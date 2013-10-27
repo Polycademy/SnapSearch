@@ -209,7 +209,8 @@ var processTask = function(task){
 
 	//for triggering a max timeout for asynchronous requests
 	var startingTime = '',
-		currentTime = '';
+		currentTime = '',
+		difference = '';
 
 	page.open(currentConfig.url).then(function(status){
 
@@ -217,7 +218,7 @@ var processTask = function(task){
 
 			console.log('Robot has opened the page and loaded all synchronous requests');
 
-			startingTime = Math.floor(Date.now()/1000);
+			startingTime = Math.floor(Date.now());
 
 			console.log('Robot is waiting for asynchronous requests to fill up');
 
@@ -255,17 +256,19 @@ var processTask = function(task){
 
 			};
 
-			//wait for the requests to queue up
-			(function checkResourceRequests(){
+			var checkResourceRequests = function(){
 				setTimeout(function(){
-					currentTime = Math.floor(Date.now()/1000);
-					if(pageRequests.length == 0 || (currentTime - startTime > currentConfig.maxtimeout)){
+					console.log('Robot still has these asynchronous resources to load: ' + pageRequests.join(', '));
+					currentTime = Math.floor(Date.now());
+					difference = currentTime - startingTime;
+					if(pageRequests.length == 0 || difference > currentConfig.maxtimeout){
 						evaluatePage();
 					}else{
 						checkResourceRequests();
 					}
 				}, currentConfig.initialwait);
-			})();
+			};
+			checkResourceRequests();
 
 		}else{
 
@@ -283,8 +286,6 @@ var processTask = function(task){
 //every 250 milliseconds, this will check
 (function processTasks(){
 	setTimeout(function(){
-		console.log(busy);
-		console.log(tasks.length);
 		if(!busy && tasks.length > 0){
 			console.log('There are ' + tasks.length + ' tasks in the queue');
 			//get the first task
