@@ -113,23 +113,16 @@ var outputResult = function(content, response){
 	console.log('Robot is responding');
 
 	response.statusCode = 200;
-
-	// content.html = "ç";
-
-	fs.write(defaultConfig.logfile, content.html + "\n", 'a');
-
+	response.headers = {
+		'Content-Type': 'application/json'
+	};
+	
+	//base 64 encode the html content due to html entities output problem (also solves utf-8 problem)
+	content.html = btoa(unescape(encodeURIComponent(content.html)));
 	content.date = Math.floor(Date.now()/1000);
+	content = JSON.stringify(content);
 
-
-	// content = JSON.stringify(content);
-
-	// response.headers = {
-	// 	'Content-Type': 'application/json',
-	// 	'Content-Length': content.length
-	// };
-
-	//this is failing to output htmlentities properly and cuts the output short!
-	response.write(content.html);
+	response.write(content);
 	
 	response.close();
 
