@@ -80,68 +80,78 @@ if(service){
 	phantom.exit();
 }
 
-//requires url (which could be changed), config, page object, response object
-var requestPage = function(url, config, page, response){
+/*
+	{
+		url: 
+		width: 
+		height: 
+		imgformat: 
+		useragent: 
+		loadimages: //wont render screen shot if this is false and ignore width/height/base64... etc
+		javascriptenabled:
+		maxtimeout: //milliseconds on the maximum wait before timing out and rendering/return html snapshot
+		animations: //want to run a mutation check on body tag? (expensive operation)
+	}
+ */
+var parseInputJson = function(input){
 
-	page.open(url).then(function(status){
-
-		if(status == 'success'){
-
-			response.statusCode = 200;
-			response.write('yea');
-			response.closeGracefully();
-			page.close();
-
-		}else{
-
-
-		}
-
-	});
-
-};
-
-//this will process a task, while also requiring the dependencies from defaultConfig and page object
-var processTask = function(task){
-
-	console.log('Robot is processing a task');
-
-	busy = true;
-	var request = task.request;
-	var response = task.response;
-
-	//configuration needs to be isolated for the current request
-	var currentConfig = JSON.parse(JSON.stringify(defaultConfig));
-	var input = request.post;
-	//input comes as a json post
-	/*
-		{
-			url: 
-			width: 
-			height: 
-			imgformat: 
-			useragent: 
-			loadimages: //wont render screen shot if this is false and ignore width/height/base64... etc
-			javascriptenabled:
-			maxtimeout: //milliseconds on the maximum wait before timing out and rendering/return html snapshot
-			animations: //want to run a mutation check on body tag? (expensive operation)
-		}
-	 */
 	try{
 		input = JSON.parse(input);
 	}catch(e){
 		logError(e);
 	}
 
+	return input;
+
+};
+
+var outputResult = function(content, response){
+
+	console.log('Robot is responding');
+
+	response.statusCode = 200;
+	content.date = Math.floor(Date.now()/1000);
+	content = JSON.stringify(content);
+	response.headers = {
+		'Content-Type': 'application/json',
+		'Content-Length': content.length
+	};
+	response.write(content);
+	response.closeGracefully();
+
+};
+
+var processTask = function(task){
+
+	console.log('Robot is processing a task');
+	
+	busy = true;
+
+	var request = task.request, 
+		response = task.response, 
+		input = parseInputJson(request.post), 
+		output = {
+			status: '',
+			headers: [],
+			message: '',
+			html: '',
+			screenshot: '',
+			date: ''
+		}, 
+		currentConfig = JSON.parse(JSON.stringify(defaultConfig));
+	
+	//configuration needs to be isolated for the current request
 	for(var key in input){
 		currentConfig[key] = input[key];
 	}
 
+	//window viewport
 	page.viewportSize = {
 		width: currentConfig.width,
 		height: currentConfig.height
 	};
 
+	//some other settings
 	page.settings.userAgent = currentConfig.useragent;
 	page.settings.loadImages = currentConfig.loadimages;
 	page.settings.javascriptEnabled = currentConfig.javascriptenabled;
@@ -162,6 +172,13 @@ var processTask = function(task){
 				pageRequests.splice(index, 1);
 			}
 		}
+		//trailing slashes could occur
+		if(resource.url == currentConfig.url || resource.url.replace(/\/$/,"") == currentConfig.url){
+			console.log('I am here');
+			//headers will be an array of objects {name:'', value: ''}
+			output.headers = resource.headers;
+			output.status = resource.status;
+		}
 	};
 
 	//this currently doesn't work, it should run for any aborted requests
@@ -179,17 +196,78 @@ var processTask = function(task){
 		busy = false;
 	};
 
-	//if the page redirects, it doesn't matter, we want to send that redirection to Google, they will process
-	//it properly,
-	//therefore we need to have the proper http code and headers
-	//All http code and headers should be sent back as well of the page itself should be sent back
-	//we can get this from the onResourceReceived
+	page.open(currentConfig.url).then(function(status){
 
-	requestPage(currentConfig.url, currentConfig, page, response);
+		if(status == 'success'){
+
+			console.log('Robot has opened a page and loaded all synchronous requests');
+
+			var evaluatePage = function(){
+
+				//default white background
+				page.evaluate(function(){
+					var style = document.createElement('style'),
+					text = document.createTextNode('body { background: #fff }');
+					style.setAttribute('type', 'text/css');
+					style.appendChild(text);
+					document.head.insertBefore(style, document.head.firstChild);
+				});
+
+				var html = page.evaluate(function(){
+					return document.documentElement.outerHTML;
+				});
+
+				var screenshot = '';
+				if(currentConfig.loadimages){
+					screenshot = page.renderBase64(currentConfig.imgformat);
+				}
+
+				output.message = 'Success';
+				output.html = html;
+				output.screenshot = screenshot;
+
+				outputResult(output, response);
+				
+				console.log('Robot has finished a task');
+
+			};
+
+			// (function checkResouceRequests(){
+			// 	setTimeout(function(){
+			// 		if(pageRequests.length == 0){
+			// 			evaluatePage();
+			// 		}else{
+			// 			checkResouceRequests();
+			// 		}
+			// 	}, 1000);
+			// })();
+
+			//wait for the requests to queue up
+			var checkResourceRequests = function(){
+				setTimeout(function(){
+					if(pageRequests == 0){
+						evaluatePage();
+					}else{
+						checkResourceRequests();
+					}
+				}, 500);
+			};
+			checkResourceRequests();
+
+		}else{
+
+			console.log('Robot failed to open page');
+			output.message = 'Failed to load URL: ' + currentConfig.url;
+			outputResult(output, response);
+			page.close();
+
+		}
+
+	});
 
 };
 
-//every 500 milliseconds, this will check
+//every 250 milliseconds, this will check
 (function processTasks(){
 	setTimeout(function(){
 		if(!busy && tasks.length > 0){
