@@ -1,6 +1,3 @@
-//PROBLEM: We need to either base64encode output before response, or htmlentity encode before response! Or else the response won't deal with html entity shit
-//also look into why subsequent stuff doesn't work...
-
 console.log('Robot is waking up');
 
 //bootstrap
@@ -19,7 +16,8 @@ var defaultConfig = {
 	useragent: 'SnapSearch',
 	loadimages: true,
 	javascriptenabled: true,
-	maxtimeout: 5000,
+	maxtimeout: 5000, 
+	initialwait: 1000, //initial wait for asynchronous requests to fill up
 	logfile: 'log.txt' // Log file is recorded in the current working directory of where you started the web server, it is not the same as this script's path
 };
 
@@ -50,6 +48,7 @@ args.forEach(function(value, index){
 	if (key === 'loadimages') defaultConfig.loadimages = propValue;
 	if (key === 'javascriptenabled') defaultConfig.javascriptenabled = propValue;
 	if (key === 'maxtimeout') defaultConfig.maxtimeout = propValue;
+	if (key === 'initialwait') defaultConfig.initialwait = propValue;
 	if (key === 'logfile') defaultConfig.logfile = propValue;
 
 });
@@ -93,7 +92,7 @@ if(service){
 		loadimages: //wont render screen shot if this is false and ignore width/height/base64... etc
 		javascriptenabled:
 		maxtimeout: //milliseconds on the maximum wait before timing out and rendering/return html snapshot
-		animations: //want to run a mutation check on body tag? (expensive operation)
+		initialwait: 
 	}
  */
 var parseInputJson = function(input){
@@ -187,7 +186,6 @@ var processTask = function(task){
 		}
 		//trailing slashes could occur
 		if(resource.url == currentConfig.url || resource.url.replace(/\/$/,"") == currentConfig.url){
-			console.log('I am here');
 			//headers will be an array of objects {name:'', value: ''}
 			output.headers = resource.headers;
 			output.status = resource.status;
@@ -205,17 +203,27 @@ var processTask = function(task){
 
 	//once the page has been closed, then we are free to do more work
 	page.onClosing = function(){
-		console.log('Robot has closed page');
+		console.log('Robot has closed the page');
 		busy = false;
 	};
+
+	//for triggering a max timeout for asynchronous requests
+	var startingTime = '',
+		currentTime = '';
 
 	page.open(currentConfig.url).then(function(status){
 
 		if(status == 'success'){
 
-			console.log('Robot has opened a page and loaded all synchronous requests');
+			console.log('Robot has opened the page and loaded all synchronous requests');
+
+			startingTime = Math.floor(Date.now()/1000);
+
+			console.log('Robot is waiting for asynchronous requests to fill up');
 
 			var evaluatePage = function(){
+
+				console.log('Robot has loaded all asynchronous requests or requests have hit max timeout');
 
 				//default white background
 				page.evaluate(function(){
@@ -247,27 +255,17 @@ var processTask = function(task){
 
 			};
 
-			// (function checkResouceRequests(){
-			// 	setTimeout(function(){
-			// 		if(pageRequests.length == 0){
-			// 			evaluatePage();
-			// 		}else{
-			// 			checkResouceRequests();
-			// 		}
-			// 	}, 1000);
-			// })();
-
 			//wait for the requests to queue up
-			var checkResourceRequests = function(){
+			(function checkResourceRequests(){
 				setTimeout(function(){
-					if(pageRequests == 0){
+					currentTime = Math.floor(Date.now()/1000);
+					if(pageRequests.length == 0 || (currentTime - startTime > currentConfig.maxtimeout)){
 						evaluatePage();
 					}else{
 						checkResourceRequests();
 					}
-				}, 500);
-			};
-			checkResourceRequests();
+				}, currentConfig.initialwait);
+			})();
 
 		}else{
 
@@ -285,13 +283,15 @@ var processTask = function(task){
 //every 250 milliseconds, this will check
 (function processTasks(){
 	setTimeout(function(){
+		console.log(busy);
+		console.log(tasks.length);
 		if(!busy && tasks.length > 0){
 			console.log('There are ' + tasks.length + ' tasks in the queue');
 			//get the first task
 			var task = tasks.shift();
 			processTask(task);
-		}else{
-			processTasks();
 		}
+		//we want to continue the loop even if a task is being processed
+		processTasks();
 	}, 250);
 })();
