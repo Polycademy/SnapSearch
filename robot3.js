@@ -1,3 +1,6 @@
+//PROBLEM: We need to either base64encode output before response, or htmlentity encode before response! Or else the response won't deal with html entity shit
+//also look into why subsequent stuff doesn't work...
+
 console.log('Robot is waking up');
 
 //bootstrap
@@ -97,11 +100,11 @@ var parseInputJson = function(input){
 
 	try{
 		input = JSON.parse(input);
+		return input;
 	}catch(e){
 		logError(e);
+		return false;
 	}
-
-	return input;
 
 };
 
@@ -110,14 +113,25 @@ var outputResult = function(content, response){
 	console.log('Robot is responding');
 
 	response.statusCode = 200;
+
+	// content.html = "ç";
+
+	fs.write(defaultConfig.logfile, content.html + "\n", 'a');
+
 	content.date = Math.floor(Date.now()/1000);
-	content = JSON.stringify(content);
-	response.headers = {
-		'Content-Type': 'application/json',
-		'Content-Length': content.length
-	};
-	response.write(content);
-	response.closeGracefully();
+
+
+	// content = JSON.stringify(content);
+
+	// response.headers = {
+	// 	'Content-Type': 'application/json',
+	// 	'Content-Length': content.length
+	// };
+
+	//this is failing to output htmlentities properly and cuts the output short!
+	response.write(content.html);
+	
+	response.close();
 
 };
 
@@ -139,6 +153,12 @@ var processTask = function(task){
 			date: ''
 		}, 
 		currentConfig = JSON.parse(JSON.stringify(defaultConfig));
+
+	if(!input){
+		output.message = 'Input was not valid JSON';
+		outputResult(output, response);
+		busy = false;
+	}
 	
 	//configuration needs to be isolated for the current request
 	for(var key in input){
@@ -227,6 +247,8 @@ var processTask = function(task){
 				output.screenshot = screenshot;
 
 				outputResult(output, response);
+
+				page.close();
 				
 				console.log('Robot has finished a task');
 
