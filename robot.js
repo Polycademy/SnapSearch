@@ -1,93 +1,304 @@
-//example CLI execution "phantomjs scraper.js url=http://blah width=1024 height= 800"
+//STILL TO ADD:
+//1. Mutation Observation (refresh timeout) (inside the context of web page, using blocking page.evaluate)
+//2. Custom callback prior to any js running using page.evaluate(func) and then using "eval"
+//3. PHP should compress the JSON before sending...? Or allow parameter to allow the option of compressing it
+//using msgpack or other styles
 
-try {
+console.log('Robot is waking up');
 
-	var config = {
-		url: '',
-		width: '1024',
-		height: '800'
-	};
+//bootstrap
+var fs = require('fs'),
+	system = require('system'),
+	server = require('webserver').create(),
+	page = require('webpage').create();
 
-	var args = require('system').args;
+//default configuration from initialising the process
+var defaultConfig = {
+	ipaddress: '127.0.0.1',
+	port: 8989,
+	width: '1280',
+	height: '1024', //this can be used to facilitate scroll based pagination
+	imgformat: 'png',
+	useragent: 'SnapSearch',
+	loadimages: true,
+	javascriptenabled: true,
+	maxtimeout: 5000, 
+	initialwait: 1000, //initial wait for asynchronous requests to fill up
+	logfile: 'log.txt' // Log file is recorded in the current working directory of where you started the web server, it is not the same as this script's path
+};
 
-	//forEach is a callback, a recursion, so to skip the first loop we use return instead of continue
-	args.forEach(function(value, index){
+//filling up the options
+var args = system.args;
 
-		//skip the first arg (the script name)
-		if(index === 0){
-			return;
-		}
-		
-		var key = value.substr(0, value.indexOf('='));
-		var propValue = value.substr(value.indexOf('=') + 1);
+args.forEach(function(value, index){
 
-		if (!key || !propValue) {
-			console.log('Incorrect parameters format, use key=value');
-			phantom.exit();
-		}
+	//skip the first arg (the script name)
+	if(index === 0){
+		return;
+	}
+	
+	var key = value.substr(0, value.indexOf('='));
+	var propValue = value.substr(value.indexOf('=') + 1);
 
-		if (key === 'url') config.url = propValue;
-		if (key === 'width') config.width = propValue;
-		if (key === 'height') config.height = propValue;
+	if (!key || !propValue) {
+		console.log('Incorrect parameters format, use key=value');
+		phantom.exit();
+	}
 
+	if (key === 'ipaddress') defaultConfig.ipaddress = propValue;
+	if (key === 'port') defaultConfig.port = propValue;
+	if (key === 'width') defaultConfig.width = propValue;
+	if (key === 'height') defaultConfig.height = propValue;
+	if (key === 'imgformat') defaultConfig.imgformat = propValue;
+	if (key === 'useragent') defaultConfig.useragent = propValue;
+	if (key === 'loadimages') defaultConfig.loadimages = propValue;
+	if (key === 'javascriptenabled') defaultConfig.javascriptenabled = propValue;
+	if (key === 'maxtimeout') defaultConfig.maxtimeout = propValue;
+	if (key === 'initialwait') defaultConfig.initialwait = propValue;
+	if (key === 'logfile') defaultConfig.logfile = propValue;
+
+});
+
+//log function
+var logError = function(exception){
+	var msg = exception.message + ' - ' + exception.fileName + ' - ' + exception.lineNumber + ' - ' + (new Date()).toString();
+	console.log('Robot hit an error: ' + msg);
+	fs.write(defaultConfig.logfile, msg + "\n", 'a');
+};
+
+//create a queue of tasks {request, response}
+var tasks = [];
+var busy = false;
+
+var service = server.listen(defaultConfig.ipaddress + ':' + defaultConfig.port, function(request, response){
+
+	console.log('Robot received a task');
+	tasks.push({
+		request: request,
+		response: response
 	});
 
-	// Outputing the data back to the Node process - NOTE: Needs further work
-	var outputData = function(output){
-		console.log(JSON.stringify(output));
+});
+
+//in case the service wasn't started
+if(service){
+	console.log('Robot server started at: ' + defaultConfig.ipaddress + ':' + defaultConfig.port);
+}else{
+	console.log('Unable to start robot server on ' + defaultConfig.ipaddress + ':' + defaultConfig.port);
+	phantom.exit();
+}
+
+/*
+	{
+		url: 
+		width: 
+		height: 
+		imgformat: 
+		useragent: 
+		loadimages: //wont render screen shot if this is false and ignore width/height/base64... etc
+		javascriptenabled:
+		maxtimeout: //milliseconds on the maximum wait before timing out and rendering/return html snapshot
+		initialwait: 
+	}
+ */
+var parseInputJson = function(input){
+
+	try{
+		input = JSON.parse(input);
+		return input;
+	}catch(e){
+		logError(e);
+		return false;
+	}
+
+};
+
+var outputResult = function(content, response){
+
+	console.log('Robot is responding');
+
+	response.statusCode = 200;
+	response.headers = {
+		'Content-Type': 'application/json'
 	};
+	
+	//base 64 encode the html content due to html entities output problem (also solves utf-8 problem)
+	content.html = btoa(unescape(encodeURIComponent(content.html)));
+	content.date = Math.floor(Date.now()/1000);
+	content = JSON.stringify(content);
 
-	// Creating the page object representing the API to manipulate the page.
-	var page = require('webpage').create();
+	response.write(content);
+	
+	response.close();
 
-	// Setting the viewportsize object properites
+};
+
+var processTask = function(task){
+
+	console.log('Robot is processing a task');
+	
+	busy = true;
+
+	var request = task.request, 
+		response = task.response, 
+		input = parseInputJson(request.post), 
+		output = {
+			status: '',
+			headers: [],
+			message: '',
+			html: '',
+			screenshot: '',
+			date: ''
+		}, 
+		currentConfig = JSON.parse(JSON.stringify(defaultConfig));
+
+	if(!input){
+		output.message = 'Input was not valid JSON';
+		outputResult(output, response);
+		busy = false;
+	}
+	
+	//configuration needs to be isolated for the current request
+	for(var key in input){
+		currentConfig[key] = input[key];
+	}
+
+	//window viewport
 	page.viewportSize = {
-		width: config.width,
-		height: config.height
+		width: currentConfig.width,
+		height: currentConfig.height
 	};
 
-	// Loading the page and executing the function on the onLoadFinished event
-	page.open(config.url, function(status){
-		if(status === 'success'){
+	//some other settings
+	page.settings.userAgent = currentConfig.useragent;
+	page.settings.loadImages = currentConfig.loadimages;
+	page.settings.javascriptEnabled = currentConfig.javascriptenabled;
 
-			var screenshot, html;
+	//queue up all the asynchronous and synchronous requests that the page will execute
+	var pageRequests = [];
 
-			page.injectJs('ajax_tracker.js');
+	page.onResourceRequested = function(resource){
+		console.log('Robot is requesting: ' + resource.id + ' - ' + resource.url);
+		pageRequests.push(resource.id);
+	};
 
-			page.evaluate(function(){
+	page.onResourceReceived = function(resource){
+		console.log('Robot received: ' + resource.id + ' - ' + resource.url + ' at ' + resource.stage);
+		if(resource.stage == 'end'){
+			var index = pageRequests.indexOf(resource.id);
+			if (index != -1) {
+				pageRequests.splice(index, 1);
+			}
+		}
+		//trailing slashes could occur
+		if(resource.url == currentConfig.url || resource.url.replace(/\/$/,"") == currentConfig.url){
+			//headers will be an array of objects {name:'', value: ''}
+			output.headers = resource.headers;
+			output.status = resource.status;
+		}
+	};
 
-				var checkAjaxRequests = function(){
-					setTimeout(function(){
-						if (_ss_ajax_tracker.checkAjax()){
-							screenshot = page.renderBase64('png');
-							html = document.all[0].outerHTML;
-						}else{
-							checkAjaxRequests();
-						}
-					}, 500);
-				};
+	//this currently doesn't work, it should run for any aborted requests
+	page.onResourceError = function(resource){
+		console.log('Robot could receive: ' + resource.url);
+		var index = pageRequests.indexOf(resource.id);
+		if (index != -1) {
+			pageRequests.splice(index, 1);
+		}
+	};
 
-				checkAjaxRequests();
+	//once the page has been closed, then we are free to do more work
+	page.onClosing = function(){
+		console.log('Robot has closed the page');
+		busy = false;
+	};
 
-			});
+	//for triggering a max timeout for asynchronous requests
+	var startingTime = '',
+		currentTime = '',
+		difference = '';
 
-			outputData({
-				screenshot: screenshot,
-				html: html,
-				date: Math.floor(Date.now()/1000) //convert to unix timestamp and round to highest seconds
-			});
+	page.open(currentConfig.url).then(function(status){
 
-			phantom.exit();
+		if(status == 'success'){
+
+			console.log('Robot has opened the page and loaded all synchronous requests');
+
+			startingTime = Math.floor(Date.now());
+
+			console.log('Robot is waiting for asynchronous requests to fill up');
+
+			var evaluatePage = function(){
+
+				console.log('Robot has loaded all asynchronous requests or requests have hit max timeout');
+
+				//default white background
+				page.evaluate(function(){
+					var style = document.createElement('style'),
+					text = document.createTextNode('body { background: #fff }');
+					style.setAttribute('type', 'text/css');
+					style.appendChild(text);
+					document.head.insertBefore(style, document.head.firstChild);
+				});
+
+				var html = page.evaluate(function(){
+					return document.documentElement.outerHTML;
+				});
+
+				var screenshot = '';
+				if(currentConfig.loadimages){
+					screenshot = page.renderBase64(currentConfig.imgformat);
+				}
+
+				output.message = 'Success';
+				output.html = html;
+				output.screenshot = screenshot;
+
+				outputResult(output, response);
+
+				page.close();
+				
+				console.log('Robot has finished a task');
+
+			};
+
+			var checkResourceRequests = function(){
+				setTimeout(function(){
+					console.log('Robot still has these asynchronous resources to load: ' + pageRequests.join(', '));
+					currentTime = Math.floor(Date.now());
+					difference = currentTime - startingTime;
+					if(pageRequests.length == 0 || difference > currentConfig.maxtimeout){
+						evaluatePage();
+					}else{
+						checkResourceRequests();
+					}
+				}, currentConfig.initialwait);
+			};
+			checkResourceRequests();
 
 		}else{
-			console.log('Failed Loading!');
-			phantom.exit();	
+
+			console.log('Robot failed to open page');
+			output.message = 'Failed to load URL: ' + currentConfig.url;
+			outputResult(output, response);
+			page.close();
+
 		}
+
 	});
 
-} catch(e) {
+};
 
-	console.log(e.name + ': ' + e.message);
-	phantom.exit();
-
-}
+//every 250 milliseconds, this will check
+(function processTasks(){
+	setTimeout(function(){
+		if(!busy && tasks.length > 0){
+			console.log('There are ' + tasks.length + ' tasks in the queue');
+			//get the first task
+			var task = tasks.shift();
+			processTask(task);
+		}
+		//we want to continue the loop even if a task is being processed
+		processTasks();
+	}, 250);
+})();
