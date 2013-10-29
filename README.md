@@ -1,3 +1,9 @@
+Running Robot.js:
+
+xvfb-run path/slimerjs path/robot.js
+
+
+
 Todo:
 
 1. Supervisor configuration file
@@ -38,3 +44,29 @@ http://superlance.readthedocs.org/en/latest/memmon.html
 http://plope.com/Members/chrism/memmon_sample
 
 Need to change logging system dependent on whether supervisord is used to start the process. Check the memory usage of each xulrunner process!
+
+You also need apt-get xvfb
+
+also httpok plugin is a good choice too!
+
+32bit linux
+XVFB: 7mb
+XVFB-RUN: 1mb
+XURL Runner: 37MB
+Website memory usage: 80mb
+
+=> 130mb
+
+You need to get this version of superlance:
+
+(special version of superlance that can track process tree)
+pip install -e git://github.com/Polycademy/superlance.git@0.9.1#egg=superlance
+
+Required:
+
+apt-get install xvfb
+apt-get install git
+git/pip/xvfb/slimerjs/superlance/supervisord
+
+pip install -> superlance
+easy_install supervisor
