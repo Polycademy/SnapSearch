@@ -1,8 +1,7 @@
 //STILL TO ADD:
 //1. Mutation Observation (refresh timeout) (inside the context of web page, using blocking page.evaluate)
-//2. Custom callback prior to any js running using page.evaluate(func) and then using "eval"
 //3. PHP should compress the JSON before sending...? Or allow parameter to allow the option of compressing it
-//using msgpack or other styles
+//using msgpack or other styles (using gzip compression?)
 
 console.log('Robot is waking up');
 
@@ -24,7 +23,8 @@ var defaultConfig = {
 	javascriptenabled: true,
 	maxtimeout: 5000, 
 	initialwait: 1000, //initial wait for asynchronous requests to fill up
-	logfile: 'log.txt' // Log file is recorded in the current working directory of where you started the web server, it is not the same as this script's path
+	callback: false, 
+	logfile: false // Log file is recorded in the current working directory of where you started the web server, it is not the same as this script's path (can be log.txt), will auto create the file it doesn't exist
 };
 
 //filling up the options
@@ -55,6 +55,7 @@ args.forEach(function(value, index){
 	if (key === 'javascriptenabled') defaultConfig.javascriptenabled = propValue;
 	if (key === 'maxtimeout') defaultConfig.maxtimeout = propValue;
 	if (key === 'initialwait') defaultConfig.initialwait = propValue;
+	if (key === 'callback') defaultConfig.callback = propValue;
 	if (key === 'logfile') defaultConfig.logfile = propValue;
 
 });
@@ -63,7 +64,9 @@ args.forEach(function(value, index){
 var logError = function(exception){
 	var msg = exception.message + ' - ' + exception.fileName + ' - ' + exception.lineNumber + ' - ' + (new Date()).toString();
 	console.log('Robot hit an error: ' + msg);
-	fs.write(defaultConfig.logfile, msg + "\n", 'a');
+	if(typeof defaultConfig.logfile == 'string'){
+		fs.write(defaultConfig.logfile, msg + "\n", 'a');
+	}
 };
 
 //create a queue of tasks {request, response}
@@ -99,6 +102,7 @@ if(service){
 		javascriptenabled:
 		maxtimeout: //milliseconds on the maximum wait before timing out and rendering/return html snapshot
 		initialwait: 
+		callback //string
 	}
  */
 var parseInputJson = function(input){
@@ -122,8 +126,6 @@ var outputResult = function(content, response){
 		'Content-Type': 'application/json'
 	};
 	
-	//base 64 encode the html content due to html entities output problem (also solves utf-8 problem)
-	content.html = btoa(unescape(encodeURIComponent(content.html)));
 	content.date = Math.floor(Date.now()/1000);
 	content = JSON.stringify(content);
 
@@ -200,7 +202,7 @@ var processTask = function(task){
 
 	//this currently doesn't work, it should run for any aborted requests
 	page.onResourceError = function(resource){
-		console.log('Robot could receive: ' + resource.url);
+		console.log('Robot could not receive: ' + resource.url);
 		var index = pageRequests.indexOf(resource.id);
 		if (index != -1) {
 			pageRequests.splice(index, 1);
@@ -241,6 +243,14 @@ var processTask = function(task){
 					document.head.insertBefore(style, document.head.firstChild);
 				});
 
+				//custom callback can be evaluated before rendering
+				if(typeof currentConfig.callback == 'string'){
+					console.log('Robot is evaluating custom callback');
+					page.evaluate(function(callback){
+						eval(callback);
+					}, currentConfig.callback);
+				}
+
 				var html = page.evaluate(function(){
 					return document.documentElement.outerHTML;
 				});
@@ -255,16 +265,16 @@ var processTask = function(task){
 				output.screenshot = screenshot;
 
 				outputResult(output, response);
-
 				page.close();
-				
 				console.log('Robot has finished a task');
 
 			};
 
 			var checkResourceRequests = function(){
 				setTimeout(function(){
-					console.log('Robot still has these asynchronous resources to load: ' + pageRequests.join(', '));
+					if(pageRequests.length > 0){
+						console.log('Robot still has these asynchronous resources to load: ' + pageRequests.join(', '));
+					}
 					currentTime = Math.floor(Date.now());
 					difference = currentTime - startingTime;
 					if(pageRequests.length == 0 || difference > currentConfig.maxtimeout){
@@ -282,6 +292,7 @@ var processTask = function(task){
 			output.message = 'Failed to load URL: ' + currentConfig.url;
 			outputResult(output, response);
 			page.close();
+			console.log('Robot has finished a task');
 
 		}
 
