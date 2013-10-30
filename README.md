@@ -73,3 +73,14 @@ easy_install supervisor
 
 Slimerjs binary needs to be softlink, so that the directory of execution works
 sudo ln -s /absolute/path/to/slimerjs /usr/local/bin/slimerjs
+
+supervisord -c path/to/conf/file
+
+Also need sendmail.
+apt-get install sendmail (to send email)
+
+https://www.digitalocean.com/community/questions/php-mail-function-enable
+http://www.flogiston.net/blog/2009/05/11/sendmail-painfully-slow-on-ubuntu/
+(make sure hostname is there by using hostname)
+
+Also add httpok
