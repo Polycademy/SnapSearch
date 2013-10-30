@@ -1,4 +1,24 @@
 #################
+## Custom
+#################
+
+*/config/development
+*/logs/*.php
+*/logs/!index.html
+*/cache/*
+*/cache/!index.html
+vendor/*
+bin/*
+build/*
+node_modules/*
+bower_components/*
+.c9revisions/*
+secrets/*
+!secrets/*.example
+*.log
+*.pid
+
+#################
 ## Eclipse
 #################
 

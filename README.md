@@ -70,3 +70,6 @@ git/pip/xvfb/slimerjs/superlance/supervisord
 
 pip install -> superlance
 easy_install supervisor
+
+Slimerjs binary needs to be softlink, so that the directory of execution works
+sudo ln -s /absolute/path/to/slimerjs /usr/local/bin/slimerjs

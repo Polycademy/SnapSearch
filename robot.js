@@ -14,7 +14,7 @@ var fs = require('fs'),
 //default configuration from initialising the process
 var defaultConfig = {
 	ipaddress: '127.0.0.1',
-	port: 8989,
+	port: 8500,
 	width: '1280',
 	height: '1024', //this can be used to facilitate scroll based pagination
 	imgformat: 'png',
