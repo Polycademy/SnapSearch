@@ -75,3 +75,5 @@ Slimerjs binary needs to be softlink, so that the directory of execution works
 sudo ln -s /absolute/path/to/slimerjs /usr/local/bin/slimerjs
 
 move startup script into /etc/init/supervisord.conf (make sure to change the chdir to where the robot_scripts is)
+
+Make sure line endings are based on LF for those shell scripts and especially the startup script. Use dos2unix to convert.
