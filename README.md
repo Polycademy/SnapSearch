@@ -6,7 +6,7 @@ xvfb-run path/slimerjs path/robot.js
 
 Todo:
 
-1. Supervisor configuration file
+1. Convert Supervisord to Monit conf file, because memmon process tree tracking is not working. Delete the superlance repo on your Polycademy group
 2. Nginx configuration file (this is loaded at runtime)
 One single Nginx will be used by Slimer and the PHP runtime. The port that nginx listens to rout to slimerjs will be blocked using iptables
 
@@ -60,7 +60,7 @@ Website memory usage: 80mb
 You need to get this version of superlance:
 
 (special version of superlance that can track process tree)
-pip install -e git://github.com/Polycademy/superlance.git@0.9.1#egg=superlance
+pip install -e git://github.com/Polycademy/superlance.git@0.9.2#egg=superlance
 
 Required:
 
