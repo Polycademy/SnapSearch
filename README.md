@@ -57,30 +57,21 @@ Website memory usage: 80mb
 
 => 130mb
 
-You need to get this version of superlance:
-
-(special version of superlance that can track process tree)
-pip install -e git://github.com/Polycademy/superlance.git@0.9.2#egg=superlance
-
 Required:
 
+apt-get install python2.7.5 or greater...
 apt-get install xvfb
 apt-get install git
-git/pip/xvfb/slimerjs/superlance/supervisord
-
-pip install -> superlance
+apt-get install python-setuptools
+apt-get install python-pip
 easy_install supervisor
+apt-get install curl
+curl -O http://download.slimerjs.org/nightlies/0.8.5pre/slimerjs-0.8.5pre-linux-i686.tar.bz2
+pip install --upgrade httpie
+
+SlimerJS 0.8.5pre => application.ini => MaxVersion=25.*
 
 Slimerjs binary needs to be softlink, so that the directory of execution works
 sudo ln -s /absolute/path/to/slimerjs /usr/local/bin/slimerjs
 
-supervisord -c path/to/conf/file
-
-Also need sendmail.
-apt-get install sendmail (to send email)
-
-https://www.digitalocean.com/community/questions/php-mail-function-enable
-http://www.flogiston.net/blog/2009/05/11/sendmail-painfully-slow-on-ubuntu/
-(make sure hostname is there by using hostname)
-
-Also add httpok
+move startup script into /etc/init/supervisord.conf (make sure to change the chdir to where the robot_scripts is)
