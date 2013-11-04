@@ -1,5 +1,3 @@
-#http://www.farinspace.com/codeigniter-nginx-rewrite-rules/
-
 # robot_slimer servers, mark which ones are running
 upstream robot_slimer {
 

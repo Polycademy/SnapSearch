@@ -28,10 +28,10 @@ apt-get install python-setuptools
 apt-get install python-pip
 easy_install supervisor
 apt-get install curl
-curl -O http://download.slimerjs.org/nightlies/0.8.5pre/slimerjs-0.8.5pre-linux-i686.tar.bz2
+curl -O http://download.slimerjs.org/v0.9/0.9.0rc1/slimerjs-0.9.0rc1-linux-i686.tar.bz2
 pip install --upgrade httpie
 
-SlimerJS 0.8.5pre => application.ini => MaxVersion=25.*
+SlimerJS 0.9.0rc1 => application.ini => MaxVersion=25.*
 
 Slimerjs binary needs to be softlink, so that the directory of execution works
 sudo ln -s /absolute/path/to/slimerjs /usr/local/bin/slimerjs
@@ -50,3 +50,12 @@ Server Configuration:
 Get https://github.com/Polycademy/server-configs-nginx do the global config.
 
 Symlink sites-available
+
+It runs 4 robot_slimer servers:
+
+8500
+8501
+8502
+8503
+
+And Nginx load balances them from 8499!

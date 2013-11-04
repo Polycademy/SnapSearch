@@ -200,9 +200,8 @@ var processTask = function(task){
 		}
 	};
 
-	//this currently doesn't work, it should run for any aborted requests
 	page.onResourceError = function(resource){
-		console.log('Robot could not receive: ' + resource.url);
+		console.log('Robot could not receive: ' + resource.url + ' due to ' + resource.errorCode + ':' + resource.errorString);
 		var index = pageRequests.indexOf(resource.id);
 		if (index != -1) {
 			pageRequests.splice(index, 1);
