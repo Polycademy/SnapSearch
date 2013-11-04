@@ -48,8 +48,16 @@ server {
   #Specify a charset
   charset utf-8;
 
-  # Include the component config parts for h5bp
-  include conf.d/base.conf;
+  # Include the recommended base config
+  include conf.d/expires.conf;
+  include conf.d/cache-busting.conf;
+  include conf.d/x-ua-compatible.conf;
+  include conf.d/protect-system-files.conf;
+  include conf.d/cache-file-descriptors.conf;
+  include conf.d/cross-domain-fonts.conf;
+  include conf.d/cross-domain-ajax.conf;
+  # Uncomment this to prevent mobile network providers from modifying your site 
+  # include conf.d/no-transform.conf;
 
   # Force ssl
   # if ($ssl_protocol = "") {
