@@ -59,3 +59,7 @@ It runs 4 robot_slimer servers:
 8503
 
 And Nginx load balances them from 8499!
+
+Configure snapsearch.io in /etc/hosts
+
+127.0.0.1 snapsearch.io

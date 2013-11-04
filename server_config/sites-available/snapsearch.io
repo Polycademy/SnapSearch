@@ -1,7 +1,7 @@
 # robot_slimer servers, mark which ones are running
 upstream robot_slimer {
 
-  least_conn
+  least_conn;
   server 127.0.0.1:8500;
   server 127.0.0.1:8501;
   server 127.0.0.1:8502;
@@ -12,11 +12,10 @@ upstream robot_slimer {
 # convert www to non-www redirect 
 server {
 
-  # don't forget to tell on which port this server listens
   listen 80;
-  listen [::]:80 ipv6only=on;
+  listen [::]:80;
   listen 443 ssl;
-  listen [::]:443 ipv6only=on;
+  listen [::]:443 ssl;
 
   # listen on the www host
   server_name www.snapsearch.io;
@@ -30,9 +29,9 @@ server {
 server {
 
   listen 80;
-  listen [::]:80 ipv6only=on;
+  listen [::]:80;
   listen 443 ssl;
-  listen [::]:443 ipv6only=on;
+  listen [::]:443 ssl;
 
   # The host name to respond to, this will require mapping hostname to ip address on dev server
   server_name snapsearch.io;
@@ -98,7 +97,6 @@ server {
     try_files $uri =404;
     fastcgi_split_path_info (.+\.php)(.*)$;
     fastcgi_param PATH_INFO $fastcgi_path_info;
-    fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     include fastcgi_params;
     fastcgi_pass unix:/var/run/php5-fpm.sock;
@@ -108,11 +106,17 @@ server {
 
 }
 
-# snapsearch.io:8499 will load balance between all the robot_slimer servers
+# localhost:8499 will load balance between all the robot_slimer servers
 # make sure to firewall 8499 and only allow local requests
 server {
   
   listen 8499;
+
+  # No need for gzip compression, this is to be reused by PHP
+  gzip off;
+
+  # No need for tracking access to the load balancer
+  access_log off;
 
   location / {
     proxy_pass http://robot_slimer;
