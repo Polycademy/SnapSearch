@@ -51,7 +51,12 @@ curl -u 'CMCDragonkai' -L https://raw.github.com/CMCDragonkai/keys/master/snapse
 # How many robots do you want to start?
 # Prompt for robot numbers, note that port starts at 8500
 # Along with port numbers
-# Also then subsequently modify sites-available on its upstream
+
+# Setup hosts redirection for snapsearch.io
+# Find any mention of snapsearch.io in /etc/hosts
+# If so replace it with 127.0.0.1 snapsearch.io www.snapsearch.io
+# Actually that's a bad idea. It's only good for development, not production.
+# Prompt and ask for this
 
 # Setting up supervisor upstart script to run this project's robots
 echo "Setting up Supervisor Upstart Script"

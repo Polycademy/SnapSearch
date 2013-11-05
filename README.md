@@ -1,21 +1,5 @@
-We need some sort of build script to be ran to install the necessary things
-
-We need an abstract deploy hook that can work for private PAAS. Something that you just can run normally!
-
-Global Dependencies:
-
-get composer
-get npm
-get slimerjs
-npm install bower -g for Bower Dependencies
-npm install grunt-cli -g for Grunt build
-
-
-
-So this would result in respository containing:
-
-4. PHP app + Front end (along with composer dependencies)
-5. API test cases with Codeception with Travis.yml
+1. PHP app + Front end (along with composer dependencies)
+2. API test cases with Codeception with Travis.yml
 
 https://www.digitalocean.com/community/articles/how-to-set-up-a-firewall-using-ip-tables-on-ubuntu-12-04
 https://www.digitalocean.com/community/articles/how-to-use-nmap-to-scan-for-open-ports-on-your-vps
