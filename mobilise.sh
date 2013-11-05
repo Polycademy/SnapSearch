@@ -12,10 +12,28 @@ if [[ $UID != 0 ]]; then
 	exit 1
 fi
 
+# Checking for necessary global components
+hash nginx 2>/dev/null || { echo >&2 "nginx needs to be installed, so aborting"; exit 1; }
+hash php-fpm 2>/dev/null || { echo >&2 "php-fpm needs to be installed, so aborting"; exit 1; }
+hash python 2>/dev/null || { echo >&2 "python needs to be installed, so aborting"; exit 1; }
+hash mysql 2>/dev/null || { echo >&2 "mysql needs to be installed, so aborting"; exit 1; }
+hash composer 2>/dev/null || { echo >&2 "composer needs to be installed, so aborting"; exit 1; }
+hash npm 2>/dev/null || { echo >&2 "npm needs to be installed, so aborting"; exit 1; }
+hash bower 2>/dev/null || { echo >&2 "bower needs to be installed, so aborting"; exit 1; }
+hash grunt-cli 2>/dev/null || { echo >&2 "grunt-cli needs to be installed, so aborting"; exit 1; }
+
 # Find the project's directory from this file
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Change to the project's directory
 cd $PROJECT_DIR
+
+# Install all the dependencies
+# Composer and NPM should already be available on PATH
+# Bower and Grunt-Cli will be required however
+echo "Installing dependencies from Composer, NPM and Bower"
+composer install --dev
+npm install
+bower install
 
 # Download SlimerJS
 echo "Downloading SlimerJS 0.9.0rc1"
@@ -35,18 +53,10 @@ curl -u 'CMCDragonkai' -L https://raw.github.com/CMCDragonkai/keys/master/snapse
 # Along with port numbers
 # Also then subsequently modify sites-available on its upstream
 
-# Install all the dependencies
-# Composer, NPM, Bower, grunt-cli
-composer install
-npm install
-npm install bower -g
-npm install grunt-cli -g
-bower install
-
 # Setting up supervisor upstart script to run this project's robots
 echo "Setting up Supervisor Upstart Script"
 ROBOT_PATH="`pwd`/robot_scripts"
-perl -pi -e 's/chdir (?:\\/[\\w\\.\\-]+)+/chdir $ROBOT_PATH/g' startup_scripts/supervisord.conf
+perl -pi -e 's/chdir .*/chdir $ROBOT_PATH/g' startup_scripts/supervisord.conf
 echo "Moving Supervisor startup script to /etc/init"
 sudo cp startup_scripts/supervisord.conf /etc/init/supervisord.conf
 echo "Starting Supervisord"
@@ -56,3 +66,5 @@ sudo service supervisord restart
 echo "Establishing a symlink from snapsearch.io to NGINX sites-enabled"
 sudo ln-s `pwd`/server_config/sites-available/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
 sudo service nginx restart
+
+echo "All done!"
