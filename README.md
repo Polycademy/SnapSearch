@@ -1,4 +1,16 @@
-Todo:
+We need some sort of build script to be ran to install the necessary things
+
+We need an abstract deploy hook that can work for private PAAS. Something that you just can run normally!
+
+Global Dependencies:
+
+get composer
+get npm
+get slimerjs
+npm install bower -g for Bower Dependencies
+npm install grunt-cli -g for Grunt build
+
+
 
 So this would result in respository containing:
 
