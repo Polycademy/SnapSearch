@@ -3,6 +3,7 @@
 # Mobilise will mobilise all the dependencies of this project in one go!
 # Everything will be installed relative to this file (this repo) and then moved/symlinked to the correct place
 # This file should appear as /www/snapsearch/mobilise.sh
+# Only run this after the server has already been configured, so it should have all the necessary generic web server stuff
 
 # Ask for sudo
 if [[ $UID != 0 ]]; then
@@ -25,9 +26,33 @@ echo "Adding SlimerJS to the PATH"
 sudo ln -s `pwd`/slimerjs/slimerjs /usr/local/bin/slimerjs
 
 # Bring in Secret Keys
+echo "Downloading secret keys relevant to Snapsearch"
+mkdir -p secrets
+curl -u 'CMCDragonkai' -L https://raw.github.com/CMCDragonkai/keys/master/snapsearch/keys.php > secrets/keys.php
 
+# How many robots do you want to start?
+# Prompt for robot numbers, note that port starts at 8500
+# Along with port numbers
+# Also then subsequently modify sites-available on its upstream
 
+# Install all the dependencies
+# Composer, NPM, Bower, grunt-cli
+composer install
+npm install
+npm install bower -g
+npm install grunt-cli -g
+bower install
 
+# Setting up supervisor upstart script to run this project's robots
+echo "Setting up Supervisor Upstart Script"
+ROBOT_PATH="`pwd`/robot_scripts"
+perl -pi -e 's/chdir (?:\\/[\\w\\.\\-]+)+/chdir $ROBOT_PATH/g' startup_scripts/supervisord.conf
+echo "Moving Supervisor startup script to /etc/init"
+sudo cp startup_scripts/supervisord.conf /etc/init/supervisord.conf
+echo "Starting Supervisord"
+sudo service supervisord restart
 
-
-# Bring in the keys from Github (secrets) (ask for it on the cli initialise, we cant save the keys)
+# Setting up NGINX server configuration
+echo "Establishing a symlink from snapsearch.io to NGINX sites-enabled"
+sudo ln-s `pwd`/server_config/sites-available/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
+sudo service nginx restart
