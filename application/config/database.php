@@ -79,27 +79,65 @@
 $active_group = 'default';
 $query_builder = TRUE;
 
-$db['default'] = array(
-	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => '',
-	'password' => '',
-	'database' => '',
-	'dbdriver' => 'mysqli',
-	'dbprefix' => '',
-	'pconnect' => TRUE,
-	'db_debug' => TRUE,
-	'cache_on' => FALSE,
-	'cachedir' => '',
-	'char_set' => 'utf8',
-	'dbcollat' => 'utf8_general_ci',
-	'swap_pre' => '',
-	'autoinit' => TRUE,
-	'encrypt' => FALSE,
-	'compress' => FALSE,
-	'stricton' => FALSE,
-	'failover' => array()
-);
+if(ENVIRONMENT == 'development'){
+
+	$database_name = 'snapsearch';
+
+	$db['default'] = array(
+		'dsn'		=> 'mysql:host=localhost;dbname=' . $database_name,
+		'hostname'	=> 'localhost',
+		'username'	=> 'root',
+		'password'	=> '',
+		'database'	=> $database_name,
+		'dbdriver'	=> 'pdo',
+		'dbprefix'	=> '',
+		'pconnect'	=> TRUE,
+		'db_debug'	=> TRUE,
+		'cache_on'	=> FALSE,
+		'cachedir'	=> '',
+		'char_set'	=> 'utf8',
+		'dbcollat'	=> 'utf8_general_ci',
+		'swap_pre'	=> '',
+		'autoinit'	=> TRUE,
+		'encrypt'	=> FALSE,
+		'compress'	=> FALSE,
+		'stricton'	=> FALSE,
+		'failover'	=> array(),
+		//'port'	=> 1234, //FOR PORTS IF YOU NEED THEM
+	);
+
+}elseif(ENVIRONMENT == 'production'){
+
+	$db_host = $_ENV['secrets']['database_host'];
+	$db_name = $_ENV['secrets']['database_name'];
+	$db_user = $_ENV['secrets']['database_user'];
+	$db_pass = $_ENV['secrets']['database_pass'];
+	$db_port = $_ENV['secrets']['database_port'];
+
+	$db['default'] = array(
+		'dsn'		=> 'mysql:host=' . $db_host . ';dbname=' . $db_name,
+		'hostname'	=> $db_host,
+		'username'	=> $db_user,
+		'password'	=> $db_pass,
+		'database'	=> $db_name,
+		'dbdriver'	=> 'pdo',
+		'dbprefix'	=> '',
+		'pconnect'	=> TRUE,
+		'db_debug'	=> FALSE, //for JSON error messages
+		'cache_on'	=> FALSE,
+		'cachedir'	=> '',
+		'char_set'	=> 'utf8',
+		'dbcollat'	=> 'utf8_general_ci',
+		'swap_pre'	=> '',
+		'autoinit'	=> TRUE,
+		'encrypt'	=> FALSE,
+		'compress'	=> FALSE,
+		'stricton'	=> FALSE,
+		'failover'	=> array(),
+		'port'		=> $db_port,
+	);
+
+}
 
 /* End of file database.php */
 /* Location: ./application/config/database.php */

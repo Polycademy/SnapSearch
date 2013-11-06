@@ -13,6 +13,9 @@ if [[ $UID != 0 ]]; then
 fi
 
 # Checking for necessary global components
+hash git 2>/dev/null || { echo >&2 "git needs to be installed, so aborting"; exit 1; }
+hash curl 2>/dev/null || { echo >&2 "curl needs to be installed, so aborting"; exit 1; }
+hash perl 2>/dev/null || { echo >&2 "perl needs to be installed, so aborting"; exit 1; }
 hash nginx 2>/dev/null || { echo >&2 "nginx needs to be installed, so aborting"; exit 1; }
 hash php-fpm 2>/dev/null || { echo >&2 "php-fpm needs to be installed, so aborting"; exit 1; }
 hash python 2>/dev/null || { echo >&2 "python needs to be installed, so aborting"; exit 1; }
@@ -68,8 +71,10 @@ echo "Starting Supervisord"
 sudo service supervisord restart
 
 # Setting up NGINX server configuration
+echo "Setting up NGINX configuration"
+perl -pi -e 's/root .*/root $PROJECT_DIR;/g' server_config/snapsearch.io
 echo "Establishing a symlink from snapsearch.io to NGINX sites-enabled"
-sudo ln-s `pwd`/server_config/sites-available/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
+sudo ln-s `pwd`/server_config/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
 sudo service nginx restart
 
 echo "All done!"
