@@ -1,5 +1,33 @@
 <?php
 
-//create a table for snapshots:
-//id | userId | url | date | snapshot
-//use date to compare for cache time. Basically that's the date it was rendered, and cachetime is that date + cache time, compare to current date!
+class Migration_add_snapshots extends CI_Migration {
+
+	public function up(){
+	
+		$this->dbforge->add_field('id');
+		
+		$this->dbforge->add_field(array(
+			'userId' => array(
+				'type'			=> 'INT',
+			),
+			'url' => array(
+				'type'			=> 'TEXT',
+			),
+			'date' => array(
+				'type'			=> 'DATETIME'
+			),
+			'snapshot' => array(
+				'type'			=> 'TEXT',
+			),
+		));
+		
+		$this->dbforge->create_table('snapshots');
+
+	}
+
+	public function down(){
+	
+		$this->dbforge->drop_table('snapshots');
+	
+	}
+}

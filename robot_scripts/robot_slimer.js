@@ -289,8 +289,8 @@ var processTask = function(task){
 
 		}else{
 
-			console.log('Robot failed to open page');
-			output.message = 'Failed to load URL: ' + currentConfig.url;
+			console.log('Robot failed to open url: ' . currentConfig.url);
+			output.message = 'Failed';
 			outputResult(output, response);
 			page.close();
 			console.log('Robot has finished a task');

@@ -23,6 +23,8 @@ class Robot_model extends CI_Model{
 
 	public function read_site($input_parameters){
 
+		$USER_ID = 1;
+
 		$parameters = elements(array(
 			'url',
 			'width',
@@ -113,59 +115,102 @@ class Robot_model extends CI_Model{
 			//get the validation messages working
 			$e->findMessages(array(‘name’, ‘email’, ‘date_start’));
 
+			$this->errors = array(
+				'validation_error'	=> 
+			);
+			return false;
+
 		}
 
 		//default cache parameters of true and 24 hours
 		if(!isset($parameters['cache'])) $parameters['cache'] = true;
 		if(!isset($parameters['cachetime'])) $parameters['cachetime'] = 24;
 
+		//the cache needs to return data even if it is expired
+		//this part determines the expiry
+		//then you can have a variable indicating the id of the cache
+		//then you can update or insert....
+
+		$existing_cache_id = false;
 		if($parameters['cache']){
+
 			//we need the user id, for now we're going to assume 1 for everybody
-			$cache = $this->read_cache(1, $parameters['url'], $parameters['cachetime']);
-			//if cache returned as true, then we the cache exists and is valid, we can decode the snapshot string and return it
+			$cache = $this->read_cache($USER_ID, $parameters['url']);
+
+			//valid date is the current time minus $cache_time in hours
+			$current_date = new DateTime();
+			$valid_date = $current_date->sub(new DateInterval('PT' . $cache_time . 'H'))->format('Y-m-d H:i:s');
+
 			if($cache){
-				return json_decode($cache['snapshot']);
+
+				//the cache's date of entry has to be more recent or equal to the valid date
+				if(strtotime($cache['date']) >= strtotime($valid_date)){
+					return json_decode($cache['snapshot'], true);
+				}
+
+				$existing_cache_id = $cache['id'];
+
 			}
+
 		}
 
 		//cache has not been hit, proceed to the robot
+		try{
 
-		//send a json request
-		$request = $this->client->post(
-			$this->robot_uri, 
-			array(
-				'Content-Type'	=> 'application/json'
-			),
-			json_encode($parameters)
-		);
+			$request = $this->client->post(
+				$this->robot_uri, 
+				array(
+					'Content-Type'	=> 'application/json'
+				),
+				json_encode($parameters)
+			);
 
-		$response = $request->send()->json();
+			$response = $request->send()->json();
 
-		//parse possible failures (from the request itself (so proxy server not operating)) to the robot not being able to access the data
-		
+		}catch(BadResponseException $e){
 
-		//if succeeded, proceed to cache the item (regardless of cache=true/false), this is so next time the request comes in, it can be received from the cache if the sender changes mind
-		$this->upsert_cache(1, $parameters['url'], $response);
+			//a bad response exception can come from 400 or 500 errors, this should not happen
+			log_message('error', 'Snapsearch PHP application received a 400/500 from Robot\'s load balancer or robot itself.');
+			$this->errors = array(
+				'system_error'	=> 'Robot service is a bit broken. Try again later.'
+			);
+			return false;
+
+		}catch(CurlException $e){
+
+			log_message('error', 'Snapsearch PHP application received a curl error when contacting the robot load balancer. See: ' . $e->getMessage());
+			$this->errors = array(
+				'system_error'	=> 'Curl failed. Try again later.'
+			);
+			return false;
+
+		}
+
+		if($response['message'] == 'Failed'){
+
+			$this->errors = array(
+				'error'	=> 'Robot could not open uri: ' . $parameters['url']
+			);
+			return false;
+
+		}		
+
+		//request has succeeded so we're going to cache the response
+		$this->upsert_cache($existing_cache_id, $USER_ID, $parameters['url'], json_encode($response));
 
 		return $response;
 
 
 	}
 
-	public function read_cache($id, $url, $cache_time){
-
-		//valid date is the current time minus $cache_time in hours
-		$current_date = new DateTime();
-		$valid_date = $current_date->sub(new DateInterval('PT' . $cache_time . 'H'))->format('Y-m-d H:i:s');
+	protected function read_cache($user_id, $url){
 
 		//get the snapshot record for the relevant user and url
-		//the entry record must be more recent or equivalent to the valid date
 		$query = $this->db->get_where(
 			'snapshots', 
 			array(
-				'id' 		=> $id, 
+				'userId' 	=> $user_id, 
 				'url' 		=> $url,
-				'date >='	=> $valid_date,
 			)
 		);
 
@@ -184,17 +229,51 @@ class Robot_model extends CI_Model{
 			
 		}else{
 		
-			//cache did not exist
 			return false;
 		
 		}
 
 	}
 
-	//will add or update to the cache regarding the id, url and snapshot data
-	public function upsert_cache($id, $url, $snapshot){
+	protected function upsert_cache($id, $user_id, $url, $snapshot){
 
-		$data['date'] = date('Y-m-d H:i:s');
+		if($id){
+
+			$this->db->where('id', $id);
+			$query = $this->db->update('snapshots', array(
+				'date'		=> date('Y-m-d H:i:s'),
+				'snapshot'	=> $snapshot,
+			));
+
+			//should be able to update
+			if($query->affected_rows() <= 0){
+
+				return false;
+
+			}
+
+		}else{
+
+			$this->db->insert('snapshots', array(
+				'userId'	=> $user_id,
+				'url'		=> $url,
+				'date'		=> date('Y-m-d H:i:s'),
+				'snapshot'	=> $snapshot,
+			));
+
+			if(!$query){
+
+				$msg = $this->db->error()['message'];
+				$num = $this->db->error()['code'];
+				$last_query = $this->db->last_query();
+				log_message('error', 'Problem inserting into snapshots table: ' . $msg . ' (' . $num . '), using this query: "' . $last_query . '"');
+				return false;
+
+			}
+
+		}
+
+		return true;
 
 	}
 
