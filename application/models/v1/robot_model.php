@@ -111,12 +111,9 @@ class Robot_model extends CI_Model{
 			}
 
 		}catch(Exception $e){
-
-			//get the validation messages working
-			$e->findMessages(array(‘name’, ‘email’, ‘date_start’));
-
+			
 			$this->errors = array(
-				'validation_error'	=> 
+				'validation_error'	=> $e->findMessages()
 			);
 			return false;
 
@@ -237,6 +234,7 @@ class Robot_model extends CI_Model{
 
 	protected function upsert_cache($id, $user_id, $url, $snapshot){
 
+		//if id is available, that means we need to update, else we need to insert
 		if($id){
 
 			$this->db->where('id', $id);
