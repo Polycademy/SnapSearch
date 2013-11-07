@@ -19,6 +19,7 @@ var defaultConfig = {
 	height: '1024', //this can be used to facilitate scroll based pagination
 	imgformat: 'png',
 	useragent: 'SnapSearch',
+	screenshot: false,
 	loadimages: true,
 	javascriptenabled: true,
 	maxtimeout: 5000, 
@@ -98,6 +99,7 @@ if(service){
 		height: 
 		imgformat: 
 		useragent: 
+		screenshot: 
 		loadimages: //wont render screen shot if this is false and ignore width/height/base64... etc
 		javascriptenabled:
 		maxtimeout: //milliseconds on the maximum wait before timing out and rendering/return html snapshot
@@ -255,7 +257,7 @@ var processTask = function(task){
 				});
 
 				var screenshot = '';
-				if(currentConfig.loadimages){
+				if(currentConfig.screenshot){
 					screenshot = page.renderBase64(currentConfig.imgformat);
 				}
 
