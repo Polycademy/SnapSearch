@@ -24,5 +24,17 @@ $ioc['Database'] = $ioc->share(function($c){
 	return $dbh;
 });
 
+/**
+ * Symfony Request Object augmented with the Authorization header
+ */
+$ioc['Request'] = $ioc->share(function($c){
+	$headers = getallheaders();
+	$request = Symfony\Component\HttpFoundation\Request::createFromGlobals();
+	if(isset($headers['Authorization'])){
+		$request->headers->set('Authorization', $headers['Authorization']);
+	}
+	return $request;
+});
+
 //we need to pass the $ioc into the global $config variable, so now it can be accessed by Codeigniter
 $config['ioc'] = $ioc;

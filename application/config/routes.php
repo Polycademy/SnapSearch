@@ -9,7 +9,9 @@ Pigeon::map(function($r){
 	$r->route('api', false, function($r){
 
 		//versioned api
-		$r->resource('v1/robot');
+		//robot
+		$r->get('v1/robot', 'v1/robot/query');
+		$r->post('v1/robot', 'v1/robot/post');
 		
 		
 	});
