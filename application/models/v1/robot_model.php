@@ -1,7 +1,5 @@
 <?php
 
-use Respect\Validation\Validator as v;
-use Respect\Validation\Exceptions\ValidationException as RespectValidationException;
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\CurlException;
@@ -11,13 +9,23 @@ class Robot_model extends CI_Model{
 	protected $robot_uri;
 	protected $client;
 	protected $errors;
+	protected $fallback;
 
 	public function __construct(){
 
 		parent::__construct();
+
 		$this->robot_uri = '127.0.0.1:8499';
 		$this->client = new Client;
 		$this->client->setUserAgent('Snapsearch');
+
+		//validation libraries suck, we need to find a better way...
+		//perhaps wrap over the Respect\Validator library (they have a couple of good validators!)
+		//Provide a fluent interface, that allows the use of closures/anonymous functions as extensions
+		//In fact it should operate similar to a DIC. Allowing you to register functions to be used as validators!
+		//The whole point of the validator library is to provide shareable reusable validation routines and data
+		//In an easy to understand way...
+		$this->load->library('form_validation', false, 'validator');
 
 	}
 
@@ -41,80 +49,90 @@ class Robot_model extends CI_Model{
 			'cachetime',
 		), $input_parameters, null, true);
 
-		try{
+		$this->validator->set_data($parameters);
 
-			v::allOf(
-				v::key(
-					'url', 
-					v::call(
-						'parse_url', 
-						v:arr()
-						->key('scheme', v::notEmpty()),
-						->key('host', v::domain())
-					)
-				)->setName('Url (url)'), 
-				v::key('width', v::int()->between(200, 4000, true), false)->setName('Width (width)'), 
-				v::key('height', v::int()->between(200, 4000, true), false)->setName('Height (height)'), 
-				v::key(
-					'imgformat', 
-					v::string()->oneOf(
-						v::equals('png'),
-						v::equals('jpg'),
-						v::equals('jpeg')
-					), 
-					false
-				)->setName('Image format (imgformat)'), 
-				v::key('useragent', v::string()->length(1, 2000, true), false)->setName('Useragent (useragent)'),
-				v::key(
-					'screenshot', 
-					v::string()->oneOf(
-						v::equals('true'),
-						v::equals('false')
-					),
-					false
-				)->setName('Screenshot (screenshot)'),
-				v::key(
-					'loadimages', 
-					v::string()->oneOf(
-						v::equals('true'),
-						v::equals('false')
-					),
-					false
-				)->setName('Load images (loadimages)'),
-				v::key(
-					'javascriptenabled', 
-					v::string()->oneOf(
-						v::equals('true'),
-						v::equals('false')
-					),
-					false
-				)->setName('Javascript enabled (javascriptenabled)'),
-				v::key('maxtimeout', v::int()->between(1000, 15000, true), false)->setName('Max timeout (maxtimeout)'),
-				v::key('initialwait', v::int(), false)->setName('Initial wait (initialwait)'),
-				v::key('callback', v::string()->length(1, 5000), false)->setName('Callback (callback)'),
-				v::key(
-					'cache', 
-					v::string()->oneOf(
-						v::equals('true'),
-						v::equals('false')
-					),
-					false
-				)->setName('Cache (cache)'),
-				v::key('cachetime', v::int()->between(1, 50), false)->setName('Cache time (cachetime)'),
-			)->assert($parameters);
-		
-			if(isset($parameters['maxtimeout']) AND isset($parameters['initialwait'])){
-				//initialwait has to be lower than maxtimeout
-				if($parameters['initialwait'] >= $parameters['maxtimeout']){
-					throw new RespectValidationException('Initial wait (initialwait) needs to be lower than Max timeout (maxtimeout)');
-				}
+		$this->validator->set_rules([
+			[
+				'field'	=> 'url',
+				'label'	=> 'Url (url)',
+				'rules'	=> 'required|trim|valid_url',
+			],
+			[
+				'field'	=> 'width',
+				'label'	=> 'Width (width)',
+				'rules'	=> 'greater_than_equal_to[200]|less_than_equal_to[4000]',
+			],
+			[
+				'field'	=> 'height',
+				'label'	=> 'Height (height)',
+				'rules'	=> 'greater_than_equal_to[200]|less_than_equal_to[4000]',
+			],
+			[
+				'field'	=> 'imgformat',
+				'label'	=> 'Image format (imgformat)',
+				'rules'	=> 'image_format',
+			],
+			[
+				'field'	=> 'useragent',
+				'label'	=> 'Useragent (useragent)',
+				'rules'	=> 'min_length[1]|max_length[2000]',
+			],
+			[
+				'field'	=> 'screenshot',
+				'label'	=> 'Screenshot (screenshot)',
+				'rules'	=> 'string_boolean',
+			],
+			[
+				'field'	=> 'loadimages',
+				'label'	=> 'Load images (loadimages)',
+				'rules'	=> 'string_boolean',
+			],
+			[
+				'field'	=> 'javascriptenabled',
+				'label'	=> 'Javascript enabled (javascriptenabled)',
+				'rules'	=> 'string_boolean',
+			],
+			[
+				'field'	=> 'maxtimeout',
+				'label'	=> 'Max timeout (maxtimeout)',
+				'rules'	=> 'greater_than_equal_to[1000]|less_than_equal_to[15000]',
+			],
+			[
+				'field'	=> 'callback',
+				'label'	=> 'Callback (callback)',
+				'rules'	=> 'min_length[1]|max_length[5000]',
+			],
+			[
+				'field'	=> 'cache',
+				'label'	=> 'Cache (cache)',
+				'rules'	=> 'string_boolean',
+			],
+			[
+				'field'	=> 'cachetime',
+				'label'	=> 'Cache time (cachetime)',
+				'rules'	=> 'greater_than_equal_to[1]|less_than_equal_to[50]',
+			],
+		]);
+
+		$validation_errors = [];
+
+		if(isset($parameters['maxtimeout']) AND isset($parameters['initialwait'])){
+			//initialwait has to be lower than maxtimeout
+			if($parameters['initialwait'] >= $parameters['maxtimeout']){
+				$validation_errors['initialwait'] = 'Initial wait (initialwait) needs to be lower than Max timeout (maxtimeout)';
 			}
+		}
 
-		}catch(Exception $e){
-			
+		if($this->validator->run() ==  false){
+			$validation_errors += $this->validator->error_array();
+		}
+
+		if(!empty($validation_errors)){
+
 			$this->errors = array(
-				'validation_error'	=> $e->findMessages()
+				'validation_error'	=> $validation_errors
 			);
+
 			return false;
 
 		}
@@ -123,22 +141,17 @@ class Robot_model extends CI_Model{
 		if(!isset($parameters['cache'])) $parameters['cache'] = true;
 		if(!isset($parameters['cachetime'])) $parameters['cachetime'] = 24;
 
-		//the cache needs to return data even if it is expired
-		//this part determines the expiry
-		//then you can have a variable indicating the id of the cache
-		//then you can update or insert....
-
 		$existing_cache_id = false;
 		if($parameters['cache']){
 
 			//we need the user id, for now we're going to assume 1 for everybody
 			$cache = $this->read_cache($USER_ID, $parameters['url']);
 
-			//valid date is the current time minus $cache_time in hours
-			$current_date = new DateTime();
-			$valid_date = $current_date->sub(new DateInterval('PT' . $cache_time . 'H'))->format('Y-m-d H:i:s');
-
 			if($cache){
+
+				//valid date is the current time minus $cache_time in hours
+				$current_date = new DateTime();
+				$valid_date = $current_date->sub(new DateInterval('PT' . $parameters['cachetime'] . 'H'))->format('Y-m-d H:i:s');
 
 				//the cache's date of entry has to be more recent or equal to the valid date
 				if(strtotime($cache['date']) >= strtotime($valid_date)){
@@ -167,10 +180,12 @@ class Robot_model extends CI_Model{
 		}catch(BadResponseException $e){
 
 			//a bad response exception can come from 400 or 500 errors, this should not happen
+			//if there was a cache, we can pass back the fallback as well
 			log_message('error', 'Snapsearch PHP application received a 400/500 from Robot\'s load balancer or robot itself.');
 			$this->errors = array(
-				'system_error'	=> 'Robot service is a bit broken. Try again later.'
+				'system_error'	=> 'Robot service is a bit broken. Try again later.',
 			);
+			if($existing_cache_id) $this->fallback = json_decode($cache['snapshot'], true);
 			return false;
 
 		}catch(CurlException $e){
@@ -179,6 +194,7 @@ class Robot_model extends CI_Model{
 			$this->errors = array(
 				'system_error'	=> 'Curl failed. Try again later.'
 			);
+			if($existing_cache_id) $this->fallback = json_decode($cache['snapshot'], true);
 			return false;
 
 		}
@@ -188,15 +204,15 @@ class Robot_model extends CI_Model{
 			$this->errors = array(
 				'error'	=> 'Robot could not open uri: ' . $parameters['url']
 			);
+			if($existing_cache_id) $this->fallback = json_decode($cache['snapshot'], true);
 			return false;
 
-		}		
+		}
 
 		//request has succeeded so we're going to cache the response
 		$this->upsert_cache($existing_cache_id, $USER_ID, $parameters['url'], json_encode($response));
 
 		return $response;
-
 
 	}
 
@@ -244,7 +260,7 @@ class Robot_model extends CI_Model{
 			));
 
 			//should be able to update
-			if($query->affected_rows() <= 0){
+			if($this->db->affected_rows() <= 0){
 
 				return false;
 
@@ -252,7 +268,7 @@ class Robot_model extends CI_Model{
 
 		}else{
 
-			$this->db->insert('snapshots', array(
+			$query = $this->db->insert('snapshots', array(
 				'userId'	=> $user_id,
 				'url'		=> $url,
 				'date'		=> date('Y-m-d H:i:s'),
@@ -278,6 +294,12 @@ class Robot_model extends CI_Model{
 	public function get_errors(){
 
 		return $this->errors;
+
+	}
+
+	public function get_fallback(){
+
+		return $this->fallback;
 
 	}
 

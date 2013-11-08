@@ -35,15 +35,26 @@ class Robot extends CI_Controller{
 		$parameters = array_filter($parameters);
 
 		$query = $this->Robot_model->read_site($parameters);
-		
+
 		if($query){
 			
 			$content = $query; //assign query
 			$code = 'success'; //assign code
 			
 		}else{
+
+			$errors = $this->Robot_model->get_errors();
+			$fallback = $this->Robot_model->get_fallback();
+
+			if(!empty($fallback)){
+				$content = array(
+					'error'		=> current($errors),
+					'fallback'	=> $fallback,
+				);
+			}else{
+				$content = current($errors);
+			}
 		
-			$content = current($this->Robot_model->get_errors());
 			$code = key($this->Robot_model->get_errors());
 			
 			if($code == 'validation_error' OR $code == 'error'){
@@ -93,7 +104,18 @@ class Robot extends CI_Controller{
 			
 		}else{
 		
-			$content = current($this->Robot_model->get_errors());
+			$errors = $this->Robot_model->get_errors();
+			$fallback = $this->Robot_model->get_fallback();
+
+			if(!empty($fallback)){
+				$content = array(
+					'error'		=> current($errors),
+					'fallback'	=> $fallback,
+				);
+			}else{
+				$content = current($errors);
+			}
+
 			$code = key($this->Robot_model->get_errors());
 			
 			if($code == 'validation_error' OR $code == 'error'){
