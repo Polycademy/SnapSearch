@@ -16,8 +16,12 @@ class Migrate extends CI_Controller {
 	
 	public function index(){
 	
-		echo 'Migration is initialised. Make sure this is not accessible in production! You may need to run this first before running any of the functions, especially if they make consecutive modifications to your tables. Now go do the latest, current, version or restart!';
+		echo "Migration is initialised. Make sure this is not accessible in production!\n";
 	
+		echo "Currently available migrations:\n";
+
+		print_r($this->migration->find_migrations());
+
 	}
  
 	public function latest(){ 
