@@ -23,22 +23,30 @@ class Migrate extends CI_Controller {
 	public function latest(){ 
 	
 		if(!$this->migration->latest()){
-			show_error($this->migration->error_string());
+			echo $this->migration->error_string();
 		}
+
+		echo 'Migrated to latest';
  
 	}
 	
 	public function current(){
 	
 		if(!$this->migration->current()){
-			show_error($this->migration->error_string());
+			echo $this->migration->error_string();
 		}
+
+		echo 'Migrated to current';
 	
 	}
 	
 	public function version($num){
 	
-		$this->migration->version($num);
+		if(!$this->migration->version($num)){
+			echo $this->migration->error_string();
+		}
+
+		echo 'Migrated to version ' . $num;
 	
 	}
 	
@@ -50,14 +58,18 @@ class Migrate extends CI_Controller {
 		if(!empty($num)){
 		
 			if(!$this->migration->version($num)){
-				show_error($this->migration->error_string());
+				echo $this->migration->error_string();
 			}
+
+			echo 'Restarted migration to ' . $num;
 		
 		}else{
 		
 			if(!$this->migration->latest()){
-				show_error($this->migration->error_string());
+				echo $this->migration->error_string();
 			}
+
+			echo 'Restarted migration to latest';
 		
 		}
 	
