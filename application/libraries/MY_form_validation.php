@@ -20,6 +20,8 @@ class MY_Form_validation extends CI_Form_validation{
 	* The error message is in my own lang!
 	*/
 	public function valid_date($date, $format){
+
+		$this->set_message('valid_date', 'The %s field is not a valid date.');
 		
 		#count between 8 and 10 characters (because of separators)
 		if(strlen($date) >= 8 && strlen($date) <= 10){
@@ -67,19 +69,34 @@ class MY_Form_validation extends CI_Form_validation{
 	}
 	
 	public function word_limit($str, $limit){
-		
+
+		$this->set_message('word_limit', 'The %s field has too many words.');
 		if(str_word_count($str, 0) > $limit){
 			return false;
-		}
-		
+		}		
 		return true;
 		
 	}
 
 	public function valid_json($str){
 
+		$this->set_message('valid_json', 'The %s field is not valid JSON.');
 		json_decode($str);
 		return (json_last_error() == JSON_ERROR_NONE);
+
+	}
+
+	public function image_format($str){
+
+		$this->set_message('image_format', 'The %s field is not a valid image format.');
+		return (bool) preg_match('/^png|jpg|jpeg$/', $str);
+
+	}
+
+	public function string_boolean($str){
+
+		$this->set_message('string_boolean', 'The %s field is not a valid string boolean.');
+		return (bool) preg_match('/^true|false$/', $str);
 
 	}
 	
