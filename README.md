@@ -52,8 +52,26 @@ sudo add-apt-repository ppa:chris-lea/node.js
 sudo apt-get update
 sudo apt-get install nodejs
 
-
-
-
 1. CI application is not working correctly (404 on controllers from NGINX)
 2. Slimer0.9.0rc1 is resolving the redirections automatically for the onResourceReceived, this is wrong and needs to be fixed, or we need to go back to 0.9pre...etc
+3. DB needs to be migrated... created if not exists...
+4. Actually SlimerJS is following the correct behaviour now. In order to not follow redirects, one must get the headers and status code of the (FIRST) request. Then have an optional toggle to follow in redirects. In you get redirected you get the final page's status code and headers, if not, you get the first one.
+5. How do you deal with JAVAScript based location redirects? Will the status code and headers be correct? No. How does search engines get that? Perhaps the next page to be opened is the main one. (So we will need to follow the redirection, however we will also need to get the headers and status code of the main page that is being redirected)
+6. Combine onCallback with the custom callback to allow users to call back to SlimerJS. Perhaps a wait timer is good too! This needs to be resolved automatically if the user forgot to do so. So if no custom callback, this will not be set. If there is a custom callback, they need to window.callPhantom(). Which would resolve to true, so this just delays the async further if need be. https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#wiki-webpage-onCallback On SlimerJS is it window.callSlimer()?
+
+    Header redirect using 3XX series
+    Javascript redirect that could happen synchronously and asynchronously
+    User actions such as form/link... etc.
+    How does meta refresh tags (html redirect) work if they are expecting 60s?
+
+
+FIRST is to toggle webpage.navigationLocked depending on options.
+First iteration, check on onResourceReceived and the first resource received for status and headers. This resolves any header redirect problems.
+onPageOpen resolves synchronous JS redirects (may involve location.href)
+still to resolve is async js redirects, user actions and meta refresh redirects (however _blank needs to be watched out for)
+
+Then use onNavigationRequested
+
+I need to know if redirects actually change the page content. 
+
+Market here: http://backbonetutorials.com/seo-for-single-page-apps/

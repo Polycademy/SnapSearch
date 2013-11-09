@@ -85,4 +85,7 @@ sudo service nginx restart
 echo "Changing owner of downloaded files to www-data"
 chown -R www-data:www-data $PROJECT_DIR
 
+# Should create the database if it's not available
+# Then migrate all tables
+
 echo "All done!"
