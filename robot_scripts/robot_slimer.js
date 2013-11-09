@@ -187,7 +187,7 @@ var processTask = function(task){
 	};
 
 	page.onResourceReceived = function(resource){
-		console.log('Robot received: ' + resource.id + ' - ' + resource.url + ' at ' + resource.stage);
+		console.log('Robot received: ' + resource.id + ' with ' + resource.status + ' - ' + resource.url + ' at ' + resource.stage);
 		if(resource.stage == 'end'){
 			var index = pageRequests.indexOf(resource.id);
 			if (index != -1) {
