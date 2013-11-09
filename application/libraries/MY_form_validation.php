@@ -99,5 +99,15 @@ class MY_Form_validation extends CI_Form_validation{
 		return (bool) preg_match('/^true|false$/', $str);
 
 	}
+
+	public function boolean_style($value){
+
+		//this will return null if the value is not of a boolean_style
+		//if it is null, it fails, if it isn't null then it succeeds
+		$this->set_message('boolean_style', 'The %s field does not evaluate to a boolean.');
+		$bool = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+		return !is_null($bool);
+
+	}
 	
 }

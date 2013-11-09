@@ -80,17 +80,22 @@ class Robot_model extends CI_Model{
 			[
 				'field'	=> 'screenshot',
 				'label'	=> 'Screenshot (screenshot)',
-				'rules'	=> 'string_boolean',
+				'rules'	=> 'boolean_style',
+			],
+			[
+				'field'	=> 'navigate',
+				'label'	=> 'Navigate (navigate)',
+				'rules'	=> 'boolean_style',
 			],
 			[
 				'field'	=> 'loadimages',
 				'label'	=> 'Load images (loadimages)',
-				'rules'	=> 'string_boolean',
+				'rules'	=> 'boolean_style',
 			],
 			[
 				'field'	=> 'javascriptenabled',
 				'label'	=> 'Javascript enabled (javascriptenabled)',
-				'rules'	=> 'string_boolean',
+				'rules'	=> 'boolean_style',
 			],
 			[
 				'field'	=> 'maxtimeout',
@@ -105,7 +110,7 @@ class Robot_model extends CI_Model{
 			[
 				'field'	=> 'cache',
 				'label'	=> 'Cache (cache)',
-				'rules'	=> 'string_boolean',
+				'rules'	=> 'boolean_style',
 			],
 			[
 				'field'	=> 'cachetime',
@@ -138,7 +143,11 @@ class Robot_model extends CI_Model{
 		}
 
 		//default cache parameters of true and 24 hours
-		if(!isset($parameters['cache'])) $parameters['cache'] = true;
+		if(isset($parameters['cache'])){
+			$parameters['cache'] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+		}else{
+			$parameters['cache'] = true;
+		}
 		if(!isset($parameters['cachetime'])) $parameters['cachetime'] = 24;
 
 		$existing_cache_id = false;
