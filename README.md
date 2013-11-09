@@ -75,3 +75,8 @@ Then use onNavigationRequested
 I need to know if redirects actually change the page content. 
 
 Market here: http://backbonetutorials.com/seo-for-single-page-apps/
+
+Prevent redirection by tracking the number of infinite redirects, dont know how to do that with header redirects however. Probably should have overall timeout for the overall task...
+
+Client side redirection can be tracked from the onNavigationRequested and limited.
+Header redirections hit an error onResourceError, however slimerJS just hangs in this case.
