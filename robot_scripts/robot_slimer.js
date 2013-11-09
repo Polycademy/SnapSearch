@@ -11,6 +11,32 @@ var fs = require('fs'),
 	server = require('webserver').create(),
 	page = require('webpage').create();
 
+//this needs to be placed in a module
+var parseBooleanStyle = function(value){
+	switch(value){
+		case true:
+		case 'true':
+		case 1:
+		case '1':
+		case 'on':
+		case 'yes':
+			value = true;
+			break;
+		case false:
+		case 'false':
+		case 0:
+		case '0':
+		case 'off':
+		case 'no':
+			value = false;
+			break;
+		default:
+			value = false;
+			break;
+	}
+	return value;
+};
+
 //default configuration from initialising the process
 var defaultConfig = {
 	ipaddress: '127.0.0.1', 
@@ -21,7 +47,7 @@ var defaultConfig = {
 	useragent: 'SnapSearch', 
 	screenshot: false, 
 	navigate: false, // allow redirection of the page or not
-	loadimages: true, 
+	loadimages: false, 
 	javascriptenabled: true, 
 	maxtimeout: 5000, 
 	initialwait: 1000, //initial wait for asynchronous requests to fill up
@@ -47,16 +73,17 @@ args.forEach(function(value, index){
 		phantom.exit();
 	}
 
+	//some propValues may need to be converted from string boolean to boolean
 	if (key === 'ipaddress') defaultConfig.ipaddress = propValue;
 	if (key === 'port') defaultConfig.port = propValue;
 	if (key === 'width') defaultConfig.width = propValue;
 	if (key === 'height') defaultConfig.height = propValue;
 	if (key === 'imgformat') defaultConfig.imgformat = propValue;
 	if (key === 'useragent') defaultConfig.useragent = propValue;
-	if (key === 'screenshot') defaultConfig.screenshot = propValue;
-	if (key === 'navigate') defaultConfig.navigate = propValue;
-	if (key === 'loadimages') defaultConfig.loadimages = propValue;
-	if (key === 'javascriptenabled') defaultConfig.javascriptenabled = propValue;
+	if (key === 'screenshot') defaultConfig.screenshot = parseBooleanStyle(propValue);
+	if (key === 'navigate') defaultConfig.navigate = parseBooleanStyle(propValue);
+	if (key === 'loadimages') defaultConfig.loadimages = parseBooleanStyle(propValue);
+	if (key === 'javascriptenabled') defaultConfig.javascriptenabled = parseBooleanStyle(propValue);
 	if (key === 'maxtimeout') defaultConfig.maxtimeout = propValue;
 	if (key === 'initialwait') defaultConfig.initialwait = propValue;
 	if (key === 'callback') defaultConfig.callback = propValue;
@@ -115,6 +142,10 @@ var parseInputJson = function(input){
 
 	try{
 		input = JSON.parse(input);
+		if ('screenshot' in input) input['screenshot'] = parseBooleanStyle(input['screenshot']);
+		if ('navigate' in input) input['navigate'] = parseBooleanStyle(input['navigate']);
+		if ('loadimages' in input) input['loadimages'] = parseBooleanStyle(input['loadimages']);
+		if ('javascriptenabled' in input) input['javascriptenabled'] = parseBooleanStyle(input['javascriptenabled']);
 		return input;
 	}catch(e){
 		logError(e);
@@ -305,7 +336,10 @@ var processTask = function(task){
 				};
 				pageRequests = [];
 				//cancel the asynchronous resource checker
-				if(resourceRequestsTimer) clearTimeout(resourceRequestsTimer);
+				if(resourceRequestsTimer){
+					clearTimeout(resourceRequestsTimer);
+					resourceRequestsTimer = false;
+				}
 				//change the currentlyRequestedUrl to the redirection
 				currentlyRequestedUrl = url;
 				//close and reopen the page
