@@ -17,13 +17,14 @@ hash git 2>/dev/null || { echo >&2 "git needs to be installed, so aborting"; exi
 hash curl 2>/dev/null || { echo >&2 "curl needs to be installed, so aborting"; exit 1; }
 hash perl 2>/dev/null || { echo >&2 "perl needs to be installed, so aborting"; exit 1; }
 hash nginx 2>/dev/null || { echo >&2 "nginx needs to be installed, so aborting"; exit 1; }
-hash php-fpm 2>/dev/null || { echo >&2 "php-fpm needs to be installed, so aborting"; exit 1; }
+hash php 2>/dev/null || { echo >&2 "php-cli (php) needs to be installed, so aborting"; exit 1; }
+hash php5-fpm 2>/dev/null || { echo >&2 "php-fpm needs to be installed, so aborting"; exit 1; }
 hash python 2>/dev/null || { echo >&2 "python needs to be installed, so aborting"; exit 1; }
 hash mysql 2>/dev/null || { echo >&2 "mysql needs to be installed, so aborting"; exit 1; }
 hash composer 2>/dev/null || { echo >&2 "composer needs to be installed, so aborting"; exit 1; }
 hash npm 2>/dev/null || { echo >&2 "npm needs to be installed, so aborting"; exit 1; }
 hash bower 2>/dev/null || { echo >&2 "bower needs to be installed, so aborting"; exit 1; }
-hash grunt-cli 2>/dev/null || { echo >&2 "grunt-cli needs to be installed, so aborting"; exit 1; }
+hash grunt 2>/dev/null || { echo >&2 "grunt-cli (grunt) needs to be installed, so aborting"; exit 1; }
 
 # Find the project's directory from this file
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -36,15 +37,16 @@ cd $PROJECT_DIR
 echo "Installing dependencies from Composer, NPM and Bower"
 composer install --dev
 npm install
-bower install
+bower install --allow-root
 
 # Download SlimerJS
 echo "Downloading SlimerJS 0.9.0rc1"
 curl http://download.slimerjs.org/v0.9/0.9.0rc1/slimerjs-0.9.0rc1-linux-i686.tar.bz2 -o slimerjs.tar.bz2
 echo "Uncompressing and extracting SlimerJS into ./slimerjs"
-mkdir slimerjs && tar xjvf slimerjs.tar.bz2 -C slimerjs --strip-components 1
+mkdir -p slimerjs && tar xjvf slimerjs.tar.bz2 -C slimerjs --strip-components 1
+rm slimerjs.tar.bz2
 echo "Adding SlimerJS to the PATH"
-sudo ln -s `pwd`/slimerjs/slimerjs /usr/local/bin/slimerjs
+sudo ln -sf `pwd`/slimerjs/slimerjs /usr/local/bin/slimerjs
 
 # Bring in Secret Keys
 echo "Downloading secret keys relevant to Snapsearch"
@@ -59,12 +61,13 @@ curl -u 'CMCDragonkai' -L https://raw.github.com/CMCDragonkai/keys/master/snapse
 # Find any mention of snapsearch.io in /etc/hosts
 # If so replace it with 127.0.0.1 snapsearch.io www.snapsearch.io
 # Actually that's a bad idea. It's only good for development, not production.
-# Prompt and ask for this
+# Prompt and ask for this, it's only done on development
 
 # Setting up supervisor upstart script to run this project's robots
 echo "Setting up Supervisor Upstart Script"
 ROBOT_PATH="`pwd`/robot_scripts"
-perl -pi -e 's/chdir .*/chdir $ROBOT_PATH/g' startup_scripts/supervisord.conf
+ESCAPED_ROBOT_PATH="${ROBOT_PATH//\//\\/}"
+perl -pi -e "s/chdir .*/chdir $ESCAPED_ROBOT_PATH/g" startup_scripts/supervisord.conf
 echo "Moving Supervisor startup script to /etc/init"
 sudo cp startup_scripts/supervisord.conf /etc/init/supervisord.conf
 echo "Starting Supervisord"
@@ -72,9 +75,14 @@ sudo service supervisord restart
 
 # Setting up NGINX server configuration
 echo "Setting up NGINX configuration"
-perl -pi -e 's/root .*/root $PROJECT_DIR;/g' server_config/snapsearch.io
+ESCAPED_PROJECT_DIR="${PROJECT_DIR//\//\\/}"
+perl -pi -e "s/root .*/root $ESCAPED_PROJECT_DIR;/g" server_config/snapsearch.io
 echo "Establishing a symlink from snapsearch.io to NGINX sites-enabled"
-sudo ln-s `pwd`/server_config/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
+sudo ln -sf `pwd`/server_config/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
 sudo service nginx restart
+
+# Changing owner to www-data
+echo "Changing owner of downloaded files to www-data"
+chown -R www-data:www-data $PROJECT_DIR
 
 echo "All done!"
