@@ -3,7 +3,6 @@
 		"pimple/pimple": "1.0.2",
 		"polycademy/citemplating": "1.0.7",
 		"jamierumbelow/pigeon": "0.2.0",
-		"respect/validation": "dev-develop",
 		"symfony/http-foundation": "2.3.6",
 		"guzzle/guzzle": "3.7.4"
 	},
