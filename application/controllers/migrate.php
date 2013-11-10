@@ -30,7 +30,7 @@ class Migrate extends CI_Controller {
 			echo $this->migration->error_string();
 		}
 
-		echo 'Migrated to latest';
+		echo "Migrated to latest\n";
  
 	}
 	
@@ -40,7 +40,7 @@ class Migrate extends CI_Controller {
 			echo $this->migration->error_string();
 		}
 
-		echo 'Migrated to current';
+		echo "Migrated to current\n";
 	
 	}
 	
@@ -50,7 +50,7 @@ class Migrate extends CI_Controller {
 			echo $this->migration->error_string();
 		}
 
-		echo 'Migrated to version ' . $num;
+		echo 'Migrated to version ' . $num . "\n";
 	
 	}
 	
@@ -65,7 +65,7 @@ class Migrate extends CI_Controller {
 				echo $this->migration->error_string();
 			}
 
-			echo 'Restarted migration to ' . $num;
+			echo 'Restarted migration to ' . $num . "\n";
 		
 		}else{
 		
@@ -73,7 +73,7 @@ class Migrate extends CI_Controller {
 				echo $this->migration->error_string();
 			}
 
-			echo 'Restarted migration to latest';
+			echo "Restarted migration to latest\n";
 		
 		}
 	
