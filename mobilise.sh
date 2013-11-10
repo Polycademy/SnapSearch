@@ -57,11 +57,17 @@ curl -u 'CMCDragonkai' -L https://raw.github.com/CMCDragonkai/keys/master/snapse
 # Prompt for robot numbers, note that port starts at 8500
 # Along with port numbers
 
-# Setup hosts redirection for snapsearch.io
-# Find any mention of snapsearch.io in /etc/hosts
-# If so replace it with 127.0.0.1 snapsearch.io www.snapsearch.io
-# Actually that's a bad idea. It's only good for development, not production.
-# Prompt and ask for this, it's only done on development
+# Setup hosts redirection for snapsearch.io and www.snapsearch.io
+read -p "$(tput bold)$(tput setaf 2)Setup /etc/hosts redirection for snapsearch.io?. [Y/n]: $(tput sgr0)" -n 1 -r HOST_REDIRECTION
+echo
+if [[  $HOST_REDIRECTION =~ ^[Y]$ ]]; then
+	git clone https://github.com/Polycademy/add-etc-hosts startup_scripts/add-etc-hosts
+	echo "Backing up /etc/hosts to startup_scripts/add-etc-hosts/hosts.backup in case of screwup!"
+	cp /etc/hosts /startup_scripts/add-etc-hosts/hosts.backup
+	echo "Adding snapsearch.io and www.snapsearch.io to /etc/hosts"
+	sudo startup_scripts/add-etc-hosts/add-etc-hosts snapsearch.io
+	sudo startup_scripts/add-etc-hosts/add-etc-hosts www.snapsearch.io
+fi
 
 # Setting up supervisor upstart script to run this project's robots
 echo "Setting up Supervisor Upstart Script"
@@ -86,6 +92,16 @@ echo "Changing owner of downloaded files to www-data"
 chown -R www-data:www-data $PROJECT_DIR
 
 # Should create the database if it's not available
-# Then migrate all tables
+echo "Creating database for snapsearch"
+read -p "$(tput bold)$(tput setaf 2)Enter username for mysql, followed by enter: $(tput sgr0)" -r MYSQL_USER
+mysql -u $MYSQL_USER -p -e "CREATE DATABASE IF NOT EXISTS snapsearch; show databases;"
+
+# Migrate all tables
+echo "Migrating the database relies on a proper configuration of the database in Codeigniter"
+read -p "$(tput bold)$(tput setaf 2)Migrate the database to latest?. [Y/n]: $(tput sgr0)" -n 1 -r DATABASE_MIGRATION
+echo
+if [[  $DATABASE_MIGRATION =~ ^[Y]$ ]]; then
+	php index.php cli migrate latest
+fi
 
 echo "All done!"
