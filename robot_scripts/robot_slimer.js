@@ -225,6 +225,18 @@ var processTask = function(task){
 	//the resource checking timer will be cleared when we're redirecting to a new page
 	var resourceRequestsTimer = false;
 
+	var numberOfRedirects = 0;
+
+	var failedOpeningPage = function(){
+
+		console.log('Robot failed to open url: ' + currentConfig.url);
+		output.message = 'Failed';
+		outputResult(output, response);
+		page.close();
+		console.log('Robot has finished a task');
+
+	};
+
 	//this function is triggered to open a page with a specific url
 	var openPage = function(url){
 
@@ -303,11 +315,12 @@ var processTask = function(task){
 
 			}else{
 
-				console.log('Robot failed to open url: ' + currentConfig.url);
-				output.message = 'Failed';
-				outputResult(output, response);
-				page.close();
-				console.log('Robot has finished a task');
+				failedOpeningPage();
+				// console.log('Robot failed to open url: ' + currentConfig.url);
+				// output.message = 'Failed';
+				// outputResult(output, response);
+				// page.close();
+				// console.log('Robot has finished a task');
 
 			}
 
@@ -325,6 +338,7 @@ var processTask = function(task){
 		if(url != currentlyRequestedUrl && url.replace(/\/$/,"") != currentlyRequestedUrl){
 			if(main && willNavigate){
 				console.log('Robot is redirecting to ' + url);
+				numberOfRedirects++;
 				//reset the current state
 				output = {
 					status: '',
@@ -342,12 +356,20 @@ var processTask = function(task){
 				}
 				//change the currentlyRequestedUrl to the redirection
 				currentlyRequestedUrl = url;
-				//close and reopen the page
-				page.close();
-				//we're still busy
-				busy = true;
-				//reopen the redirected page
-				openPage(url);
+
+				//if the number of redirects is greater than 10, we need to fail the page instead of reopening
+				if(numberOfRedirects > 10){	
+					console.log('Robot has exceeded client side redirection limit');
+					failedOpeningPage();
+				}else{
+					//close and reopen the page
+					page.close();
+					//we're still busy
+					busy = true;
+					//reopen the redirected page
+					openPage(url);
+				}
+				
 			}
 		}
 
