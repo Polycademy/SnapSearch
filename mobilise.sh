@@ -34,10 +34,11 @@ cd $PROJECT_DIR
 # Install all the dependencies
 # Composer and NPM should already be available on PATH
 # Bower and Grunt-Cli will be required however
+# Their STDIN is redirected to /dev/null, this is because it can affect the STDIN of this bash script
 echo "Installing dependencies from Composer, NPM and Bower"
-composer install --dev
-npm install
-bower install --allow-root
+composer install --dev </dev/null
+npm install </dev/null
+bower install --allow-root </dev/null
 
 # Download SlimerJS
 echo "Downloading SlimerJS 0.9.0rc1"
@@ -57,13 +58,30 @@ curl -u 'CMCDragonkai' -L https://raw.github.com/CMCDragonkai/keys/master/snapse
 # Prompt for robot numbers, note that port starts at 8500
 # Along with port numbers
 
+# Should create the database if it's not available
+echo "Creating database for snapsearch"
+read -p "$(tput bold)$(tput setaf 2)Enter username for mysql, followed by enter: $(tput sgr0)" -r MYSQL_USER
+# Check if the username has been set
+if [ ! -z "$MYSQL_USER" ]; then
+	mysql -u $MYSQL_USER -p -e "CREATE DATABASE IF NOT EXISTS snapsearch; show databases;"
+fi
+
+# Migrate all tables
+echo "Migrating the database relies on a proper configuration of the database in Codeigniter"
+read -p "$(tput bold)$(tput setaf 2)Migrate the database to latest?. [Y/n]: $(tput sgr0)" -n 1 -r DATABASE_MIGRATION
+echo
+if [[ $DATABASE_MIGRATION =~ ^[Y]$ ]]; then
+	php index.php cli migrate latest
+fi
+
 # Setup hosts redirection for snapsearch.io and www.snapsearch.io
 read -p "$(tput bold)$(tput setaf 2)Setup /etc/hosts redirection for snapsearch.io?. [Y/n]: $(tput sgr0)" -n 1 -r HOST_REDIRECTION
 echo
-if [!2[  $HOST_REDIRECTION =~ ^[Y]$ ]]; then
+if [[ $HOST_REDIRECTION =~ ^[Y]$ ]]; then
+	# This will not overwrite the previous clone
 	git clone https://github.com/Polycademy/add-etc-hosts startup_scripts/add-etc-hosts
 	echo "Backing up /etc/hosts to startup_scripts/add-etc-hosts/hosts.backup in case of screwup!"
-	cp /etc/hosts /startup_scripts/add-etc-hosts/hosts.backup
+	cp /etc/hosts startup_scripts/add-etc-hosts/hosts.backup
 	echo "Adding snapsearch.io and www.snapsearch.io to /etc/hosts"
 	sudo startup_scripts/add-etc-hosts/add-etc-hosts snapsearch.io
 	sudo startup_scripts/add-etc-hosts/add-etc-hosts www.snapsearch.io
@@ -86,21 +104,6 @@ perl -pi -e "s/root .*/root $ESCAPED_PROJECT_DIR;/g" server_config/snapsearch.io
 echo "Establishing a symlink from snapsearch.io to NGINX sites-enabled"
 sudo ln -sf `pwd`/server_config/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
 sudo service nginx restart
-
-# Should create the database if it's not available
-echo "Creating database for snapsearch"
-read -p "$(tput bold)$(tput setaf 2)Enter username for mysql, followed by enter: $(tput sgr0)" -r MYSQL_USER
-if [[  $MYSQL_USER =~ ^[Y]$ ]]; then
-	mysql -u $MYSQL_USER -p -e "CREATE DATABASE IF NOT EXISTS snapsearch; show databases;"
-fi
-
-# Migrate all tables
-echo "Migrating the database relies on a proper configuration of the database in Codeigniter"
-read -p "$(tput bold)$(tput setaf 2)Migrate the database to latest?. [Y/n]: $(tput sgr0)" -n 1 -r DATABASE_MIGRATION
-echo
-if [[  $DATABASE_MIGRATION =~ ^[Y]$ ]]; then
-	php index.php cli migrate latest
-fi
 
 # Changing owner to www-data
 echo "Changing owner of downloaded files to www-data"
