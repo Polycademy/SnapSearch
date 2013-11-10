@@ -55,5 +55,7 @@ sudo apt-get install nodejs
 1. CI application is not working correctly (404 on controllers from NGINX)
 3. DB needs to be migrated... created if not exists...
 6. Combine onCallback with the custom callback to allow users to call back to SlimerJS. Perhaps a wait timer is good too! This needs to be resolved automatically if the user forgot to do so. So if no custom callback, this will not be set. If there is a custom callback, they need to window.callPhantom(). Which would resolve to true, so this just delays the async further if need be. https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#wiki-webpage-onCallback On SlimerJS is it window.callSlimer()?
+7. Wait for navigationLocked to be fixed!
+8. Also make sure pages aren't created using _blank.. that will screw up the headers
 
 Market here: http://backbonetutorials.com/seo-for-single-page-apps/
