@@ -303,7 +303,7 @@ var processTask = function(task){
 
 			}else{
 
-				console.log('Robot failed to open url: ' . currentConfig.url);
+				console.log('Robot failed to open url: ' + currentConfig.url);
 				output.message = 'Failed';
 				outputResult(output, response);
 				page.close();
@@ -375,7 +375,7 @@ var processTask = function(task){
 	};
 
 	page.onResourceError = function(resource){
-		console.log('Robot could not receive: ' + resource.url + ' due to ' + resource.errorCode + ':' + resource.errorString);
+		console.log('Robot could not receive: ' + resource.id + ' - ' + resource.url + ' due to ' + resource.errorCode + ':' + resource.errorString);
 		var index = pageRequests.indexOf(resource.id);
 		if (index != -1) {
 			pageRequests.splice(index, 1);
