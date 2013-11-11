@@ -31,6 +31,11 @@ PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Change to the project's directory
 cd $PROJECT_DIR
 
+# Need something to run change index.php's environment to production
+# perl -pi -e "s/((?:[a-z][a-z]+)\(\'ENVIRONMENT\', isset\(\$_SERVER\[\'CI_ENV\'\]\) \? \$_SERVER\[\'CI_ENV\'\] : \'development\'\).)/define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'production');/g" index.php
+# Perhaps it's better to use NGINX or the server module to provide this?
+# Eventually mobilise.sh needs to run grunt in order to actually build the final product
+
 # Install all the dependencies
 # Composer and NPM should already be available on PATH
 # Bower and Grunt-Cli will be required however
@@ -38,6 +43,7 @@ cd $PROJECT_DIR
 echo "Installing dependencies from Composer, NPM and Bower"
 composer install --dev </dev/null
 npm install </dev/null
+# this has an issue it might request for confirmation (make sure to resolve bower beforehand)
 bower install --allow-root </dev/null
 
 # Download SlimerJS
