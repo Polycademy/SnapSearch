@@ -6,7 +6,7 @@ https://www.digitalocean.com/community/articles/how-to-use-nmap-to-scan-for-open
 
 Required:
 
-apt-get install python2.7.5 or greater...
+apt-get install python2.7.5 (probably already installed)
 apt-get install xvfb
 apt-get install git
 apt-get install python-setuptools
@@ -14,11 +14,12 @@ apt-get install python-pip
 easy_install supervisor
 apt-get install curl
 
+sudo apt-get install nginx
+sudo apt-get install php5-fpm
+sudo apt-get install mysql-server php5-mysql
 Follow this as well: https://www.digitalocean.com/community/articles/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-12-04
 Also install PHP extensions -> http://arstechnica.com/information-technology/2012/12/web-served-part-3-bolting-on-php-with-php-fpm/ (Check mcrypt bug! http://askubuntu.com/a/360657)
-sudo apt-get install mysql-server php5-mysql
-sudo apt-get install php5-fpm
-sudo apt-get install nginx
+sudo apt-get install php5json
 
 Robot Service (can be modified inside supervisord.conf in robot_scripts, but make sure to update the NGINX configuration to load balance more than 4 robot services):
 
@@ -51,6 +52,10 @@ sudo apt-get install python-software-properties python g++ make
 sudo add-apt-repository ppa:chris-lea/node.js
 sudo apt-get update
 sudo apt-get install nodejs
+
+COMPOSER:
+curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer
 
 1. CI application is not working correctly (404 on controllers from NGINX)
 3. DB needs to be migrated... created if not exists...
