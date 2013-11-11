@@ -55,7 +55,7 @@ class Robot_model extends CI_Model{
 			[
 				'field'	=> 'url',
 				'label'	=> 'Url (url)',
-				'rules'	=> 'required|trim|valid_url',
+				'rules'	=> 'required|trim|prep_url|valid_url',
 			],
 			[
 				'field'	=> 'width',
@@ -154,12 +154,14 @@ class Robot_model extends CI_Model{
 		$parameters_checksum = md5(json_encode($parameters));
 
 		$existing_cache_id = false;
-		if($parameters['cache']){
+		//we need the user id, for now we're going to assume 1 for everybody
+		$cache = $this->read_cache($USER_ID, $parameters_checksum);
 
-			//we need the user id, for now we're going to assume 1 for everybody
-			$cache = $this->read_cache($USER_ID, $parameters_checksum);
+		if($cache){
 
-			if($cache){
+			$existing_cache_id = $cache['id'];
+
+			if($parameters['cache']){
 
 				//valid date is the current time minus $cache_time in hours
 				$current_date = new DateTime();
@@ -169,8 +171,6 @@ class Robot_model extends CI_Model{
 				if(strtotime($cache['date']) >= strtotime($valid_date)){
 					return json_decode($cache['snapshot'], true);
 				}
-
-				$existing_cache_id = $cache['id'];
 
 			}
 
@@ -222,6 +222,7 @@ class Robot_model extends CI_Model{
 		}
 
 		//request has succeeded so we're going to cache the response
+		//THERE NEEDS TO BE SOMETHING TO CHECK IF the $response is a valid data, sometimes it might return crap...
 		$this->upsert_cache($existing_cache_id, $USER_ID, $parameters['url'], json_encode($response), $parameters_checksum);
 
 		return $response;
