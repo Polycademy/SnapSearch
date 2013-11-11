@@ -144,17 +144,20 @@ class Robot_model extends CI_Model{
 
 		//default cache parameters of true and 24 hours
 		if(isset($parameters['cache'])){
-			$parameters['cache'] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+			$parameters['cache'] = filter_var($parameters['cache'], FILTER_VALIDATE_BOOLEAN);
 		}else{
 			$parameters['cache'] = true;
 		}
 		if(!isset($parameters['cachetime'])) $parameters['cachetime'] = 24;
 
+		//we need a checksum of the parameters to compare with the cache's checksum
+		$parameters_checksum = md5(json_encode($parameters));
+
 		$existing_cache_id = false;
 		if($parameters['cache']){
 
 			//we need the user id, for now we're going to assume 1 for everybody
-			$cache = $this->read_cache($USER_ID, $parameters['url']);
+			$cache = $this->read_cache($USER_ID, $parameters_checksum);
 
 			if($cache){
 
@@ -219,20 +222,20 @@ class Robot_model extends CI_Model{
 		}
 
 		//request has succeeded so we're going to cache the response
-		$this->upsert_cache($existing_cache_id, $USER_ID, $parameters['url'], json_encode($response));
+		$this->upsert_cache($existing_cache_id, $USER_ID, $parameters['url'], json_encode($response), $parameters_checksum);
 
 		return $response;
 
 	}
 
-	protected function read_cache($user_id, $url){
+	protected function read_cache($user_id, $parameters_checksum){
 
 		//get the snapshot record for the relevant user and url
 		$query = $this->db->get_where(
 			'snapshots', 
 			array(
-				'userId' 	=> $user_id, 
-				'url' 		=> $url,
+				'userId' 				=> $user_id, 
+				'parametersChecksum'	=> $parameters_checksum,
 			)
 		);
 
@@ -240,12 +243,13 @@ class Robot_model extends CI_Model{
 			
 			$row = $query->row();
 
-			$data = array(
-				'id'		=> $row->id,
-				'userId'	=> $row->userId,
-				'date'		=> $row->date,
-				'snapshot'	=> $row->snapshot
-			);
+			$data = [
+				'id'					=> $row->id,
+				'userId'				=> $row->userId,
+				'date'					=> $row->date,
+				'snapshot'				=> $row->snapshot,
+				'parametersChecksum'	=> $row->parametersChecksum
+			];
 
 			return $data;
 			
@@ -257,15 +261,16 @@ class Robot_model extends CI_Model{
 
 	}
 
-	protected function upsert_cache($id, $user_id, $url, $snapshot){
+	protected function upsert_cache($id, $user_id, $url, $snapshot, $parameters_checksum){
 
 		//if id is available, that means we need to update, else we need to insert
 		if($id){
 
 			$this->db->where('id', $id);
 			$query = $this->db->update('snapshots', array(
-				'date'		=> date('Y-m-d H:i:s'),
-				'snapshot'	=> $snapshot,
+				'date'					=> date('Y-m-d H:i:s'),
+				'snapshot'				=> $snapshot,
+				'parametersChecksum'	=> $parametersChecksum,
 			));
 
 			//should be able to update
@@ -278,10 +283,11 @@ class Robot_model extends CI_Model{
 		}else{
 
 			$query = $this->db->insert('snapshots', array(
-				'userId'	=> $user_id,
-				'url'		=> $url,
-				'date'		=> date('Y-m-d H:i:s'),
-				'snapshot'	=> $snapshot,
+				'userId'				=> $user_id,
+				'url'					=> $url,
+				'date'					=> date('Y-m-d H:i:s'),
+				'snapshot'				=> $snapshot,
+				'parametersChecksum'	=> $parametersChecksum,
 			));
 
 			if(!$query){
