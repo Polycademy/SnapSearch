@@ -28,10 +28,14 @@ $ioc['Database'] = $ioc->share(function($c){
  * Symfony Request Object augmented with the Authorization header
  */
 $ioc['Request'] = $ioc->share(function($c){
-	$headers = getallheaders();
 	$request = Symfony\Component\HttpFoundation\Request::createFromGlobals();
-	if(isset($headers['Authorization'])){
-		$request->headers->set('Authorization', $headers['Authorization']);
+	//php-fpm doesn't support getallheaders yet: https://bugs.php.net/bug.php?id=62596
+	//we need to test if authorization exists for cgi mode normally...
+	if(function_exists('getallheaders')){
+		$headers = getallheaders();
+		if(isset($headers['Authorization'])){
+			$request->headers->set('Authorization', $headers['Authorization']);
+		}
 	}
 	return $request;
 });
