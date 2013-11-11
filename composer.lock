@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "d1458f7056e2e83f278e5187325d319b",
+    "hash": "4ff141a0b5247716212f22a72b236f00",
     "packages": [
         {
             "name": "guzzle/guzzle",
@@ -219,119 +219,6 @@
             "time": "2013-04-28 18:06:47"
         },
         {
-            "name": "respect/validation",
-            "version": "dev-develop",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Respect/Validation.git",
-                "reference": "7002c641ac3f8ad68a1635901b4929f835e7bf78"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Respect/Validation/zipball/7002c641ac3f8ad68a1635901b4929f835e7bf78",
-                "reference": "7002c641ac3f8ad68a1635901b4929f835e7bf78",
-                "shasum": ""
-            },
-            "require-dev": {
-                "symfony/validator": "2.*",
-                "zendframework/zend-validator": "2.*"
-            },
-            "suggest": {
-                "ext-bcmath": "*",
-                "ext-mbstring": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Respect\\Validation": "library/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD Style"
-            ],
-            "authors": [
-                {
-                    "name": "Henrique Moody",
-                    "email": "henriquemoody@gmail.com",
-                    "homepage": "http://henriquemoody.com/"
-                },
-                {
-                    "name": "Alexandre Gomes Gaigalas",
-                    "email": "alexandre@gaigalas.net"
-                },
-                {
-                    "name": "Carlos André Ferrari",
-                    "email": "caferrari@gmail.com",
-                    "homepage": "http://ferrari.eti.br/"
-                },
-                {
-                    "name": "Devin Torres",
-                    "email": "devin@devintorres.com"
-                },
-                {
-                    "name": "Emerson Carvalho",
-                    "email": "emerson.broga@gmail.com"
-                },
-                {
-                    "name": "Fábio da Silva Ribeiro",
-                    "email": "fabiorphp@gmail.com"
-                },
-                {
-                    "name": "Jair Henrique",
-                    "email": "jair.henrique@gmail.com"
-                },
-                {
-                    "name": "Jayson Reis",
-                    "email": "santosdosreis@gmail.com"
-                },
-                {
-                    "name": "Jean Pimentel",
-                    "email": "jeanfap@gmail.com"
-                },
-                {
-                    "name": "Kleber Hamada Sato",
-                    "email": "kleberhs007@yahoo.com"
-                },
-                {
-                    "name": "Leandro",
-                    "email": "lleitep3@gmail.com"
-                },
-                {
-                    "name": "Marcelo Araujo",
-                    "email": "msaraujo@php.net"
-                },
-                {
-                    "name": "Michael Klishin",
-                    "email": "michaelklishin@me.com"
-                },
-                {
-                    "name": "Morf",
-                    "email": "i@morfi.ru"
-                },
-                {
-                    "name": "Rogerio Prado de Jesus",
-                    "email": "rogeriopradoj@gmail.com"
-                },
-                {
-                    "name": "Torben Brodt",
-                    "email": "t.brodt@gmail.com"
-                },
-                {
-                    "name": "Kinn Coelho Julião",
-                    "email": "kinncj@gmail.com",
-                    "homepage": "http://kinncj.com.br",
-                    "role": "Developer"
-                },
-                {
-                    "name": "Augusto Pascutti",
-                    "email": "augusto@phpsp.org.br"
-                }
-            ],
-            "description": "The most awesome validation engine ever created for PHP",
-            "time": "2013-09-23 00:55:30"
-        },
-        {
             "name": "symfony/event-dispatcher",
             "version": "v2.3.6",
             "target-dir": "Symfony/Component/EventDispatcher",
@@ -478,9 +365,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "respect/validation": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": [
 
     ],
