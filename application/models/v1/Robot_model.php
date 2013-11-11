@@ -270,7 +270,7 @@ class Robot_model extends CI_Model{
 			$query = $this->db->update('snapshots', array(
 				'date'					=> date('Y-m-d H:i:s'),
 				'snapshot'				=> $snapshot,
-				'parametersChecksum'	=> $parametersChecksum,
+				'parametersChecksum'	=> $parameters_checksum,
 			));
 
 			//should be able to update
@@ -287,7 +287,7 @@ class Robot_model extends CI_Model{
 				'url'					=> $url,
 				'date'					=> date('Y-m-d H:i:s'),
 				'snapshot'				=> $snapshot,
-				'parametersChecksum'	=> $parametersChecksum,
+				'parametersChecksum'	=> $parameters_checksum,
 			));
 
 			if(!$query){
