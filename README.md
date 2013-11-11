@@ -6,20 +6,22 @@ https://www.digitalocean.com/community/articles/how-to-use-nmap-to-scan-for-open
 
 Required:
 
-apt-get install python2.7.5 (probably already installed)
-apt-get install xvfb
-apt-get install git
-apt-get install python-setuptools
-apt-get install python-pip
-easy_install supervisor
-apt-get install curl
+sudo add-apt-repository ppa:chris-lea/node.js
+sudo apt-get update
+sudo apt-get install -y firefox xvfb git python-setuptools python-pip curl nginx php5-fpm mysql-server php5-mysql php5-json php5-mcrypt php5-cli python-software-properties python g++ make nodejs
+(MySQL config: https://www.digitalocean.com/community/articles/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-12-04)
+(Note http://arstechnica.com/information-technology/2012/12/web-served-part-3-bolting-on-php-with-php-fpm/)
+(Fix up mcrypt http://askubuntu.com/a/360657 | sudo ln -s /etc/php5/conf.d/mcrypt.ini /etc/php5/mods-available/mcrypt.ini | sudo php5enmod mcrypt | sudo service php5-fpm restart)
 
-sudo apt-get install nginx
-sudo apt-get install php5-fpm
-sudo apt-get install mysql-server php5-mysql
-Follow this as well: https://www.digitalocean.com/community/articles/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-12-04
-Also install PHP extensions -> http://arstechnica.com/information-technology/2012/12/web-served-part-3-bolting-on-php-with-php-fpm/ (Check mcrypt bug! http://askubuntu.com/a/360657)
-sudo apt-get install php5json
+easy_install supervisor
+easy_install httpie
+
+npm install -g bower
+npm install -g grunt-cli
+
+COMPOSER:
+curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer
 
 Robot Service (can be modified inside supervisord.conf in robot_scripts, but make sure to update the NGINX configuration to load balance more than 4 robot services):
 
@@ -28,13 +30,6 @@ Robot Service (can be modified inside supervisord.conf in robot_scripts, but mak
 8501 - Second Robot
 8502 - Third Robot
 8503 - Fourth Robot
-
-Configure snapsearch.io in /etc/hosts: 127.0.0.1 snapsearch.io www.snapsearch.io
-
-Scale up: https://www.digitalocean.com/community/articles/how-to-scale-your-infrastructure-with-digitalocean
-
-Migrate to using Monit instead of Supervisord eventually!
-
 
 FOR PHP:
 
@@ -45,22 +40,12 @@ FOR PHP:
 5. No need for MY_Input, use HTTP request/response object
 6. Swap out CI Migrations for Phinx Migration (then plugin the CLI route)
 7. Migrate to Slim, you're swapping out everything for Composer anyway!
-
-NODEJS:
-
-sudo apt-get install python-software-properties python g++ make
-sudo add-apt-repository ppa:chris-lea/node.js
-sudo apt-get update
-sudo apt-get install nodejs
-
-COMPOSER:
-curl -sS https://getcomposer.org/installer | php
-mv composer.phar /usr/local/bin/composer
-
-1. CI application is not working correctly (404 on controllers from NGINX)
-3. DB needs to be migrated... created if not exists...
 6. Combine onCallback with the custom callback to allow users to call back to SlimerJS. Perhaps a wait timer is good too! This needs to be resolved automatically if the user forgot to do so. So if no custom callback, this will not be set. If there is a custom callback, they need to window.callPhantom(). Which would resolve to true, so this just delays the async further if need be. https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#wiki-webpage-onCallback On SlimerJS is it window.callSlimer()?
 7. Wait for navigationLocked to be fixed!
 8. Also make sure pages aren't created using _blank.. that will screw up the headers
 
 Market here: http://backbonetutorials.com/seo-for-single-page-apps/
+
+Fix the error for dreamitapp.com...
+Also 8499 port is public, we need a firewall
+Why the hell is this taking 8 seconds.
