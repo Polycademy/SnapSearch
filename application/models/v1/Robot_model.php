@@ -15,7 +15,7 @@ class Robot_model extends CI_Model{
 
 		parent::__construct();
 
-		$this->robot_uri = '127.0.0.1:8499';
+		$this->robot_uri = 'http://127.0.0.1:8499';
 		$this->client = new Client;
 		$this->client->setUserAgent('Snapsearch');
 
