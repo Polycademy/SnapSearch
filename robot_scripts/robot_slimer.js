@@ -49,8 +49,8 @@ var defaultConfig = {
 	navigate: false, // allow redirection of the page or not
 	loadimages: false, 
 	javascriptenabled: true, 
-	maxtimeout: 5000, 
-	initialwait: 1000, //initial wait for asynchronous requests to fill up
+	maxtimeout: 4000, 
+	initialwait: 250, //initial wait for asynchronous requests to fill up
 	callback: false, 
 	logfile: false // Log file is recorded in the current working directory of where you started the web server, it is not the same as this script's path (can be log.txt), will auto create the file it doesn't exist
 };
@@ -415,7 +415,7 @@ var processTask = function(task){
 
 };
 
-//every 250 milliseconds, this will check
+//busy loop
 (function processTasks(){
 	setTimeout(function(){
 		if(!busy && tasks.length > 0){
@@ -426,5 +426,5 @@ var processTask = function(task){
 		}
 		//we want to continue the loop even if a task is being processed
 		processTasks();
-	}, 250);
+	}, 500);
 })();
