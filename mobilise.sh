@@ -42,7 +42,7 @@ bower install --allow-root </dev/null
 
 # Download SlimerJS
 echo "Downloading SlimerJS 0.9.0rc1"
-curl http://download.slimerjs.org/v0.9/0.9.0rc1/slimerjs-0.9.0rc1-linux-i686.tar.bz2 -o slimerjs.tar.bz2
+curl http://download.slimerjs.org/v0.9/0.9.0rc1/slimerjs-0.9.0rc1-linux-x86_64.tar.bz2 -o slimerjs.tar.bz2
 echo "Uncompressing and extracting SlimerJS into ./slimerjs"
 mkdir -p slimerjs && tar xjvf slimerjs.tar.bz2 -C slimerjs --strip-components 1
 rm slimerjs.tar.bz2
