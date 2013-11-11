@@ -18,4 +18,5 @@ class Migration_add_parameterschecksum_to_snapshots extends CI_Migration {
 		$this->dbforge->drop_column('snapshots', 'parameters');
 	
 	}
+	
 }
