@@ -1,16 +1,10 @@
 <?php
 
 class MY_Form_validation extends CI_Form_validation{
-
-	private $_CI;
 	
 	public function __construct($rules = array()){
 	
 		parent::__construct();
-		
-		if(!isset($this->_CI)){
-			$this->_CI =& get_instance();
-		}
 		
 	}
 	
