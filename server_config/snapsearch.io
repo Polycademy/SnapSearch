@@ -37,7 +37,7 @@ server {
   server_name snapsearch.io;
 
   # Path for static files
-  root /www/snapsearch/;
+  root /www/snapsearch;
 
   # Index search file to serve if in a directory
   index index.php index.html index.htm;
@@ -89,15 +89,12 @@ server {
 
   # Fallback on front controller pattern if it cannot find files or directories matching the uri
   location / {
-    try_files $uri $uri/ /index.php$args;
+    try_files $uri $uri/ /index.php;
   }
 
   # Fast cgi to the PHP run time
   location ~* \.php$ {
     try_files $uri =404;
-    fastcgi_split_path_info (.+\.php)(.*)$;
-    fastcgi_param PATH_INFO $fastcgi_path_info;
-    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     include fastcgi_params;
     fastcgi_pass unix:/var/run/php5-fpm.sock;
     fastcgi_index index.php;
