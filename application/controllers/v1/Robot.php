@@ -116,7 +116,7 @@ class Robot extends CI_Controller{
 				$content = current($errors);
 			}
 
-			$code = key($this->Robot_model->get_errors());
+			$code = key($errors);
 			
 			if($code == 'validation_error' OR $code == 'error'){
 				$this->output->set_status_header(400);
