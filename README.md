@@ -6,12 +6,15 @@ https://www.digitalocean.com/community/articles/how-to-use-nmap-to-scan-for-open
 
 Required:
 
+sudo apt-get install -y python-software-properties python g++
 sudo add-apt-repository ppa:chris-lea/node.js
 sudo apt-get update
-sudo apt-get install -y firefox xvfb git python-setuptools python-pip curl nginx php5-fpm mysql-server php5-mysql php5-json php5-mcrypt php5-cli python-software-properties python g++ make nodejs
+sudo apt-get install -y make libc6 libstdc++6 libgcc1 xvfb git python-setuptools python-pip curl nginx php5-fpm mysql-server php5-mysql php5-json php5-mcrypt php5-cli php5-curl nodejs
 (MySQL config: https://www.digitalocean.com/community/articles/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-12-04)
 (Note http://arstechnica.com/information-technology/2012/12/web-served-part-3-bolting-on-php-with-php-fpm/)
 (Fix up mcrypt http://askubuntu.com/a/360657 | sudo ln -s /etc/php5/conf.d/mcrypt.ini /etc/php5/mods-available/mcrypt.ini | sudo php5enmod mcrypt | sudo service php5-fpm restart)
+
+If SlimerJS doesn't start, make sure firefox is installed
 
 easy_install supervisor
 easy_install httpie
@@ -24,6 +27,8 @@ curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 
 Robot Service (can be modified inside supervisord.conf in robot_scripts, but make sure to update the NGINX configuration to load balance more than 4 robot services):
+
+Change index.php development to production if necessary
 
 8499 - LOAD BALANCER
 8500 - First Robot
@@ -45,7 +50,3 @@ FOR PHP:
 8. Also make sure pages aren't created using _blank.. that will screw up the headers
 
 Market here: http://backbonetutorials.com/seo-for-single-page-apps/
-
-Fix the error for dreamitapp.com...
-Also 8499 port is public, we need a firewall
-Why the hell is this taking 8 seconds.
