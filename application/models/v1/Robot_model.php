@@ -16,15 +16,10 @@ class Robot_model extends CI_Model{
 		parent::__construct();
 
 		$this->robot_uri = 'http://127.0.0.1:8499';
+		
 		$this->client = new Client;
 		$this->client->setUserAgent('Snapsearch');
 
-		//validation libraries suck, we need to find a better way...
-		//perhaps wrap over the Respect\Validator library (they have a couple of good validators!)
-		//Provide a fluent interface, that allows the use of closures/anonymous functions as extensions
-		//In fact it should operate similar to a DIC. Allowing you to register functions to be used as validators!
-		//The whole point of the validator library is to provide shareable reusable validation routines and data
-		//In an easy to understand way...
 		$this->load->library('form_validation', false, 'validator');
 
 	}
@@ -187,7 +182,10 @@ class Robot_model extends CI_Model{
 				json_encode($parameters)
 			);
 
-			$response = $request->send()->json();
+			//decode the returned json into an array
+			$response = $request->send();
+			$response_string = $response->getBody(true);
+			$response_array = $response->json();
 
 		}catch(BadResponseException $e){
 
@@ -211,7 +209,7 @@ class Robot_model extends CI_Model{
 
 		}
 
-		if($response['message'] == 'Failed'){
+		if($response_array['message'] == 'Failed'){
 
 			$this->errors = array(
 				'error'	=> 'Robot could not open uri: ' . $parameters['url']
@@ -221,11 +219,15 @@ class Robot_model extends CI_Model{
 
 		}
 
-		//request has succeeded so we're going to cache the response
 		//THERE NEEDS TO BE SOMETHING TO CHECK IF the $response is a valid data, sometimes it might return crap...
-		$this->upsert_cache($existing_cache_id, $USER_ID, $parameters['url'], json_encode($response), $parameters_checksum);
+		
+		//only cache the result if the cache option was true, subsequent requests would never request for cached data that had their cache parameter as false, because matching checksums would require the request's parameters to also have cache being false, which would prevent us from requesting from the cache
+		if($parameters['cache']){
+			//cache the result
+			$this->upsert_cache($existing_cache_id, $USER_ID, $parameters['url'], $response_string, $parameters_checksum);
+		}
 
-		return $response;
+		return $response_array;
 
 	}
 
