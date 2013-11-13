@@ -274,7 +274,7 @@ class Robot_model extends CI_Model{
 			}
 
 			$snapshot_data = $this->filesystem->read($data['snapshot']);
-			$snapshot_data = gzuncompress($content);
+			$snapshot_data = gzuncompress($snapshot_data);
 			$data['snapshotData'] = $snapshot_data;
 
 			return $data;
@@ -343,7 +343,7 @@ class Robot_model extends CI_Model{
 
 		$query = $this->db->delete('snapshots', array('id' => $id));
 
-		if($filename AND $this->filesystem->has($filename){
+		if($filename AND $this->filesystem->has($filename)){
 			$this->filesystem->delete($filename);
 		}
 
