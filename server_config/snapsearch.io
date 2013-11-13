@@ -87,6 +87,12 @@ server {
     rewrite ^/(.*)$ /index.php?/$1 last;
   }
 
+  # Deny requests to the snapshots cache directory
+  location /snapshots/ {
+    deny all;
+    return 403;
+  }
+
   # Fallback on front controller pattern if it cannot find files or directories matching the uri
   location / {
     try_files $uri $uri/ /index.php;
