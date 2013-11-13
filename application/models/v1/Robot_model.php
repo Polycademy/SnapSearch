@@ -4,10 +4,14 @@ use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\CurlException;
 
+use Gaufrette\Filesystem;
+use Gaufrette\Adapter\Local as LocalAdapter;
+
 class Robot_model extends CI_Model{
 
 	protected $robot_uri;
 	protected $client;
+	protected $filesystem;
 	protected $errors;
 	protected $fallback;
 
@@ -19,6 +23,9 @@ class Robot_model extends CI_Model{
 		
 		$this->client = new Client;
 		$this->client->setUserAgent('Snapsearch');
+
+		//snapshots should be a relative directory to index.php
+		$this->filesystem = new Filesystem(new LocalAdapter('snapshots', true));
 
 		$this->load->library('form_validation', false, 'validator');
 
@@ -149,12 +156,16 @@ class Robot_model extends CI_Model{
 		$parameters_checksum = md5(json_encode($parameters));
 
 		$existing_cache_id = false;
+		$existing_cache_name = false;
 		//we need the user id, for now we're going to assume 1 for everybody
 		$cache = $this->read_cache($USER_ID, $parameters_checksum);
 
 		if($cache){
 
+			//we can update the cache when it's invalid
+			//but also it can still be used if we run against an error
 			$existing_cache_id = $cache['id'];
+			$existing_cache_name = $cache['snapshot'];
 
 			if($parameters['cache']){
 
@@ -164,7 +175,7 @@ class Robot_model extends CI_Model{
 
 				//the cache's date of entry has to be more recent or equal to the valid date
 				if(strtotime($cache['date']) >= strtotime($valid_date)){
-					return json_decode($cache['snapshot'], true);
+					return json_decode($cache['snapshotData'], true);
 				}
 
 			}
@@ -195,7 +206,7 @@ class Robot_model extends CI_Model{
 			$this->errors = array(
 				'system_error'	=> 'Robot service is a bit broken. Try again later.',
 			);
-			if($existing_cache_id) $this->fallback = json_decode($cache['snapshot'], true);
+			if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
 			return false;
 
 		}catch(CurlException $e){
@@ -204,7 +215,7 @@ class Robot_model extends CI_Model{
 			$this->errors = array(
 				'system_error'	=> 'Curl failed. Try again later.'
 			);
-			if($existing_cache_id) $this->fallback = json_decode($cache['snapshot'], true);
+			if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
 			return false;
 
 		}
@@ -214,24 +225,27 @@ class Robot_model extends CI_Model{
 			$this->errors = array(
 				'error'	=> 'Robot could not open uri: ' . $parameters['url']
 			);
-			if($existing_cache_id) $this->fallback = json_decode($cache['snapshot'], true);
+			if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
 			return false;
 
 		}
-
-		//THERE NEEDS TO BE SOMETHING TO CHECK IF the $response is a valid data, sometimes it might return crap...
 		
 		//only cache the result if the cache option was true, subsequent requests would never request for cached data that had their cache parameter as false, because matching checksums would require the request's parameters to also have cache being false, which would prevent us from requesting from the cache
 		if($parameters['cache']){
-			//cache the result
-			$this->upsert_cache($existing_cache_id, $USER_ID, $parameters['url'], $response_string, $parameters_checksum);
+
+			if($existing_cache_id){
+				$this->update_cache($existing_cache_id, $existing_cache_name, $response_string);
+			}else{
+				$this->insert_cache($USER_ID, $parameters['url'], $response_string, $parameters_checksum);
+			}
+
 		}
 
 		return $response_array;
 
 	}
 
-	protected function read_cache($user_id, $parameters_checksum){
+	public function read_cache($user_id, $parameters_checksum){
 
 		//get the snapshot record for the relevant user and url
 		$query = $this->db->get_where(
@@ -254,6 +268,15 @@ class Robot_model extends CI_Model{
 				'parametersChecksum'	=> $row->parametersChecksum
 			];
 
+			if(!$this->filesystem->has($data['snapshot'])){
+				$this->delete_cache($data['id']);
+				return false;
+			}
+
+			$snapshot_data = $this->filesystem->read($data['snapshot']);
+			$snapshot_data = gzuncompress($content);
+			$data['snapshotData'] = $snapshot_data;
+
 			return $data;
 			
 		}else{
@@ -264,45 +287,64 @@ class Robot_model extends CI_Model{
 
 	}
 
-	protected function upsert_cache($id, $user_id, $url, $snapshot, $parameters_checksum){
+	public function insert_cache($user_id, $url, $snapshot_data, $parameters_checksum){
 
-		//if id is available, that means we need to update, else we need to insert
-		if($id){
+		//get a unique filename first
+		do{
+			$snapshot = uniqid('snapshot', true);
+			if(!$this->filesystem->has($snapshot)) break;
+		}while(true);
 
-			$this->db->where('id', $id);
-			$query = $this->db->update('snapshots', array(
-				'date'					=> date('Y-m-d H:i:s'),
-				'snapshot'				=> $snapshot,
-				'parametersChecksum'	=> $parameters_checksum,
-			));
+		//compress the data
+		$snapshot_data = gzcompress($snapshot_data, 9);
 
-			//should be able to update
-			if($this->db->affected_rows() <= 0){
+		//write the snapshot data, and potentially overwrite it
+		$this->filesystem->write($snapshot, $snapshot_data, true);
 
-				return false;
+		//insert the snapshot filename to the database
+		$query = $this->db->insert('snapshots', array(
+			'userId'				=> $user_id,
+			'url'					=> $url,
+			'date'					=> date('Y-m-d H:i:s'),
+			'snapshot'				=> $snapshot,
+			'parametersChecksum'	=> $parameters_checksum,
+		));
 
-			}
+		if(!$query){
+			$msg = $this->db->error()['message'];
+			$num = $this->db->error()['code'];
+			$last_query = $this->db->last_query();
+			log_message('error', 'Problem inserting into snapshots table: ' . $msg . ' (' . $num . '), using this query: "' . $last_query . '"');
+		}
 
-		}else{
+		return true;
 
-			$query = $this->db->insert('snapshots', array(
-				'userId'				=> $user_id,
-				'url'					=> $url,
-				'date'					=> date('Y-m-d H:i:s'),
-				'snapshot'				=> $snapshot,
-				'parametersChecksum'	=> $parameters_checksum,
-			));
+	}
 
-			if(!$query){
+	public function update_cache($id, $snapshot, $snapshot_data){
 
-				$msg = $this->db->error()['message'];
-				$num = $this->db->error()['code'];
-				$last_query = $this->db->last_query();
-				log_message('error', 'Problem inserting into snapshots table: ' . $msg . ' (' . $num . '), using this query: "' . $last_query . '"');
-				return false;
+		//update the date timestamp for this cached data
+		$this->db->where('id', $id);
+		$query = $this->db->update('snapshots', array(
+			'date'	=> date('Y-m-d H:i:s'),
+		));
 
-			}
+		//compress the snapshot
+		$snapshot_data = gzcompress($snapshot_data, 9);
 
+		//overwrite the cached file
+		$this->filesystem->write($snapshot, $snapshot_data, true);
+
+		return true;
+
+	}
+
+	public function delete_cache($id, $filename = false){
+
+		$query = $this->db->delete('snapshots', array('id' => $id));
+
+		if($filename AND $this->filesystem->has($filename){
+			$this->filesystem->delete($filename);
 		}
 
 		return true;
