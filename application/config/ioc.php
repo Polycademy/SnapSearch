@@ -37,6 +37,11 @@ $ioc['Request'] = $ioc->share(function($c){
 			$request->headers->set('Authorization', $headers['Authorization']);
 		}
 	}
+	//parsing JSON body content
+	if(0 === strpos($request->headers->get('Content-Type'), 'application/json')){
+		$json_data = json_decode($request->getContent(), true);
+		$request->request->replace(is_array($json_data) ? $json_data : array());
+	}
 	return $request;
 });
 
