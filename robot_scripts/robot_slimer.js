@@ -49,8 +49,8 @@ var defaultConfig = {
 	navigate: false, // allow redirection of the page or not
 	loadimages: false, 
 	javascriptenabled: true, 
-	maxtimeout: 4000, 
-	initialwait: 250, //initial wait for asynchronous requests to fill up
+	maxtimeout: 5000, 
+	initialwait: 1000, //initial wait for asynchronous requests to fill up
 	callback: false, 
 	logfile: false // Log file is recorded in the current working directory of where you started the web server, it is not the same as this script's path (can be log.txt), will auto create the file it doesn't exist
 };
@@ -195,6 +195,8 @@ var processTask = function(task){
 		output.message = 'Input was not valid JSON';
 		outputResult(output, response);
 		busy = false;
+		console.log('Robot has finished a task');
+		return false;
 	}
 	
 	//configuration needs to be isolated for the current request
@@ -237,6 +239,17 @@ var processTask = function(task){
 
 	};
 
+	//this is to prevent pages from taking too long to open (10s max)
+	var pageOpened = false;
+
+	//30s for page opening time
+	setTimeout(function(){
+		if(pageOpened == false){
+			console.log('Robot has exceeded maximum synchronous page opening time');
+			failedOpeningPage();
+		}
+	}, 30000);
+
 	//this function is triggered to open a page with a specific url
 	var openPage = function(url){
 
@@ -248,6 +261,9 @@ var processTask = function(task){
 			difference = '';
 
 		page.open(url).then(function(status){
+
+			//yay page has been opened
+			pageOpened = true;
 
 			if(status == 'success'){
 
@@ -316,11 +332,6 @@ var processTask = function(task){
 			}else{
 
 				failedOpeningPage();
-				// console.log('Robot failed to open url: ' + currentConfig.url);
-				// output.message = 'Failed';
-				// outputResult(output, response);
-				// page.close();
-				// console.log('Robot has finished a task');
 
 			}
 
