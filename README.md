@@ -1,9 +1,3 @@
-1. PHP app + Front end (along with composer dependencies)
-2. API test cases with Codeception with Travis.yml
-
-https://www.digitalocean.com/community/articles/how-to-set-up-a-firewall-using-ip-tables-on-ubuntu-12-04
-https://www.digitalocean.com/community/articles/how-to-use-nmap-to-scan-for-open-ports-on-your-vps
-
 Required:
 
 sudo apt-get install -y python-software-properties python g++
@@ -30,27 +24,8 @@ Robot Service (can be modified inside supervisord.conf in robot_scripts, but mak
 
 Change index.php development to production if necessary.
 
-8499 - LOAD BALANCER
-8500 - First Robot
-8501 - Second Robot
-8502 - Third Robot
-
 FOR PHP:
-
-1. Wrap Valitron + Pimple/DI container + Respect\Validation to create something freaking awesome for validation...
-2. Clean up templating structure, something simpler, it's mostly use JS templates for the front end. However what about default_layout? Or JSON layout?
-3. Use Monolog instead of CI's logger.
-4. Disable CSRF, you're going to use Localstorage + Oauth anyway
-5. No need for MY_Input, use HTTP request/response object
-6. Swap out CI Migrations for Phinx Migration (then plugin the CLI route)
-7. Migrate to Slim, you're swapping out everything for Composer anyway!
-6. Combine onCallback with the custom callback to allow users to call back to SlimerJS. Perhaps a wait timer is good too! This needs to be resolved automatically if the user forgot to do so. So if no custom callback, this will not be set. If there is a custom callback, they need to window.callPhantom(). Which would resolve to true, so this just delays the async further if need be. https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#wiki-webpage-onCallback On SlimerJS is it window.callSlimer()?
-7. Wait for navigationLocked to be fixed!
-8. Also make sure pages aren't created using _blank.. that will screw up the headers
-
-Market here: http://backbonetutorials.com/seo-for-single-page-apps/
-
-Setup firewall
+Setup firewall once server is up!
 
 apt-get install ufw
 ufw default deny incoming
@@ -69,3 +44,21 @@ echo "y" | ufw enable
 SSH tunnelling, then you can access the database!
 
 ssh -L LOCALPORT:127.0.0.1:REMOTEPORT USER@IP
+
+
+Improvements
+------------
+
+Load Balancer: Use http://zef.me/4502/message-queue-based-load-balancing and https://developer.mozilla.org/en-US/docs/WebAPI/TCP_Socket
+Server Admin: Use Dokku and Vagrant
+Process Management: Test out memmon.py, write a corresponding one for HTTPok in PHP
+SlimerJS: Modularise and cleanup the code. Also need some core improvements for some bugs (navigationLocked)
+Validation: Remote filesize and mimetype (technology not available)
+Framework: Transition to Slim and custom framework
+Logging: Federate the logging systems, actually a PHP binary that accepts logging details would be good
+Statuspage: Similar to the logging, but testing the API aswell
+Auth: Use PolyAuth + Mashape + Pin.net instead of Mashape? Disable CSRF
+Mobilise: Something to set the number of robot servers to setup AND set index.php to production/development, integrate with Grunt build
+Tests: API tests functional tests using Codeception
+
+Combine onCallback with the custom callback to allow users to call back to SlimerJS. Perhaps a wait timer is good too! This needs to be resolved automatically if the user forgot to do so. So if no custom callback, this will not be set. If there is a custom callback, they need to window.callPhantom(). Which would resolve to true, so this just delays the async further if need be. https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#wiki-webpage-onCallback On SlimerJS is it window.callSlimer()?
