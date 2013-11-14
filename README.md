@@ -28,13 +28,12 @@ mv composer.phar /usr/local/bin/composer
 
 Robot Service (can be modified inside supervisord.conf in robot_scripts, but make sure to update the NGINX configuration to load balance more than 4 robot services):
 
-Change index.php development to production if necessary
+Change index.php development to production if necessary.
 
 8499 - LOAD BALANCER
 8500 - First Robot
 8501 - Second Robot
 8502 - Third Robot
-8503 - Fourth Robot
 
 FOR PHP:
 
@@ -50,3 +49,23 @@ FOR PHP:
 8. Also make sure pages aren't created using _blank.. that will screw up the headers
 
 Market here: http://backbonetutorials.com/seo-for-single-page-apps/
+
+Setup firewall
+
+apt-get install ufw
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow ssh
+ufw allow www
+ufw allow https
+ufw allow imap
+ufw allow imaps
+ufw allow smtp
+ufw allow ftp
+ufw allow sftp
+ufw allow git
+echo "y" | ufw enable
+
+SSH tunnelling, then you can access the database!
+
+ssh -L LOCALPORT:127.0.0.1:REMOTEPORT USER@IP
