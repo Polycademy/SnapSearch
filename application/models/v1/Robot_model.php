@@ -351,6 +351,43 @@ class Robot_model extends CI_Model{
 
 	}
 
+	public function purge_cache($allowed_length = false, $user_id = false){
+
+		$cutoff_date = false;
+		try{
+			if($allowed_length){
+				$current_date = new DateTime();
+				$allowed_length = new DateInterval($allowed_length);
+				$cutoff_date = $current_date->sub($allowed_length)->format('Y-m-d H:i:s');
+			}
+		}catch(Exception $e){
+			return $e->getMessage();
+		}
+
+		if($cutoff_date){
+			$this->db->where('date <', $cutoff_date);
+		}
+
+		if(is_int($user_id)){
+			$this->db->where('userId', $user_id);
+		}
+
+		$query = $this->db->get('snapshots');
+
+		if($query->num_rows() > 0){
+			
+			foreach($query->result() as $row){
+
+				$this->delete_cache($row->id, $row->snapshot);
+
+			}
+			
+		}
+
+		return true;
+
+	}
+
 	public function get_errors(){
 
 		return $this->errors;
