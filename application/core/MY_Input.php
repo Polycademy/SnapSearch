@@ -38,12 +38,13 @@ class MY_Input extends CI_Input{
 	}
 	
 	//extracts information coming from stdin, and you can specify the type to be json encoded or php encoded (serialisation) or false encoding
-	public function stdin($index = false, $xss_clean = false, $type = 'json', $return_as_object = false){
+	public function stdin($index = false, $xss_clean = false, $type = false, $return_as_object = false){
 	
+		//this will block, so don't use this function if there may be no STDIN
 		$input_data = '';
-		while(FALSE !== ($line = fgets(STDIN))){
+		while(FALSE !== ($line = fgets($stdin))){
 			$input_data .= $line;
-		}		
+		}
 		
 		switch($type){
 			case 'json':
