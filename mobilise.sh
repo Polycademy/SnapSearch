@@ -46,6 +46,9 @@ npm install </dev/null
 # this has an issue it might request for confirmation (make sure to resolve bower beforehand)
 bower install --allow-root </dev/null
 
+# Optimising Composer
+composer dump-autoload --optimize </dev/null
+
 # Download SlimerJS
 echo "Downloading SlimerJS 0.9.0rc1"
 curl http://download.slimerjs.org/v0.9/0.9.0rc1/slimerjs-0.9.0rc1-linux-i686.tar.bz2 -o slimerjs.tar.bz2
