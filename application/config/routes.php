@@ -12,7 +12,8 @@ Pigeon::map(function($r){
 		//robot
 		$r->get('v1/robot', 'v1/robot/query');
 		$r->post('v1/robot', 'v1/robot/post');
-		
+
+		$r->resources('blog');
 		
 	});
 
@@ -26,6 +27,10 @@ Pigeon::map(function($r){
 		$r->route('migrate/version/(:num)', 'migrate/version/$1');
 		$r->route('migrate/restart',  'migrate/restart');
 		$r->route('migrate/restart/(:num)',  'migrate/restart/$1');
+
+		$r->route('cron/purge_cache', 'cron#purge_cache');
+		$r->route('cron/purge_cache/(.*)', 'cron#purge_cache');
+		$r->route('cron/purge_cache/(.*)/(.*)', 'cron#purge_cache');
 		
 	});
 	
