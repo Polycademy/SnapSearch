@@ -117,10 +117,15 @@ class Robot_model extends CI_Model{
 
 		$validation_errors = [];
 
+		//parameters that must exist
+		if(!isset($parameters['url'])){
+			$validation_errors['url'] = 'Url (url) is necessary.';
+		}
+
 		if(isset($parameters['maxtimeout']) AND isset($parameters['initialwait'])){
 			//initialwait has to be lower than maxtimeout
 			if($parameters['initialwait'] >= $parameters['maxtimeout']){
-				$validation_errors['initialwait'] = 'Initial wait (initialwait) needs to be lower than Max timeout (maxtimeout)';
+				$validation_errors['initialwait'] = 'Initial wait (initialwait) needs to be lower than Max timeout (maxtimeout).';
 			}
 		}
 
@@ -137,6 +142,16 @@ class Robot_model extends CI_Model{
 			return false;
 
 		}
+
+		/*
+			THIS PLACE WILL NEED API FLOOD CONTROL. In order to prevent malicious infinite interception.
+			http://stackoverflow.com/questions/1375501/how-do-i-throttle-my-sites-api-users
+			Basically use the leaky bucket. Or a resetting bucket.
+			Most importantly is to use something Redis as a cache rather than storing in DB. This needs to be
+			in memory for performance purposes.
+			Infinite interception can occur from Snapsearch heading to the site which calls Snapsearch again.
+			Detect from the same USER ID + SAME URL or same IP?.
+		 */
 
 		//default cache parameters of true and 24 hours
 		if(isset($parameters['cache'])){
