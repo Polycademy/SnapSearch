@@ -120,20 +120,20 @@ class Robot_model extends CI_Model{
 		//parameters that must exist
 		if(!isset($parameters['url'])){
 			$validation_errors['url'] = 'Url (url) is necessary.';
-		}
-
-		//validate the url because valid_url sucks
-		$url_parts = parse_url($parameters['url']);
-		if($url_parts){
-			if(
-				!isset($url_parts['scheme']) 
-				OR !isset($url_parts['host']) 
-				OR ($url_parts['scheme'] != 'http' AND $url_parts['scheme'] != 'https')
-			){
-				$validation_errors['url'] = 'Url (url) must be a valid url containing http or https as the host and a proper host domain.';
-			}
 		}else{
-			$validation_errors['url'] = 'Url (url) is malformed.';
+			//validate the url because valid_url sucks
+			$url_parts = parse_url($parameters['url']);
+			if($url_parts){
+				if(
+					!isset($url_parts['scheme']) 
+					OR !isset($url_parts['host']) 
+					OR ($url_parts['scheme'] != 'http' AND $url_parts['scheme'] != 'https')
+				){
+					$validation_errors['url'] = 'Url (url) must be a valid url containing http or https as the host and a proper host domain.';
+				}
+			}else{
+				$validation_errors['url'] = 'Url (url) is malformed.';
+			}
 		}
 
 		if(isset($parameters['maxtimeout']) AND isset($parameters['initialwait'])){
@@ -144,7 +144,8 @@ class Robot_model extends CI_Model{
 		}
 
 		if($this->validator->run() ==  false){
-			$validation_errors += $this->validator->error_array();
+			//overwrite the validation with form validation
+			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
 
 		if(!empty($validation_errors)){
