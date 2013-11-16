@@ -56,7 +56,7 @@ class Robot_model extends CI_Model{
 			[
 				'field'	=> 'url',
 				'label'	=> 'Url (url)',
-				'rules'	=> 'required|trim|prep_url|valid_url',
+				'rules'	=> 'required',
 			],
 			[
 				'field'	=> 'width',
@@ -120,6 +120,20 @@ class Robot_model extends CI_Model{
 		//parameters that must exist
 		if(!isset($parameters['url'])){
 			$validation_errors['url'] = 'Url (url) is necessary.';
+		}
+
+		//validate the url because valid_url sucks
+		$url_parts = parse_url($parameters['url']);
+		if($url_parts){
+			if(
+				!isset($url_parts['scheme']) 
+				OR !isset($url_parts['host']) 
+				OR ($url_parts['scheme'] != 'http' AND $url_parts['scheme'] != 'https')
+			){
+				$validation_errors['url'] = 'Url (url) must be a valid url containing http or https as the host and a proper host domain.';
+			}
+		}else{
+			$validation_errors['url'] = 'Url (url) is malformed.';
 		}
 
 		if(isset($parameters['maxtimeout']) AND isset($parameters['initialwait'])){
