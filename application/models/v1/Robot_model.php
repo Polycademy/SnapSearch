@@ -40,7 +40,6 @@ class Robot_model extends CI_Model{
 			'width',
 			'height',
 			'imgformat',
-			'useragent',
 			'screenshot',
 			'loadimages',
 			'javascriptenabled',
@@ -73,11 +72,6 @@ class Robot_model extends CI_Model{
 				'field'	=> 'imgformat',
 				'label'	=> 'Image format (imgformat)',
 				'rules'	=> 'image_format',
-			],
-			[
-				'field'	=> 'useragent',
-				'label'	=> 'Useragent (useragent)',
-				'rules'	=> 'min_length[1]|max_length[2000]',
 			],
 			[
 				'field'	=> 'screenshot',
