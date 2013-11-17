@@ -9,7 +9,7 @@ class Home extends CI_Controller{
 	}
 	
 	public function index(){
-		
+
 		//when we're in production we can cache the main page for 48 hrs, this requires the cache to be writable, or else this won't work!
 		if(ENVIRONMENT == 'production'){
 			$this->output->cache(2880);
