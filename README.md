@@ -56,9 +56,11 @@ SlimerJS: Modularise and cleanup the code. Also need some core improvements for 
 Validation: Remote filesize and mimetype (technology not available)
 Framework: Transition to Slim and custom framework
 Logging: Federate the logging systems, actually a PHP binary that accepts logging details would be good
-Statuspage: Similar to the logging, but testing the API aswell
+Statuspage: Similar to the logging, but testing the API aswell. Specifically it shows the limits.
 Auth: Use PolyAuth + Mashape + Pin.net instead of Mashape? Disable CSRF
 Mobilise: Something to set the number of robot servers to setup AND set index.php to production/development, integrate with Grunt build
 Tests: API tests functional tests using Codeception
 
 Combine onCallback with the custom callback to allow users to call back to SlimerJS. Perhaps a wait timer is good too! This needs to be resolved automatically if the user forgot to do so. So if no custom callback, this will not be set. If there is a custom callback, they need to window.callPhantom(). Which would resolve to true, so this just delays the async further if need be. https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#wiki-webpage-onCallback On SlimerJS is it window.callSlimer()?
+
+You need to integrate CSRF later on. Since you'll need a signup page. Or use PolyAuth to support this.
