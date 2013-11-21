@@ -15,6 +15,7 @@ bower_components/*
 .c9revisions/*
 secrets/*
 !secrets/*.example
+!secrets/*.gitkeep
 *.log
 *.pid
 slimerjs/*
