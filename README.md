@@ -64,3 +64,8 @@ Tests: API tests functional tests using Codeception
 Combine onCallback with the custom callback to allow users to call back to SlimerJS. Perhaps a wait timer is good too! This needs to be resolved automatically if the user forgot to do so. So if no custom callback, this will not be set. If there is a custom callback, they need to window.callPhantom(). Which would resolve to true, so this just delays the async further if need be. https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#wiki-webpage-onCallback On SlimerJS is it window.callSlimer()?
 
 You need to integrate CSRF later on. Since you'll need a signup page. Or use PolyAuth to support this.
+
+CRON payments: http://www.unixgeeks.org/security/newbie/unix/cron-1.html
+
+HTML minifier: https://github.com/mrclay/minify/issues/80#issuecomment-28946276
+(no comments, only whitespace can be collapsed, but also remember about badly formed html, malformed!)
