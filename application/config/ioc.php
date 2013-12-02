@@ -45,5 +45,72 @@ $ioc['Request'] = $ioc->share(function($c){
 	return $request;
 });
 
+/**
+ * PolyAuth
+ * Accounts Management
+ * Authentication using CookieStrategy but also HTTPBasicStrategy
+ */
+$ioc['PolyAuth\Options'] = $ioc->share(function($c){
+	return new PolyAuth\Options($this->config['polyauth']);
+});
+
+$ioc['PolyAuth\Language'] = $ioc->share(function($c){
+	return new PolyAuth\Language;
+});
+
+$ioc['PolyAuth\Storage'] = $ioc->share(function($c){
+	return new PolyAuth\Storage\MySQLAdapter($c['Database'], $c['PolyAuth\Options']);
+});
+
+$ioc['PolyAuth\Emailer'] = $ioc->share(function($c){
+	return new PolyAuth\Emailer($c['PolyAuth\Options'], $c['PolyAuth\Language']);
+});
+
+$ioc['PolyAuth\AccountsManager'] = $ioc->share(function($c){
+	return new PolyAuth\Accounts\AccountsManager(
+		$c['PolyAuth\Storage'], 
+		$c['PolyAuth\Options'], 
+		$c['PolyAuth\Language']
+	);
+});
+
+$ioc['PolyAuth\Authentication\CookieStrategy'] = $ioc->share(function($c){
+	return new PolyAuth\Authentication\AuthStrategies\CookieStrategy(
+		$c['PolyAuth\Storage'], 
+		$c['PolyAuth\Options'], 
+		$c['PolyAuth\Language'], 
+		new PolyAuth\Sessions\SessionManager(
+			$c['PolyAuth\Options'], 
+			$c['PolyAuth\Language'], 
+			new PolyAuth\Sessions\Persistence\FileSystemPersistence
+		);
+	);
+});
+
+$ioc['PolyAuth\Authentication\HTTPBasicStrategy'] = $ioc->share(function($c){
+	return new PolyAuth\Authentication\AuthStrategies\HTTPBasicStrategy(
+		$c['PolyAuth\Storage'], 
+		$c['PolyAuth\Options'], 
+		$c['PolyAuth\Language'], 
+		new PolyAuth\Sessions\SessionManager(
+			$c['PolyAuth\Options'], 
+			$c['PolyAuth\Language'], 
+			new PolyAuth\Sessions\Persistence\MemoryPersistence
+		);
+	);
+});
+
+$ioc['PolyAuth\Authenticator'] = $ioc->share(function($c){
+	return new PolyAuth\Authentication\Authenticator(
+		new PolyAuth\Authentication\AuthStrategies\CompositeStrategy(
+			$c['PolyAuth\Authentication\CookieStrategy'],
+			$c['PolyAuth\Authentication\HTTPBasicStrategy']
+		), 
+		$c['PolyAuth\Storage'], 
+		$c['PolyAuth\Options'], 
+		$c['PolyAuth\Language']
+	);
+});
+
 //we need to pass the $ioc into the global $config variable, so now it can be accessed by Codeigniter
 $config['ioc'] = $ioc;

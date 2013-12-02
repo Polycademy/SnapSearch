@@ -8,15 +8,16 @@ Pigeon::map(function($r){
 	//RESOURCES ROUTING
 	$r->route('api', false, function($r){
 
-		$r->get('test/(:any)', 'test/$1');
-
-		//versioned api
-		//robot
 		$r->get('v1/robot', 'v1/robot/query');
 		$r->post('v1/robot', 'v1/robot/post');
 
+		$r->resources('accounts');
+		$r->resource('sessions');
 		$r->resources('blog');
-		
+
+		$r->get('test/(:any)', 'test/$1');
+
+
 	});
 
 	//CLI ROUTING
