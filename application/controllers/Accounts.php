@@ -271,8 +271,6 @@ class Accounts extends CI_Controller{
 				$this->auth_response->setStatusCode(500);
 			}
 
-			$this->auth_response->sendHeaders();
-
 		}
 
 		$this->auth_response->sendHeaders();
