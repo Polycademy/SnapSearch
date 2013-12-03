@@ -24,6 +24,7 @@ class Accounts_model extends CI_Model{
 		try{
 
 			$user = $this->accounts_manager->get_user($id);
+			$user = $user->get_user_data();
 			return $user;
 
 		}catch(PolyAuthException $e){
@@ -38,15 +39,21 @@ class Accounts_model extends CI_Model{
 
 	}
 
-	public function read_all($limit, $offset){
+	public function read_all($offset, $limit){
 
 		$limit = intval($limit);
 		$offset = intval($offset);
 
 		try{
 
-			$user = $this->accounts_manager->get_users(null, $limit, $offset);
-			return $user;
+			$users = $this->accounts_manager->get_users(null, $offset, $limit);
+
+			$output = [];
+			foreach($users as $user){
+				$output[] = $user->get_user_data();
+			}
+
+			return $output;
 
 		}catch(PolyAuthException $e){
 

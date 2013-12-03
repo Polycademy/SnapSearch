@@ -24,14 +24,14 @@ class Accounts extends CI_Controller{
 	//this is really for admin use
 	public function index(){
 
-		$limit = $this->input->get('limit', true);
 		$offset = $this->input->get('offset', true);
+		$limit = $this->input->get('limit', true);
 
 		if(empty($limit)) $limit = 100;
 		if(empty($offset)) $offset = 0;
 
-		$query = $this->Accounts_model->read_all($limit, $offset);
-				
+		$query = $this->Accounts_model->read_all($offset, $limit);
+
 		if($query){
 
 			//if admin we get to see all the details, but if not admin we need to remove properties
@@ -55,7 +55,7 @@ class Accounts extends CI_Controller{
 			$code = 'success';
 			
 		}else{
-		
+
 			$this->auth_response->setStatusCode(404);
 			$content = current($this->Accounts_model->get_errors());
 			$code = key($this->Accounts_model->get_errors());
