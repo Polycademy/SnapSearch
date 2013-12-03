@@ -1,14 +1,23 @@
 <?php
 
 class Home extends CI_Controller{
+
+	protected $auth_response;
 	
 	public function __construct(){
 	
 		parent::__construct();
+
+		$ioc = $this->config->item('ioc');
+		$this->authenticator = $ioc['PolyAuth\Authenticator'];
+		$this->authenticator->start();
+		$this->auth_response = $this->authenticator->get_response();
 	
 	}
 	
 	public function index(){
+
+		$this->auth_response->sendHeaders();
 
 		//when we're in production we can cache the main page for 48 hrs, this requires the cache to be writable, or else this won't work!
 		if(ENVIRONMENT == 'production'){

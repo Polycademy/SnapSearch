@@ -49,6 +49,8 @@ ssh -L LOCALPORT:127.0.0.1:REMOTEPORT USER@IP
 Improvements
 ------------
 
+You need to integrate CSRF later on. Since you'll need a signup page. Or use PolyAuth to support this.
+
 Load Balancer: Use http://zef.me/4502/message-queue-based-load-balancing and https://developer.mozilla.org/en-US/docs/WebAPI/TCP_Socket
 Server Admin: Use Dokku and Vagrant
 Process Management: Test out memmon.py, write a corresponding one for HTTPok in PHP
@@ -62,8 +64,6 @@ Mobilise: Something to set the number of robot servers to setup AND set index.ph
 Tests: API tests functional tests using Codeception
 
 Combine onCallback with the custom callback to allow users to call back to SlimerJS. Perhaps a wait timer is good too! This needs to be resolved automatically if the user forgot to do so. So if no custom callback, this will not be set. If there is a custom callback, they need to window.callPhantom(). Which would resolve to true, so this just delays the async further if need be. https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#wiki-webpage-onCallback On SlimerJS is it window.callSlimer()?
-
-You need to integrate CSRF later on. Since you'll need a signup page. Or use PolyAuth to support this.
 
 CRON payments: http://www.unixgeeks.org/security/newbie/unix/cron-1.html
 

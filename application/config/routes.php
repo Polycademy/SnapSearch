@@ -8,16 +8,19 @@ Pigeon::map(function($r){
 	//RESOURCES ROUTING
 	$r->route('api', false, function($r){
 
+		//ROBOT
 		$r->get('v1/robot', 'v1/robot/query');
 		$r->post('v1/robot', 'v1/robot/post');
 
+		//ACCOUNTS
 		$r->resources('accounts');
-		$r->get('accounts/activate/(:any)', 'accounts/activate/$1');
-		$r->get('accounts/forgot_password/(:any)', 'accounts/forgot_password/$1');
-		$r->get('accounts/confirm_forgot_password/(:any)', 'accounts/forgot_password/$1');
-		$r->resource('sessions');
-		$r->resources('blog');
+		$r->get('accounts/forgotten_password/(:any)', 'accounts/forgot_password/$1');
+		$r->post('accounts/confirm_forgotten_password', 'accounts/forgot_password');
 
+		//SESSIONS
+		$r->resource('sessions');
+
+		//TEST
 		$r->get('test/(:any)', 'test/$1');
 
 
@@ -55,4 +58,6 @@ $route['translate_uri_dashes'] = FALSE;
 	CSRF EXCLUSION, use api paths
  */
 $config =& load_class('Config', 'core');
-$config->set_item('csrf_exclude_uris', array());
+$config->set_item('csrf_exclude_uris', array(
+	'api/v1/robot'
+));
