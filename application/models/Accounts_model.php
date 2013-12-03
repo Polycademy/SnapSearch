@@ -73,6 +73,7 @@ class Accounts_model extends CI_Model{
 			'username',
 			'email',
 			'password',
+			'passwordConfirm',
 			'tac',
 		), $input_data, null, true);
 
@@ -95,6 +96,11 @@ class Accounts_model extends CI_Model{
 				'rules'	=> 'required'
 			),
 			array(
+				'field'	=> 'passwordConfirm',
+				'label'	=> 'Password Confirm',
+				'rules'	=> 'required|matches[password]'
+			),
+			array(
 				'field'	=> 'tac',
 				'label'	=> 'Terms and Conditions',
 				'rules'	=> 'required|boolean_style'
@@ -113,6 +119,10 @@ class Accounts_model extends CI_Model{
 
 		if(!isset($data['password'])){
 			$validation_errors['password'] = 'Password is necessary.';
+		}
+
+		if(!isset($data['passwordConfirm'])){
+			$validation_errors['passwordConfirm'] = 'Password Confirm is necessary.';
 		}
 
 		if(isset($data['tac'])){
@@ -138,6 +148,7 @@ class Accounts_model extends CI_Model{
 		}
 
 		unset($data['tac']);
+		unset($data['passwordConfirm']);
 
 		try{
 
