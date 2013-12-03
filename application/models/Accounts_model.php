@@ -388,7 +388,7 @@ class Accounts_model extends CI_Model{
 			}else{
 
 				$this->errors = array(
-					'error'	=> 'Forgotten code has expired or never existed',
+					'error'	=> 'Forgotten code has expired or never existed. You need to resend a forgotten email.',
 				);
 				return false;
 

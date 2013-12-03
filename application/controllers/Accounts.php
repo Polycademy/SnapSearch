@@ -288,14 +288,6 @@ class Accounts extends CI_Controller{
 
 	public function confirm_forgotten_password(){
 
-		//this needs 3 things:
-		//1. the user_id
-		//2. the forgotten_code
-		//3. the new proposed password
-		//id => user (id)
-		//get the forgotten code from the query parameter
-		//if the proposed password is the same password it will fail, requiring the user to resubmit
-
 		$data = $this->input->json(false);
 
 		$query = $this->Accounts_model->confirm_forgotten_password($data);
