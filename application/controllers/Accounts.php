@@ -38,7 +38,7 @@ class Accounts extends CI_Controller{
 			if(!$this->user->authorized(false, 'admin')){
 				foreach($query as &$user){
 					unset(
-						$user['email']
+						$user['email'],
 						$user['apiLimit'],
 						$user['apiFreeLimit'],
 						$user['apiUsage'],
@@ -83,7 +83,7 @@ class Accounts extends CI_Controller{
 			//if not admin nor the user that owns this resource			
 			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $id)){
 				unset(
-					$query['email']
+					$query['email'],
 					$query['apiLimit'],
 					$query['apiFreeLimit'],
 					$query['apiUsage'],
@@ -129,8 +129,7 @@ class Accounts extends CI_Controller{
 			$content = $query; //resource id
 			$code = 'success';
 		
-		}else{
-		
+		}else{		
 			
 			$content = current($this->Accounts_model->get_errors());
 			$code = key($this->Accounts_model->get_errors());

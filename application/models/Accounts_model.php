@@ -16,7 +16,6 @@ class Accounts_model extends CI_Model{
 
 		$ioc = $this->config->item('ioc');
 		$this->accounts_manager = $ioc['PolyAuth\AccountsManager'];
-		$this->emailer = $ioc['PolyAuth\Emailer'];
 
 	}
 
@@ -131,7 +130,7 @@ class Accounts_model extends CI_Model{
 
 		}
 
-		unset $data['tac'];
+		unset($data['tac']);
 
 		try{
 
@@ -362,7 +361,7 @@ class Accounts_model extends CI_Model{
 				}else{
 
 					$this->errors = array(
-						'system_error'	=> 'Unable to reset password, try again.';
+						'system_error'	=> 'Unable to reset password, try again.'
 					);
 					return false;
 
@@ -371,7 +370,7 @@ class Accounts_model extends CI_Model{
 			}else{
 
 				$this->errors = array(
-					'error'	=> 'Forgotten code has expired or never existed';
+					'error'	=> 'Forgotten code has expired or never existed',
 				);
 				return false;
 
@@ -390,7 +389,7 @@ class Accounts_model extends CI_Model{
 
 	public function get_errors(){
 
-		return $errors;
+		return $this->errors;
 
 	}
 
