@@ -15,7 +15,18 @@ $config['polyauth'] = array(
 	'email_html'			=> true,
 	// 'email_forgotten_password_template'	=> '', //THIS NEEDS TO HAVE A LOADED TEMPLATE
 	//LOGIN SETTINGS
-	'login_identity'		=> 'email',
+	'login_identity'			=> 'email',
+	'login_password_complexity'	=> array(
+		'min'			=> 6, //('' or false or 8)
+		'max'			=> 32,
+		'lowercase'		=> false,
+		'uppercase'		=> false,
+		'number'		=> false,
+		'specialchar'	=> false,
+		'diffpass'		=> false, //number of characters different from old password ('' or false or 3)
+		'diffidentity'	=> false,
+		'unique'		=> false, //number of unique characters ('' or false or 4) ('' defaults to 4)
+	),
 	//REGISTRATION SETTINGS
 	'reg_activation'		=> false,
 );

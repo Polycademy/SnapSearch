@@ -116,7 +116,7 @@ class Accounts_model extends CI_Model{
 		}
 
 		if(isset($data['tac'])){
-			$data['tac'] = filter_var($data['autologin'], FILTER_VALIDATE_BOOLEAN);
+			$data['tac'] = filter_var($data['tac'], FILTER_VALIDATE_BOOLEAN);
 			if(!$data['tac']){
 				$validation_errors['tac'] = 'Accepting the Terms and Conditions is necessary.';
 			}
@@ -141,7 +141,7 @@ class Accounts_model extends CI_Model{
 
 		try{
 
-			$user = $this->accounts_manager->register_user($data);
+			$user = $this->accounts_manager->register($data);
 
 			return $user['id'];
 
