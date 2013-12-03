@@ -196,31 +196,6 @@ AddDefaultCharset utf-8
 # ##############################################################################
 
 # ------------------------------------------------------------------------------
-# | Rewrite engine                                                             |
-# ------------------------------------------------------------------------------
-
-# Turning on the rewrite engine and enabling the `FollowSymLinks` option is
-# necessary for the following directives to work.
-
-# If your web host doesn't allow the `FollowSymlinks` option, you may need to
-# comment it out and use `Options +SymLinksIfOwnerMatch` but, be aware of the
-# performance impact: http://httpd.apache.org/docs/current/misc/perf-tuning.html#symlinks
-
-# Also, some cloud hosting services require `RewriteBase` to be set:
-# http://www.rackspace.com/knowledge_center/frequently-asked-question/why-is-mod-rewrite-not-working-on-my-site
-
-<IfModule mod_rewrite.c>
-    Options +FollowSymlinks
-  # Options +SymLinksIfOwnerMatch
-    RewriteEngine On
-  # RewriteBase /
-    RewriteCond $1 !^(index\.php|images|css|js|robots\.txt|favicon\.ico)
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ ./index.php/$1 [L,QSA]
-</IfModule>
-
-# ------------------------------------------------------------------------------
 # | Suppressing / Forcing the "www." at the beginning of URLs                  |
 # ------------------------------------------------------------------------------
 
@@ -260,6 +235,30 @@ AddDefaultCharset utf-8
 #    RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 # </IfModule>
 
+# ------------------------------------------------------------------------------
+# | Rewrite engine                                                             |
+# ------------------------------------------------------------------------------
+
+# Turning on the rewrite engine and enabling the `FollowSymLinks` option is
+# necessary for the following directives to work.
+
+# If your web host doesn't allow the `FollowSymlinks` option, you may need to
+# comment it out and use `Options +SymLinksIfOwnerMatch` but, be aware of the
+# performance impact: http://httpd.apache.org/docs/current/misc/perf-tuning.html#symlinks
+
+# Also, some cloud hosting services require `RewriteBase` to be set:
+# http://www.rackspace.com/knowledge_center/frequently-asked-question/why-is-mod-rewrite-not-working-on-my-site
+
+<IfModule mod_rewrite.c>
+    Options +FollowSymlinks
+  # Options +SymLinksIfOwnerMatch
+    RewriteEngine On
+  # RewriteBase /
+    RewriteCond $1 !^(index\.php|images|css|js|robots\.txt|favicon\.ico)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ ./index.php/$1 [L,QSA]
+</IfModule>
 
 # ##############################################################################
 # # SECURITY                                                                   #
