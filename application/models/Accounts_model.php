@@ -30,7 +30,7 @@ class Accounts_model extends CI_Model{
 		}catch(PolyAuthException $e){
 
 			$this->errors = array(
-				'error'	=> $e->get_errors()
+				'error'	=> $e->get_error_string()
 			);
 
 			return false;
@@ -289,7 +289,7 @@ class Accounts_model extends CI_Model{
 		}catch(PolyAuthException $e){
 
 			$this->errors = array(
-				'error'	=> $e->get_errors()
+				'error'	=> $e->get_error_string()
 			);
 
 			return false;
