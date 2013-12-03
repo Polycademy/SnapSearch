@@ -68,6 +68,8 @@ server {
     rewrite ^(.*)$ / permanent;
   }
 
+  # We need a rule to redirect the index.php back to / even when it's between example.com/index.php/controller, so it can go have 301 example.com/controller
+
   # Removes the index method of every controller
   # Changes example.com/controller/index to example.com/lol
   # Changes example.com/controller/index/ to example.com/lol

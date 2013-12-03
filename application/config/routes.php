@@ -12,6 +12,9 @@ Pigeon::map(function($r){
 		$r->post('v1/robot', 'v1/robot/post');
 
 		$r->resources('accounts');
+		$r->get('accounts/activate/(:any)', 'accounts/activate/$1');
+		$r->get('accounts/forgot_password/(:any)', 'accounts/forgot_password/$1');
+		$r->get('accounts/confirm_forgot_password/(:any)', 'accounts/forgot_password/$1');
 		$r->resource('sessions');
 		$r->resources('blog');
 
