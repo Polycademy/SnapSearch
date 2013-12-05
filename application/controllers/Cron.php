@@ -1,5 +1,6 @@
 <?php
 
+//add the billing stuff here too!
 class Cron extends CI_Controller{
 
 	public function __construct(){

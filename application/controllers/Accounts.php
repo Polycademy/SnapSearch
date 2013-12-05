@@ -39,6 +39,13 @@ class Accounts extends CI_Controller{
 				foreach($query as &$user){
 					unset(
 						$user['email'],
+						$user['passwordChange'],
+						$user['activationCode'],
+						$user['forgottenCode'],
+						$user['forgottenDate'],
+						$user['autoCode'],
+						$user['autoDate'],
+						$user['sharedKey'],
 						$user['apiLimit'],
 						$user['apiFreeLimit'],
 						$user['apiUsage'],
@@ -84,6 +91,13 @@ class Accounts extends CI_Controller{
 			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $id)){
 				unset(
 					$query['email'],
+					$query['passwordChange'],
+					$query['activationCode'],
+					$query['forgottenCode'],
+					$query['forgottenDate'],
+					$query['autoCode'],
+					$query['autoDate'],
+					$query['sharedKey'],
 					$query['apiLimit'],
 					$query['apiFreeLimit'],
 					$query['apiUsage'],
