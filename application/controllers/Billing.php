@@ -5,6 +5,7 @@ class Billing extends CI_Controller{
 	protected $authenticator;
 	protected $auth_response;
 	protected $user;
+	protected $charge_interval;
 
 	public function __construct(){
 
@@ -18,6 +19,8 @@ class Billing extends CI_Controller{
 
 		$this->auth_response = $this->authenticator->get_response();
 		$this->user = $this->authenticator->get_user();
+
+		$this->charge_interval = 'P30D';
 
 	}
 
@@ -71,8 +74,23 @@ class Billing extends CI_Controller{
 		}else{
 
 			$data = $this->input->json(false);
-			$data['userId'] = $user_id;
-			$query = $this->Billing_model->create($data);
+
+			//only admin can change these fields
+			if(!$this->user->authorized(false, 'admin')){
+				unset($data['chargeInterval']);
+				unset($data['chargeDate']);
+				unset($data['cardInvalid']);
+			}
+
+			$charge_date = new DateTime;
+			$charge_date->add(new DateInterval($this->charge_interval));
+			$charge_date = $charge_date->format('Y-m-d H:i:s');
+
+			if(!isset($data['chargeInterval'])) $data['chargeInterval'] = $this->charge_interval;
+			if(!isset($data['chargeDate'])) $data['chargeDate'] = $charge_date;
+			if(!isset($data['cardInvalid'])) $data['cardInvalid'] = 0;
+			
+			$query = $this->Billing_model->create($user_id, data);
 
 			if($query){
 

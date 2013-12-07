@@ -12,7 +12,7 @@
  * customerToken is the id of the customer object which could be reference to another data source containing the credit card information. This is of course for pin.net
  * cardInvalid is a boolean that tells if the previous charge did not work, however if the next charge works, then this switched back to off
  */
-class Migration_add_billing_users extends CI_Migration {
+class Migration_add_billing extends CI_Migration {
 
 	public function up(){
 
@@ -24,24 +24,6 @@ class Migration_add_billing_users extends CI_Migration {
 			],
 			'userId'	=> [
 				'type' => 'INT',
-				'unsigned' => TRUE,
-			],
-			'apiLimit'	=> [
-				'type'		=> 'INT',
-				'unsigned' => TRUE,
-			],
-			'apiFreeLimit'	=> [
-				'type'		=> 'INT',
-				'unsigned' => TRUE,
-			],
-			'apiUsage'	=> [
-				'type'		=> 'INT',
-				'default'	=> 0,
-				'unsigned' => TRUE,
-			],
-			'apiLeftOverUsage'	=> [
-				'type'		=> 'INT',
-				'default'	=> 0,
 				'unsigned' => TRUE,
 			],
 			'chargeInterval'	=> [
@@ -62,7 +44,7 @@ class Migration_add_billing_users extends CI_Migration {
 		]);
 
 		$this->dbforge->add_key('id', TRUE);
-		$this->dbforge->create_table('billing_users', true);
+		$this->dbforge->create_table('billing', true);
 
 		//30 days is more accurate then 1 month
 		$user = $this->db->get_where('user_accounts', array('id' => '1'))->row();
@@ -71,13 +53,12 @@ class Migration_add_billing_users extends CI_Migration {
 
 		$default_user = array(
 			'id'				=> 1,
-			'apiLimit'			=> 100000000,
-			'apiFreeLimit'		=> 100000000,
+			'userId'			=> 1,
 			'chargeInterval'	=> 'P30D',
 			'chargeDate'		=> $charge_date->format('Y-m-d H:i:s'),
 		);
 
-		$this->db->insert('billing_users', $default_user);
+		$this->db->insert('billing', $default_user);
 
 	}
 

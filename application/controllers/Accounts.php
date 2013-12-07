@@ -1,10 +1,12 @@
 <?php
 
+//UPON creation of the user account, we need to use the Billing_model to add in the initial API limit information
 class Accounts extends CI_Controller{
 
 	protected $authenticator;
 	protected $auth_response;
 	protected $user;
+	protected $api_free_limit;
 
 	public function __construct(){
 
@@ -18,6 +20,8 @@ class Accounts extends CI_Controller{
 
 		$this->auth_response = $this->authenticator->get_response();
 		$this->user = $this->authenticator->get_user();
+
+		$this->api_free_limit = 3000;
 
 	}
 
@@ -49,11 +53,7 @@ class Accounts extends CI_Controller{
 						$user['apiLimit'],
 						$user['apiFreeLimit'],
 						$user['apiUsage'],
-						$user['apiLeftOverUsage'],
-						$user['chargeInterval'],
-						$user['chargeDate'],
-						$user['customerToken'],
-						$user['cardInvalid']
+						$user['apiLeftOverUsage']
 					);
 				}
 			}
@@ -102,10 +102,6 @@ class Accounts extends CI_Controller{
 					$query['apiFreeLimit'],
 					$query['apiUsage'],
 					$query['apiLeftOverUsage'],
-					$query['chargeInterval'],
-					$query['chargeDate'],
-					$query['customerToken'],
-					$query['cardInvalid']
 				);
 			}
 
@@ -134,6 +130,18 @@ class Accounts extends CI_Controller{
 	public function create(){
 
 		$data = $this->input->json(false);
+
+		if(!$this->user->authorized(false, 'admin')){
+			unset($data['apiLimit']);
+			unset($data['apiFreeLimit']);
+			unset($data['apiUsage']);
+			unset($data['apiLeftOverUsage']);
+		}
+
+		if(!isset($data['apiLimit'])) $data['apiLimit'] = $this->api_free_limit;
+		if(!isset($data['apiFreeLimit'])) $data['apiFreeLimit'] = $this->api_free_limit;
+		if(!isset($data['apiUsage'])) $data['apiUsage'] = 0;
+		if(!isset($data['apiLeftOverUsage'])) $data['apiLeftOverUsage'] = 0;
 
 		$query = $this->Accounts_model->create($data);
 		
@@ -179,6 +187,13 @@ class Accounts extends CI_Controller{
 		}else{
 
 			$data = $this->input->json(false);
+
+			//only administrators are allowed to update these properties which govern the usage of the API
+			if(!$this->user->authorized(false, 'admin')){
+				unset($data['apiFreeLimit']);
+				unset($data['apiUsage']);
+				unset($data['apiLeftOverUsage']);
+			}
 
 			$query = $this->Accounts_model->update($id, $data);
 			

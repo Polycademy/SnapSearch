@@ -75,6 +75,10 @@ class Accounts_model extends CI_Model{
 			'password',
 			'passwordConfirm',
 			'tac',
+			'apiLimit',
+			'apiFreeLimit',
+			'apiUsage',
+			'apiLeftOverUsage',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -105,6 +109,26 @@ class Accounts_model extends CI_Model{
 				'label'	=> 'Terms and Conditions',
 				'rules'	=> 'required|boolean_style'
 			),
+			array(
+				'field'	=> 'apiLimit',
+				'label'	=> 'API Limit',
+				'rules'	=> 'required|integer',
+			),
+			array(
+				'field'	=> 'apiFreeLimit',
+				'label'	=> 'API Free limit',
+				'rules'	=> 'integer',
+			),
+			array(
+				'field'	=> 'apiUsage',
+				'label'	=> 'API Usage',
+				'rules'	=> 'integer'
+			),
+			array(
+				'field'	=> 'apiLeftOverUsage',
+				'label'	=> 'API Left Over Usage',
+				'rules'	=> 'integer'
+			)
 		));
 
 		$validation_errors = [];
@@ -132,6 +156,22 @@ class Accounts_model extends CI_Model{
 			}
 		}else{
 			$validation_errors['tac'] = 'Terms and conditions is necessary.';
+		}
+
+		if(!isset($data['apiLimit'])){
+			$validation_errors['apiLimit'] = 'API Limit is necessary.';
+		}
+
+		if(isset($data['apiLimit']) AND isset($data['apiFreeLimit'])){
+			if($data['apiLimit'] < $data['apiFreeLimit']){
+				$validation_errors['apiLimit'] = 'API Limit cannot be lower than the API Free Limit.';
+			}
+		}
+
+		if(isset($data['apiLimit']) AND isset($data['apiUsage'])){
+			if($data['apiUsage'] > $data['apiLimit']){
+				$validation_errors['apiUsage'] = 'API Usage cannot be higher than the API Limit.';
+			}
 		}
 
 		if($this->validator->run() ==  false){
@@ -177,6 +217,10 @@ class Accounts_model extends CI_Model{
 			'email',
 			'password',
 			'passwordConfirm',
+			'apiLimit',
+			'apiFreeLimit', //admin
+			'apiUsage', //admin
+			'apiLeftOverUsage', //admin
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -202,9 +246,30 @@ class Accounts_model extends CI_Model{
 				'label'	=> 'Password Confirm',
 				'rules'	=> 'matches[password]'
 			),
+			array(
+				'field'	=> 'apiLimit', //theoretically apiLimit should not be below apiFreeLimit (here or in the database), but it could happen and we would need to compensate for that in the biller code
+				'label'	=> 'API Limit',
+				'rules'	=> 'integer',
+			),
+			array(
+				'field'	=> 'apiFreeLimit',
+				'label'	=> 'API Free limit',
+				'rules'	=> 'integer',
+			),
+			array(
+				'field'	=> 'apiUsage', //theoretically this should not be greater than apiLimit, so compensate for that
+				'label'	=> 'API Usage',
+				'rules'	=> 'integer'
+			),
+			array(
+				'field'	=> 'apiLeftOverUsage',
+				'label'	=> 'API Left Over Usage',
+				'rules'	=> 'integer'
+			)
 		));
 
 		$validation_errors = [];
+
 		if($this->validator->run() ==  false){
 			$validation_errors = $this->validator->error_array();
 		}

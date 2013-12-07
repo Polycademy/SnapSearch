@@ -1,5 +1,6 @@
 <?php
 
+//THE ROBOT needs to incorporate the user accounts system, and also the billing_model to check api limit and increment accordingly
 class Robot extends CI_Controller{
 
 	protected $request;

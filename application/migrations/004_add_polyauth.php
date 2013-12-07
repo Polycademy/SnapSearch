@@ -34,6 +34,10 @@ class Migration_add_polyauth extends CI_Migration {
 			'createdOn'				=> date('Y-m-d H:i:s'),
 			'lastLogin'				=> date('Y-m-d H:i:s'),
 			'active'				=> '1',
+			'apiLimit'				=> 100000000,
+			'apiFreeLimit'			=> 100000000,
+			'apiUsage'				=> 0,
+			'apiLeftOverUsage'		=> 0,
 		);
 		
 		//roles to descriptions
@@ -134,7 +138,27 @@ class Migration_add_polyauth extends CI_Migration {
 			),
 			'sharedKey' => array(
 				'type' => 'TEXT'
-			)
+			),
+			'apiLimit'	=> [
+				'type'		=> 'INT',
+				'default'	=> 0,
+				'unsigned' => TRUE,
+			],
+			'apiFreeLimit'	=> [
+				'type'		=> 'INT',
+				'default'	=> 0,
+				'unsigned' => TRUE,
+			],
+			'apiUsage'	=> [
+				'type'		=> 'INT',
+				'default'	=> 0,
+				'unsigned' => TRUE,
+			],
+			'apiLeftOverUsage'	=> [
+				'type'		=> 'INT',
+				'default'	=> 0,
+				'unsigned' => TRUE,
+			],
 		));
 		
 		$this->dbforge->add_key('id', TRUE);
