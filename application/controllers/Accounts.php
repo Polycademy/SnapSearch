@@ -173,7 +173,7 @@ class Accounts extends CI_Controller{
 		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $id)){
 
 			$content = 'You\'re not authorized to update this user!';
-			$code = 'validation_error';
+			$code = 'error';
 			$this->auth_response->setStatusCode(401);
 
 		}else{
@@ -219,7 +219,7 @@ class Accounts extends CI_Controller{
 		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $id)){
 
 			$content = 'You\'re not authorized to delete this user!';
-			$code = 'validation_error';
+			$code = 'error';
 			$this->auth_response->setStatusCode(401);
 
 		}else{
@@ -235,14 +235,9 @@ class Accounts extends CI_Controller{
 				
 			}else{
 			
+				$this->auth_response->setStatusCode(404);
 				$content = current($this->Accounts_model->get_errors());
 				$code = key($this->Accounts_model->get_errors());
-
-				if($code == 'validation_error'){
-					$this->auth_response->setStatusCode(400);
-				}elseif($code == 'system_error'){
-					$this->auth_response->setStatusCode(500);
-				}
 				
 			}
 

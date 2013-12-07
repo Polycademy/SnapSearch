@@ -1,6 +1,6 @@
 <?php
 
-//these ids would be be the user id and you would get a multitude of these items
+//payments history is only recorded from the controller, but the biller will add payments history on a scheduled basis
 class Payments extends CI_Controller{
 
 	public function __construct(){
@@ -18,19 +18,42 @@ class Payments extends CI_Controller{
 
 	}
 
-	public function show($id){
+	public function show($user_id){
 
-	}
+		//private information	
+		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
 
-	public function create(){
+			$this->auth_response->setStatusCode(401);
+			$content = 'Not authorized to view this information.';
+			$code = 'error';
 
-	}
+		}else{
 
-	public function update($id){
+			$query = $this->Payments_model->read($user_id);
 
-	}
+			if($query){
 
-	public function delete($id){
+				$content = $query;
+				$code = 'success';
+
+			}else{
+
+				$this->auth_response->setStatusCode(404);
+				$content = current($this->Payments_model->get_errors());
+				$code = key($this->Payments_model->get_errors());
+
+			}
+
+		}
+
+		$this->auth_response->sendHeaders();
+		
+		$output = array(
+			'content'	=> $content,
+			'code'		=> $code,
+		);
+		
+		Template::compose(false, $output, 'json');
 
 	}
 
