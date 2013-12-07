@@ -41,6 +41,7 @@ Pigeon::map(function($r){
 	//CLI ROUTING
 	$r->route('cli', false , function($r){
 		
+		//Migration
 		//php index.php cli migrate restart
 		$r->route('migrate', 'migrate/index');
 		$r->route('migrate/latest', 'migrate/latest');
@@ -49,9 +50,15 @@ Pigeon::map(function($r){
 		$r->route('migrate/restart',  'migrate/restart');
 		$r->route('migrate/restart/(:num)',  'migrate/restart/$1');
 
+		//Cache purging
+		//php index.php cli cron purge_cache P30D
 		$r->route('cron/purge_cache', 'cron#purge_cache');
 		$r->route('cron/purge_cache/(.*)', 'cron#purge_cache');
 		$r->route('cron/purge_cache/(.*)/(.*)', 'cron#purge_cache');
+
+		//Monthly Billing
+		//php index.php cli cron monthly_billing
+		$r->route('cron/monthly_billing', 'cron#monthly_billing');
 		
 	});
 	
