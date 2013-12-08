@@ -12,6 +12,7 @@ class Billing extends CI_Controller{
 		parent::__construct();
 
 		$this->load->model('Billing_model');
+		$this->load->model('Pin_model');
 
 		$ioc = $this->config->item('ioc');
 		$this->authenticator = $ioc['PolyAuth\Authenticator'];
@@ -63,6 +64,7 @@ class Billing extends CI_Controller{
 
 	}
 
+	//ON THIS CREATION, we need to call in and use the Pin_model to create the customer
 	public function create($user_id){
 
 		if(!$this->user->authorized(false, 'admin') AND $this->user['id'] != $user_id){
@@ -124,6 +126,7 @@ class Billing extends CI_Controller{
 
 	}
 
+	//ON THIS UPDATE we need to use Pin Model to create the customer token!
 	public function update($user_id){
 
 		if(!$this->user->authorized(false, 'admin') AND $this->user['id'] != $user_id){

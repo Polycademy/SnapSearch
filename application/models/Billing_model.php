@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * One to one relationship with Accounts, so we're querying based on user id, not individual ids.
+ */
 class Billing_model extends CI_Model{
 
 	protected $errors;
@@ -8,13 +11,11 @@ class Billing_model extends CI_Model{
 
 		parent::__construct();
 
+		$this->load->model('Accounts_model');
 		$this->load->library('form_validation', false, 'validator');
 
 	}
 
-	//this should be created once for each user, as in there's only one billing information for each user
-	//we're onlys storing one customer token
-	//so we need to check if the prior user already exists
 	public function create($user_id, $input_data){
 
 		$data = elements(array(
@@ -55,6 +56,10 @@ class Billing_model extends CI_Model{
 			$validation_errors['chargeDate'] = 'Charge Date cannot be in the past.';
 		}
 
+		if(!$this->Accounts_model->read($user_id)){
+			$validation_errors['userId'] = 'Billing information can only be created for an existing user account.';
+		}
+
 		if($this->validator->run() ==  false){
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
@@ -74,12 +79,6 @@ class Billing_model extends CI_Model{
 		$query = $this->db->insert('billing', $data);
 
 		if(!$query){
-
-			$msg = $this->db->error()['message'];
-			$num = $this->db->error()['code'];
-			$last_query = $this->db->last_query();
-
-			log_message('error', 'Problem inserting to billing table: ' . $msg . ' (' . $num . '), using this query: "' . $last_query . '"');
 
 			$this->errors = array(
 				'system_error'	=> 'Problem inserting data to billing table.',
@@ -197,7 +196,7 @@ class Billing_model extends CI_Model{
 
 	public function delete($user_id){
 
-		$query = $this->db->delete('billing', array('userId' => $user_id));
+		$this->db->delete('billing', array('userId' => $user_id));
 
 		if($this->db->affected_rows() > 0){
 
@@ -212,6 +211,12 @@ class Billing_model extends CI_Model{
 			return false;
 
 		}
+
+	}
+
+	public function get_errors(){
+
+		return $this->errors;
 
 	}
 

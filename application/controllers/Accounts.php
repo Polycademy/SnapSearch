@@ -1,6 +1,8 @@
 <?php
 
+//TODO:
 //UPON creation of the user account, we need to use the Billing_model to add in the initial API limit information
+//ALSO we need to disallow the modification of the API limit until there is billing information added.
 class Accounts extends CI_Controller{
 
 	protected $authenticator;

@@ -20,7 +20,6 @@ class Payments extends CI_Controller{
 
 	public function show($user_id){
 
-		//private information	
 		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
 
 			$this->auth_response->setStatusCode(401);
@@ -29,7 +28,13 @@ class Payments extends CI_Controller{
 
 		}else{
 
-			$query = $this->Payments_model->read($user_id);
+			$offset = $this->input->get('offset', true);
+			$limit = $this->input->get('limit', true);
+
+			if(empty($limit)) $limit = 100;
+			if(empty($offset)) $offset = 0;
+
+			$query = $this->Payments_model->read_all($offset, $limit, $user_id);
 
 			if($query){
 

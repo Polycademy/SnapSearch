@@ -16,17 +16,23 @@ class Migration_add_payment_history extends CI_Migration {
 				'type' => 'INT',
 				'unsigned' => TRUE,
 			],
+			'chargeToken'	=> [
+				'type'	=> 'TEXT'
+			],
 			'date'	=> [
 				'type'	=> 'DATETIME'
 			],
-			'amount'	=> [
+			'amount'	=> [ //amount in cents 100 => $1
+				'type'		=> 'INT'
+				'unsigned'	=> TRUE,
+			],
+			'currency'	=> [
 				'type'			=> 'VARCHAR',
-				'constraint'	=> '40'
+				'constraint'	=> '3'
 			],
 			'invoiceFile'	=> [
 				'type'	=> 'TEXT'
 			],
-
 		]);
 
 		$this->dbforge->add_key('id', TRUE);

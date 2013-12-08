@@ -19,54 +19,6 @@ class Accounts_model extends CI_Model{
 
 	}
 
-	public function read($id){
-
-		try{
-
-			$user = $this->accounts_manager->get_user($id);
-			$user = $user->get_user_data();
-			return $user;
-
-		}catch(PolyAuthException $e){
-
-			$this->errors = array(
-				'error'	=> $e->get_error_string()
-			);
-
-			return false;
-
-		}
-
-	}
-
-	public function read_all($offset, $limit){
-
-		$limit = intval($limit);
-		$offset = intval($offset);
-
-		try{
-
-			$users = $this->accounts_manager->get_users(null, $offset, $limit);
-
-			$output = [];
-			foreach($users as $user){
-				$output[] = $user->get_user_data();
-			}
-
-			return $output;
-
-		}catch(PolyAuthException $e){
-
-			$this->errors = array(
-				'error'	=> $e->get_errors()
-			);
-
-			return false;
-
-		}
-
-	}
-
 	public function create($input_data){
 
 		$data = elements(array(
@@ -208,8 +160,54 @@ class Accounts_model extends CI_Model{
 
 	}
 
-	//how would this work as complete or partial update
-	//and the data fields that are not sent will be be left as it is?
+	public function read($id){
+
+		try{
+
+			$user = $this->accounts_manager->get_user($id);
+			$user = $user->get_user_data();
+			return $user;
+
+		}catch(PolyAuthException $e){
+
+			$this->errors = array(
+				'error'	=> $e->get_error_string()
+			);
+
+			return false;
+
+		}
+
+	}
+
+	public function read_all($offset = false, $limit = false){
+
+		$offset = ($offset) ? (int) $offset : 0;
+		$limit = ($limit) ? (int) $limit : false;
+
+		try{
+
+			$users = $this->accounts_manager->get_users(null, $offset, $limit);
+
+			$output = [];
+			foreach($users as $user){
+				$output[] = $user->get_user_data();
+			}
+
+			return $output;
+
+		}catch(PolyAuthException $e){
+
+			$this->errors = array(
+				'error'	=> $e->get_errors()
+			);
+
+			return false;
+
+		}
+
+	}
+
 	public function update($id, $input_data){
 
 		$data = elements(array(
