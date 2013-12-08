@@ -52,7 +52,7 @@ class Billing_model extends CI_Model{
 		$validation_errors = [];
 
 		if(strtotime($data['chargeDate']) < time()){
-			$validation_errors['username'] = 'Charge Date cannot be in the past.';
+			$validation_errors['chargeDate'] = 'Charge Date cannot be in the past.';
 		}
 
 		if($this->validator->run() ==  false){
@@ -96,14 +96,123 @@ class Billing_model extends CI_Model{
 
 	public function read($user_id){
 
+		$query = $this->db->get_where('billing', array('userId' => $user_id));
+
+		if($query->num_rows() > 0){
+
+			$row = $query->row();
+
+			$data = array(
+				'id'				=> $row->id,
+				'userId'			=> $row->userId,
+				'chargeInterval'	=> $row->chargeInterval,
+				'chargeDate'		=> $row->chargeDate,
+				'customerToken'		=> $row->customerToken,
+				'cardInvalid'		=> $row->cardInvalid,
+			);
+
+			return $data;
+
+		}else{
+
+			$this->errors = array(
+				'error' => 'Could not find specified blog post.'
+			);
+			return false;
+
+		}
+
 	}
 
-	public function update($id, $input_data){
+	public function update($user_id, $input_data){
+
+		$data = elements(array(
+			'chargeInterval',
+			'chargeDate',
+			'customerToken',
+			'cardInvalid',
+		), $input_data, null, true);
+
+		$this->validator->set_data($data);
+
+		$this->validator->set_rules(array(
+			array(
+				'field'	=> 'chargeInterval',
+				'label'	=> 'Charge Interval',
+				'rules'	=> 'valid_date_duration',
+			),
+			array(
+				'field'	=> 'chargeDate'
+				'label'	=> 'Charge Date',
+				'rules'	=> 'valid_date',
+			),
+			array(
+				'field'	=> 'customerToken',
+				'label'	=> 'Customer Token',
+				'rules'	=> '',
+			),
+			array(
+				'field'	=> 'cardInvalid',
+				'label'	=> 'Card Invalid',
+				'rules'	=> 'boolean_style',
+			)
+		));
+
+		$validation_errors = [];
+
+		if(strtotime($data['chargeDate']) < time()){
+			$validation_errors['chargeDate'] = 'Charge Date cannot be in the past.';
+		}
+
+		if($this->validator->run() ==  false){
+			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
+		}
+
+		if(!empty($validation_errors)){
+
+			$this->errors = array(
+				'validation_error'	=> $validation_errors
+			);
+			return false;
+
+		}
+
+		$this->db->where('userId', $user_id);
+		$this->db->update('billing', $data);
+
+		if($this->db->affected_rows() > 0){
+		
+			return true;
+		
+		}else{
+			
+			$this->errors = array(
+				'error'	=> 'Billing information doesn\'t need to be updated.',
+			);
+			return false;
+		
+		}
 
 	}
 
 	public function delete($user_id){
-		
+
+		$query = $this->db->delete('billing', array('userId' => $user_id));
+
+		if($this->db->affected_rows() > 0){
+
+			return true;
+
+		}else{
+
+			$this->errors = array(
+				'error'	=> 'No billing information to delete.',
+			);
+			
+			return false;
+
+		}
+
 	}
 
 }
