@@ -1,7 +1,17 @@
 <?php
 
+use PHPPdf\Core\FacadeBuilder as PDFBuilder;
+use Gaufrette\Filesystem;
+use Gaufrette\Adapter\Local as LocalAdapter;
+
+/*
+TODO:
+Get the create and update methods to hit the create_invoice file automatically.
+Furthermore, you'll want to delete the prior invoice file when updating or when deleting.
+ */
 class Payments_model extends CI_Model{
 
+	protected $filesystem;
 	protected $errors;
 
 	public function __construct(){
@@ -9,7 +19,10 @@ class Payments_model extends CI_Model{
 		parent::__construct();
 
 		$this->load->model('Accounts_model');
+
 		$this->load->library('form_validation', false, 'validator');
+
+		$this->filesystem = new Filesystem(new LocalAdapter('invoices', true));
 
 	}
 
@@ -158,7 +171,7 @@ class Payments_model extends CI_Model{
 	}
 
 	/**
-	 * Update a payment record. Theoretically this should never bec called.
+	 * Update a payment record. Theoretically this should never be called. Or else the invoice file will be a mismatch.
 	 * @param  integer $id
 	 * @param  array   $input_data
 	 * @return integer|boolean
@@ -261,13 +274,110 @@ class Payments_model extends CI_Model{
 
 	}
 
-	public function create_invoice(){
+	/**
+	 * Creates an invoice and saves it in the invoices folder and returns the filename.
+	 * @param  array $input_data 
+	 * @return string|boolean
+	 */
+	public function create_invoice($input_data){
 
-		//this should be executed from the Billing cycle
-		//and would be called before the payment history thing gets created
+		$data = elements(array(
+			'invoiceNumber', //provide SS1
+			'date',
+			'userId',
+			'email',
+			'item',
+			'usageRate',
+			'currency',
+			'amount',
+		), $input_data, null, true);
 
-		//use a PHP pdf kit, and create the invoice, storing the invoice in a file location
-		//and passing the invoice's location path to the database
+		$this->validator->set_data($data);
+
+		$this->validator->set_rules(array(
+			array(
+				'field'	=> 'invoiceNumber',
+				'label'	=> 'Invoice Number',
+				'rules'	=> 'required|integer',
+			),
+			array(
+				'field'	=> 'date',
+				'label'	=> 'Date',
+				'rules'	=> 'required|valid_date',
+			),
+			array(
+				'field'	=> 'userId',
+				'label'	=> 'User ID',
+				'rules'	=> 'required|integer',
+			),
+			array(
+				'field'	=> 'email'
+				'label'	=> 'User Email',
+				'rules'	=> 'valid_email',
+			),
+			array(
+				'field'	=> 'item',
+				'label'	=> 'Item Description',
+				'rules'	=> 'required',
+			),
+			array(
+				'field'	=> 'usageRate',
+				'label'	=> 'Usage Rate',
+				'rules'	=> 'required|integer'
+			),
+			array(
+				'field'	=> 'currency',
+				'label'	=> 'Currency',
+				'rules'	=> 'required|alpha|max_length[3]',
+			),
+			array(
+				'field'	=> 'amount',
+				'label'	=> 'Amount in Cents',
+				'rules'	=> 'required|numeric'
+			)
+		));
+
+		$validation_errors = [];
+
+		if($this->validator->run() ==  false){
+			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
+		}
+
+		if(!empty($validation_errors)){
+
+			$this->errors = array(
+				'validation_error'	=> $validation_errors
+			);
+			return false;
+
+		}
+
+		//prefix the invoice number by SS
+		$data['invoiceNumber'] = 'SS' . $data['invoiceNumber'];
+		//convert the cents into dollars
+		$dollars = $data['amount'] / 100;
+		$data['amount'] = '$' . $dollars;
+		//add the logo image of Polycademy
+		$data['logo'] = FCPATH . 'img/polycademy_logo.png';
+
+		$invoice_template = $this->load->view('invoices/invoice', $data, true);
+		$invoice_style = $this->load->view('invoices/invoice_style', false, true);
+
+		$pdf_builder = PDFBuilder::create()->build();
+		$pdf = $pdf_builder->render($invoice_template, $invoice_style);
+
+		//get a unique filename first
+		do{
+			$invoice_name = uniqid('invoices', true);
+			if(!$this->filesystem->has($invoice_name)) break;
+		}while(true);
+
+		//add the pdf extension
+		$invoice_name .= '.pdf';
+
+		$this->filesystem->write($invoice_name, $pdf, true);
+
+		return $invoice_name;
 
 	}
 

@@ -172,12 +172,15 @@ class Test extends CI_Controller{
 		$currency = 'AUD';
 
 		$data = array(
-			'invoiceNumber'	=> '#SS1',
+			'invoiceNumber'	=> 'SS1',
 			'date'	=> date('Y-m-d H:i:s'),
-			'amount'	=> '$' . $dollars,
-			'currency'	=> $currency,
 			'userId'	=> '1',
-			'logo'		=> 'absolutepathtologo',
+			'email'	=> 'roger.qiu@polycademy.com',
+			'item'	=> 'SnapSearch API Usage',
+			'usageRate'	=> '2450',
+			'currency'	=> $currency,
+			'amount'	=> '$' . $dollars,
+			'logo'		=> FCPATH . 'img/polycademy_logo.png',
 		);
 
 		$invoice_template = $this->load->view('invoices/invoice', $data, true);
