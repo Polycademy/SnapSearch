@@ -63,6 +63,7 @@
 				'application/views/index.html', //CI stuff
 				'application/views/layouts/**',  //for server side
 				'application/views/errors/**', //this is for CI
+				'application/views/invoices/**', //these are for pdf invoices, not HTML
 			));
 		?>
 

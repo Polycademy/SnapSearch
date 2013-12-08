@@ -6,7 +6,8 @@
 		"symfony/http-foundation": "2.3.6",
 		"guzzle/guzzle": "3.7.4",
 		"knplabs/gaufrette": "0.1.6",
-		"polycademy/polyauth": "0.0.7"
+		"polycademy/polyauth": "0.0.7",
+		"psliwa/php-pdf": "1.2.2"
 	},
 	"require-dev":{
 		"firephp/firephp-core": "0.4.0"

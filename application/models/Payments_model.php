@@ -137,6 +137,10 @@ class Payments_model extends CI_Model{
 					'invoiceFile'	=> $row->invoiceFile,
 				);
 
+				//WE NEED A FULL URL TO THE INVOICEFILE itself!
+				//Gaufrette may store the invoice a particular location, but we still need 
+				//the invoice url
+
 			}
 
 			return $data;
@@ -261,6 +265,9 @@ class Payments_model extends CI_Model{
 
 		//this should be executed from the Billing cycle
 		//and would be called before the payment history thing gets created
+
+		//use a PHP pdf kit, and create the invoice, storing the invoice in a file location
+		//and passing the invoice's location path to the database
 
 	}
 

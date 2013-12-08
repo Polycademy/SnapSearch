@@ -1,6 +1,5 @@
 <?php
 
-
 class Test extends CI_Controller{
 
 	protected $authenticator;
@@ -163,6 +162,33 @@ class Test extends CI_Controller{
 
 		var_dump($users);
 
+	}
+
+	public function test_pdf(){
+
+		$amount = 10000;
+
+		$dollars = $amount / 100;
+		$currency = 'AUD';
+
+		$data = array(
+			'invoiceNumber'	=> '#SS1',
+			'date'	=> date('Y-m-d H:i:s'),
+			'amount'	=> '$' . $dollars,
+			'currency'	=> $currency,
+			'userId'	=> '1',
+			'logo'		=> 'absolutepathtologo',
+		);
+
+		$invoice_template = $this->load->view('invoices/invoice', $data, true);
+		$invoice_style = $this->load->view('invoices/invoice_style', $data, true);
+
+		$facade = PHPPdf\Core\FacadeBuilder::create()->build();
+		$pdf = $facade->render($invoice_template, $invoice_style);
+
+		header('Content-Type: application/pdf');
+		echo $pdf;
+		
 	}
 
 }
