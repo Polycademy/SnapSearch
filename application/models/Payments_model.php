@@ -4,11 +4,6 @@ use PHPPdf\Core\FacadeBuilder as PDFBuilder;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local as LocalAdapter;
 
-/*
-TODO:
-Get the create and update methods to hit the create_invoice file automatically.
-Furthermore, you'll want to delete the prior invoice file when updating or when deleting.
- */
 class Payments_model extends CI_Model{
 
 	protected $invoices_location;
@@ -240,10 +235,6 @@ class Payments_model extends CI_Model{
 		$this->db->update('payment_history', $data, array('id' => $id));
 
 		if($this->db->affected_rows() > 0){
-
-			$query = $this->db->get_where('payment_history', array('id' => $id));
-			$row = $query->row();
-
 
 			return true;
 		
