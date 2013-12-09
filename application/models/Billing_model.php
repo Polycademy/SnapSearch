@@ -41,7 +41,7 @@ class Billing_model extends CI_Model{
 			array(
 				'field'	=> 'customerToken',
 				'label'	=> 'Customer Token',
-				'rules'	=> 'required',
+				'rules'	=> '',
 			),
 			array(
 				'field'	=> 'cardInvalid',
