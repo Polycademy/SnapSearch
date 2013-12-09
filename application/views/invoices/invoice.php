@@ -22,6 +22,9 @@
             <h2>To</h2>
             <p>User: #<?=$userId?></p>
             <p>Email: <?=$email?></p>
+            <p>Address: <?=$address?></p>
+            <p>Post Code: <?=$postCode?></p>
+            <p>Country: <?=$country?></p>
         </div>
         <div class="bill">
         	<h2>Reference</h2>

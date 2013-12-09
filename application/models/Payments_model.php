@@ -11,6 +11,7 @@ Furthermore, you'll want to delete the prior invoice file when updating or when 
  */
 class Payments_model extends CI_Model{
 
+	protected $invoices_location;
 	protected $filesystem;
 	protected $errors;
 
@@ -22,7 +23,9 @@ class Payments_model extends CI_Model{
 
 		$this->load->library('form_validation', false, 'validator');
 
-		$this->filesystem = new Filesystem(new LocalAdapter('invoices', true));
+		$this->invoices_location = 'invoices';
+
+		$this->filesystem = new Filesystem(new LocalAdapter($this->invoices_location, true));
 
 	}
 
@@ -52,7 +55,7 @@ class Payments_model extends CI_Model{
 			),
 			array(
 				'field'	=> 'chargeToken',
-				'label'	=> 'Customer Token',
+				'label'	=> 'Charge Token',
 				'rules'	=> 'required',
 			),
 			array(
@@ -141,18 +144,15 @@ class Payments_model extends CI_Model{
 			foreach($query->result() as $row){
 
 				$data[] = array(
-					'id'			=> $row->id,
-					'userId'		=> $row->userId,
-					'chargeToken'	=> $row->chargeToken,
-					'date'			=> $row->date,
-					'amount'		=> $row->amount,
-					'currency'		=> $row->currency,
-					'invoiceFile'	=> $row->invoiceFile,
+					'id'				=> $row->id,
+					'userId'			=> $row->userId,
+					'chargeToken'		=> $row->chargeToken,
+					'date'				=> $row->date,
+					'amount'			=> $row->amount,
+					'currency'			=> $row->currency,
+					'invoiceFile'		=> $row->invoiceFile,
+					'invoiceFilePath'	=> $this->invoices_location . '/' . $row->invoiceFile,
 				);
-
-				//WE NEED A FULL URL TO THE INVOICEFILE itself!
-				//Gaufrette may store the invoice a particular location, but we still need 
-				//the invoice url
 
 			}
 
@@ -161,7 +161,7 @@ class Payments_model extends CI_Model{
 		}else{
 
 			$this->errors = array(
-				'error' => 'No payment history to found.'
+				'error' => 'No payment history to be found.'
 			);
 			
 			return false;
@@ -197,7 +197,7 @@ class Payments_model extends CI_Model{
 			),
 			array(
 				'field'	=> 'chargeToken',
-				'label'	=> 'Customer Token',
+				'label'	=> 'Charge Token',
 				'rules'	=> '',
 			),
 			array(
@@ -240,7 +240,11 @@ class Payments_model extends CI_Model{
 		$this->db->update('payment_history', $data, array('id' => $id));
 
 		if($this->db->affected_rows() > 0){
-		
+
+			$query = $this->db->get_where('payment_history', array('id' => $id));
+			$row = $query->row();
+
+
 			return true;
 		
 		}else{
@@ -276,16 +280,22 @@ class Payments_model extends CI_Model{
 
 	/**
 	 * Creates an invoice and saves it in the invoices folder and returns the filename.
-	 * @param  array $input_data 
+	 * Or it can update an invoice if you pass the relevant invoice name.
+	 * This is used prior to creating or updating the records.
+	 * @param  array          $input_data
+	 * @param  string         $invoice_name
 	 * @return string|boolean
 	 */
-	public function create_invoice($input_data){
+	public function create_invoice($input_data, $invoice_name = false){
 
 		$data = elements(array(
 			'invoiceNumber', //provide SS1
 			'date',
 			'userId',
 			'email',
+			'address',
+			'postCode',
+			'country'
 			'item',
 			'usageRate',
 			'currency',
@@ -314,6 +324,21 @@ class Payments_model extends CI_Model{
 				'field'	=> 'email'
 				'label'	=> 'User Email',
 				'rules'	=> 'valid_email',
+			),
+			array(
+				'field'	=> 'address',
+				'label'	=> 'Address',
+				'rules'	=> 'required',
+			),
+			array(
+				'field'	=> 'postCode',
+				'label'	=> 'Post Code',
+				'rules'	=> 'required|integer',
+			),
+			array(
+				'field'	=> 'country',
+				'label'	=> 'Country',
+				'rules'	=> 'required',
 			),
 			array(
 				'field'	=> 'item',
@@ -366,18 +391,35 @@ class Payments_model extends CI_Model{
 		$pdf_builder = PDFBuilder::create()->build();
 		$pdf = $pdf_builder->render($invoice_template, $invoice_style);
 
-		//get a unique filename first
-		do{
-			$invoice_name = uniqid('invoices', true);
-			if(!$this->filesystem->has($invoice_name)) break;
-		}while(true);
-
-		//add the pdf extension
-		$invoice_name .= '.pdf';
+		//we create a new invoice, or update an old invoice
+		if(!$invoice_name){
+			//get a unique filename first
+			do{
+				$invoice_name = uniqid('invoices', true);
+				if(!$this->filesystem->has($invoice_name)) break;
+			}while(true);
+			//add the pdf extension
+			$invoice_name .= '.pdf';
+		}
 
 		$this->filesystem->write($invoice_name, $pdf, true);
 
 		return $invoice_name;
+
+	}
+
+	/**
+	 * Deletes an invoice file based on the name
+	 * @param  string  $invoice_name
+	 * @return boolean
+	 */
+	public function delete_invoice($invoice_name){
+
+		if($filename AND $this->filesystem->has($invoice_name)){
+			$this->filesystem->delete($invoice_name);
+		}
+
+		return true;
 
 	}
 
