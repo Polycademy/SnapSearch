@@ -29,7 +29,13 @@ class Usage extends CI_Controller{
 
 		}else{
 
-			$query = $this->Usage_model->read($user_id);
+			$offset = $this->input->get('offset', true);
+			$limit = $this->input->get('limit', true);
+
+			if(empty($limit)) $limit = 100;
+			if(empty($offset)) $offset = 0;
+
+			$query = $this->Usage_model->read_all($offset, $limit, $user_id);
 
 			if($query){
 

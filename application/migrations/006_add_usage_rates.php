@@ -14,10 +14,7 @@ class Migration_add_usage_rates extends CI_Migration{
 				'type' => 'INT',
 				'unsigned' => TRUE,
 			],
-			'startDate'	=> [
-				'type'	=> 'DATETIME',
-			],
-			'endDate'	=> [
+			'date'	=> [
 				'type'	=> 'DATETIME',
 			],
 			'usage'	=> [
