@@ -69,3 +69,7 @@ CRON payments: http://www.unixgeeks.org/security/newbie/unix/cron-1.html
 
 HTML minifier: https://github.com/mrclay/minify/issues/80#issuecomment-28946276
 (no comments, only whitespace can be collapsed, but also remember about badly formed html, malformed!)
+
+use: https://github.com/noetix/pin-php
+Also: The billing table should contain id, userId, customerToken, active, cardInvalid
+All the other info needs to be moved to the user_accounts table. And when the user is created, these things need to be filled. The billing_model and Billing controller needs to be modified accordingly.

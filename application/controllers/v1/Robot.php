@@ -1,6 +1,8 @@
 <?php
 
 //THE ROBOT needs to incorporate the user accounts system, and also the billing_model to check api limit and increment accordingly
+//USES HTTP BASIC checks!
+//ALSO THIS ROUTE CANNOT HAVE CSRF CHECKING
 class Robot extends CI_Controller{
 
 	protected $request;
