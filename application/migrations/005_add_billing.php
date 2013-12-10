@@ -26,39 +26,25 @@ class Migration_add_billing extends CI_Migration {
 				'type' => 'INT',
 				'unsigned' => TRUE,
 			],
-			'chargeInterval'	=> [
-				'type'		=> 'TEXT',
-			],
-			'chargeDate'	=> [
-				'type'		=> 'DATETIME'
-			],
 			'customerToken'	=> [
 				'type'		=> 'TEXT',
+			],
+			'active'	=> [
+				'type'			=> 'TINYINT',
+				'constraint'	=> '1',
+				'unsigned'		=> TRUE,
+				'default'		=> 0,
 			],
 			'cardInvalid'	=> [
 				'type'			=> 'TINYINT',
 				'constraint'	=> '1',
 				'unsigned'		=> TRUE,
 				'default'		=> 0,
-			]
+			],
 		]);
 
 		$this->dbforge->add_key('id', TRUE);
 		$this->dbforge->create_table('billing', true);
-
-		//30 days is more accurate then 1 month
-		$user = $this->db->get_where('user_accounts', array('id' => '1'))->row();
-		$charge_date = new DateTime($user->createdOn);
-		$charge_date->add(new DateInterval('P30D'));
-
-		$default_user = array(
-			'id'				=> 1,
-			'userId'			=> 1,
-			'chargeInterval'	=> 'P30D',
-			'chargeDate'		=> $charge_date->format('Y-m-d H:i:s'),
-		);
-
-		$this->db->insert('billing', $default_user);
 
 	}
 

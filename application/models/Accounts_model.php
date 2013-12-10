@@ -20,7 +20,7 @@ class Accounts_model extends CI_Model{
 	}
 
 	public function create($input_data){
-
+		
 		$data = elements(array(
 			'username',
 			'email',
@@ -29,8 +29,7 @@ class Accounts_model extends CI_Model{
 			'tac',
 			'apiLimit',
 			'apiFreeLimit',
-			'apiUsage',
-			'apiLeftOverUsage',
+			'chargeInterval',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -72,15 +71,10 @@ class Accounts_model extends CI_Model{
 				'rules'	=> 'integer',
 			),
 			array(
-				'field'	=> 'apiUsage',
-				'label'	=> 'API Usage',
-				'rules'	=> 'integer'
+				'field'	=> 'chargeInterval',
+				'label'	=> 'Charge Interval',
+				'rules'	=> 'required|valid_date_duration',
 			),
-			array(
-				'field'	=> 'apiLeftOverUsage',
-				'label'	=> 'API Left Over Usage',
-				'rules'	=> 'integer'
-			)
 		));
 
 		$validation_errors = [];
@@ -120,12 +114,6 @@ class Accounts_model extends CI_Model{
 			}
 		}
 
-		if(isset($data['apiLimit']) AND isset($data['apiUsage'])){
-			if($data['apiUsage'] > $data['apiLimit']){
-				$validation_errors['apiUsage'] = 'API Usage cannot be higher than the API Limit.';
-			}
-		}
-
 		if($this->validator->run() ==  false){
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
@@ -141,6 +129,19 @@ class Accounts_model extends CI_Model{
 
 		unset($data['tac']);
 		unset($data['passwordConfirm']);
+
+		$data['createdOn'] = date('Y-m-d H:i:s');
+
+		$data['apiPreviousLimit'] = 0;
+
+		$data['apiUsage'] = 0;
+
+		$data['apiLeftOverUsage'] = 0;
+
+		$charge_date = new DateTime($data['createdOn']);
+		$charge_date->add(new DateInterval($data['chargeInterval']));
+		$charge_date = $charge_date->format('Y-m-d H:i:s');
+		$data['chargeDate'] = $charge_date;
 
 		try{
 
@@ -216,9 +217,8 @@ class Accounts_model extends CI_Model{
 			'password',
 			'passwordConfirm',
 			'apiLimit',
-			'apiFreeLimit', //admin
-			'apiUsage', //admin
-			'apiLeftOverUsage', //admin
+			'apiFreeLimit',
+			'chargeInterval',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -255,18 +255,27 @@ class Accounts_model extends CI_Model{
 				'rules'	=> 'integer',
 			),
 			array(
-				'field'	=> 'apiUsage', //theoretically this should not be greater than apiLimit, so compensate for that
-				'label'	=> 'API Usage',
-				'rules'	=> 'integer'
+				'field'	=> 'chargeInterval',
+				'label'	=> 'Charge Interval',
+				'rules'	=> 'valid_date_duration',
 			),
-			array(
-				'field'	=> 'apiLeftOverUsage',
-				'label'	=> 'API Left Over Usage',
-				'rules'	=> 'integer'
-			)
 		));
 
 		$validation_errors = [];
+
+		if(isset($data['apiLimit']) AND isset($data['apiFreeLimit'])){
+			if($data['apiLimit'] < $data['apiFreeLimit']){
+				$validation_errors['apiLimit'] = 'API Limit cannot be lower than the API Free Limit.';
+			}
+		}
+
+		//api limit can only be changed if the user has at least an active billing information
+		if(isset($data['apiLimit'])){
+			$billing_query = $this->db->get_where('billing', array('userId' => $id, 'active' => 1));
+			if($billing_query->num_rows() < 1){
+				$validation_errors['apiLimit'] = 'Cannot update API Limit unless you have valid and active billing information.';
+			}
+		}
 
 		if($this->validator->run() ==  false){
 			$validation_errors = $this->validator->error_array();

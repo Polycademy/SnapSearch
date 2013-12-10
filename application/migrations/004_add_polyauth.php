@@ -24,6 +24,8 @@ class Migration_add_polyauth extends CI_Migration {
 
 	public function up(){
 	
+
+
 		$default_user = array(
 			'id'					=> '1',
 			'ipAddress'				=> inet_pton('127.0.0.1'),
@@ -35,11 +37,19 @@ class Migration_add_polyauth extends CI_Migration {
 			'lastLogin'				=> date('Y-m-d H:i:s'),
 			'active'				=> '1',
 			'apiLimit'				=> 100000000,
+			'apiPreviousLimit'		=> 0,		
 			'apiFreeLimit'			=> 100000000,
 			'apiUsage'				=> 0,
 			'apiLeftOverUsage'		=> 0,
+			'chargeInterval'		=> 'P30D',
 		);
-		
+
+		//30 days is more accurate than 1 month
+		$charge_date = new DateTime($default_user['createdOn']);
+		$charge_date->add(new DateInterval($default_user['chargeInterval']));
+		$charge_date = $charge_date->format('Y-m-d H:i:s');
+		$default_user['chargeDate'] = $charge_date;
+
 		//roles to descriptions
 		$default_roles = array(
 			'admin'		=> 'Site Administrators',
@@ -144,6 +154,11 @@ class Migration_add_polyauth extends CI_Migration {
 				'default'	=> 0,
 				'unsigned' => TRUE,
 			],
+			'apiPreviousLimit'	[
+				'type'		=> 'INT',
+				'default'	=> 0,
+				'unsigned' => TRUE,
+			],
 			'apiFreeLimit'	=> [
 				'type'		=> 'INT',
 				'default'	=> 0,
@@ -158,6 +173,12 @@ class Migration_add_polyauth extends CI_Migration {
 				'type'		=> 'INT',
 				'default'	=> 0,
 				'unsigned' => TRUE,
+			],
+			'chargeInterval'	=> [
+				'type'		=> 'TEXT',
+			],
+			'chargeDate'	=> [
+				'type'		=> 'DATETIME'
 			],
 		));
 		

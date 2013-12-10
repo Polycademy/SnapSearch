@@ -1,33 +1,36 @@
 <?php
 
-//TODO:
-//UPON creation of the user account, we need to use the Billing_model to add in the initial API limit information
-//ALSO we need to disallow the modification of the API limit until there is billing information added.
 class Accounts extends CI_Controller{
 
 	protected $authenticator;
 	protected $auth_response;
 	protected $user;
+
 	protected $api_free_limit;
+	protected $charge_interval;
 
 	public function __construct(){
 
 		parent::__construct();
 
+		//models
 		$this->load->model('Accounts_model');
+		$this->load->model('Billing_model');
 
 		$ioc = $this->config->item('ioc');
+
+		//authentication
 		$this->authenticator = $ioc['PolyAuth\Authenticator'];
 		$this->authenticator->start();
-
 		$this->auth_response = $this->authenticator->get_response();
 		$this->user = $this->authenticator->get_user();
 
+		//configurable properties
 		$this->api_free_limit = 3000;
+		$this->charge_interval = 'P30D';
 
 	}
 
-	//this is really for admin use
 	public function index(){
 
 		$offset = $this->input->get('offset', true);
@@ -53,9 +56,12 @@ class Accounts extends CI_Controller{
 						$user['autoDate'],
 						$user['sharedKey'],
 						$user['apiLimit'],
+						$user['apiPreviousLimit'],
 						$user['apiFreeLimit'],
 						$user['apiUsage'],
-						$user['apiLeftOverUsage']
+						$user['apiLeftOverUsage'],
+						$user['chargeInterval'],
+						$user['chargeDate'],
 					);
 				}
 			}
@@ -101,9 +107,12 @@ class Accounts extends CI_Controller{
 					$query['autoDate'],
 					$query['sharedKey'],
 					$query['apiLimit'],
+					$query['apiPreviousLimit'],
 					$query['apiFreeLimit'],
 					$query['apiUsage'],
 					$query['apiLeftOverUsage'],
+					$query['chargeInterval'],
+					$query['chargeDate'],
 				);
 			}
 
@@ -134,16 +143,16 @@ class Accounts extends CI_Controller{
 		$data = $this->input->json(false);
 
 		if(!$this->user->authorized(false, 'admin')){
-			unset($data['apiLimit']);
-			unset($data['apiFreeLimit']);
-			unset($data['apiUsage']);
-			unset($data['apiLeftOverUsage']);
+			unset(
+				$data['apiLimit'],
+				$data['apiFreeLimit'],
+				$data['chargeInterval']
+			);
 		}
 
 		if(!isset($data['apiLimit'])) $data['apiLimit'] = $this->api_free_limit;
 		if(!isset($data['apiFreeLimit'])) $data['apiFreeLimit'] = $this->api_free_limit;
-		if(!isset($data['apiUsage'])) $data['apiUsage'] = 0;
-		if(!isset($data['apiLeftOverUsage'])) $data['apiLeftOverUsage'] = 0;
+		if(!isset($data['chargeInterval'])) $data['chargeInterval'] = $this->charge_interval;
 
 		$query = $this->Accounts_model->create($data);
 		
@@ -190,11 +199,11 @@ class Accounts extends CI_Controller{
 
 			$data = $this->input->json(false);
 
-			//only administrators are allowed to update these properties which govern the usage of the API
 			if(!$this->user->authorized(false, 'admin')){
-				unset($data['apiFreeLimit']);
-				unset($data['apiUsage']);
-				unset($data['apiLeftOverUsage']);
+				unset(
+					$data['apiFreeLimit'],
+					$data['chargeInterval']
+				);
 			}
 
 			$query = $this->Accounts_model->update($id, $data);
@@ -230,7 +239,6 @@ class Accounts extends CI_Controller{
 
 	}
 
-	//can only be done by admin and resource owner
 	public function delete($id){
 
 		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $id)){

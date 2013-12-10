@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * TODO: Billing Controller needs to be redone to address the changes in the Billing_model and schema.
+ * Furthermore create update and delete definitely stays here since that information will get created here.
+ */
 class Billing extends CI_Controller{
 
 	protected $authenticator;
@@ -65,6 +69,7 @@ class Billing extends CI_Controller{
 	}
 
 	//ON THIS CREATION, we need to call in and use the Pin_model to create the customer
+	//by default all cards or customerTokens has "active" as = 1
 	public function create($user_id){
 
 		if(!$this->user->authorized(false, 'admin') AND $this->user['id'] != $user_id){

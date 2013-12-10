@@ -1,7 +1,7 @@
 <?php
 
 /**
- * One to one relationship with Accounts, so we're querying based on user id, not individual ids.
+ * Read, Update and Delete methods need to be updated as it no longer matches the domain schema
  */
 class Billing_model extends CI_Model{
 
@@ -11,17 +11,16 @@ class Billing_model extends CI_Model{
 
 		parent::__construct();
 
-		$this->load->model('Accounts_model');
 		$this->load->library('form_validation', false, 'validator');
 
 	}
 
-	public function create($user_id, $input_data){
+	public function create($input_data){
 
 		$data = elements(array(
-			'chargeInterval',
-			'chargeDate',
+			'userId',
 			'customerToken',
+			'active',
 			'cardInvalid',
 		), $input_data, null, true);
 
@@ -29,19 +28,19 @@ class Billing_model extends CI_Model{
 
 		$this->validator->set_rules(array(
 			array(
-				'field'	=> 'chargeInterval',
-				'label'	=> 'Charge Interval',
-				'rules'	=> 'required|valid_date_duration',
-			),
-			array(
-				'field'	=> 'chargeDate'
-				'label'	=> 'Charge Date',
-				'rules'	=> 'required|valid_date',
+				'field'	=> 'userId',
+				'label'	=> 'User ID',
+				'rules'	=> 'required|integer',
 			),
 			array(
 				'field'	=> 'customerToken',
 				'label'	=> 'Customer Token',
-				'rules'	=> '',
+				'rules'	=> 'required',
+			),
+			array(
+				'field'	=> 'active'
+				'label'	=> 'Active',
+				'rules'	=> 'boolean_style',
 			),
 			array(
 				'field'	=> 'cardInvalid',
@@ -51,14 +50,6 @@ class Billing_model extends CI_Model{
 		));
 
 		$validation_errors = [];
-
-		if(strtotime($data['chargeDate']) < time()){
-			$validation_errors['chargeDate'] = 'Charge Date cannot be in the past.';
-		}
-
-		if(!$this->Accounts_model->read($user_id)){
-			$validation_errors['userId'] = 'Billing information can only be created for an existing user account.';
-		}
 
 		if($this->validator->run() ==  false){
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
@@ -73,7 +64,8 @@ class Billing_model extends CI_Model{
 
 		}
 
-		$data['userId'] = $user_id;
+		//converting to binary
+		$data['active'] = (isset($data['active'])) ? intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN)) : 0;
 		$data['cardInvalid'] = (isset($data['cardInvalid'])) ? intval(filter_var($data['cardInvalid'], FILTER_VALIDATE_BOOLEAN)) : 0;
 
 		$query = $this->db->insert('billing', $data);
@@ -88,34 +80,47 @@ class Billing_model extends CI_Model{
 
 		}
 
-		//this data is fundamentally linked one to one to the user, so we use the user id to identify them
-		return $user_id;
+		return $this->db->insert_id();
 
 	}
 
-	public function read($user_id){
+	public function read(){
 
-		$query = $this->db->get_where('billing', array('userId' => $user_id));
+	}
+
+	public function read_all($user_id = false, $active = false){
+
+		$this->db->select('*');
+		$this->db->from('billing');
+		if($user_id){
+			$this->db->where('userId', $user_id);
+		}
+		if($active){
+			$this->db->where('active', '1');
+		}
+
+		$query = $this->db->get();
 
 		if($query->num_rows() > 0){
 
-			$row = $query->row();
+			foreach($query->result() as $row){
 
-			$data = array(
-				'id'				=> $row->id,
-				'userId'			=> $row->userId,
-				'chargeInterval'	=> $row->chargeInterval,
-				'chargeDate'		=> $row->chargeDate,
-				'customerToken'		=> $row->customerToken,
-				'cardInvalid'		=> $row->cardInvalid,
-			);
+				$data[] = array(
+					'id'				=> $row->id,
+					'userId'			=> $row->userId,
+					'customerToken'		=> $row->customerToken,
+					'active'			=> $row->active,
+					'cardInvalid'		=> $row->cardInvalid,
+				);
+
+			}
 
 			return $data;
 
 		}else{
 
 			$this->errors = array(
-				'error' => 'Could not find specified blog post.'
+				'error' => 'Could not find specified billing information.'
 			);
 			return false;
 
@@ -123,96 +128,126 @@ class Billing_model extends CI_Model{
 
 	}
 
-	public function update($user_id, $input_data){
+	// public function read($user_id){
 
-		$data = elements(array(
-			'chargeInterval',
-			'chargeDate',
-			'customerToken',
-			'cardInvalid',
-		), $input_data, null, true);
+	// 	$query = $this->db->get_where('billing', array('userId' => $user_id));
 
-		$this->validator->set_data($data);
+	// 	if($query->num_rows() > 0){
 
-		$this->validator->set_rules(array(
-			array(
-				'field'	=> 'chargeInterval',
-				'label'	=> 'Charge Interval',
-				'rules'	=> 'valid_date_duration',
-			),
-			array(
-				'field'	=> 'chargeDate'
-				'label'	=> 'Charge Date',
-				'rules'	=> 'valid_date',
-			),
-			array(
-				'field'	=> 'customerToken',
-				'label'	=> 'Customer Token',
-				'rules'	=> '',
-			),
-			array(
-				'field'	=> 'cardInvalid',
-				'label'	=> 'Card Invalid',
-				'rules'	=> 'boolean_style',
-			)
-		));
+	// 		$row = $query->row();
 
-		$validation_errors = [];
+	// 		$data = array(
+	// 			'id'				=> $row->id,
+	// 			'userId'			=> $row->userId,
+	// 			'chargeInterval'	=> $row->chargeInterval,
+	// 			'chargeDate'		=> $row->chargeDate,
+	// 			'customerToken'		=> $row->customerToken,
+	// 			'cardInvalid'		=> $row->cardInvalid,
+	// 		);
 
-		if(strtotime($data['chargeDate']) < time()){
-			$validation_errors['chargeDate'] = 'Charge Date cannot be in the past.';
-		}
+	// 		return $data;
 
-		if($this->validator->run() ==  false){
-			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
-		}
+	// 	}else{
 
-		if(!empty($validation_errors)){
+	// 		$this->errors = array(
+	// 			'error' => 'Could not find specified blog post.'
+	// 		);
+	// 		return false;
 
-			$this->errors = array(
-				'validation_error'	=> $validation_errors
-			);
-			return false;
+	// 	}
 
-		}
+	// }
 
-		$this->db->where('userId', $user_id);
-		$this->db->update('billing', $data);
+	// public function update($user_id, $input_data){
 
-		if($this->db->affected_rows() > 0){
+	// 	$data = elements(array(
+	// 		'chargeInterval',
+	// 		'chargeDate',
+	// 		'customerToken',
+	// 		'cardInvalid',
+	// 	), $input_data, null, true);
+
+	// 	$this->validator->set_data($data);
+
+	// 	$this->validator->set_rules(array(
+	// 		array(
+	// 			'field'	=> 'chargeInterval',
+	// 			'label'	=> 'Charge Interval',
+	// 			'rules'	=> 'valid_date_duration',
+	// 		),
+	// 		array(
+	// 			'field'	=> 'chargeDate'
+	// 			'label'	=> 'Charge Date',
+	// 			'rules'	=> 'valid_date',
+	// 		),
+	// 		array(
+	// 			'field'	=> 'customerToken',
+	// 			'label'	=> 'Customer Token',
+	// 			'rules'	=> '',
+	// 		),
+	// 		array(
+	// 			'field'	=> 'cardInvalid',
+	// 			'label'	=> 'Card Invalid',
+	// 			'rules'	=> 'boolean_style',
+	// 		)
+	// 	));
+
+	// 	$validation_errors = [];
+
+	// 	if(strtotime($data['chargeDate']) < time()){
+	// 		$validation_errors['chargeDate'] = 'Charge Date cannot be in the past.';
+	// 	}
+
+	// 	if($this->validator->run() ==  false){
+	// 		$validation_errors = array_merge($validation_errors, $this->validator->error_array());
+	// 	}
+
+	// 	if(!empty($validation_errors)){
+
+	// 		$this->errors = array(
+	// 			'validation_error'	=> $validation_errors
+	// 		);
+	// 		return false;
+
+	// 	}
+
+	// 	$this->db->where('userId', $user_id);
+	// 	$this->db->update('billing', $data);
+
+	// 	if($this->db->affected_rows() > 0){
 		
-			return true;
+	// 		return true;
 		
-		}else{
+	// 	}else{
 			
-			$this->errors = array(
-				'error'	=> 'Billing information doesn\'t need to be updated.',
-			);
-			return false;
+	// 		$this->errors = array(
+	// 			'error'	=> 'Billing information doesn\'t need to be updated.',
+	// 		);
+	// 		return false;
 		
-		}
+	// 	}
 
-	}
+	// }
 
-	public function delete($user_id){
+	// public function delete($user_id){
 
-		$this->db->delete('billing', array('userId' => $user_id));
+	// 	$this->db->delete('billing', array('userId' => $user_id));
 
-		if($this->db->affected_rows() > 0){
+	// 	if($this->db->affected_rows() > 0){
 
-			return true;
+	// 		return true;
 
-		}else{
+	// 	}else{
 
-			$this->errors = array(
-				'error'	=> 'No billing information to delete.',
-			);
+	// 		$this->errors = array(
+	// 			'error'	=> 'No billing information to delete.',
+	// 		);
 			
-			return false;
+	// 		return false;
 
-		}
+	// 	}
 
-	}
+	// }
 
 	public function get_errors(){
 
