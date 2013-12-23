@@ -38,11 +38,23 @@ class Cron extends CI_Controller{
 	 */
 	public function monthly_billing(){
 
-		$this->load->model('Billing_model');
-		$this->load->model('Payments_model');
+		$this->load->model('Accounts_model');
 		$this->load->model('Usage_model');
+		$this->load->model('Billing_model');
+		$this->load->model('Pin_model');
+		$this->load->model('Payments_model');
+		$this->load->model('Email_model');
+
+		//also probably need an email model
 
 		//this will execute the billing
+		//cycle through Accounts_model
+		//implement API monthly cleanup
+		//each account that has a customer object
+		//needs to be charged
+		//using the Pin model
+		//once charged, create the payment record and invoice in the Payments_model
+		//send email notification via the Email_model
 
 	}
 

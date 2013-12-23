@@ -24,7 +24,12 @@ class Migration_add_polyauth extends CI_Migration {
 
 	public function up(){
 	
-
+		// * apiLimit is the total limit of how many times the api can be accessed
+		// * apiFreeLimit is the limit that is subtracted from the apiUsage when you're about the charge the amount
+		// * apiUsage is the number of usages of the API racked up in the chargeInterval, this number will subtract apiFreeLimit and add apiLeftOverUsage and if the number is positive, this is the number that will be multiplied by the charge amount and be charged to the user via the payment gateway, the charge amount will be specified by the handler
+		// * apiLeftOverUsage will be number of API usages that were not charged for from the previous chargeInterval due to charge errors or no customer reference number
+		// * chargeInterval is ISO 8601 duration
+		// * chargeDate is the next date to be charged for
 
 		$default_user = array(
 			'id'					=> '1',

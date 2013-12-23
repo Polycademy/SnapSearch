@@ -1,15 +1,11 @@
 <?php
 
 /**
- * Billing Users table represents the data that is necessary to charge a customer.
+ * Billing Users table represents a list of customer tokens associated with credit cards on the Pin service.
+ * There can be multiple customer tokens for each user account.
  * userId is a reference to the user accounts
- * apiLimit is the total limit of how many times the api can be accessed
- * apiFreeLimit is the limit that is subtracted from the apiUsage when you're about the charge the amount
- * apiUsage is the number of usages of the API racked up in the chargeInterval, this number will subtract apiFreeLimit and add apiLeftOverUsage and if the number is positive, this is the number that will be multiplied by the charge amount and be charged to the user via the payment gateway, the charge amount will be specified by the handler
- * apiLeftOverUsage will be number of API usages that were not charged for from the previous chargeInterval due to charge errors or no customer reference number
- * chargeInterval is ISO 8601 duration
- * chargeDate is the next date to be charged for
  * customerToken is the id of the customer object which could be reference to another data source containing the credit card information. This is of course for pin.net
+ * active is a boolean indicating that this card is available to be charged, if multiple cards are active, the biller should use the first one
  * cardInvalid is a boolean that tells if the previous charge did not work, however if the next charge works, then this switched back to off
  */
 class Migration_add_billing extends CI_Migration {

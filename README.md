@@ -71,5 +71,5 @@ HTML minifier: https://github.com/mrclay/minify/issues/80#issuecomment-28946276
 (no comments, only whitespace can be collapsed, but also remember about badly formed html, malformed!)
 
 use: https://github.com/noetix/pin-php
-Also: The billing table should contain id, userId, customerToken, active, cardInvalid
-All the other info needs to be moved to the user_accounts table. And when the user is created, these things need to be filled. The billing_model and Billing controller needs to be modified accordingly.
+
+The Billing Model and Controller is used to create the customer object via the Pin service and thus associate credit card information to a user account. This needs to be done. This is combined with the Pin_model to contact the Pin service. Therefore the Billing controller needs the Billing_model and Pin_model. Furthermore to actually charge the customers, this code is in the Cron controller which will use the monthly_billing which uses the Accounts_model, Billing_model, Pin_model, Usage_model, Payments_model and Email_model

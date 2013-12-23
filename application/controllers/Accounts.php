@@ -15,7 +15,6 @@ class Accounts extends CI_Controller{
 
 		//models
 		$this->load->model('Accounts_model');
-		$this->load->model('Billing_model');
 
 		$ioc = $this->config->item('ioc');
 
