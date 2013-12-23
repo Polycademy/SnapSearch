@@ -4,6 +4,10 @@ use PHPPdf\Core\FacadeBuilder as PDFBuilder;
 use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local as LocalAdapter;
 
+/**
+ * Payments Model manages the payment history. 
+ * This means CRUDing the payment_history, and also creating and deleting invoices.
+ */
 class Payments_model extends CI_Model{
 
 	protected $invoices_location;
@@ -26,6 +30,7 @@ class Payments_model extends CI_Model{
 
 	/**
 	 * Create a payment record for a particular user. There can be multiple records.
+	 * Also creates the invoice file.
 	 * @param  array           $input_data Array of data
 	 * @return integer|boolean
 	 */
@@ -34,10 +39,15 @@ class Payments_model extends CI_Model{
 		$data = elements(array(
 			'userId',
 			'chargeToken',
-			'date',
+			'date', //from Pin API charge_time
+			'item',
+			'usageRate',
 			'amount',
-			'currency',
-			'invoiceFile',
+			'currency',			
+			'email',
+			'address',
+			'postCode',
+			'country',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -59,6 +69,16 @@ class Payments_model extends CI_Model{
 				'rules'	=> 'required|valid_date',
 			),
 			array(
+				'field'	=> 'item',
+				'label'	=> 'Item Description',
+				'rules'	=> 'required',
+			),
+			array(
+				'field'	=> 'usageRate',
+				'label'	=> 'Usage Rate',
+				'rules'	=> 'required|integer'
+			),
+			array(
 				'field'	=> 'amount'
 				'label'	=> 'Amount in Cents',
 				'rules'	=> 'required|numeric',
@@ -69,10 +89,25 @@ class Payments_model extends CI_Model{
 				'rules'	=> 'required|alpha|max_length[3]',
 			),
 			array(
-				'field'	=> 'invoiceFile',
-				'label'	=> 'Invoice File',
-				'rules'	=> 'required'
-			)
+				'field'	=> 'email'
+				'label'	=> 'User Email',
+				'rules'	=> 'required|valid_email',
+			),
+			array(
+				'field'	=> 'address',
+				'label'	=> 'Address',
+				'rules'	=> 'required',
+			),
+			array(
+				'field'	=> 'postCode',
+				'label'	=> 'Post Code',
+				'rules'	=> 'required|integer',
+			),
+			array(
+				'field'	=> 'country',
+				'label'	=> 'Country',
+				'rules'	=> 'required',
+			),
 		));
 
 		$validation_errors = [];
@@ -94,19 +129,36 @@ class Payments_model extends CI_Model{
 
 		}
 
-		$query = $this->db->insert('payment_history', $data);
+		//begin transaction
+		$this->db->trans_begin();
 
-		if(!$query){
+		//first insert the payment record without the invoice file
+		$this->db->insert('payment_history', $data);
 
+		//we need this invoice id to update with the invoice file once created
+		$invoice_id = $this->db->insert_id();
+
+		//create the invoice file using the invoice id as the invoiceNumber
+		$invoice_data['invoiceNumber'] = $invoice_id;
+		$invoice_data = array_merge($invoice_data, $data);
+		$invoice_file = $this->upsert_invoice($invoice_data);
+
+		//update the record with the location of the invoice file
+		$data['invoiceFile'] = $invoice_file;
+		$this->db->update('payment_history', $data, array('id' => $invoice_id));
+
+		//if any queries failed or the invoice file was not created, we roll back the transaction
+		if($this->db->trans_status() === false OR $invoice_file === false){
+			$this->db->trans_rollback();
 			$this->errors = array(
-				'system_error'	=> 'Problem inserting data to payments table.',
+				'system_error'	=> 'Problem inserting data to payments table and/or creating the invoice file.',
 			);
-
 			return false;
-
+		}else{
+			$this->db->trans_commit();
 		}
 
-		return $this->db->insert_id();
+		return $invoice_id;
 
 	}
 
@@ -143,8 +195,14 @@ class Payments_model extends CI_Model{
 					'userId'			=> $row->userId,
 					'chargeToken'		=> $row->chargeToken,
 					'date'				=> $row->date,
+					'item'				=> $row->item,
+					'usageRate'			=> $row->usageRate,
 					'amount'			=> $row->amount,
 					'currency'			=> $row->currency,
+					'email'				=> $row->email,
+					'address'			=> $row->address,
+					'postCode'			=> $row->postCode,
+					'country'			=> $row->country,
 					'invoiceFile'		=> $row->invoiceFile,
 					'invoiceFilePath'	=> $this->invoices_location . '/' . $row->invoiceFile,
 				);
@@ -166,7 +224,7 @@ class Payments_model extends CI_Model{
 	}
 
 	/**
-	 * Update a payment record. Theoretically this should never be called. Or else the invoice file will be a mismatch.
+	 * Update a payment record. It can also update the entire invoice file by overwriting it. 
 	 * @param  integer $id
 	 * @param  array   $input_data
 	 * @return integer|boolean
@@ -177,8 +235,14 @@ class Payments_model extends CI_Model{
 			'userId',
 			'chargeToken',
 			'date',
+			'item',
+			'usageRate',
 			'amount',
-			'currency',
+			'currency',			
+			'email',
+			'address',
+			'postCode',
+			'country',
 			'invoiceFile',
 		), $input_data, null, true);
 
@@ -201,6 +265,16 @@ class Payments_model extends CI_Model{
 				'rules'	=> 'valid_date',
 			),
 			array(
+				'field'	=> 'item',
+				'label'	=> 'Item Description',
+				'rules'	=> '',
+			),
+			array(
+				'field'	=> 'usageRate',
+				'label'	=> 'Usage Rate',
+				'rules'	=> 'integer'
+			),
+			array(
 				'field'	=> 'amount'
 				'label'	=> 'Amount in Cents',
 				'rules'	=> 'numeric',
@@ -211,6 +285,26 @@ class Payments_model extends CI_Model{
 				'rules'	=> 'alpha|max_length[3]',
 			),
 			array(
+				'field'	=> 'email'
+				'label'	=> 'User Email',
+				'rules'	=> 'valid_email',
+			),
+			array(
+				'field'	=> 'address',
+				'label'	=> 'Address',
+				'rules'	=> '',
+			),
+			array(
+				'field'	=> 'postCode',
+				'label'	=> 'Post Code',
+				'rules'	=> 'integer',
+			),
+			array(
+				'field'	=> 'country',
+				'label'	=> 'Country',
+				'rules'	=> '',
+			),
+			array(
 				'field'	=> 'invoiceFile',
 				'label'	=> 'Invoice File',
 				'rules'	=> ''
@@ -218,6 +312,10 @@ class Payments_model extends CI_Model{
 		));
 
 		$validation_errors = [];
+
+		if(isset($data['userId']) AND !$this->Accounts_model->read($data['userId'])){
+			$validation_errors['userId'] = 'Payments information can only be updated to an existing user account.';
+		}
 
 		if($this->validator->run() ==  false){
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
@@ -232,25 +330,62 @@ class Payments_model extends CI_Model{
 
 		}
 
+		//begin transaction
+		$this->db->trans_begin();
+
+		//get previous invoice file and delete it to prevent orphaned invoice files
+		$query = $this->db->get_where('payment_history', array('id' => $id));
+		if($query->num_rows() > 0){
+			$this->delete_invoice($query->row()->invoiceFile);
+		}
+
+		//update the record with the new data
 		$this->db->update('payment_history', $data, array('id' => $id));
 
-		if($this->db->affected_rows() > 0){
-
-			return true;
-		
-		}else{
-			
+		//if no rows were affected, nothing was changed
+		if($this->db->affected_rows() < 1){
+			$this->db->trans_commit();
 			$this->errors = array(
-				'error'	=> 'Payment record doesn\'t need to update.',
+				'error'	=> 'Payment record doesn\'t need to update or record wasn\'t found.',
 			);
 			return false;
-		
 		}
+
+		//get the updated record information
+		$query = $this->db->get_where('payment_history', array('id' => $id));
+		$payment_record = $query->row_array();
+
+		//use the updated $payment_record's information to overwrite the old invoice file
+		$invoice_file = $this->upsert_invoice($payment_record, $payment_record['invoiceFile']);
+
+		if($this->db->trans_status() === false OR $invoice_file === false){
+			$this->db->trans_rollback();
+			$this->errors = array(
+				'system_error'	=> 'Problem updating the payment history and/or updating the invoice file.',
+			);
+			return false;
+		}else{
+			$this->db->trans_commit();
+		}
+
+		return true;
 
 	}
 
+	/**
+	 * Deletes the payment record and associated invoice file
+	 * @param  integer $id
+	 * @return boolean  
+	 */
 	public function delete($id){
 
+		//delete invoice file
+		$query = $this->db->get_where('payment_history', array('id' => $id));
+		if($query->num_rows() > 0){
+			$this->delete_invoice($query->row()->invoiceFile);
+		}
+
+		//delete record
 		$this->db->delete('payment_history', array('id' => $id));
 
 		if($this->db->affected_rows() > 0){
@@ -272,12 +407,11 @@ class Payments_model extends CI_Model{
 	/**
 	 * Creates an invoice and saves it in the invoices folder and returns the filename.
 	 * Or it can update an invoice if you pass the relevant invoice name.
-	 * This is used prior to creating or updating the records.
 	 * @param  array          $input_data
 	 * @param  string         $invoice_name
 	 * @return string|boolean
 	 */
-	public function create_invoice($input_data, $invoice_name = false){
+	protected function upsert_invoice($input_data, $invoice_name = false){
 
 		$data = elements(array(
 			'invoiceNumber', //provide SS1
@@ -293,86 +427,19 @@ class Payments_model extends CI_Model{
 			'amount',
 		), $input_data, null, true);
 
-		$this->validator->set_data($data);
-
-		$this->validator->set_rules(array(
-			array(
-				'field'	=> 'invoiceNumber',
-				'label'	=> 'Invoice Number',
-				'rules'	=> 'required|integer',
-			),
-			array(
-				'field'	=> 'date',
-				'label'	=> 'Date',
-				'rules'	=> 'required|valid_date',
-			),
-			array(
-				'field'	=> 'userId',
-				'label'	=> 'User ID',
-				'rules'	=> 'required|integer',
-			),
-			array(
-				'field'	=> 'email'
-				'label'	=> 'User Email',
-				'rules'	=> 'valid_email',
-			),
-			array(
-				'field'	=> 'address',
-				'label'	=> 'Address',
-				'rules'	=> 'required',
-			),
-			array(
-				'field'	=> 'postCode',
-				'label'	=> 'Post Code',
-				'rules'	=> 'required|integer',
-			),
-			array(
-				'field'	=> 'country',
-				'label'	=> 'Country',
-				'rules'	=> 'required',
-			),
-			array(
-				'field'	=> 'item',
-				'label'	=> 'Item Description',
-				'rules'	=> 'required',
-			),
-			array(
-				'field'	=> 'usageRate',
-				'label'	=> 'Usage Rate',
-				'rules'	=> 'required|integer'
-			),
-			array(
-				'field'	=> 'currency',
-				'label'	=> 'Currency',
-				'rules'	=> 'required|alpha|max_length[3]',
-			),
-			array(
-				'field'	=> 'amount',
-				'label'	=> 'Amount in Cents',
-				'rules'	=> 'required|numeric'
-			)
-		));
-
-		$validation_errors = [];
-
-		if($this->validator->run() ==  false){
-			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
-		}
-
-		if(!empty($validation_errors)){
-
-			$this->errors = array(
-				'validation_error'	=> $validation_errors
-			);
-			return false;
-
-		}
-
 		//prefix the invoice number by SS
 		$data['invoiceNumber'] = 'SS' . $data['invoiceNumber'];
+		//calculate tax dollars of 10% inclusive
+		if(strtolower($data['country']) == 'australia'){
+			$tax_dollars = round(($data['amount'] * 0.1) / 100, 2);
+		}else{
+			$tax_dollars = 0;
+		}
+		$data['tax'] = '$' . $dollars;
 		//convert the cents into dollars
 		$dollars = $data['amount'] / 100;
 		$data['amount'] = '$' . $dollars;
+
 		//add the logo image of Polycademy
 		$data['logo'] = FCPATH . 'img/polycademy_logo.png';
 
@@ -404,9 +471,9 @@ class Payments_model extends CI_Model{
 	 * @param  string  $invoice_name
 	 * @return boolean
 	 */
-	public function delete_invoice($invoice_name){
+	protected function delete_invoice($invoice_name){
 
-		if($filename AND $this->filesystem->has($invoice_name)){
+		if($this->filesystem->has($invoice_name)){
 			$this->filesystem->delete($invoice_name);
 		}
 

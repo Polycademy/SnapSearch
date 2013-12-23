@@ -17,18 +17,38 @@ class Migration_add_payment_history extends CI_Migration {
 				'unsigned' => TRUE,
 			],
 			'chargeToken'	=> [
-				'type'	=> 'TEXT'
+				'type'	=> 'TEXT',
 			],
 			'date'	=> [
-				'type'	=> 'DATETIME'
+				'type'	=> 'DATETIME',
+			],
+			'item'	=> [
+				'type'	=> 'TEXT',
+			],
+			'usageRate'	=> [
+				'type'	=> 'INT',
+				'unsigned' => TRUE,
 			],
 			'amount'	=> [ //amount in cents 100 => $1
-				'type'		=> 'INT'
+				'type'		=> 'INT',
 				'unsigned'	=> TRUE,
 			],
 			'currency'	=> [
 				'type'			=> 'VARCHAR',
 				'constraint'	=> '3'
+			],
+			'email'		=> [
+				'type'	=> 'TEXT'
+			],
+			'address'	=> [
+				'type'	=> 'TEXT'
+			],
+			'postCode'	=> [
+				'type'	=> 'INT',
+				'unsigned' => TRUE,
+			],
+			'country'	=> [
+				'type'	=> 'TEXT',
 			],
 			'invoiceFile'	=> [
 				'type'	=> 'TEXT'

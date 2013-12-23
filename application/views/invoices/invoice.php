@@ -37,12 +37,14 @@
                 <td>Usage Rate</td>
                 <td>Currency</td>
                 <td>Amount</td>
+                <td>Includes GST 10%</td>
             </tr>
             <tr>
                 <td><?=$item?></td>
                 <td class="center"><?=$usageRate?></td>
                 <td class="center"><?=$currency?></td>
                 <td class="center"><?=$amount?></td>
+                <td class="center"><?=$tax?></td>
             </tr>
         </table>
     </dynamic-page>

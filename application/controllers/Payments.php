@@ -1,6 +1,8 @@
 <?php
 
-//payments history is only recorded from the controller, but the biller will add payments history on a scheduled basis
+/**
+ * Payments controller is a HTTP API that allows the payment history to be viewed from a logged in user.
+ */
 class Payments extends CI_Controller{
 
 	public function __construct(){
