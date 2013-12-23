@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Usage Model manages the usage history of the API from a user.
+ * It's not used to calculate charges, but to allow the user to see how they are using the API.
+ */
 class Usage_model extends CI_Model{
 
 	protected $errors;

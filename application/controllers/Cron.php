@@ -32,6 +32,10 @@ class Cron extends CI_Controller{
 
 	}
 
+	/**
+	 * This function will be ran from the Cron service. Make sure this is done well and no bugs!
+	 * @return [type] [description]
+	 */
 	public function monthly_billing(){
 
 		$this->load->model('Billing_model');
