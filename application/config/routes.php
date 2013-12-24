@@ -17,20 +17,17 @@ Pigeon::map(function($r){
 		$r->get('accounts/forgotten_password/(:any)', 'accounts/forgotten_password/$1');
 		$r->post('accounts/confirm_forgotten_password', 'accounts/confirm_forgotten_password');
 
+		//SESSIONS
+		$r->resource('sessions');
+
 		//BILLING
-		$r->get('billing/(:any)', 'billing/show/$1');
-		$r->post('billing/(:any)', 'billing/create/$1');
-		$r->put('billing/(:any)', 'billing/update/$1');
-		$r->delete('billing/(:any)', 'billing/delete/$1');
+		$r->resource('billing');
 
 		//PAYMENTS HISTORY
 		$r->get('payments/(:any)', 'payments/show/$1');
 
 		//USAGE HISTORY
 		$r->get('usage/(:any)', 'payments/show/$1');
-
-		//SESSIONS
-		$r->resource('sessions');
 
 		//TEST
 		$r->get('test/(:any)', 'test/$1');

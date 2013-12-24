@@ -1,9 +1,5 @@
 <?php
 
-/**
- * TODO: Billing Controller needs to be redone to address the changes in the Billing_model and schema.
- * Furthermore create update and delete definitely stays here since that information will get created here.
- */
 class Billing extends CI_Controller{
 
 	protected $authenticator;
@@ -16,7 +12,6 @@ class Billing extends CI_Controller{
 		parent::__construct();
 
 		$this->load->model('Billing_model');
-		$this->load->model('Pin_model');
 
 		$ioc = $this->config->item('ioc');
 		$this->authenticator = $ioc['PolyAuth\Authenticator'];
@@ -24,8 +19,6 @@ class Billing extends CI_Controller{
 
 		$this->auth_response = $this->authenticator->get_response();
 		$this->user = $this->authenticator->get_user();
-
-		$this->charge_interval = 'P30D';
 
 	}
 
@@ -40,7 +33,7 @@ class Billing extends CI_Controller{
 
 		}else{
 
-			$query = $this->Billing_model->read($user_id);
+			$query = $this->Billing_model->read_all($user_id);
 
 			if($query){
 

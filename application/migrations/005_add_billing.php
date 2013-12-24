@@ -22,6 +22,10 @@ class Migration_add_billing extends CI_Migration {
 				'type' => 'INT',
 				'unsigned' => TRUE,
 			],
+			'cardHint'	=> [
+				'type'		=> 'INT',
+				'unsigned'	=> TRUE,
+			],
 			'customerToken'	=> [
 				'type'		=> 'TEXT',
 			],
