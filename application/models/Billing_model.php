@@ -21,16 +21,8 @@ class Billing_model extends CI_Model{
 			'userId',
 			'email',
 			'active',
+			'customerToken',
 			'cardNumber',
-			'cardCvc',
-			'cardExpiryMonth',
-			'cardExpiryYear',
-			'cardName',
-			'cardAddress',
-			'cardCity',
-			'cardPostCode',
-			'cardState',
-			'cardCountry',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -57,48 +49,8 @@ class Billing_model extends CI_Model{
 				'rules'	=> 'required|integer'
 			),
 			array(
-				'field'	=> 'cardCvc',
-				'label'	=> 'Card CVC',
-				'rules'	=> 'required|integer'
-			),
-			array(
-				'field'	=> 'cardExpiryMonth',
-				'label'	=> 'Card Expiry Month',
-				'rules'	=> 'required|integer',
-			),
-			array(
-				'field'	=> 'cardExpiryYear',
-				'label'	=> 'Card Expiry Year',
-				'rules'	=> 'required|integer'
-			),
-			array(
-				'field'	=> 'cardName',
-				'label'	=> 'Card Name',
-				'rules'	=> 'required',
-			),
-			array(
-				'field'	=> 'cardAddress', //card address is the combined one line address
-				'label'	=> 'Card Address',
-				'rules'	=> 'required',
-			),
-			array(
-				'field'	=> 'cardCity',
-				'label'	=> 'Card City',
-				'rules'	=> 'required',
-			),
-			array(
-				'field'	=> 'cardPostCode',
-				'label'	=> 'Card Post Code',
-				'rules'	=> 'integer',
-			),
-			array(
-				'field'	=> 'cardState', //card state is not a required
-				'label'	=> 'Card State',
-				'rules'	=> '',
-			),
-			array(
-				'field'	=> 'cardCountry',
-				'label'	=> 'Card Country',
+				'field'	=> 'customerToken',
+				'label'	=> 'Customer Token',
 				'rules'	=> 'required'
 			),
 		));
@@ -124,31 +76,16 @@ class Billing_model extends CI_Model{
 
 		$data['cardHint'] = substr($data['cardNumber'], -4);
 		//convert active into binary boolean
-		$data['active'] = (isset($data['active'])) ? intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN)) : 0;
-		$data['active'] = (isset($data['active'])) ? intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN)) : 0;
+		$data['active'] = (isset($data['active'])) ? intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN)) : 1;
 		//all cards upon creation shouldn't be invalid
 		$data['cardInvalid'] = 0;
-		$data['customerToken'] = $this->Pin_model->create_customer($data);
 
-		$query = false;
-		if($data['customerToken']){
-
-			$db_data = elements(array(
-				'userId',
-				'cardHint',
-				'customerToken',
-				'active',
-				'cardInvalid',
-			), $data, null, true);
-
-			$query = $this->db->insert('billing', $db_data);
-		
-		}
+		$query = $this->db->insert('billing', $data);
 
 		if(!$query){
 
 			$this->errors = array(
-				'system_error'	=> 'Problem creating customer reference in Pin service and/or inserting the data into billing table.',
+				'system_error'	=> 'Problem inserting the data into billing table.',
 			);
 
 			return false;
@@ -389,8 +326,12 @@ class Billing_model extends CI_Model{
 		if(isset($data['cardNumber'])){
 			$data['cardHint'] = substr($data['cardNumber'], -4);
 		}
-		$data['active'] = (isset($data['active'])) ? intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN)) : 0;
-		$data['cardInvalid'] = (isset($data['cardInvalid'])) ? intval(filter_var($data['cardInvalid'], FILTER_VALIDATE_BOOLEAN)) : 0;
+		if(isset($data['active'])){
+			$data['active'] = intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN));
+		}
+		if(isset($data['cardInvalid'])){
+			$data['cardInvalid'] = intval(filter_var($data['cardInvalid'], FILTER_VALIDATE_BOOLEAN));
+		}
 
 		$db_data = elements(array(
 			'userId',
