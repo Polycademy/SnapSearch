@@ -165,31 +165,31 @@ class Pin_model extends CI_Model{
 					switch($key){
 						case 'number':
 							$key = 'cardNumber';
-						break;
+							break;
 						case 'expiry_month':
 							$key = 'cardExpiryMonth';
-						break;
+							break;
 						case 'expiry_year':
 							$key = 'cardExpiryYear';
-						break;
+							break;
 						case 'cvc':
 							$key = 'cardCvc';
-						break;
+							break;
 						case 'name':
 							$key = 'cardName';
-						break;
+							break;
 						case 'address_line1':
 							$key = 'cardAddress';
-						break;
+							break;
 						case 'address_country':
 							$key = 'cardCountry';
-						break;
+							break;
 						case 'address_postcode':
 							$key = 'cardPostCode';
-						break;
+							break;
 						case 'address_state':
 							$key = 'cardState';
-						break;
+							break;
 					}
 
 					$this->errors['validation_error'][$key] = $message; 	
@@ -230,7 +230,7 @@ class Pin_model extends CI_Model{
 
 	}
 
-	public function charge_customer(){
+	public function charge_customer($customer_token, $data){
 
 		//take customer code, and charge, and return charge code
 
