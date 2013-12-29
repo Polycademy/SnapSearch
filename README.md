@@ -50,6 +50,9 @@ Improvements
 ------------
 
 You need to integrate CSRF later on. Since you'll need a signup page. Or use PolyAuth to support this.
+Test CSRF and exclusion
+Robot model needs user_id
+Robot controller needs to do authentication, and API counting
 
 Load Balancer: Use http://zef.me/4502/message-queue-based-load-balancing and https://developer.mozilla.org/en-US/docs/WebAPI/TCP_Socket
 Server Admin: Use Dokku and Vagrant
@@ -69,7 +72,3 @@ CRON payments: http://www.unixgeeks.org/security/newbie/unix/cron-1.html
 
 HTML minifier: https://github.com/mrclay/minify/issues/80#issuecomment-28946276
 (no comments, only whitespace can be collapsed, but also remember about badly formed html, malformed!)
-
-use: https://github.com/noetix/pin-php
-
-The Billing Model and Controller is used to create the customer object via the Pin service and thus associate credit card information to a user account. This needs to be done. This is combined with the Pin_model to contact the Pin service. Therefore the Billing controller needs the Billing_model and Pin_model. Furthermore to actually charge the customers, this code is in the Cron controller which will use the monthly_billing which uses the Accounts_model, Billing_model, Pin_model, Usage_model, Payments_model and Email_model

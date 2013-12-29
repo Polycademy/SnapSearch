@@ -5,13 +5,13 @@ class Billing extends CI_Controller{
 	protected $authenticator;
 	protected $auth_response;
 	protected $user;
-	protected $charge_interval;
 
 	public function __construct(){
 
 		parent::__construct();
 
 		$this->load->model('Billing_model');
+		$this->load->model('Pin_model');
 
 		$ioc = $this->config->item('ioc');
 		$this->authenticator = $ioc['PolyAuth\Authenticator'];
@@ -22,18 +22,48 @@ class Billing extends CI_Controller{
 
 	}
 
-	public function show($user_id){
+	public function index(){
 
-		//private information	
-		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
+		$user_id = $this->input->get('user', true);
+		$active = $this->input->get('active', true);
+		$active = ($active) ? $active : null;
 
-			$this->auth_response->setStatusCode(401);
-			$content = 'Not authorized to view this information.';
-			$code = 'error';
+		if(!$user_id){
 
+			//all the billing information is only available for the admin
+			if(!$this->user->authorized(false, 'admin')){
+
+				$this->auth_response->setStatusCode(401);
+				$content = 'Not authorized to view this information.';
+				$code = 'error';
+				$authorized = false;
+
+			}else{
+
+				$authorized = true;
+
+			}
+			
 		}else{
 
-			$query = $this->Billing_model->read_all($user_id);
+			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
+
+				$this->auth_response->setStatusCode(401);
+				$content = 'Not authorized to view this information.';
+				$code = 'error';
+				$authorized = false;
+
+			}else{
+
+				$authorized = true;
+
+			}
+
+		}
+
+		if($authorized){
+
+			$query = $this->Billing_model->read_all($user_id, $active);
 
 			if($query){
 
@@ -61,11 +91,51 @@ class Billing extends CI_Controller{
 
 	}
 
-	//ON THIS CREATION, we need to call in and use the Pin_model to create the customer
-	//by default all cards or customerTokens has "active" as = 1
-	public function create($user_id){
+	public function show($id){
 
-		if(!$this->user->authorized(false, 'admin') AND $this->user['id'] != $user_id){
+		$query = $this->Billing_model->read($id);
+
+		if($query){
+
+			$user_id = $query['userId'];
+			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
+
+				$this->auth_response->setStatusCode(401);
+				$content = 'Not authorized to view this information.';
+				$code = 'error';
+
+			}else{
+
+				$content = $query;
+				$code = 'success';
+
+			}
+
+		}else{
+
+			$this->auth_response->setStatusCode(404);
+			$content = current($this->Billing_model->get_errors());
+			$code = key($this->Billing_model->get_errors());
+
+		}
+
+		$this->auth_response->sendHeaders();
+		
+		$output = array(
+			'content'	=> $content,
+			'code'		=> $code,
+		);
+		
+		Template::compose(false, $output, 'json');
+
+	}
+
+	public function create(){
+
+		$data = $this->input->json(false);
+		$user_id = (isset($data['userId'])) ? intval($user_id) : 0;
+
+		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
 
 			$this->auth_response->setStatusCode(401);
 			$content = 'Not authorized to submitting billing information.';
@@ -73,42 +143,35 @@ class Billing extends CI_Controller{
 
 		}else{
 
-			$data = $this->input->json(false);
-
-			//only admin can change these fields
-			if(!$this->user->authorized(false, 'admin')){
-				unset($data['chargeInterval']);
-				unset($data['chargeDate']);
-				unset($data['cardInvalid']);
+			$pin_query = $this->Pin_model->create_customer($data);
+			if($pin_query){
+				$data['customerToken'] = $pin_query;
+				$billing_query = $this->Billing_model->create($data);
 			}
 
-			$charge_date = new DateTime;
-			$charge_date->add(new DateInterval($this->charge_interval));
-			$charge_date = $charge_date->format('Y-m-d H:i:s');
+			if(!$pin_query){
 
-			if(!isset($data['chargeInterval'])) $data['chargeInterval'] = $this->charge_interval;
-			if(!isset($data['chargeDate'])) $data['chargeDate'] = $charge_date;
-			if(!isset($data['cardInvalid'])) $data['cardInvalid'] = 0;
-			
-			$query = $this->Billing_model->create($user_id, data);
+				$content = current($this->Pin_model->get_errors());
+				$code = key($this->Pin_model->get_errors());
 
-			if($query){
-
-				$this->auth_response->setStatusCode(201);
-				$content = $query; //resource id
-				$code = 'success';
-
-			}else{
+			}elseif(!$billing_query){
 
 				$content = current($this->Billing_model->get_errors());
 				$code = key($this->Billing_model->get_errors());
-				
-				if($code == 'validation_error'){
-					$this->auth_response->setStatusCode(400);
-				}elseif($code == 'system_error'){
-					$this->auth_response->setStatusCode(500);
-				}
 
+			}else{
+
+				$content = $query;
+				$code = 'success';
+
+			}
+
+			if($code == 'success'){
+				$this->auth_response->setStatusCode(201);
+			}elseif($code == 'validation_error'){
+				$this->auth_response->setStatusCode(400);
+			}elseif($code == 'system_error'){
+				$this->auth_response->setStatusCode(500);
 			}
 
 			$this->auth_response->sendHeaders();
@@ -124,10 +187,12 @@ class Billing extends CI_Controller{
 
 	}
 
-	//ON THIS UPDATE we need to use Pin Model to create the customer token!
-	public function update($user_id){
+	public function update($id){
 
-		if(!$this->user->authorized(false, 'admin') AND $this->user['id'] != $user_id){
+		$data = $this->input->json(false);
+		$user_id = (isset($data['userId'])) ? intval($user_id) : 0;
+
+		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
 
 			$this->auth_response->setStatusCode(401);
 			$content = 'Not authorized to update billing information.';
@@ -135,25 +200,72 @@ class Billing extends CI_Controller{
 
 		}else{
 
-			$data = $this->input->json(false);
-			$query = $this->Billing_model->update($user_id, $data);
+			//only if the data is attempting to update the card do we try to update the card
+			$updating_card = false;
+			$keys = array_keys($data);
+			$necessary_keys = array(
+				'cardNumber',
+				'cardCvc',
+				'cardExpiryMonth',
+				'cardExpiryYear',
+				'cardName',
+				'cardAddress',
+				'cardCity',
+				'cardCountry'
+			);
+			foreach($necessary_keys as $necessary_key){
+				if(array_key_exists($data, $necessary_key){
+					$updating_card =  true;
+					break;
+				}
+			}
 
-			if($query){
+			if($updating_card){
 
-				$content = $user_id;
-				$code = 'success';
+				$customer_token_query = $this->Billing_model->read($id);
+				if($customer_token_query){
+					$pin_query = $this->Pin_model->update_customer($customer_token_query['customerToken'], $data);
+					if($pin_query){
+						$billing_query = $this->Billing_model->update($id, $data);
+					}
+				}
 
 			}else{
+
+				$customer_token_query = true;
+				$pin_query = true;
+				$billing_query = $this->Billing_model->update($id, $data);
+
+			}
+
+			if(!$customer_token_query){
 
 				$content = current($this->Billing_model->get_errors());
 				$code = key($this->Billing_model->get_errors());
 
-				if($code == 'validation_error'){
-					$this->auth_response->setStatusCode(400);
-				}elseif($code == 'system_error'){
-					$this->auth_response->setStatusCode(500);
-				}
+			}elseif(!$pin_query){
 
+				$content = current($this->Pin_model->get_errors());
+				$code = key($this->Pin_model->get_errors());
+
+			}elseif(!$billing_query){
+
+				$content = current($this->Billing_model->get_errors());
+				$code = key($this->Billing_model->get_errors());
+
+			}else{
+
+				$content = $query;
+				$code = 'success';
+
+			}
+
+			if($code == 'success'){
+				$this->auth_response->setStatusCode(200);
+			}elseif($code == 'validation_error'){
+				$this->auth_response->setStatusCode(400);
+			}elseif($code == 'system_error'){
+				$this->auth_response->setStatusCode(500);
 			}
 
 			$this->auth_response->sendHeaders();
@@ -169,42 +281,44 @@ class Billing extends CI_Controller{
 
 	}
 
-	public function delete($user_id){
+	public function delete($id){
 
-		if(!$this->user->authorized(false, 'admin') AND $this->user['id'] != $user_id){
+		$query = $this->Billing_model->read($id);
 
-			$this->auth_response->setStatusCode(401);
-			$content = 'Not authorized to delete billing information.';
-			$code = 'error';
+		if($query){
 
-		}else{
+			$user_id = $query['userId'];
 
-			$query = $this->Billing_model->delete($user_id);
+			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
 
-			if($query){
-
-				$content = $user_id;
-				$code = 'success';
+				$this->auth_response->setStatusCode(401);
+				$content = 'Not authorized to delete billing information.';
+				$code = 'error';
 
 			}else{
 
-				//cant find the thing to delete
-				$this->auth_response->setStatusCode(404);
-				$content = current($this->Accounts_model->get_errors());
-				$code = key($this->Accounts_model->get_errors());
+				$query = $this->Billing_model->delete($id);
+				$content = $id;
+				$code = 'success';
 
 			}
 
-			$this->auth_response->sendHeaders();
-			
-			$output = array(
-				'content'	=> $content,
-				'code'		=> $code,
-			);
-			
-			Template::compose(false, $output, 'json');
+		}else{
+
+			$this->auth_response->setStatusCode(404);
+			$content = current($this->Accounts_model->get_errors());
+			$code = key($this->Accounts_model->get_errors());
 
 		}
+
+		$this->auth_response->sendHeaders();
+		
+		$output = array(
+			'content'	=> $content,
+			'code'		=> $code,
+		);
+		
+		Template::compose(false, $output, 'json');
 
 	}
 

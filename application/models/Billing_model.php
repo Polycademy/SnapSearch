@@ -1,9 +1,5 @@
 <?php
 
-/**
- * ONE MORE THING TO DO:
- * There is not enough validation errors being extracted if the card is invalid, and errors were sent back from the Pin Service. We need to extract these errors as well.
- */
 class Billing_model extends CI_Model{
 
 	protected $errors;

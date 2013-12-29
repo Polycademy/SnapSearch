@@ -21,7 +21,7 @@ Pigeon::map(function($r){
 		$r->resource('sessions');
 
 		//BILLING
-		$r->resource('billing');
+		$r->resources('billing');
 
 		//PAYMENTS HISTORY
 		$r->get('payments/(:any)', 'payments/show/$1');
