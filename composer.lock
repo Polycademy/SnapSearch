@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "db276c53b74c6ba4c7e6c94f663cdcbc",
+    "hash": "3a2748a62047842c6e50633ee923d33f",
     "packages": [
         {
             "name": "dflydev/hawk",
@@ -311,7 +311,7 @@
                 {
                     "name": "Jamie Rumbelow",
                     "email": "jamie@jamierumbelow.net",
-                    "homepage": "http://jamierumbelow.net"
+                    "homepage": "http://jamierumbelow.net/"
                 }
             ],
             "description": "Intelligent, elegant routing for CodeIgniter",
