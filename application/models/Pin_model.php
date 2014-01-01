@@ -15,6 +15,8 @@ class Pin_model extends CI_Model{
 
 	public function __construct(){
 
+		parent::__construct();
+
 		$api_url = 'https://api.pin.net.au/{version}';
 		$api_version = '1';
 		$api_key = $_ENV['secrets']['pin_api_key'];
