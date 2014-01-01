@@ -9,7 +9,6 @@ class Billing_model extends CI_Model{
 		parent::__construct();
 
 		$this->load->model('Accounts_model');
-		$this->load->model('Pin_model');
 
 		$this->load->library('form_validation', false, 'validator');
 
@@ -19,10 +18,9 @@ class Billing_model extends CI_Model{
 
 		$data = elements(array(
 			'userId',
-			'email',
-			'active',
-			'customerToken',
 			'cardNumber',
+			'customerToken',
+			'active',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -34,16 +32,6 @@ class Billing_model extends CI_Model{
 				'rules'	=> 'required|integer',
 			),
 			array(
-				'field'	=> 'email',
-				'label'	=> 'Email',
-				'rules'	=> 'required|valid_email',
-			),
-			array(
-				'field'	=> 'active'
-				'label'	=> 'Active',
-				'rules'	=> 'boolean_style',
-			),
-			array(
 				'field'	=> 'cardNumber',
 				'label'	=> 'Credit Card Number',
 				'rules'	=> 'required|integer'
@@ -52,6 +40,11 @@ class Billing_model extends CI_Model{
 				'field'	=> 'customerToken',
 				'label'	=> 'Customer Token',
 				'rules'	=> 'required'
+			),
+			array(
+				'field'	=> 'active'
+				'label'	=> 'Active',
+				'rules'	=> 'boolean_style',
 			),
 		));
 
@@ -73,6 +66,8 @@ class Billing_model extends CI_Model{
 			return false;
 
 		}
+
+		//filtering the $data
 
 		$data['cardHint'] = substr($data['cardNumber'], -4);
 		//convert active into binary boolean
@@ -105,12 +100,13 @@ class Billing_model extends CI_Model{
 			$row = $query->row();
 
 			$data = array(
-				'id'			=> $row->id,
-				'userId'		=> $row->userId,
-				'cardHint'		=> $row->cardHint,
-				'customerToken'	=> $row->customerToken, //customerToken is sensitive information, do not allow non-admins to see
-				'active'		=> $row->active,
-				'cardInvalid'	=> $row->active,
+				'id'				=> $row->id,
+				'userId'			=> $row->userId,
+				'cardHint'			=> $row->cardHint,
+				'customerToken'		=> $row->customerToken,
+				'active'			=> $row->active,
+				'cardInvalid'		=> $row->cardInvalid,
+				'cardInvalidReason'	=> $row->cardInvalidReason,
 			);
 
 			return $data;
@@ -153,6 +149,7 @@ class Billing_model extends CI_Model{
 					'customerToken'		=> $row->customerToken,
 					'active'			=> $row->active,
 					'cardInvalid'		=> $row->cardInvalid,
+					'cardInvalidReason'	=> $row->cardInvalidReason,
 				);
 
 			}
@@ -172,22 +169,12 @@ class Billing_model extends CI_Model{
 
 	public function update($id, $input_data){
 
-		//for card data to be updated, all the necessary card data must exist
 		$data = elements(array(
 			'userId',
-			'email',
+			'cardNumber',
 			'active',
 			'cardInvalid',
-			'cardNumber',
-			'cardCvc',
-			'cardExpiryMonth',
-			'cardExpiryYear',
-			'cardName',
-			'cardAddress',
-			'cardCity',
-			'cardPostCode',
-			'cardState',
-			'cardCountry',
+			'cardInvalidReason',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -199,9 +186,9 @@ class Billing_model extends CI_Model{
 				'rules'	=> 'integer',
 			),
 			array(
-				'field'	=> 'email',
-				'label'	=> 'Email',
-				'rules'	=> 'valid_email',
+				'field'	=> 'cardNumber',
+				'label'	=> 'Credit Card Number',
+				'rules'	=> 'integer'
 			),
 			array(
 				'field'	=> 'active'
@@ -214,55 +201,10 @@ class Billing_model extends CI_Model{
 				'rules'	=> 'boolean_style',
 			),
 			array(
-				'field'	=> 'cardNumber',
-				'label'	=> 'Credit Card Number',
-				'rules'	=> 'integer'
-			),
-			array(
-				'field'	=> 'cardCvc',
-				'label'	=> 'Card CVC',
-				'rules'	=> 'integer'
-			),
-			array(
-				'field'	=> 'cardExpiryMonth',
-				'label'	=> 'Card Expiry Month',
-				'rules'	=> 'integer',
-			),
-			array(
-				'field'	=> 'cardExpiryYear',
-				'label'	=> 'Card Expiry Year',
-				'rules'	=> 'integer'
-			),
-			array(
-				'field'	=> 'cardName',
-				'label'	=> 'Card Name',
-				'rules'	=> '',
-			),
-			array(
-				'field'	=> 'cardAddress',
-				'label'	=> 'Card Address',
-				'rules'	=> '',
-			),
-			array(
-				'field'	=> 'cardCity',
-				'label'	=> 'Card City',
-				'rules'	=> '',
-			),
-			array(
-				'field'	=> 'cardPostCode',
-				'label'	=> 'Card Post Code',
-				'rules'	=> 'integer',
-			),
-			array(
-				'field'	=> 'cardState',
-				'label'	=> 'Card State',
-				'rules'	=> '',
-			),
-			array(
-				'field'	=> 'cardCountry',
-				'label'	=> 'Card Country',
+				'field'	=> 'cardInvalidReason',
+				'label'	=> 'Card Invalid Reason',
 				'rules'	=> ''
-			),
+			)
 		));
 
 		$validation_errors = [];
@@ -271,29 +213,8 @@ class Billing_model extends CI_Model{
 			$validation_errors['userId'] = 'Billing information can only be updated with an existing user account.';
 		}
 
-		//one for all, all for one, if any of the card data is set, all the card data must be set
-		$updating_card = false;
-		$keys = array_keys($data);
-		$necessary_keys = array(
-			'cardNumber',
-			'cardCvc',
-			'cardExpiryMonth',
-			'cardExpiryYear',
-			'cardName',
-			'cardAddress',
-			'cardCity',
-			'cardCountry'
-		);
-		foreach($necessary_keys as $necessary_key){
-			if(array_key_exists($data, $necessary_key){
-				$updating_card =  true;
-				break;
-			}
-		}
-		if($updating_card){
-			if(count(array_intersect_key(array_flip($necessary_keys), $data)) !== count($necessary_keys)){
-				$validation_errors['card'] = 'Updating the credit card requires all necessary credit card values to be supplied. This includes Card Number, Card CVC, Card Expiry Month, Card Expiry Year, Card Name, Card Address, Card City and Card Country.';
-			}
+		if(isset($data['cardInvalidReason']) AND !isset($data['cardInvalid'])){
+			$validation_errors['cardInvalidReason'] = 'Cannot submit a card invalid reason without the card also being invalid';
 		}
 
 		if($this->validator->run() ==  false){
@@ -309,19 +230,7 @@ class Billing_model extends CI_Model{
 
 		}
 
-		//get the customer token, the customerToken cannot be updated
-		$query = $this->db->get_where('billing', array('id' => $id));
-		if($query->num_rows() > 0){
-			$customer_token = $query->row()->customerToken;
-		}else{
-			$this->errors = array(
-				'error'	=> 'Billing record to be updated was not found.',
-			);
-			return false;
-		}
-
-		//begin transaction
-		$this->db->trans_begin();
+		//filtering the $data
 
 		if(isset($data['cardNumber'])){
 			$data['cardHint'] = substr($data['cardNumber'], -4);
@@ -332,44 +241,24 @@ class Billing_model extends CI_Model{
 		if(isset($data['cardInvalid'])){
 			$data['cardInvalid'] = intval(filter_var($data['cardInvalid'], FILTER_VALIDATE_BOOLEAN));
 		}
-
-		$db_data = elements(array(
-			'userId',
-			'cardHint',
-			'active',
-			'cardInvalid',
-		), $data, null, true);
-
-		//update the record
-		$this->db->update('billing', $db_data, array('id' => $id));
-
-		//update the card if necessary
-		$card_updated = false;
-		if($updating_card){
-			$card_updated = $this->Pin_model->update_customer($customer_token, $data);
+		//if cardInvalid is false, then we should wipe the cardInvalidReason
+		if(!$data['cardInvalid']){
+			$data['cardInvalidReason'] = '';
 		}
 
-		//if the db record was updated or that the card was updated, then everything is fine
-		//if the trans_status was affected, it's a system error
-		//otherwise, nothing needed to be updated
-		if($this->db->affected_rows() > 0 OR $card_updated){
+		//we no longer require the cardNumber
+		unset($data['cardNumber']);
 
-			$this->db->trans_commit();
+		$this->db->update('billing', $data, array('id' => $id));
+
+		if($this->db->affected_rows() > 0){
+
 			return true;
 		
-		}elseif($this->db->trans_status() === FALSE){
-
-			$this->db->trans_rollback();
-			$this->errors = array(
-				'system_error'	=> 'Billing record in the database could not be updated.',
-			);
-			return false;
-		
 		}else{
-
-			$this->db->trans_rollback();
+			
 			$this->errors = array(
-				'error'	=> 'Billing record in the database did not need to be updated and/or the credit card could not be or did not need to be updated by the Pin service.',
+				'error'	=> 'Billing record in the database did not need to be updated.',
 			);
 			return false;
 		
@@ -378,7 +267,7 @@ class Billing_model extends CI_Model{
 	}
 
 	/**
-	 * Deletes the billing information. It's not possible to delete the customer object in the Pin service
+	 * Deletes the billing information.
 	 * @param  integer $id
 	 * @return boolean
 	 */

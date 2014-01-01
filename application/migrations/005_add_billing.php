@@ -41,6 +41,9 @@ class Migration_add_billing extends CI_Migration {
 				'unsigned'		=> TRUE,
 				'default'		=> 0,
 			],
+			'cardInvalidReason'	=> [
+				'type'	=> 'TEXT',
+			]
 		]);
 
 		$this->dbforge->add_key('id', TRUE);
