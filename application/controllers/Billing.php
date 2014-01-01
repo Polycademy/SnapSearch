@@ -143,6 +143,9 @@ class Billing extends CI_Controller{
 
 		}else{
 
+			//email is always the email the user is registered with
+			$data['email'] = $this->user['email'];
+
 			$pin_query = $this->Pin_model->create_customer($data);
 			if($pin_query){
 				$data['customerToken'] = $pin_query;
@@ -200,42 +203,17 @@ class Billing extends CI_Controller{
 
 		}else{
 
-			//only if the data is attempting to update the card do we try to update the card
-			$updating_card = false;
-			$keys = array_keys($data);
-			$necessary_keys = array(
-				'cardNumber',
-				'cardCvc',
-				'cardExpiryMonth',
-				'cardExpiryYear',
-				'cardName',
-				'cardAddress',
-				'cardCity',
-				'cardCountry'
-			);
-			foreach($necessary_keys as $necessary_key){
-				if(array_key_exists($data, $necessary_key){
-					$updating_card =  true;
-					break;
+			//email is always the email the user is registered with
+			//if the email gets updated through the accounts
+			//this subsequently needs to get updated
+			$data['email'] = $this->user['email'];
+
+			$customer_token_query = $this->Billing_model->read($id);
+			if($customer_token_query){
+				$pin_query = $this->Pin_model->update_customer($customer_token_query['customerToken'], $data);
+				if($pin_query){
+					$billing_query = $this->Billing_model->update($id, $data);
 				}
-			}
-
-			if($updating_card){
-
-				$customer_token_query = $this->Billing_model->read($id);
-				if($customer_token_query){
-					$pin_query = $this->Pin_model->update_customer($customer_token_query['customerToken'], $data);
-					if($pin_query){
-						$billing_query = $this->Billing_model->update($id, $data);
-					}
-				}
-
-			}else{
-
-				$customer_token_query = true;
-				$pin_query = true;
-				$billing_query = $this->Billing_model->update($id, $data);
-
 			}
 
 			if(!$customer_token_query){
