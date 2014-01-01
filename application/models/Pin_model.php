@@ -491,7 +491,6 @@ class Pin_model extends CI_Model{
 			'amount',
 			'ipAddress',
 			'currency',
-			'capture',
 			'customerToken',
 		), $input_data, null, true);
 
@@ -520,11 +519,6 @@ class Pin_model extends CI_Model{
 				'field'	=> 'currency',
 				'label'	=> 'Currency',
 				'rules'	=> 'required|alpha|max_length[3]',
-			),
-			array(
-				'field'	=> 'capture',
-				'label'	=> 'Card Name',
-				'rules'	=> 'boolean_style',
 			),
 			array(
 				'field'	=> 'customerToken',
