@@ -81,7 +81,7 @@ class Payments_model extends CI_Model{
 			array(
 				'field'	=> 'amount'
 				'label'	=> 'Amount in Cents',
-				'rules'	=> 'required|numeric',
+				'rules'	=> 'required|numeric|greater_than[99]',
 			),
 			array(
 				'field'	=> 'currency',
