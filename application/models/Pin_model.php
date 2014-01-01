@@ -11,6 +11,7 @@ use Guzzle\Http\Exception\CurlException;
 class Pin_model extends CI_Model{
 
 	protected $client;
+	protected $errors;
 
 	public function __construct(){
 
@@ -629,6 +630,12 @@ class Pin_model extends CI_Model{
 		}
 
 		return $response_array['response']['token'];
+
+	}
+
+	public function get_errors(){
+
+		return $this->errors;
 
 	}
 
