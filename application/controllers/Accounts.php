@@ -25,7 +25,7 @@ class Accounts extends CI_Controller{
 		$this->user = $this->authenticator->get_user();
 
 		//configurable properties
-		$this->api_free_limit = 3000;
+		$this->api_free_limit = 1500;
 		$this->charge_interval = 'P30D';
 
 	}
@@ -58,6 +58,7 @@ class Accounts extends CI_Controller{
 						$user['apiPreviousLimit'],
 						$user['apiFreeLimit'],
 						$user['apiUsage'],
+						$user['apiRequests'],
 						$user['apiLeftOverCharge'],
 						$user['chargeInterval'],
 						$user['chargeDate'],
@@ -109,6 +110,7 @@ class Accounts extends CI_Controller{
 					$query['apiPreviousLimit'],
 					$query['apiFreeLimit'],
 					$query['apiUsage'],
+					$query['apiRequests'],
 					$query['apiLeftOverCharge'],
 					$query['chargeInterval'],
 					$query['chargeDate'],
@@ -201,6 +203,8 @@ class Accounts extends CI_Controller{
 			if(!$this->user->authorized(false, 'admin')){
 				unset(
 					$data['apiFreeLimit'],
+					$data['apiUsage'],
+					$data['apiRequests'],
 					$data['apiLeftOverCharge'],
 					$data['chargeInterval']
 				);

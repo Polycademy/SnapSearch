@@ -1,5 +1,8 @@
 <?php
 
+//track the stats by adding each request to $user['apiRequests'] and each usage to $user['apiUsage']
+//but disallow any requests (get the cache instead)?? that are beyond the apiLimit
+
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\CurlException;

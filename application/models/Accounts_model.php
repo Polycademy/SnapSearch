@@ -2,10 +2,6 @@
 
 use PolyAuth\Exceptions\PolyAuthException;
 
-/*
-UPDATE needs to allow the possibility of adding to the apiLeftOverCharge
- */
-
 class Accounts_model extends CI_Model{
 
 	protected $accounts_manager;
@@ -140,6 +136,8 @@ class Accounts_model extends CI_Model{
 
 		$data['apiUsage'] = 0;
 
+		$data['apiRequests'] = 0;
+
 		$data['apiLeftOverCharge'] = 0;
 
 		$charge_date = new DateTime($data['createdOn']);
@@ -222,6 +220,8 @@ class Accounts_model extends CI_Model{
 			'passwordConfirm',
 			'apiLimit',
 			'apiFreeLimit',
+			'apiUsage',
+			'apiRequests',
 			'apiLeftOverCharge',
 			'chargeInterval',
 		), $input_data, null, true);
@@ -260,6 +260,16 @@ class Accounts_model extends CI_Model{
 				'rules'	=> 'integer',
 			),
 			array(
+				'field'	=> 'apiUsage', //apiUsage can only be updated directly inside the model
+				'label'	=> 'API Usage',
+				'rules'	=> 'integer',
+			),
+			array(
+				'field'	=> 'apiRequests',
+				'label'	=> 'API Requests',
+				'rules'	=> 'integer',
+			),
+			array(
 				'field'	=> 'apiLeftOverCharge', //apiLeftOverCharge can only be updated directly in the model, which is from the CRON billing, not from the controller. This relies on assuming only one currency is used! This is a pre-tax charge.
 				'label'	=> 'API Left Over Charge',
 				'rules'	=> 'numeric',
@@ -281,7 +291,7 @@ class Accounts_model extends CI_Model{
 
 		//api limit can only be changed if the user has at least an active billing information
 		if(isset($data['apiLimit'])){
-			$billing_query = $this->db->get_where('billing', array('userId' => $id, 'active' => 1));
+			$billing_query = $this->db->get_where('billing', array('userId' => $id, 'active' => 1, 'cardInvalid' => 0));
 			if($billing_query->num_rows() < 1){
 				$validation_errors['apiLimit'] = 'Cannot update API Limit unless you have valid and active billing information.';
 			}

@@ -1,5 +1,20 @@
 <?php
 
+//we'll only try using one of the cards to be active
+//it's too risk to have multiple cards active, and the error handling gets complex
+//so make sure only one card is allowed to be the active card
+//
+//also on create and update
+//check if any of the cards are active and has no cardInvalid error
+//this can happen if the card gets updated with new information
+//or when a new card is created and designated as active
+//if this is true, go into Accounts_model and move the apiPreviousLimit to the apiLimit
+//
+//to resolve billing errors:
+//
+//1. Delete your error card and a new card and designate as active
+//2. Update your error card with new information and designate as active
+
 class Billing_model extends CI_Model{
 
 	protected $errors;

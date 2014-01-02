@@ -24,6 +24,7 @@ class Usage_model extends CI_Model{
 			'userId',
 			'date',
 			'usage',
+			'requests',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -42,8 +43,13 @@ class Usage_model extends CI_Model{
 			array(
 				'field'	=> 'usage'
 				'label'	=> 'Usage',
-				'rules'	=> 'required|numeric',
+				'rules'	=> 'required|integer',
 			),
+			array(
+				'field'	=> 'requests',
+				'label'	=> 'Requests',
+				'rules'	=> 'required|integer',
+			)
 		));
 
 		$validation_errors = [];
@@ -145,8 +151,13 @@ class Usage_model extends CI_Model{
 			array(
 				'field'	=> 'usage'
 				'label'	=> 'Usage',
-				'rules'	=> 'numeric',
+				'rules'	=> 'integer',
 			),
+			array(
+				'field'	=> 'requests',
+				'label'	=> 'Requests',
+				'rules'	=> 'integer',
+			)
 		));
 
 		$validation_errors = [];

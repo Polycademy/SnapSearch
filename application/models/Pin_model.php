@@ -485,7 +485,7 @@ class Pin_model extends CI_Model{
 
 	}
 
-	public function charge_customer($customer_token, $input_data){
+	public function charge_customer($input_data){
 
 		$data = elements(array(
 			'email',
@@ -625,7 +625,7 @@ class Pin_model extends CI_Model{
 
 		}
 
-		return $response_array['response']['token'];
+		return $response_array['response'];
 
 	}
 

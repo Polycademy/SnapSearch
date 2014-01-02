@@ -20,7 +20,11 @@ class Migration_add_usage_rates extends CI_Migration{
 			'usage'	=> [
 				'type'		=> 'INT',
 				'unsigned'	=> TRUE,
-			]
+			],
+			'requests'	=> [
+				'type'		=> 'INT',
+				'unsigned'	=> TRUE,
+			],
 		]);
 
 		$this->dbforge->add_key('id', TRUE);

@@ -27,6 +27,7 @@ class Migration_add_polyauth extends CI_Migration {
 		// * apiLimit is the total limit of how many times the api can be accessed
 		// * apiFreeLimit is the limit that is subtracted from the apiUsage when you're about the charge the amount
 		// * apiUsage is the number of usages of the API racked up in the chargeInterval, this number will subtract apiFreeLimit and if the number is positive, this is the number that will be multiplied by the charge amount (and add any apiLeftOverCharge) and be charged to the user via the payment gateway, the charge amount will be specified by the handler
+		// * apiRequests is the total number of requests sent to SnapSearch in the month, regardless of whether its cached or non-cached
 		// * apiPreviousLimit was the previous limit 
 		// * apiLeftOverCharge will be charge of API usages that were not charged for from the previous chargeInterval due to charge errors, this is an added amount based on cents. It assumes only ONE currency. The reason we do it this way, is so that the monthly charges can actually add up properly instead of adding up the usage which could decrease the price since the more usage, the less charge per usage.
 		// * chargeInterval is ISO 8601 duration
@@ -46,6 +47,7 @@ class Migration_add_polyauth extends CI_Migration {
 			'apiPreviousLimit'		=> 0,		
 			'apiFreeLimit'			=> 100000000,
 			'apiUsage'				=> 0,
+			'apiRequests'			=> 0,
 			'apiLeftOverCharge'		=> 0,
 			'chargeInterval'		=> 'P30D',
 		);
@@ -171,6 +173,11 @@ class Migration_add_polyauth extends CI_Migration {
 				'unsigned' => TRUE,
 			],
 			'apiUsage'	=> [
+				'type'		=> 'INT',
+				'default'	=> 0,
+				'unsigned' => TRUE,
+			],
+			'apiRequests'	=> [
 				'type'		=> 'INT',
 				'default'	=> 0,
 				'unsigned' => TRUE,
