@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<title>SnapSearch Monthly Invoice for <?= $month ?> <?= $year ?></title>
+		<title>SnapSearch Billing Error for <?= $month ?> <?= $year ?></title>
 		<style type="text/css">
 			/* Based on The MailChimp Reset INLINE: Yes. */  
 			/* Client-specific Styles */
@@ -141,7 +141,11 @@
 
 					<h4>Hi <?= $username ?>,</h4>
 
-					<p>SnapSearch has prepared your latest monthly invoice. You can login to your <a href="http://snapsearch.io/user/<?= $user_id ?>/billing">billing control panel</a> to view it. It is also attached to this email. The invoice has been automatically charged, you do not need to take any action.</p>
+					<p>SnapSearch has attempted to bill your credit card for your monthly invoice. However it met an error processing the payment. The error is: <?= $charge_error ?>.</p>
+
+					<p>Due to this error, we have downgraded your API limit to the free account limit.</p>
+
+					<p>Please review your credit card details at your <a href="http://snapsearch.io/user/<?= $user_id ?>/billing">billing control panel</a>. Once this is resolved, your previous API limit will be reinstated. This month's charge will be added to the next month's charge.</p>
 
 					<p>Thank you for your business.</p>
 

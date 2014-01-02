@@ -1,6 +1,5 @@
 <?php
 
-//this model probably has to send emails, such as the charge notification emails
 class Email_model extends CI_Model{
 
 	protected $mailer;
@@ -20,11 +19,9 @@ class Email_model extends CI_Model{
 
 	}
 
-	public function send_charge(){
+	public function prepare_email($data, $template){
 
-		//send charge information
-		//we need a charge invoice template email
-		//attach invoice
+		return $this->load->view($template, $data, true);
 
 	}
 
@@ -65,7 +62,9 @@ class Email_model extends CI_Model{
 		}
 
 		if(!$this->mailer->Send()){
-			log_message('error', 'Mailer Error: ' . $this->mailer->ErrorInfo);
+			$this->errors = [
+				'system_error'	=> 'Mailer Error: ' . $this->mailer->ErrorInfo,
+			];
 			return false;
 		}
 
