@@ -26,8 +26,9 @@ class Migration_add_polyauth extends CI_Migration {
 	
 		// * apiLimit is the total limit of how many times the api can be accessed
 		// * apiFreeLimit is the limit that is subtracted from the apiUsage when you're about the charge the amount
-		// * apiUsage is the number of usages of the API racked up in the chargeInterval, this number will subtract apiFreeLimit and add apiLeftOverUsage and if the number is positive, this is the number that will be multiplied by the charge amount and be charged to the user via the payment gateway, the charge amount will be specified by the handler
-		// * apiLeftOverUsage will be number of API usages that were not charged for from the previous chargeInterval due to charge errors or no customer reference number
+		// * apiUsage is the number of usages of the API racked up in the chargeInterval, this number will subtract apiFreeLimit and if the number is positive, this is the number that will be multiplied by the charge amount (and add any apiLeftOverCharge) and be charged to the user via the payment gateway, the charge amount will be specified by the handler
+		// * apiPreviousLimit was the previous limit 
+		// * apiLeftOverCharge will be charge of API usages that were not charged for from the previous chargeInterval due to charge errors, this is an added amount based on cents. It assumes only ONE currency. The reason we do it this way, is so that the monthly charges can actually add up properly instead of adding up the usage which could decrease the price since the more usage, the less charge per usage.
 		// * chargeInterval is ISO 8601 duration
 		// * chargeDate is the next date to be charged for
 
@@ -45,7 +46,7 @@ class Migration_add_polyauth extends CI_Migration {
 			'apiPreviousLimit'		=> 0,		
 			'apiFreeLimit'			=> 100000000,
 			'apiUsage'				=> 0,
-			'apiLeftOverUsage'		=> 0,
+			'apiLeftOverCharge'		=> 0,
 			'chargeInterval'		=> 'P30D',
 		);
 
@@ -174,7 +175,7 @@ class Migration_add_polyauth extends CI_Migration {
 				'default'	=> 0,
 				'unsigned' => TRUE,
 			],
-			'apiLeftOverUsage'	=> [
+			'apiLeftOverCharge'	=> [
 				'type'		=> 'INT',
 				'default'	=> 0,
 				'unsigned' => TRUE,

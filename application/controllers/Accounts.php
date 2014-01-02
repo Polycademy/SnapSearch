@@ -58,7 +58,7 @@ class Accounts extends CI_Controller{
 						$user['apiPreviousLimit'],
 						$user['apiFreeLimit'],
 						$user['apiUsage'],
-						$user['apiLeftOverUsage'],
+						$user['apiLeftOverCharge'],
 						$user['chargeInterval'],
 						$user['chargeDate'],
 					);
@@ -109,7 +109,7 @@ class Accounts extends CI_Controller{
 					$query['apiPreviousLimit'],
 					$query['apiFreeLimit'],
 					$query['apiUsage'],
-					$query['apiLeftOverUsage'],
+					$query['apiLeftOverCharge'],
 					$query['chargeInterval'],
 					$query['chargeDate'],
 				);
@@ -201,6 +201,7 @@ class Accounts extends CI_Controller{
 			if(!$this->user->authorized(false, 'admin')){
 				unset(
 					$data['apiFreeLimit'],
+					$data['apiLeftOverCharge'],
 					$data['chargeInterval']
 				);
 			}

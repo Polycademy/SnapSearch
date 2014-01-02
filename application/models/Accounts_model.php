@@ -2,6 +2,10 @@
 
 use PolyAuth\Exceptions\PolyAuthException;
 
+/*
+UPDATE needs to allow the possibility of adding to the apiLeftOverCharge
+ */
+
 class Accounts_model extends CI_Model{
 
 	protected $accounts_manager;
@@ -136,7 +140,7 @@ class Accounts_model extends CI_Model{
 
 		$data['apiUsage'] = 0;
 
-		$data['apiLeftOverUsage'] = 0;
+		$data['apiLeftOverCharge'] = 0;
 
 		$charge_date = new DateTime($data['createdOn']);
 		$charge_date->add(new DateInterval($data['chargeInterval']));
@@ -218,6 +222,7 @@ class Accounts_model extends CI_Model{
 			'passwordConfirm',
 			'apiLimit',
 			'apiFreeLimit',
+			'apiLeftOverCharge',
 			'chargeInterval',
 		), $input_data, null, true);
 
@@ -253,6 +258,11 @@ class Accounts_model extends CI_Model{
 				'field'	=> 'apiFreeLimit',
 				'label'	=> 'API Free limit',
 				'rules'	=> 'integer',
+			),
+			array(
+				'field'	=> 'apiLeftOverCharge', //apiLeftOverCharge can only be updated directly in the model, which is from the CRON billing, not from the controller. This relies on assuming only one currency is used! This is a pre-tax charge.
+				'label'	=> 'API Left Over Charge',
+				'rules'	=> 'numeric',
 			),
 			array(
 				'field'	=> 'chargeInterval',
@@ -335,6 +345,26 @@ class Accounts_model extends CI_Model{
 			$query = $this->accounts_manager->deregister($user);
 			
 			return true;
+
+		}catch(PolyAuthException $e){
+
+			$this->errors = array(
+				'error'	=> $e->get_errors()
+			);
+
+			return false;
+
+		}
+
+	}
+
+	public function count(){
+
+		try{
+
+			$query = $this->accounts_manager->count_users();
+
+			return $query;
 
 		}catch(PolyAuthException $e){
 
