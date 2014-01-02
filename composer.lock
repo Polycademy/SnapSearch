@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "3a2748a62047842c6e50633ee923d33f",
+    "hash": "3ecdfd8c6151bcd12df205a49de2fffb",
     "packages": [
         {
             "name": "dflydev/hawk",
@@ -701,16 +701,16 @@
         },
         {
             "name": "polycademy/polyauth",
-            "version": "0.0.7",
+            "version": "0.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Polycademy/PolyAuth.git",
-                "reference": "99780b18bcfd8889f056e7c9e0760a3d4a07892d"
+                "reference": "c448aca4a6e03c84135c98985bb324e1e86544ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/99780b18bcfd8889f056e7c9e0760a3d4a07892d",
-                "reference": "99780b18bcfd8889f056e7c9e0760a3d4a07892d",
+                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/c448aca4a6e03c84135c98985bb324e1e86544ab",
+                "reference": "c448aca4a6e03c84135c98985bb324e1e86544ab",
                 "shasum": ""
             },
             "require": {
@@ -763,7 +763,7 @@
                 "sessions",
                 "user accounts"
             ],
-            "time": "2013-12-03 15:17:52"
+            "time": "2014-01-02 12:25:18"
         },
         {
             "name": "polycademy/purl",
