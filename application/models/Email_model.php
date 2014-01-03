@@ -19,7 +19,7 @@ class Email_model extends CI_Model{
 
 	}
 
-	public function prepare_email($data, $template){
+	public function prepare_email($template, $data){
 
 		return $this->load->view($template, $data, true);
 

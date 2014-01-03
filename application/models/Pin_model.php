@@ -410,7 +410,7 @@ class Pin_model extends CI_Model{
 
 			if($response_status == 404){
 
-				$this->errors['validation_error'] = 'Customer was not found on the Pin service. Try deleting and creating a new customer reference on the Pin service.'; 
+				$this->errors['validation_error']['customerToken'] = 'Customer was not found on the Pin service. Try deleting and creating a new customer reference on the Pin service.'; 
 
 			}elseif($response_status == 422){
 

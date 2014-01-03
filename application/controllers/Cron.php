@@ -1,6 +1,9 @@
 <?php
 
-//add the billing stuff here too!
+/*
+	Todo: The monthly_tracking really needs to be wrapped together in a global transaction.
+	But that's too hard to do with the structure of Codeigniter's models.
+ */
 class Cron extends CI_Controller{
 
 	public function __construct(){
@@ -14,8 +17,6 @@ class Cron extends CI_Controller{
 		//no time limit for Cron processes
 		//by default calling PHP from the cli should have max_execution_time of 0, but this is here to be sure
 		set_time_limit(0);
-
-
  
 	}
 
@@ -46,11 +47,14 @@ class Cron extends CI_Controller{
 		//1 cent per request
 		$charge_per_request = 1;
 		$currency = 'AUD';
+		$product_description = 'SnapSearch API Usage';
 
 		$this->load->model('Accounts_model');
 		$this->load->model('Usage_model');
 		$this->load->model('Billing_model');
 		$this->load->model('Pin_model');
+		$this->load->model('Email_model');
+		$this->load->model('Payments_model');
 
 		//we need to paginate across all the users because loading all the users into memory might be a bad idea
 		$offset = 0;
@@ -133,7 +137,7 @@ class Cron extends CI_Controller{
 					//prepare the charge the customer
 					$charge_query = $this->Pin_model->charge_customer([
 						'email'			=> $user['email'],
-						'description'	=> 'SnapSearch API Usage',
+						'description'	=> $product_description,
 						'amount'		=> $charge,
 						'ipAddress'		=> $user['ipAddress'],
 						'currency'		=> $currency,
@@ -142,21 +146,92 @@ class Cron extends CI_Controller{
 
 					if(!$charge_query){
 
-						//failed to charge
-						//put failed charge into left over charge
-						//send billing failure email
-						//update the billing details to make the card inactive and also invalid, add invalid reason from the errors
-						//copy the apiLimit into the apiPreviousLimit and make the apiLimit the same as apiFreeLimit
+						//charge was unsuccessful
 
-						//the validation_errors can be a multitude, they need to be imploded and added as text to the invalidReason
+						//retrieve the errors, there could be system or validation errors
+						$charge_errors = $this->Pin_model->get_errors();
+						$charge_error_message = '';
+						if(isset($charge_errors['validation_error'])){
+							$charge_error_message .= implode(' | ', $charge_errors['validation_error']);
+						}elseif(isset($charge_errors['system_error'])){
+							$charge_error_message .= $charge_errors['system_error'];
+						}
+
+						//update the account with the left over charge
+						//apiLimit gets reset to apiFreeLimit while also being copied into apiPreviousLimit
+						$this->Accounts_model->update($user['id'], [
+							'apiLeftOverCharge'	=> $charge,
+							'apiLimit'			=> $user['apiFreeLimit'],
+							'apiPreviousLimit'	=> $user['apiLimit'],
+						]);
+
+						//update the billing details in order to make the current customer object invalid
+						$this->Billing_model->update($billing_record['id'], [
+							'active'			=> 0,
+							'cardInvalid'		=> 1,
+							'cardInvalidReason'	=> $charge_error_message,							
+						]);
+
+						//prepare the billing error email
+						$email = $this->Email_model->prepare_email('emails/billing_error_email', [
+							'month'			=> date('F'),
+							'year'			=> date('Y'),
+							'username'		=> $user['username'],
+							'charge_error'	=> $charge_error_message,
+							'user_id'		=> $user['id'],
+						]);
+
+						//send the email
+						$this->Email_model->send_email([
+							'enquiry@polycademy.com',
+							[$user['email']],
+							'SnapSearch Billing Error for ' . date('F') . ' ' . date('Y'),
+							$email,
+						]);
+
+						//move on to the next user!
 
 					}else{
 
-						//charge was successful
-						//create payment history record (this record requires information about the customer object)
-						//this is returned as a successful response
-						//read the invoice file
-						//send email and attach invoice file
+						$payment_history = [
+							'userId'		=> $user['id'],
+							'chargeToken'	=> $charge_query['token'],
+							'date'			=> (new DateTime($charge_query['created_at']))->format('Y-m-d H:i:s'),
+							'item'			=> $product_description,
+							'usageRate'		=> $user['apiUsage'],
+							'amount'		=> $charge,
+							'currency'		=> $currency,
+							'email'			=> $user['email'],
+							'country'		=> $charge_query['card']['address_country'],
+						];
+
+						if(!empty($charge_query['card']['address_line1'])) $address[] $charge_query['card']['address_line1'];
+						if(!empty($charge_query['card']['address_line2'])) $address[] $charge_query['card']['address_line2'];
+						if(!empty($charge_query['card']['address_city'])) $address[] $charge_query['card']['address_city'];
+						if(!empty($charge_query['card']['address_postcode'])) $address[] $charge_query['card']['address_postcode'];
+						if(!empty($charge_query['card']['address_state'])) $address[] $charge_query['card']['address_state'];
+
+						$payment_history['address'] = implode(' ', $address);
+
+						$payment_id = $this->Payments_model->create($payment_history);
+
+						$invoice_file_location = $this->Payments_model->read($payment_id)['invoiceFilePath'];
+
+						$email = $this->Email_model->prepare_email('emails/invoice_email', [
+							'month'			=> date('F'),
+							'year'			=> date('Y'),
+							'username'		=> $user['username'],
+							'user_id'		=> $user['id'],
+						]);
+
+						//send the email
+						$this->Email_model->send_email([
+							'enquiry@polycademy.com',
+							[$user['email']],
+							'SnapSearch Monthly Invoice for ' . date('F') . ' ' . date('Y'),
+							$email,
+							[$invoice_file_location]
+						]);
 
 					}
 

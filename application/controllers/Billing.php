@@ -203,6 +203,16 @@ class Billing extends CI_Controller{
 
 		}else{
 
+			//non administrators are not allowed the change whether card is invalid or not
+			//the only way for people to resolve their billing error is delete their errored card
+			//and create a new card
+			if(!$this->user->authorized(false, 'admin')){
+				unset(
+					$data['cardInvalid'],
+					$data['cardInvalidReason']
+				);
+			}
+
 			//email is always the email the user is registered with
 			//if the email gets updated through the accounts
 			//this subsequently needs to get updated

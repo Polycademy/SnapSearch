@@ -43,10 +43,6 @@ class Migration_add_payment_history extends CI_Migration {
 			'address'	=> [
 				'type'	=> 'TEXT'
 			],
-			'postCode'	=> [
-				'type'	=> 'INT',
-				'unsigned' => TRUE,
-			],
 			'country'	=> [
 				'type'	=> 'TEXT',
 			],

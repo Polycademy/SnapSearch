@@ -46,7 +46,6 @@ class Payments_model extends CI_Model{
 			'currency',			
 			'email',
 			'address',
-			'postCode',
 			'country',
 		), $input_data, null, true);
 
@@ -97,11 +96,6 @@ class Payments_model extends CI_Model{
 				'field'	=> 'address',
 				'label'	=> 'Address',
 				'rules'	=> 'required',
-			),
-			array(
-				'field'	=> 'postCode',
-				'label'	=> 'Post Code',
-				'rules'	=> 'required|integer',
 			),
 			array(
 				'field'	=> 'country',
@@ -162,6 +156,44 @@ class Payments_model extends CI_Model{
 
 	}
 
+	public function read($id){
+
+		$query = $this->db->get_where('payment_history', ['id'	=> $id]);
+
+		if($query->num_rows() > 0){
+
+			$row = $query->row();
+
+			$data = array(
+				'id'				=> $row->id,
+				'userId'			=> $row->userId,
+				'chargeToken'		=> $row->chargeToken,
+				'date'				=> $row->date,
+				'item'				=> $row->item,
+				'usageRate'			=> $row->usageRate,
+				'amount'			=> $row->amount,
+				'currency'			=> $row->currency,
+				'email'				=> $row->email,
+				'address'			=> $row->address,
+				'country'			=> $row->country,
+				'invoiceFile'		=> $row->invoiceFile,
+				'invoiceFilePath'	=> $this->invoices_location . '/' . $row->invoiceFile,
+			);
+
+			return $data;
+
+		}else{
+		
+			$this->errors = array(
+				'error' => 'Could not find payment history record.'
+			);
+
+			return false;
+		
+		}
+
+	}
+
 	/**
 	 * Read all of payments history, can be searched by the user id
 	 * @param  boolean       $offset  Integer to offset
@@ -201,7 +233,6 @@ class Payments_model extends CI_Model{
 					'currency'			=> $row->currency,
 					'email'				=> $row->email,
 					'address'			=> $row->address,
-					'postCode'			=> $row->postCode,
 					'country'			=> $row->country,
 					'invoiceFile'		=> $row->invoiceFile,
 					'invoiceFilePath'	=> $this->invoices_location . '/' . $row->invoiceFile,
@@ -241,7 +272,6 @@ class Payments_model extends CI_Model{
 			'currency',			
 			'email',
 			'address',
-			'postCode',
 			'country',
 			'invoiceFile',
 		), $input_data, null, true);
@@ -293,11 +323,6 @@ class Payments_model extends CI_Model{
 				'field'	=> 'address',
 				'label'	=> 'Address',
 				'rules'	=> '',
-			),
-			array(
-				'field'	=> 'postCode',
-				'label'	=> 'Post Code',
-				'rules'	=> 'integer',
 			),
 			array(
 				'field'	=> 'country',
@@ -419,7 +444,6 @@ class Payments_model extends CI_Model{
 			'userId',
 			'email',
 			'address',
-			'postCode',
 			'country'
 			'item',
 			'usageRate',

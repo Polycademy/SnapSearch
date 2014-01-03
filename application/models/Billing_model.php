@@ -1,20 +1,5 @@
 <?php
 
-//we'll only try using one of the cards to be active
-//it's too risk to have multiple cards active, and the error handling gets complex
-//so make sure only one card is allowed to be the active card
-//
-//also on create and update
-//check if any of the cards are active and has no cardInvalid error
-//this can happen if the card gets updated with new information
-//or when a new card is created and designated as active
-//if this is true, go into Accounts_model and move the apiPreviousLimit to the apiLimit
-//
-//to resolve billing errors:
-//
-//1. Delete your error card and a new card and designate as active
-//2. Update your error card with new information and designate as active
-
 class Billing_model extends CI_Model{
 
 	protected $errors;
@@ -101,6 +86,8 @@ class Billing_model extends CI_Model{
 			return false;
 		
 		}
+
+		$this->resolve_billing_errors($data['userId']);
 
 		return $this->db->insert_id();
 
@@ -222,14 +209,33 @@ class Billing_model extends CI_Model{
 			)
 		));
 
+		//filtering the $data
+		if(isset($data['cardNumber'])){
+			$data['cardHint'] = substr($data['cardNumber'], -4);
+		}
+		if(isset($data['active'])){
+			$data['active'] = intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN));
+		}
+		if(isset($data['cardInvalid'])){
+			$data['cardInvalid'] = intval(filter_var($data['cardInvalid'], FILTER_VALIDATE_BOOLEAN));
+		}
+		//if cardInvalid is false, then we should wipe the cardInvalidReason
+		if(isset($data['cardInvalid'])){
+			if(!$data['cardInvalid']){
+				$data['cardInvalidReason'] = '';
+			}
+		}
+
 		$validation_errors = [];
 
 		if(isset($data['userId']) AND !$this->Accounts_model->read($data['userId'])){
 			$validation_errors['userId'] = 'Billing information can only be updated with an existing user account.';
 		}
 
-		if(isset($data['cardInvalidReason']) AND !isset($data['cardInvalid'])){
-			$validation_errors['cardInvalidReason'] = 'Cannot submit a card invalid reason without the card also being invalid';
+		if(isset($data['active']) AND isset($data['cardInvalid'])){
+			if($data['active'] AND $data['cardInvalid']){
+				$validation_errors['active'] = 'Cannot submit a card that is simultaneously active and invalid.';
+			}
 		}
 
 		if($this->validator->run() ==  false){
@@ -243,22 +249,6 @@ class Billing_model extends CI_Model{
 			);
 			return false;
 
-		}
-
-		//filtering the $data
-
-		if(isset($data['cardNumber'])){
-			$data['cardHint'] = substr($data['cardNumber'], -4);
-		}
-		if(isset($data['active'])){
-			$data['active'] = intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN));
-		}
-		if(isset($data['cardInvalid'])){
-			$data['cardInvalid'] = intval(filter_var($data['cardInvalid'], FILTER_VALIDATE_BOOLEAN));
-		}
-		//if cardInvalid is false, then we should wipe the cardInvalidReason
-		if(!$data['cardInvalid']){
-			$data['cardInvalidReason'] = '';
 		}
 
 		//we no longer require the cardNumber
@@ -309,6 +299,36 @@ class Billing_model extends CI_Model{
 	public function get_errors(){
 
 		return $this->errors;
+
+	}
+
+	/*
+		Billing errors can only be resolved by deleting the bad card, and creating a new card
+	 */
+	protected function resolve_billing_errors($user_id){
+
+		$cards = $this->read_all($user_id);
+		
+		//if any of the cards are both active and not invalid, we can resolve any potential billing errors
+		$can_be_resolved = false;
+		foreach($cards as $card){
+			if($card['active'] AND !$card['cardInvalid']){
+				$can_be_resolved = true;
+				break;
+			}
+		}
+
+		//switch the apiPreviousLimit into the apiLimit, but only if the apiPreviousLimit was greater than 0
+		//then default the apiPreviousLimit to 0
+		if($can_be_resolved){
+			$user = $this->Accounts_model->read($user_id);
+			if($user['apiPreviousLimit'] > 0){
+				$this->Accounts_model->update($user_id, [
+					'apiLimit'	=> $user['apiPreviousLimit'],
+					'apiPreviousLimit'	=> 0
+				]);
+			}
+		}
 
 	}
 
