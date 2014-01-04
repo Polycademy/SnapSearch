@@ -1,8 +1,5 @@
 <?php
 
-//track the stats by adding each request to $user['apiRequests'] and each usage to $user['apiUsage']
-//but disallow any requests (get the cache instead)?? that are beyond the apiLimit
-
 use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\CurlException;
@@ -34,9 +31,7 @@ class Robot_model extends CI_Model{
 
 	}
 
-	public function read_site($input_parameters){
-
-		$USER_ID = 1;
+	public function read_site($user_id, $input_parameters){
 
 		$parameters = elements(array(
 			'url',
@@ -161,16 +156,6 @@ class Robot_model extends CI_Model{
 
 		}
 
-		/*
-			THIS PLACE WILL NEED API FLOOD CONTROL. In order to prevent malicious infinite interception.
-			http://stackoverflow.com/questions/1375501/how-do-i-throttle-my-sites-api-users
-			Basically use the leaky bucket. Or a resetting bucket.
-			Most importantly is to use something Redis as a cache rather than storing in DB. This needs to be
-			in memory for performance purposes.
-			Infinite interception can occur from Snapsearch heading to the site which calls Snapsearch again.
-			Detect from the same USER ID + SAME URL or same IP?.
-		 */
-
 		//default cache parameters of true and 24 hours
 		if(isset($parameters['cache'])){
 			$parameters['cache'] = filter_var($parameters['cache'], FILTER_VALIDATE_BOOLEAN);
@@ -185,7 +170,7 @@ class Robot_model extends CI_Model{
 		$existing_cache_id = false;
 		$existing_cache_name = false;
 		//we need the user id, for now we're going to assume 1 for everybody
-		$cache = $this->read_cache($USER_ID, $parameters_checksum);
+		$cache = $this->read_cache($user_id, $parameters_checksum);
 
 		if($cache){
 
@@ -202,7 +187,9 @@ class Robot_model extends CI_Model{
 
 				//the cache's date of entry has to be more recent or equal to the valid date
 				if(strtotime($cache['date']) >= strtotime($valid_date)){
-					return json_decode($cache['snapshotData'], true);
+					$response_array = json_decode($cache['snapshotData'], true);
+					$response_array['cache'] = true;
+					return $response_array;
 				}
 
 			}
@@ -263,7 +250,7 @@ class Robot_model extends CI_Model{
 			if($existing_cache_id){
 				$this->update_cache($existing_cache_id, $existing_cache_name, $response_string);
 			}else{
-				$this->insert_cache($USER_ID, $parameters['url'], $response_string, $parameters_checksum);
+				$this->insert_cache($user_id, $parameters['url'], $response_string, $parameters_checksum);
 			}
 
 		}
