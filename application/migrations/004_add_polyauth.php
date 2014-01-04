@@ -130,7 +130,7 @@ class Migration_add_polyauth extends CI_Migration {
 		}
 		
 		//assign the role to the users
-		foreach($default_user_roles as $key => $roles){
+		foreach($default_users_to_roles as $key => $roles){
 
 			$user_id = $default_users[$key]['id'];
 		
@@ -222,7 +222,7 @@ class Migration_add_polyauth extends CI_Migration {
 				'default'	=> 0,
 				'unsigned' => TRUE,
 			],
-			'apiPreviousLimit'	[
+			'apiPreviousLimit'	=> [
 				'type'		=> 'INT',
 				'default'	=> 0,
 				'unsigned' => TRUE,

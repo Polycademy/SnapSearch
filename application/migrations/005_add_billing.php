@@ -53,7 +53,7 @@ class Migration_add_billing extends CI_Migration {
 
 	public function down(){
 
-		$this->dbforge->drop_table('billing_users');
+		$this->dbforge->drop_table('billing');
 
 	}
 
