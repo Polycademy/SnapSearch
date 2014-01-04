@@ -22,8 +22,8 @@ use RBAC\Manager\RoleManager;
  */
 class Migration_add_polyauth extends CI_Migration {
 
-	public function up(){
-	
+	protected function seed(){
+
 		// * apiLimit is the total limit of how many times the api can be accessed
 		// * apiFreeLimit is the limit that is subtracted from the apiUsage when you're about the charge the amount
 		// * apiUsage is the number of usages of the API racked up in the chargeInterval, this number will subtract apiFreeLimit and if the number is positive, this is the number that will be multiplied by the charge amount (and add any apiLeftOverCharge) and be charged to the user via the payment gateway, the charge amount will be specified by the handler
@@ -33,30 +33,55 @@ class Migration_add_polyauth extends CI_Migration {
 		// * chargeInterval is ISO 8601 duration
 		// * chargeDate is the next date to be charged for
 
-		$default_user = array(
-			'id'					=> '1',
-			'ipAddress'				=> inet_pton('127.0.0.1'),
-			'username'				=> 'administrator',
-			'password'				=> '$2y$10$EiqipvSt3lnD//nchj4u9OgOTL9R3J4AbZ5bUVVrh.Tq/gmc5xIvS', //default is "password"
-			'passwordChange'		=> '0',
-			'email'					=> 'admin@admin.com',
-			'createdOn'				=> date('Y-m-d H:i:s'),
-			'lastLogin'				=> date('Y-m-d H:i:s'),
-			'active'				=> '1',
-			'apiLimit'				=> 100000000,
-			'apiPreviousLimit'		=> 0,		
-			'apiFreeLimit'			=> 100000000,
-			'apiUsage'				=> 0,
-			'apiRequests'			=> 0,
-			'apiLeftOverCharge'		=> 0,
-			'chargeInterval'		=> 'P30D',
-		);
+		$default_users = [
+			[
+				'id'					=> '1',
+				'ipAddress'				=> inet_pton('127.0.0.1'),
+				'username'				=> 'administrator',
+				'password'				=> '$2y$10$.73AQ8fIqY6n1ukE8GXTPutI77hOIa9oXDeqYjCOPGcHqRApPDT9O ',
+				'passwordChange'		=> '0',
+				'email'					=> 'enquiry@polycademy.com',
+				'createdOn'				=> date('Y-m-d H:i:s'),
+				'lastLogin'				=> date('Y-m-d H:i:s'),
+				'active'				=> '1',
+				'apiLimit'				=> 100000000,
+				'apiPreviousLimit'		=> 0,		
+				'apiFreeLimit'			=> 100000000,
+				'apiUsage'				=> 0,
+				'apiRequests'			=> 0,
+				'apiLeftOverCharge'		=> 0,
+				'chargeInterval'		=> 'P30D',
+			],
+			[
+				'id'					=> '2',
+				'ipAddress'				=> inet_pton('127.0.0.1'),
+				'username'				=> 'demo',
+				'password'				=> '$2y$10$H3ZtHFOwi2tU2fWYPujK/eS2y3X8enxG9f6Sr51GLgXnHJiMccJhG', //demo
+				'passwordChange'		=> '0',
+				'email'					=> 'enquiry@polycademy.com',
+				'createdOn'				=> date('Y-m-d H:i:s'),
+				'lastLogin'				=> date('Y-m-d H:i:s'),
+				'active'				=> '1',
+				'apiLimit'				=> 1000,
+				'apiPreviousLimit'		=> 0,		
+				'apiFreeLimit'			=> 1000,
+				'apiUsage'				=> 0,
+				'apiRequests'			=> 0,
+				'apiLeftOverCharge'		=> 0,
+				'chargeInterval'		=> 'P30D',
+			]
+		];
 
-		//30 days is more accurate than 1 month
-		$charge_date = new DateTime($default_user['createdOn']);
-		$charge_date->add(new DateInterval($default_user['chargeInterval']));
-		$charge_date = $charge_date->format('Y-m-d H:i:s');
-		$default_user['chargeDate'] = $charge_date;
+		//add chargeDate to each user
+		foreach($default_users as $user){
+			//30 days is more accurate than 1 month
+			$user['chargeDate'] = (new DateTime($user['createdOn']))->add(new DateInterval($user['chargeInterval']))->format('Y-m-d H:i:s');
+		}
+
+		// Seeding data for table 'users'
+		foreach($default_users as $user){
+			$this->db->insert('user_accounts', $user);
+		}
 
 		//roles to descriptions
 		$default_roles = array(
@@ -66,28 +91,63 @@ class Migration_add_polyauth extends CI_Migration {
 		
 		//roles to permissions to permission descriptions
 		$default_role_permissions = array(
-			'admin'		=> array(
-				'admin_create'	=> 'Creating administration resources.',
-				'admin_read'	=> 'Viewing administration resources.',
-				'admin_update'	=> 'Editing administration resources.',
-				'admin_delete'	=> 'Deleting administration resources.',
-			),
-			'member'	=> array(
-				'public_read'	=> 'Viewing public resources.',
-			),
-		);
-		
-		//default user to roles
-		$default_user_roles = array(
-			$default_user['id']	=> array(
-				'admin',
-				'member',
-			),
+			'admin'		=> array(),
+			'member'	=> array(),
 		);
 
+		//default user to roles
+		$default_users_to_roles = array(
+			[
+				'admin',
+				'member',
+			],
+			[
+				'member',
+			]
+		);
+
+		//time to insert the default permission and role data
+		$role_manager = new RoleManager(new MySQLAdapter($this->db->conn_id, new Options));
+		
+		foreach($default_role_permissions as $role => $permissions_array){
+		
+			//create the role
+			$created_role = Role::create($role, $default_roles[$role]);
+			
+			foreach($permissions_array as $permission => $reason){
+
+				//create the permission
+				$created_permission = Permission::create($permission, $reason);
+				//save the permission to the database
+				$role_manager->permissionSave($created_permission);
+				//add the permission to the role
+				$created_role->addPermission($created_permission);
+				
+			}
+			
+			$role_manager->roleSave($created_role);
+			
+		}
+		
+		//assign the role to the users
+		foreach($default_user_roles as $key => $roles){
+
+			$user_id = $default_users[$key]['id'];
+		
+			foreach($roles as $role){
+				$assignable_role = $role_manager->roleFetchByName($role);
+				$role_manager->roleAddSubjectId($assignable_role, $user_id);
+			}
+		
+		}
+
+	}
+
+	public function up(){
+		
 		//autoCode is for autologin
 		//accessTokens would be in a separate table representing the accessTokens
-		//hmac is for HawkStrategy, it's a shared secret to be generated at random
+		//sharedKey is a shared secret to be generated at random for Hawk or HTTP Digest
 		
 		// Table structure for table 'user_accounts'
 		$this->dbforge->add_field(array(
@@ -198,9 +258,6 @@ class Migration_add_polyauth extends CI_Migration {
 		$this->dbforge->add_key('id', TRUE);
 		$this->dbforge->create_table('user_accounts', true);
 		
-		// Dumping data for table 'users'
-		$this->db->insert('user_accounts', $default_user);
-		
 		// Table structure for table 'login_attempts'
 		$this->dbforge->add_field(array(
 			'id' => array(
@@ -309,42 +366,8 @@ class Migration_add_polyauth extends CI_Migration {
 			ENGINE = InnoDB;';
 		
 		$this->db->query($create_auth_subject_role);
-		
-		//time to insert the default permission and role data
-		$role_manager = new RoleManager(new MySQLAdapter($this->db->conn_id, new Options));
-		
-		foreach($default_role_permissions as $role => $permissions_array){
-		
-			//create the role
-			$created_role = Role::create($role, $default_roles[$role]);
-			
-			foreach($permissions_array as $permission => $reason){
 
-				//create the permission
-				$created_permission = Permission::create($permission, $reason);
-				//save the permission to the database
-				$role_manager->permissionSave($created_permission);
-				//add the permission to the role
-				$created_role->addPermission($created_permission);
-				
-			}
-			
-			$role_manager->roleSave($created_role);
-			
-		}
-		
-		//assign the role to the default user
-		foreach($default_user_roles as $user => $roles){
-		
-			foreach($roles as $role){
-			
-				$assignable_role = $role_manager->roleFetchByName($role);
-				
-				$role_manager->roleAddSubjectId($assignable_role, $user);
-			
-			}
-		
-		}
+		$this->seed();
 		
 	}
 
