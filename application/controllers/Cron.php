@@ -77,24 +77,12 @@ class Cron extends CI_Controller{
 
 				//first determine if the $user is currently scheduled for a monthly checkup
 				$today = new DateTime;
-				$beginning_date = new DateTime($user['createdOn']);
-				$charge_interval = new DateInterval($user['chargeInterval']);
+				$charge_date = new DateTime($user['chargeDate']);
 
-				while(true){
-
-					$date_to_check = $beginning_date->add($charge_interval);
-
-					if($date_to_check < $today){
-						//if the date_to_check is before today, we'll keep working with the loop
-						continue;
-					}elseif($date_to_check > $today){
-						//if the date_to_check is after today, then we'll skip this user, as this user is not scheduled for a monthly checkup
-						continue 2;
-					}elseif($date_to_check->format('Y-m-d') == $today->format('Y-m-d')){
-						//if the date_to_check is today, then we'll break and use this user
-						break;
-					}
-
+				if($charge_date > $today){
+					//if the charge_date is after today, then we'll skip this user, as this user is not scheduled for a monthly checkup
+					//if it was equal or less than today, then we'll use this user, if it is less, then that means we missed a charge
+					continue;
 				}
 
 				//there are 2 situations in which a charge will occur, when the apiUsage - apiFreeLimit > 0 or when there is apiLeftOverCharge
@@ -120,11 +108,15 @@ class Cron extends CI_Controller{
 					'requests'	=> $user['apiRequests'],
 				]);
 
-				//clear apiUsage, apiRequests and apiLeftOverCharge for next month
+				$charge_interval = new DateInterval($user['chargeInterval']);
+				$next_charge_date = $charge_date->add($charge_interval);
+
+				//clear apiUsage, apiRequests and apiLeftOverCharge for this month and add the next month's chargeDate
 				$this->Accounts_model->update($user['id'], [
 					'apiUsage'			=> 0,
 					'apiRequests'		=> 0,
 					'apiLeftOverCharge'	=> 0,
+					'chargeDate'		=> $next_charge_date->format('Y-m-d H:i:s'),
 				]);
 
 				if($charge){

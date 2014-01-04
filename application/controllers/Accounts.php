@@ -206,7 +206,8 @@ class Accounts extends CI_Controller{
 					$data['apiUsage'],
 					$data['apiRequests'],
 					$data['apiLeftOverCharge'],
-					$data['chargeInterval']
+					$data['chargeInterval'],
+					$data['chargeDate'],
 				);
 			}
 

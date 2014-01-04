@@ -224,6 +224,7 @@ class Accounts_model extends CI_Model{
 			'apiRequests',
 			'apiLeftOverCharge',
 			'chargeInterval',
+			'chargeDate',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -278,6 +279,11 @@ class Accounts_model extends CI_Model{
 				'field'	=> 'chargeInterval',
 				'label'	=> 'Charge Interval',
 				'rules'	=> 'valid_date_duration',
+			),
+			array(
+				'field'	=> 'chargeDate',
+				'label'	=> 'Charge Date',
+				'rules'	=> 'valid_date',
 			),
 		));
 
