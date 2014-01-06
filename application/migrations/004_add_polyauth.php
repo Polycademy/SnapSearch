@@ -58,7 +58,7 @@ class Migration_add_polyauth extends CI_Migration {
 				'username'				=> 'demo',
 				'password'				=> '$2y$10$H3ZtHFOwi2tU2fWYPujK/eS2y3X8enxG9f6Sr51GLgXnHJiMccJhG', //demo
 				'passwordChange'		=> '0',
-				'email'					=> 'enquiry@polycademy.com',
+				'email'					=> 'demo@polycademy.com',
 				'createdOn'				=> date('Y-m-d H:i:s'),
 				'lastLogin'				=> date('Y-m-d H:i:s'),
 				'active'				=> '1',
