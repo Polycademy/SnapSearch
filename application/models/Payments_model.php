@@ -78,7 +78,7 @@ class Payments_model extends CI_Model{
 				'rules'	=> 'required|integer'
 			),
 			array(
-				'field'	=> 'amount'
+				'field'	=> 'amount',
 				'label'	=> 'Amount in Cents',
 				'rules'	=> 'required|numeric|greater_than[99]',
 			),
@@ -88,7 +88,7 @@ class Payments_model extends CI_Model{
 				'rules'	=> 'required|alpha|max_length[3]',
 			),
 			array(
-				'field'	=> 'email'
+				'field'	=> 'email',
 				'label'	=> 'User Email',
 				'rules'	=> 'required|valid_email',
 			),
@@ -302,10 +302,10 @@ class Payments_model extends CI_Model{
 			array(
 				'field'	=> 'usageRate',
 				'label'	=> 'Usage Rate',
-				'rules'	=> 'integer'
+				'rules'	=> 'integer',
 			),
 			array(
-				'field'	=> 'amount'
+				'field'	=> 'amount',
 				'label'	=> 'Amount in Cents',
 				'rules'	=> 'numeric',
 			),
@@ -315,7 +315,7 @@ class Payments_model extends CI_Model{
 				'rules'	=> 'alpha|max_length[3]',
 			),
 			array(
-				'field'	=> 'email'
+				'field'	=> 'email',
 				'label'	=> 'User Email',
 				'rules'	=> 'valid_email',
 			),
@@ -444,7 +444,7 @@ class Payments_model extends CI_Model{
 			'userId',
 			'email',
 			'address',
-			'country'
+			'country',
 			'item',
 			'usageRate',
 			'currency',

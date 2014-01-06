@@ -46,7 +46,7 @@ class Billing extends CI_Controller{
 			
 		}else{
 
-			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
+			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
 
 				$this->auth_response->setStatusCode(401);
 				$content = 'Not authorized to view this information.';
@@ -98,7 +98,7 @@ class Billing extends CI_Controller{
 		if($query){
 
 			$user_id = $query['userId'];
-			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
+			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
 
 				$this->auth_response->setStatusCode(401);
 				$content = 'Not authorized to view this information.';
@@ -135,7 +135,7 @@ class Billing extends CI_Controller{
 		$data = $this->input->json(false);
 		$user_id = (isset($data['userId'])) ? intval($user_id) : 0;
 
-		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
+		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
 
 			$this->auth_response->setStatusCode(401);
 			$content = 'Not authorized to submitting billing information.';
@@ -195,7 +195,7 @@ class Billing extends CI_Controller{
 		$data = $this->input->json(false);
 		$user_id = (isset($data['userId'])) ? intval($user_id) : 0;
 
-		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
+		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
 
 			$this->auth_response->setStatusCode(401);
 			$content = 'Not authorized to update billing information.';

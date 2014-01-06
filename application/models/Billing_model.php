@@ -42,7 +42,7 @@ class Billing_model extends CI_Model{
 				'rules'	=> 'required'
 			),
 			array(
-				'field'	=> 'active'
+				'field'	=> 'active',
 				'label'	=> 'Active',
 				'rules'	=> 'boolean_style',
 			),
@@ -190,10 +190,10 @@ class Billing_model extends CI_Model{
 			array(
 				'field'	=> 'cardNumber',
 				'label'	=> 'Credit Card Number',
-				'rules'	=> 'integer'
+				'rules'	=> 'integer',
 			),
 			array(
-				'field'	=> 'active'
+				'field'	=> 'active',
 				'label'	=> 'Active',
 				'rules'	=> 'boolean_style',
 			),
@@ -205,7 +205,7 @@ class Billing_model extends CI_Model{
 			array(
 				'field'	=> 'cardInvalidReason',
 				'label'	=> 'Card Invalid Reason',
-				'rules'	=> ''
+				'rules'	=> '',
 			)
 		));
 

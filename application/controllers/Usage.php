@@ -1,6 +1,5 @@
 <?php
 
-//payments history is only recorded from the controller, but the biller will add payments history on a scheduled basis
 class Usage extends CI_Controller{
 
 	public function __construct(){
@@ -21,7 +20,7 @@ class Usage extends CI_Controller{
 	public function show($user_id){
 
 		//private information	
-		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
+		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
 
 			$this->auth_response->setStatusCode(401);
 			$content = 'Not authorized to view this information.';

@@ -21,7 +21,7 @@ class Pin_model extends CI_Model{
 		$api_version = '1';
 		$api_key = $_ENV['secrets']['pin_api_key'];
 
-		$this->client = new Client($this->api_url, [
+		$this->client = new Client($api_url, [
 			'version'	=> $api_version,
 			'request.options'	=> [
 				'auth'	=> [$api_key, '', 'Basic']
@@ -100,7 +100,7 @@ class Pin_model extends CI_Model{
 			array(
 				'field'	=> 'cardCountry',
 				'label'	=> 'Card Country',
-				'rules'	=> 'required'
+				'rules'	=> 'required',
 			),
 		));
 
@@ -280,7 +280,7 @@ class Pin_model extends CI_Model{
 
 		$updating_card = false;
 		foreach($card_keys as $card_key){
-			if(array_key_exists($card_key, $data){
+			if(array_key_exists($card_key, $data)){
 				$updating_card =  true;
 				break;
 			}

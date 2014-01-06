@@ -41,7 +41,7 @@ class Usage_model extends CI_Model{
 				'rules'	=> 'required|valid_date',
 			),
 			array(
-				'field'	=> 'usage'
+				'field'	=> 'usage',
 				'label'	=> 'Usage',
 				'rules'	=> 'required|integer',
 			),
@@ -149,7 +149,7 @@ class Usage_model extends CI_Model{
 				'rules'	=> 'valid_date',
 			),
 			array(
-				'field'	=> 'usage'
+				'field'	=> 'usage',
 				'label'	=> 'Usage',
 				'rules'	=> 'integer',
 			),

@@ -22,7 +22,7 @@ class Payments extends CI_Controller{
 
 	public function show($user_id){
 
-		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false $user_id)){
+		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
 
 			$this->auth_response->setStatusCode(401);
 			$content = 'Not authorized to view this information.';

@@ -197,11 +197,11 @@ class Cron extends CI_Controller{
 							'country'		=> $charge_query['card']['address_country'],
 						];
 
-						if(!empty($charge_query['card']['address_line1'])) $address[] $charge_query['card']['address_line1'];
-						if(!empty($charge_query['card']['address_line2'])) $address[] $charge_query['card']['address_line2'];
-						if(!empty($charge_query['card']['address_city'])) $address[] $charge_query['card']['address_city'];
-						if(!empty($charge_query['card']['address_postcode'])) $address[] $charge_query['card']['address_postcode'];
-						if(!empty($charge_query['card']['address_state'])) $address[] $charge_query['card']['address_state'];
+						if(!empty($charge_query['card']['address_line1'])) $address[] = $charge_query['card']['address_line1'];
+						if(!empty($charge_query['card']['address_line2'])) $address[] = $charge_query['card']['address_line2'];
+						if(!empty($charge_query['card']['address_city'])) $address[] = $charge_query['card']['address_city'];
+						if(!empty($charge_query['card']['address_postcode'])) $address[] = $charge_query['card']['address_postcode'];
+						if(!empty($charge_query['card']['address_state'])) $address[] = $charge_query['card']['address_state'];
 
 						$payment_history['address'] = implode(' ', $address);
 

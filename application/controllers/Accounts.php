@@ -61,7 +61,7 @@ class Accounts extends CI_Controller{
 						$user['apiRequests'],
 						$user['apiLeftOverCharge'],
 						$user['chargeInterval'],
-						$user['chargeDate'],
+						$user['chargeDate']
 					);
 				}
 			}
@@ -113,7 +113,7 @@ class Accounts extends CI_Controller{
 					$query['apiRequests'],
 					$query['apiLeftOverCharge'],
 					$query['chargeInterval'],
-					$query['chargeDate'],
+					$query['chargeDate']
 				);
 			}
 
@@ -207,7 +207,7 @@ class Accounts extends CI_Controller{
 					$data['apiRequests'],
 					$data['apiLeftOverCharge'],
 					$data['chargeInterval'],
-					$data['chargeDate'],
+					$data['chargeDate']
 				);
 			}
 
