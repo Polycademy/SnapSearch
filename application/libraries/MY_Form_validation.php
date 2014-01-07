@@ -20,7 +20,12 @@ class MY_Form_validation extends CI_Form_validation{
 
 	}
 	
-	public function valid_date($date, $format = 'Y-m-d H:i:s'){
+	public function valid_date($date, $format){
+
+		//default format matching the MYSQL datetime
+		if(!$format){
+			$format = 'Y-m-d H:i:s';
+		}
 
 		$this->set_message('valid_date', 'The %s field is not a valid date according to the format: ' . $format);
 		$date_object = DateTime::createFromFormat($format, $date);
