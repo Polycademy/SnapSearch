@@ -92,4 +92,68 @@ class Test extends CI_Controller{
 
 	}
 
+	public function payments(){
+
+		$this->load->model('Payments_model');
+
+		$payment_history = [
+			'userId'		=> 1,
+			'chargeToken'	=> 'ch_lfUYEBK14zotCTykezJkfg',
+			'date'			=> (new DateTime('2012-06-20T03:10:49Z'))->format('Y-m-d H:i:s'),
+			'item'			=> 'SnapSearch API Charge',
+			'usageRate'		=> '100000',
+			'amount'		=> '10000000',
+			'currency'		=> 'AUD',
+			'email'			=> 'roger.qiu@polycademy.com',
+			'country'		=> 'New Zealand',
+		];
+
+		$payment_history['address'] = '42 Sevenoaks St Lathlain 6454 WA';
+
+		$payment_id = $this->Payments_model->create($payment_history);
+
+		echo $payment_id;
+
+	}
+
+	public function payments_update(){
+
+		$payment_id = '14';
+
+		$this->load->model('Payments_model');
+
+		$updated_payment_history = [
+			'userId'		=> 1,
+			'chargeToken'	=> 'ch_lfUYEBK14zotCTykezJkfg',
+			'date'			=> (new DateTime('2012-06-20T03:10:49Z'))->format('Y-m-d H:i:s'),
+			'item'			=> 'Blah API Charge',
+			'usageRate'		=> '100',
+			'amount'		=> '10000',
+			'currency'		=> 'AUD',
+			'email'			=> 'roger.qiu@polycademy.com',
+			'country'		=> 'Crazy Land',
+		];
+
+		$updated_payment_history['address'] = '100 Sevenoaks St Lathlain 6454 WA';
+
+		$payment_id = $this->Payments_model->update($payment_id, $updated_payment_history);
+
+	}
+
+	public function payments_read(){
+
+		$this->load->model('Payments_model');
+
+		var_dump($this->Payments_model->read_all());
+
+	}
+
+	public function payments_delete(){
+
+		$this->load->model('Payments_model');
+
+		$this->Payments_model->delete(14);
+
+	}
+
 }
