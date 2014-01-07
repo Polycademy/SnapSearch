@@ -56,7 +56,7 @@ class Email_model extends CI_Model{
 				if(is_string($attachment_name)){
 					$this->mailer->addAttachment($attachment_file, $attachment_name);
 				}else{
-					$this->mailer->addAttachment($attachement_file);
+					$this->mailer->addAttachment($attachment_file);
 				}
 			}
 		}

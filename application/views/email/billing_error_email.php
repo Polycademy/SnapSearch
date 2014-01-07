@@ -52,6 +52,11 @@
 			Bring inline: Yes. */
 			a {color: orange;}
 
+			blockquote {
+				padding: 0 0 0 15px;
+				margin: 0 0 20px;
+				border-left: 5px solid #eeeeee;
+			}
 
 			/***************************************************
 			****************************************************
@@ -141,11 +146,13 @@
 
 					<h4>Hi <?= $username ?>,</h4>
 
-					<p>SnapSearch has attempted to bill your credit card for your monthly invoice. However it met an error processing the payment. The error is: <?= $charge_error ?>.</p>
+					<p>SnapSearch has attempted to bill your credit card for your monthly invoice. However it met an error processing the payment. The error is:</p>
+
+					<blockquote><strong><?= $charge_error ?></strong></blockquote>
 
 					<p>Due to this error, we have downgraded your API limit to the free account limit.</p>
 
-					<p>Please review your credit card details at your <a href="http://snapsearch.io/user/<?= $user_id ?>/billing">billing control panel</a>. You need to delete the card that met the error, and create a new card even if it has same card details. Once this is resolved, your previous API limit will be reinstated. This month's charge will be added to the next month's charge.</p>
+					<p>Please review your credit card details at your <a href="http://snapsearch.io/user/<?= $user_id ?>/billing">billing control panel</a>. You need to delete the card that met the error, and create a new active card. Once this is resolved, your previous API limit will be reinstated. This month's charge will be added to the next month's charge.</p>
 
 					<p>Thank you for your business.</p>
 

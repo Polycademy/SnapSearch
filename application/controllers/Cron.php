@@ -120,6 +120,7 @@ class Cron extends CI_Controller{
 				]);
 
 				if($charge){
+
 					//get the user's first active billing details, remember there should only be one
 					//for each user, and the active one should not be invalid
 					$billing_record = $this->Billing_model->read_all($user['id'], true)[0];
@@ -135,6 +136,9 @@ class Cron extends CI_Controller{
 						'currency'		=> $currency,
 						'customerToken'	=> $customer_token,
 					]);
+
+					$month = date('F');
+					$year = date('Y');
 
 					if(!$charge_query){
 
@@ -166,8 +170,8 @@ class Cron extends CI_Controller{
 
 						//prepare the billing error email
 						$email = $this->Email_model->prepare_email('emails/billing_error_email', [
-							'month'			=> date('F'),
-							'year'			=> date('Y'),
+							'month'			=> $month,
+							'year'			=> $year,
 							'username'		=> $user['username'],
 							'charge_error'	=> $charge_error_message,
 							'user_id'		=> $user['id'],
@@ -177,7 +181,7 @@ class Cron extends CI_Controller{
 						$this->Email_model->send_email([
 							'enquiry@polycademy.com',
 							[$user['email']],
-							'SnapSearch Billing Error for ' . date('F') . ' ' . date('Y'),
+							"SnapSearch Billing Error for $month $year",
 							$email,
 						]);
 
@@ -210,8 +214,8 @@ class Cron extends CI_Controller{
 						$invoice_file_location = $this->Payments_model->read($payment_id)['invoiceFilePath'];
 
 						$email = $this->Email_model->prepare_email('emails/invoice_email', [
-							'month'			=> date('F'),
-							'year'			=> date('Y'),
+							'month'			=> $month,
+							'year'			=> $year,
 							'username'		=> $user['username'],
 							'user_id'		=> $user['id'],
 						]);
@@ -220,9 +224,11 @@ class Cron extends CI_Controller{
 						$this->Email_model->send_email([
 							'enquiry@polycademy.com',
 							[$user['email']],
-							'SnapSearch Monthly Invoice for ' . date('F') . ' ' . date('Y'),
+							"SnapSearch Monthly Invoice For $month $year",
 							$email,
-							[$invoice_file_location]
+							[
+								"SnapSearch Invoice for $month $year.pdf"	=> $invoice_file_location
+							]
 						]);
 
 					}
