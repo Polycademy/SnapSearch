@@ -156,4 +156,28 @@ class Test extends CI_Controller{
 
 	}
 
+	public function usage(){
+
+		//test usage
+
+	}
+
+	public function pin(){
+
+		//use test api and create customers.. etc
+
+	}
+
+	public function billing(){
+
+		//finally test the creation of customers and records from the billing
+
+	}
+
+	public function cron(){
+
+		//simulate a cron...
+
+	}
+
 }
