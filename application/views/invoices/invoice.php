@@ -46,5 +46,6 @@
                 <td class="center"><?=$tax?></td>
             </tr>
         </table>
+        <p class="tax_message">GST is inclusive and will be applied if the customer is from Australia.</p>
     </dynamic-page>
 </pdf>

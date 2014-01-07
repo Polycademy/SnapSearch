@@ -22,4 +22,5 @@
 		<td border.type="all" border.size="1px" border.color="#000000" padding="6.5px"></td>
 		<td class="no-border" border.type="none"></td>
 	</table>
+	<p class="tax_message" margin-top="10px"></p>
 </stylesheet>

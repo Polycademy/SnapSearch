@@ -133,23 +133,34 @@ class Payments_model extends CI_Model{
 		$invoice_id = $this->db->insert_id();
 
 		//create the invoice file using the invoice id as the invoiceNumber
+		$invoice_data = $data;
 		$invoice_data['invoiceNumber'] = $invoice_id;
-		$invoice_data = array_merge($invoice_data, $data);
 		$invoice_file = $this->upsert_invoice($invoice_data);
 
 		//update the record with the location of the invoice file
-		$data['invoiceFile'] = $invoice_file;
-		$this->db->update('payment_history', $data, array('id' => $invoice_id));
+		$this->db->update(
+			'payment_history', 
+			[
+				'invoiceFile'	=> $invoice_file
+			], 
+			[
+				'id'	=> $invoice_id
+			]
+		);
 
 		//if any queries failed or the invoice file was not created, we roll back the transaction
 		if($this->db->trans_status() === false OR $invoice_file === false){
+
 			$this->db->trans_rollback();
 			$this->errors = array(
 				'system_error'	=> 'Problem inserting data to payments table and/or creating the invoice file.',
 			);
 			return false;
+
 		}else{
+
 			$this->db->trans_commit();
+		
 		}
 
 		return $invoice_id;
@@ -328,11 +339,6 @@ class Payments_model extends CI_Model{
 				'field'	=> 'country',
 				'label'	=> 'Country',
 				'rules'	=> '',
-			),
-			array(
-				'field'	=> 'invoiceFile',
-				'label'	=> 'Invoice File',
-				'rules'	=> ''
 			)
 		));
 
@@ -358,13 +364,7 @@ class Payments_model extends CI_Model{
 		//begin transaction
 		$this->db->trans_begin();
 
-		//get previous invoice file and delete it to prevent orphaned invoice files
-		$query = $this->db->get_where('payment_history', array('id' => $id));
-		if($query->num_rows() > 0){
-			$this->delete_invoice($query->row()->invoiceFile);
-		}
-
-		//update the record with the new data
+		//update the record with the new data, the invoiceFile however is not allowed to be updated
 		$this->db->update('payment_history', $data, array('id' => $id));
 
 		//if no rows were affected, nothing was changed
@@ -377,8 +377,10 @@ class Payments_model extends CI_Model{
 		}
 
 		//get the updated record information
-		$query = $this->db->get_where('payment_history', array('id' => $id));
-		$payment_record = $query->row_array();
+		$payment_record = $this->db->get_where('payment_history', array('id' => $id))->row_array();
+
+		//the invoiceNumber stays the same, and it's the same as the id of the record
+		$payment_record['invoiceNumber'] = $payment_record['id'];
 
 		//use the updated $payment_record's information to overwrite the old invoice file
 		$invoice_file = $this->upsert_invoice($payment_record, $payment_record['invoiceFile']);
@@ -453,16 +455,16 @@ class Payments_model extends CI_Model{
 
 		//prefix the invoice number by SS
 		$data['invoiceNumber'] = 'SS' . $data['invoiceNumber'];
+
 		//calculate tax dollars of 10% inclusive
 		if(strtolower($data['country']) == 'australia'){
-			$tax_dollars = round(($data['amount'] * 0.1) / 100, 2);
+			$data['tax'] = '$' . round(($data['amount'] * 0.1) / 100, 2);
 		}else{
-			$tax_dollars = 0;
+			$data['tax'] = '$0';
 		}
-		$data['tax'] = '$' . $dollars;
+
 		//convert the cents into dollars
-		$dollars = $data['amount'] / 100;
-		$data['amount'] = '$' . $dollars;
+		$data['amount'] = '$' . $data['amount'] / 100;
 
 		//add the logo image of Polycademy
 		$data['logo'] = FCPATH . 'img/polycademy_logo.png';
