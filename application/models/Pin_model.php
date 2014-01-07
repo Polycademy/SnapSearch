@@ -13,11 +13,20 @@ class Pin_model extends CI_Model{
 	protected $client;
 	protected $errors;
 
-	public function __construct(){
+	public function __construct($test = false){
 
 		parent::__construct();
 
-		$api_url = 'https://api.pin.net.au/{version}';
+		if($test){
+
+			$api_url = 'https://test-api.pin.net.au/{version}';
+
+		}else{
+
+			$api_url = 'https://api.pin.net.au/{version}';
+
+		}
+
 		$api_version = '1';
 		$api_key = $_ENV['secrets']['pin_api_key'];
 
