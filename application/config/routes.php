@@ -24,10 +24,10 @@ Pigeon::map(function($r){
 		$r->resources('billing');
 
 		//PAYMENTS HISTORY
-		$r->get('payments/(:any)', 'payments/show/$1');
+		$r->resources('payments');
 
 		//USAGE HISTORY
-		$r->get('usage/(:any)', 'payments/show/$1');
+		$r->resources('usage');
 
 		//TEST
 		$r->get('test/(:any)', 'test/$1');

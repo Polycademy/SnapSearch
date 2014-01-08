@@ -20,18 +20,45 @@ class Payments extends CI_Controller{
 
 	}
 
-	public function show($user_id){
+	public function index(){
 
-		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
+		$user_id = $this->input->get('user', true);
+		$offset = $this->input->get('offset', true);
+		$limit = $this->input->get('limit', true);
 
-			$this->auth_response->setStatusCode(401);
-			$content = 'Not authorized to view this information.';
-			$code = 'error';
+		$authorized = false;
+
+		if(!$user_id){
+
+			if($this->user->authorized(false, 'admin')){
+
+				$authorized = true;
+
+			}else{
+
+				$this->auth_response->setStatusCode(401);
+				$content = 'Not authorized to view this information.';
+				$code = 'error';
+
+			}
 
 		}else{
 
-			$offset = $this->input->get('offset', true);
-			$limit = $this->input->get('limit', true);
+			if($this->user->authorized(false, 'admin') OR $this->user->authorized(false, false, $user_id)){
+
+				$authorized = true;
+
+			}else{
+
+				$this->auth_response->setStatusCode(401);
+				$content = 'Not authorized to view this information.';
+				$code = 'error';
+
+			}
+
+		}
+
+		if($authorized){
 
 			if(empty($limit)) $limit = 100;
 			if(empty($offset)) $offset = 0;
