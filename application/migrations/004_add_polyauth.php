@@ -38,7 +38,7 @@ class Migration_add_polyauth extends CI_Migration {
 				'id'					=> '1',
 				'ipAddress'				=> inet_pton('127.0.0.1'),
 				'username'				=> 'administrator',
-				'password'				=> '$2y$10$.73AQ8fIqY6n1ukE8GXTPutI77hOIa9oXDeqYjCOPGcHqRApPDT9O ',
+				'password'				=> '$2y$10$YBknpDUNRbW.cLemHbXWLevJ1Tl.q9iSaaSudpJZpriY6qVTStATu',
 				'passwordChange'		=> '0',
 				'email'					=> 'enquiry@polycademy.com',
 				'createdOn'				=> date('Y-m-d H:i:s'),
