@@ -133,6 +133,7 @@ class Usage_model extends CI_Model{
 			'userId',
 			'date',
 			'usage',
+			'requests',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
