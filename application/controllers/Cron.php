@@ -103,7 +103,7 @@ class Cron extends CI_Controller{
 				//track usage statistics
 				$this->Usage_model->create([
 					'userId'	=> $user['id'],
-					'date'		=> date('Y-m-d H:i:s'),
+					'date'		=> $today->format('Y-m-d H:i:s'),
 					'usage'		=> $user['apiUsage'],
 					'requests'	=> $user['apiRequests'],
 				]);
@@ -137,9 +137,6 @@ class Cron extends CI_Controller{
 						'customerToken'	=> $customer_token,
 					]);
 
-					$month = date('F');
-					$year = date('Y');
-
 					if(!$charge_query){
 
 						//charge was unsuccessful
@@ -170,8 +167,8 @@ class Cron extends CI_Controller{
 
 						//prepare the billing error email
 						$email = $this->Email_model->prepare_email('emails/billing_error_email', [
-							'month'			=> $month,
-							'year'			=> $year,
+							'month'			=> $today->format('F'),
+							'year'			=> $today->format('Y'),
 							'username'		=> $user['username'],
 							'charge_error'	=> $charge_error_message,
 							'user_id'		=> $user['id'],
@@ -181,7 +178,7 @@ class Cron extends CI_Controller{
 						$this->Email_model->send_email([
 							'enquiry@polycademy.com',
 							[$user['email']],
-							"SnapSearch Billing Error for $month $year",
+							'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 							$email,
 						]);
 
@@ -214,8 +211,8 @@ class Cron extends CI_Controller{
 						$invoice_file_location = $this->Payments_model->read($payment_id)['invoiceFilePath'];
 
 						$email = $this->Email_model->prepare_email('emails/invoice_email', [
-							'month'			=> $month,
-							'year'			=> $year,
+							'month'			=> $today->format('F'),
+							'year'			=> $today->format('Y'),
 							'username'		=> $user['username'],
 							'user_id'		=> $user['id'],
 						]);
@@ -224,10 +221,10 @@ class Cron extends CI_Controller{
 						$this->Email_model->send_email([
 							'enquiry@polycademy.com',
 							[$user['email']],
-							"SnapSearch Monthly Invoice For $month $year",
+							'SnapSearch Monthly Invoice for ' . $today->format('F') . ' ' . $today->format('Y'),
 							$email,
 							[
-								"SnapSearch Invoice for $month $year.pdf"	=> $invoice_file_location
+								'SnapSearch Invoice for ' . $today->format('F') . $today->format('Y') . '.pdf'	=> $invoice_file_location
 							]
 						]);
 
