@@ -1,5 +1,11 @@
 <?php
 
+/*
+	Except for admins
+	the userId should always be the currently logged in user
+	it should not be able to be updated or assigned to other people
+ */
+
 class Billing extends CI_Controller{
 
 	protected $authenticator;

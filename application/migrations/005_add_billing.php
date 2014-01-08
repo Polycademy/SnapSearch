@@ -23,8 +23,9 @@ class Migration_add_billing extends CI_Migration {
 				'unsigned' => TRUE,
 			],
 			'cardHint'	=> [
-				'type'		=> 'INT',
-				'unsigned'	=> TRUE,
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 4,
+				'unsigned'		=> TRUE,
 			],
 			'customerToken'	=> [
 				'type'		=> 'TEXT',

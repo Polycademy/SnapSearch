@@ -151,11 +151,10 @@ class Cron extends CI_Controller{
 						}
 
 						//update the account with the left over charge
-						//apiLimit gets reset to apiFreeLimit while also being copied into apiPreviousLimit
+						//apiLimit gets reset to apiFreeLimit
 						$this->Accounts_model->update($user['id'], [
 							'apiLeftOverCharge'	=> $charge,
 							'apiLimit'			=> $user['apiFreeLimit'],
-							'apiPreviousLimit'	=> $user['apiLimit'],
 						]);
 
 						//update the billing details in order to make the current customer object invalid

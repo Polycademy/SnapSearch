@@ -152,7 +152,7 @@
 
 					<p>Due to this error, we have downgraded your API limit to the free account limit.</p>
 
-					<p>Please review your credit card details at your <a href="http://snapsearch.io/user/<?= $user_id ?>/billing">billing control panel</a>. You need to delete the card that met the error, and create a new active card. Once this is resolved, your previous API limit will be reinstated. This month's charge will be added to the next month's charge.</p>
+					<p>Please review your credit card details at your <a href="http://snapsearch.io/user/<?= $user_id ?>/billing">billing control panel</a>. You need to delete the card that met the error, and create a new active card. Once this is resolved, you must reinstate your previous API limit in the control panel. This month's charge will be added to the next month's charge.</p>
 
 					<p>Thank you for your business.</p>
 

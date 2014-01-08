@@ -45,7 +45,6 @@ class Migration_add_polyauth extends CI_Migration {
 				'lastLogin'				=> date('Y-m-d H:i:s'),
 				'active'				=> '1',
 				'apiLimit'				=> 100000000,
-				'apiPreviousLimit'		=> 0,		
 				'apiFreeLimit'			=> 100000000,
 				'apiUsage'				=> 0,
 				'apiRequests'			=> 0,
@@ -63,7 +62,6 @@ class Migration_add_polyauth extends CI_Migration {
 				'lastLogin'				=> date('Y-m-d H:i:s'),
 				'active'				=> '1',
 				'apiLimit'				=> 1000,
-				'apiPreviousLimit'		=> 0,		
 				'apiFreeLimit'			=> 1000,
 				'apiUsage'				=> 0,
 				'apiRequests'			=> 0,
@@ -218,11 +216,6 @@ class Migration_add_polyauth extends CI_Migration {
 				'type' => 'TEXT'
 			),
 			'apiLimit'	=> [
-				'type'		=> 'INT',
-				'default'	=> 0,
-				'unsigned' => TRUE,
-			],
-			'apiPreviousLimit'	=> [
 				'type'		=> 'INT',
 				'default'	=> 0,
 				'unsigned' => TRUE,

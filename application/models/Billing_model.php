@@ -48,10 +48,33 @@ class Billing_model extends CI_Model{
 			),
 		));
 
+		//all cards upon creation shouldn't be invalid
+		$data['cardInvalid'] = 0;
+
+		//converting the cardNumber to a cardHint
+		if(isset($data['cardNumber'])){
+			$data['cardHint'] = substr($data['cardNumber'], -4);
+			unset($data['cardNumber']);
+		}
+
+		if(isset($data['active'])){
+			$data['active'] = intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN));
+		}else{
+			$data['active'] =  1;
+		}
+
 		$validation_errors = [];
 
-		if(!$this->Accounts_model->read($data['userId'])){
+		if(isset($data['userId']) AND !$this->Accounts_model->read($data['userId'])){
 			$validation_errors['userId'] = 'Billing information can only be created for an existing user account.';
+		}
+
+		//if the inserted active is intended to be active, check if there are already cards in which they are active
+		if(isset($data['userId']) AND $data['active']){
+			$active_cards = $this->read_all($data['userId'], true);
+			if($active_cards){
+				$validation_errors['active'] = 'Only one active card per user account is allowed.';
+			}
 		}
 
 		if($this->validator->run() ==  false){
@@ -67,14 +90,6 @@ class Billing_model extends CI_Model{
 
 		}
 
-		//filtering the $data
-
-		$data['cardHint'] = substr($data['cardNumber'], -4);
-		//convert active into binary boolean
-		$data['active'] = (isset($data['active'])) ? intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN)) : 1;
-		//all cards upon creation shouldn't be invalid
-		$data['cardInvalid'] = 0;
-
 		$query = $this->db->insert('billing', $data);
 
 		if(!$query){
@@ -86,8 +101,6 @@ class Billing_model extends CI_Model{
 			return false;
 		
 		}
-
-		$this->resolve_billing_errors($data['userId']);
 
 		return $this->db->insert_id();
 
@@ -125,7 +138,7 @@ class Billing_model extends CI_Model{
 
 	}
 
-	public function read_all($user_id = false, $active = null){
+	public function read_all($user_id = false, $active = null, $not_invalid = null){
 
 		$this->db->select('*');
 		$this->db->from('billing');
@@ -136,6 +149,11 @@ class Billing_model extends CI_Model{
 			$this->db->where('active', '1');
 		}elseif(!$active AND !is_null($active)){
 			$this->db->where('active', '0');
+		}
+		if($not_invalid AND !is_null($not_invalid)){
+			$this->db->where('cardInvalid', '0');
+		}elseif(!$not_invalid AND !is_null($not_invalid)){
+			$this->db->where('cardInvalid', '1');
 		}
 
 		$query = $this->db->get();
@@ -209,16 +227,28 @@ class Billing_model extends CI_Model{
 			)
 		));
 
+		//get the user_id of this particular update, it'll be used for active card validation
+		//and settling api limit issues
+		$query = $this->read($id);
+		$user_id = false;
+		if($query){
+			$user_id = $query['userId'];
+		}
+
 		//filtering the $data
 		if(isset($data['cardNumber'])){
 			$data['cardHint'] = substr($data['cardNumber'], -4);
+			unset($data['cardNumber']);
 		}
+
 		if(isset($data['active'])){
 			$data['active'] = intval(filter_var($data['active'], FILTER_VALIDATE_BOOLEAN));
 		}
+		
 		if(isset($data['cardInvalid'])){
 			$data['cardInvalid'] = intval(filter_var($data['cardInvalid'], FILTER_VALIDATE_BOOLEAN));
 		}
+		
 		//if cardInvalid is false, then we should wipe the cardInvalidReason
 		if(isset($data['cardInvalid'])){
 			if(!$data['cardInvalid']){
@@ -238,6 +268,22 @@ class Billing_model extends CI_Model{
 			}
 		}
 
+		//check if there are any active cards other than this current card
+		if(isset($data['active'])){
+			if($data['active'] AND $user_id){
+				$active_cards = $this->read_all($user_id, true);
+				if($active_cards){
+					//filter out this particular card if it exists
+					$other_cards = array_filter($active_cards, function($value) use ($id){
+						return $id != $value['id'];
+					});
+					if(count($other_cards) > 0){
+						$validation_errors['active'] = 'Only one active card per user account is allowed.';
+					}
+				}
+			}
+		}
+
 		if($this->validator->run() ==  false){
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
@@ -251,12 +297,11 @@ class Billing_model extends CI_Model{
 
 		}
 
-		//we no longer require the cardNumber
-		unset($data['cardNumber']);
-
 		$this->db->update('billing', $data, array('id' => $id));
 
 		if($this->db->affected_rows() > 0){
+
+			$this->settle_api_limit($user_id);
 
 			return true;
 		
@@ -278,9 +323,15 @@ class Billing_model extends CI_Model{
 	 */
 	public function delete($id){
 
+		if($query = $this->read($id)){
+			$user_id = $query['userId'];
+		}
+
 		$this->db->delete('billing', array('id' => $id));
 
 		if($this->db->affected_rows() > 0){
+
+			$this->settle_api_limit($user_id);
 
 			return true;
 
@@ -303,33 +354,24 @@ class Billing_model extends CI_Model{
 	}
 
 	/*
-		Billing errors can only be resolved by deleting the bad card, and creating a new card
+		Whenever there is a successful change to the Billing records, we need to check if there aren't any active cards left. Then the apiLimit will equal the apiFreeLimit.
 	 */
-	protected function resolve_billing_errors($user_id){
+	protected function settle_api_limit($user_id){
 
-		$cards = $this->read_all($user_id);
-		
-		//if any of the cards are both active and not invalid, we can resolve any potential billing errors
-		$can_be_resolved = false;
-		foreach($cards as $card){
-			if($card['active'] AND !$card['cardInvalid']){
-				$can_be_resolved = true;
-				break;
-			}
-		}
+		//get all the cards that are active and not invalid
+		//when cards are determined to be invalid by the cron job, it already sets the apiLimit to equal the apiFreeLimit
+		$cards = $this->read_all($user_id, true, true);
 
-		//switch the apiPreviousLimit into the apiLimit, but only if the apiPreviousLimit was greater than 0
-		//then default the apiPreviousLimit to 0
-		if($can_be_resolved){
+		if(!$cards){
+
 			$user = $this->Accounts_model->read($user_id);
-			if($user['apiPreviousLimit'] > 0){
-				$this->Accounts_model->update($user_id, [
-					'apiLimit'	=> $user['apiPreviousLimit'],
-					'apiPreviousLimit'	=> 0
-				]);
-			}
-		}
 
+			$query = $this->Accounts_model->update($user_id, [
+				'apiLimit'			=> $user['apiFreeLimit'],
+			]);
+
+		}
+		
 	}
 
 }

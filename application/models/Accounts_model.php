@@ -132,8 +132,6 @@ class Accounts_model extends CI_Model{
 
 		$data['createdOn'] = date('Y-m-d H:i:s');
 
-		$data['apiPreviousLimit'] = 0;
-
 		$data['apiUsage'] = 0;
 
 		$data['apiRequests'] = 0;
@@ -295,11 +293,16 @@ class Accounts_model extends CI_Model{
 			}
 		}
 
-		//api limit can only be changed if the user has at least an active billing information
+		//api limit can only be changed if the user has at least an active billing information, but only if it's greater than the apiFreeLimit which can come from the database, or the currently updated data
 		if(isset($data['apiLimit'])){
-			$billing_query = $this->db->get_where('billing', array('userId' => $id, 'active' => 1, 'cardInvalid' => 0));
-			if($billing_query->num_rows() < 1){
-				$validation_errors['apiLimit'] = 'Cannot update API Limit unless you have valid and active billing information.';
+			if($query = $this->read($id)){
+				$api_free_limit = (isset($data['apiFreeLimit'])) ? $data['apiFreeLimit'] : $query['apiFreeLimit'];
+				if($data['apiLimit'] > $api_free_limit){
+					$billing_query = $this->db->get_where('billing', array('userId' => $id, 'active' => 1, 'cardInvalid' => 0));
+					if($billing_query->num_rows() < 1){
+						$validation_errors['apiLimit'] = 'Cannot update API Limit unless you have valid and active billing information.';
+					}
+				}
 			}
 		}
 
