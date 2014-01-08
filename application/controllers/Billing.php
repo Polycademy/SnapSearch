@@ -28,34 +28,33 @@ class Billing extends CI_Controller{
 		$active = $this->input->get('active', true);
 		$active = ($active) ? $active : null;
 
+		$authorized = false;
+
 		if(!$user_id){
 
-			//all the billing information is only available for the admin
-			if(!$this->user->authorized(false, 'admin')){
+			if($this->user->authorized(false, 'admin')){
+
+				$authorized = true;
+
+			}else{
 
 				$this->auth_response->setStatusCode(401);
 				$content = 'Not authorized to view this information.';
 				$code = 'error';
-				$authorized = false;
-
-			}else{
-
-				$authorized = true;
 
 			}
 			
 		}else{
 
-			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
+			if($this->user->authorized(false, 'admin') OR $this->user->authorized(false, false, $user_id)){
+
+				$authorized = true;
+
+			}else{
 
 				$this->auth_response->setStatusCode(401);
 				$content = 'Not authorized to view this information.';
 				$code = 'error';
-				$authorized = false;
-
-			}else{
-
-				$authorized = true;
 
 			}
 
