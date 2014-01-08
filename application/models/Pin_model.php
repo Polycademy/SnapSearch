@@ -13,22 +13,30 @@ class Pin_model extends CI_Model{
 	protected $client;
 	protected $errors;
 
-	public function __construct($test = false){
+	public function __construct(){
 
 		parent::__construct();
 
-		if($test){
+		$this->load->library('form_validation', false, 'validator');
 
-			$api_url = 'https://test-api.pin.net.au/{version}';
-
-		}else{
-
-			$api_url = 'https://api.pin.net.au/{version}';
-
-		}
-
+		$api_url = 'https://api.pin.net.au/{version}';
 		$api_version = '1';
 		$api_key = $_ENV['secrets']['pin_api_key'];
+
+		$this->client = new Client($api_url, [
+			'version'	=> $api_version,
+			'request.options'	=> [
+				'auth'	=> [$api_key, '', 'Basic']
+			]
+		]);
+
+	}
+
+	public function test(){
+
+		$api_url = 'https://test-api.pin.net.au/{version}';
+		$api_version = '1';
+		$api_key = $_ENV['secrets']['pin_api_test_key'];
 
 		$this->client = new Client($api_url, [
 			'version'	=> $api_version,
@@ -143,6 +151,7 @@ class Pin_model extends CI_Model{
 					'cvc'				=> $data['cardCvc'],
 					'name'				=> $data['cardName'],
 					'address_line1'		=> $data['cardAddress'],
+					'address_city'		=> $data['cardCity'],
 					'address_country'	=> $data['cardCountry'],
 				]
 			];
@@ -156,7 +165,7 @@ class Pin_model extends CI_Model{
 			}
 
 			$request = $this->client->post(
-				'/customers',
+				'customers',
 				array(
 					'Content-Type'	=> 'application/json'
 				),
@@ -179,36 +188,40 @@ class Pin_model extends CI_Model{
 					$message = $error['message'];
 
 					switch($key){
-						case 'number':
+						case 'card.number':
 							$key = 'cardNumber';
 							break;
-						case 'expiry_month':
+						case 'card.expiry_month':
 							$key = 'cardExpiryMonth';
 							break;
-						case 'expiry_year':
+						case 'card.expiry_year':
 							$key = 'cardExpiryYear';
 							break;
-						case 'cvc':
+						case 'card.cvc':
 							$key = 'cardCvc';
 							break;
-						case 'name':
+						case 'card.name':
 							$key = 'cardName';
 							break;
-						case 'address_line1':
+						case 'card.address_line1':
 							$key = 'cardAddress';
 							break;
-						case 'address_country':
-							$key = 'cardCountry';
+						case 'card.address_city':
+							$key = 'cardCity';
 							break;
-						case 'address_postcode':
+						case 'card.address_postcode':
 							$key = 'cardPostCode';
 							break;
-						case 'address_state':
+						case 'card.address_state':
 							$key = 'cardState';
+							break;
+						case 'card.address_country':
+							$key = 'cardCountry';
 							break;
 					}
 
-					$this->errors['validation_error'][$key] = $message; 	
+					$this->errors['validation_error'][$key] = $message;
+
 				}
 
 			}elseif($response_status == 401){
@@ -389,6 +402,7 @@ class Pin_model extends CI_Model{
 					'cvc'				=> $data['cardCvc'],
 					'name'				=> $data['cardName'],
 					'address_line1'		=> $data['cardAddress'],
+					'address_city'		=> $data['cardCity'],
 					'address_country'	=> $data['cardCountry'],
 				];
 			}
@@ -402,7 +416,7 @@ class Pin_model extends CI_Model{
 			}
 
 			$request = $this->client->put(
-				"/customers/$customer_token",
+				"customers/$customer_token",
 				array(
 					'Content-Type'	=> 'application/json'
 				),
@@ -429,32 +443,35 @@ class Pin_model extends CI_Model{
 					$message = $error['message'];
 
 					switch($key){
-						case 'number':
+						case 'card.number':
 							$key = 'cardNumber';
 							break;
-						case 'expiry_month':
+						case 'card.expiry_month':
 							$key = 'cardExpiryMonth';
 							break;
-						case 'expiry_year':
+						case 'card.expiry_year':
 							$key = 'cardExpiryYear';
 							break;
-						case 'cvc':
+						case 'card.cvc':
 							$key = 'cardCvc';
 							break;
-						case 'name':
+						case 'card.name':
 							$key = 'cardName';
 							break;
-						case 'address_line1':
+						case 'card.address_line1':
 							$key = 'cardAddress';
 							break;
-						case 'address_country':
-							$key = 'cardCountry';
+						case 'card.address_city':
+							$key = 'cardCity';
 							break;
-						case 'address_postcode':
+						case 'card.address_postcode':
 							$key = 'cardPostCode';
 							break;
-						case 'address_state':
+						case 'card.address_state':
 							$key = 'cardState';
+							break;
+						case 'card.address_country':
+							$key = 'cardCountry';
 							break;
 					}
 
@@ -566,7 +583,7 @@ class Pin_model extends CI_Model{
 			unset($pin_data['customerToken']);
 
 			$request = $this->client->post(
-				'/charges',
+				'charges',
 				array(
 					'Content-Type'	=> 'application/json'
 				),
