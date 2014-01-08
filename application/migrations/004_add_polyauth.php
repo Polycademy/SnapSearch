@@ -71,9 +71,12 @@ class Migration_add_polyauth extends CI_Migration {
 		];
 
 		//add chargeDate to each user
-		foreach($default_users as $user){
+		foreach($default_users as $key => $user){
 			//30 days is more accurate than 1 month
-			$user['chargeDate'] = (new DateTime($user['createdOn']))->add(new DateInterval($user['chargeInterval']))->format('Y-m-d H:i:s');
+			$charge_date = new DateTime($user['createdOn']);
+			$charge_date->add(new DateInterval($user['chargeInterval']));
+			$charge_date = $charge_date->format('Y-m-d H:i:s');
+			$default_users[$key]['chargeDate'] = $charge_date;
 		}
 
 		// Seeding data for table 'users'
