@@ -189,7 +189,6 @@ class Cron extends CI_Controller{
 						$payment_history = [
 							'userId'		=> $user['id'],
 							'chargeToken'	=> $charge_query['token'],
-							'date'			=> (new DateTime($charge_query['created_at']))->format('Y-m-d H:i:s'),
 							'item'			=> $product_description,
 							'usageRate'		=> $user['apiUsage'],
 							'amount'		=> $charge,
@@ -197,6 +196,11 @@ class Cron extends CI_Controller{
 							'email'			=> $user['email'],
 							'country'		=> $charge_query['card']['address_country'],
 						];
+
+						//add the payment date from the charge query's date
+						$payment_date = new DateTime($charge_query['created_at']);
+						$payment_date = $payment_date->format('Y-m-d H:i:s');
+						$payment_history['date'] = $payment_date;
 
 						if(!empty($charge_query['card']['address_line1'])) $address[] = $charge_query['card']['address_line1'];
 						if(!empty($charge_query['card']['address_line2'])) $address[] = $charge_query['card']['address_line2'];
