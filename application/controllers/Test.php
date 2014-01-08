@@ -159,18 +159,157 @@ class Test extends CI_Controller{
 	public function usage(){
 
 		//test usage
+		$this->load->model('Usage_model');
+
+		$this->Usage_model->create([
+			'userId'	=> 1,
+			'date'		=> date('Y-m-d H:i:s'),
+			'usage'		=> 1000,
+			'requests'	=> 10000,
+		]);
+
+		$this->Usage_model->create([
+			'userId'	=> 2,
+			'date'		=> date('Y-m-d H:i:s'),
+			'usage'		=> 1000,
+			'requests'	=> 10000,
+		]);
+
+		$data = $this->Usage_model->read_all();
+
+		var_dump($data);
+
+		$first = $this->Usage_model->read_all(false, false, 2);
+
+		var_dump($first);
+
+	}
+
+	public function usage_update(){
+
+		$this->load->model('Usage_model');
+
+		$this->Usage_model->update(1, [
+			'usage'	=> 100000,
+			'requests'	=> 100000
+		]);
+
+		$this->Usage_model->delete(2);
 
 	}
 
 	public function pin(){
 
-		//use test api and create customers.. etc
+		$this->load->model('Pin_model');
+
+		$this->Pin_model->test();
+
+		$pin_query = $this->Pin_model->create_customer([
+			'email' 		=> 'test@test.com',
+			'cardNumber'	=> ' 4100000000000001',
+			'cardCvc'		=> '123',
+			'cardExpiryMonth'	=> '05',
+			'cardExpiryYear'	=> '2015',
+			'cardName'		=> 'Roland C Robot',
+			'cardAddress'	=> '42 Sevenoaks St',
+			'cardCity'		=> 'Lathlain',
+			'cardCountry'	=> 'Australia',
+		]);
+
+		var_dump($pin_query);
+
+		var_dump($this->Pin_model->get_errors());
+
+	}
+
+	public function pin_update(){
+
+		$this->load->model('Pin_model');
+
+		$this->Pin_model->test();
+
+		$pin_query = $this->Pin_model->update_customer('cus_JrYjPr0VGBxW0WgPrvvyCg', [
+			'email'	=> 'new@new.com',
+			'cardNumber'	=> '4100000000000001',
+			'cardCvc'		=> '123',
+			'cardExpiryMonth'	=> '05',
+			'cardExpiryYear'	=> '2015',
+			'cardName'		=> 'Roland C Robot',
+			'cardAddress'	=> '42 Sevenoaks St',
+			'cardState'		=> 'NSW',
+			'cardPostCode'	=> '2220',
+			'cardCity'		=> 'Lathlain',
+			'cardCountry'	=> 'Australia',
+		]);
+
+		var_dump($pin_query);
+
+		var_dump($this->Pin_model->get_errors());
+
+	}
+
+	public function pin_charge(){
+
+		$this->load->model('Pin_model');
+
+		$this->Pin_model->test();
+
+		$pin_query = $this->Pin_model->charge_customer([
+			'email'			=> 'test@test.com',
+			'description'	=> 'SnapSearch API Charge',
+			'amount'		=> '10000',
+			'ipAddress'		=> '::1',
+			'currency'		=> 'AUD',
+			'customerToken'	=> 'cus_Do_KEk4ajiy4X3Luo-R-dA',
+		]);
+
+		var_dump($pin_query);
+
+		var_dump($this->Pin_model->get_errors());
 
 	}
 
 	public function billing(){
 
-		//finally test the creation of customers and records from the billing
+		$this->load->model('Billing_model');
+
+		$query = $this->Billing_model->create([
+			'userId'		=> '1',
+			'cardNumber'	=> '4100000000000001',
+			'customerToken'	=> 'cus_Do_KEk4ajiy4X3Luo-R-dA',
+			'active'		=> '1',
+		]);
+
+		var_dump($this->Billing_model->get_errors());
+
+	}
+
+	public function billing_update(){
+
+		$this->load->model('Billing_model');
+
+		$query = $this->Billing_model->update(4, [
+			'userId'		=> '1',
+			'cardNumber'	=> '4100000000000001',
+			'customerToken'	=> 'cus_Do_KEk4ajiy4X3Luo-R-dA',
+			'active'		=> '1',
+		]);
+
+		var_dump($query);
+
+		var_dump($this->Billing_model->get_errors());
+
+	}
+
+	public function billing_delete(){
+
+		$this->load->model('Billing_model');
+
+		$query = $this->Billing_model->delete(14);
+
+		var_dump($query);
+
+		var_dump($this->Billing_model->get_errors());
 
 	}
 
@@ -179,5 +318,12 @@ class Test extends CI_Controller{
 		//simulate a cron...
 
 	}
+
+	//test out navigation false (redirect false)
+	//then add SSL
+	//then deploy
+	//and modify dreamitapp
+	//then post up libraries! (change SnapSearch to use HTTP basic)
+	//then work on the design, and pricing?
 
 }
