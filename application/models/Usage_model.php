@@ -212,5 +212,11 @@ class Usage_model extends CI_Model{
 		}
 		
 	}
+
+	public function get_errors(){
+
+		return $this->errors;
+
+	}
 	
 }
