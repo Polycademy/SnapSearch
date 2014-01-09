@@ -44,8 +44,8 @@ class Cron extends CI_Controller{
 	 */
 	public function monthly_tracking(){
 
-		//1 cent per request
-		$charge_per_request = 1;
+		//0.5 cent per request
+		$charge_per_request = 0.5;
 		$currency = 'AUD';
 		$product_description = 'SnapSearch API Usage';
 
@@ -61,7 +61,7 @@ class Cron extends CI_Controller{
 		$limit = 300;
 		$total_number_of_users = $this->Accounts_model->count();
 
-		//divid the total number of users by the limit to get the number of iterations
+		//divide the total number of users by the limit to get the number of iterations
 		//round to highest nearest integer so we run the query at least once
 		$iterations = ceil($total_number_of_users / $limit);
 
@@ -79,9 +79,9 @@ class Cron extends CI_Controller{
 				$today = new DateTime;
 				$charge_date = new DateTime($user['chargeDate']);
 
+				//if the charge_date is after today, then we'll skip this user, as this user is not scheduled for a monthly checkup
+				//if it was equal or less than today, then we'll use this user, if it is less, then that means we missed a charge
 				if($charge_date > $today){
-					//if the charge_date is after today, then we'll skip this user, as this user is not scheduled for a monthly checkup
-					//if it was equal or less than today, then we'll use this user, if it is less, then that means we missed a charge
 					continue;
 				}
 
@@ -89,10 +89,15 @@ class Cron extends CI_Controller{
 
 				$usage = $user['apiUsage'] - $user['apiFreeLimit'];
 
+				//total usage is going to be used for invoice and resetting onto the apiLeftOverUsage
+				$total_usage = $usage + $user['apiLeftOverUsage'];
+
 				$charge = 0;
+
 				if($usage > 0){
 					//usage is the number of API requests to be charged for
-					$charge = $usage * $charge_per_request;
+					//we round to the nearest integer, since everything is charged based on cents
+					$charge += (int) round($usage * $charge_per_request);
 				}
 
 				if($user['apiLeftOverCharge'] > 0){
@@ -115,121 +120,167 @@ class Cron extends CI_Controller{
 				$this->Accounts_model->update($user['id'], [
 					'apiUsage'			=> 0,
 					'apiRequests'		=> 0,
+					'apiLeftOverUsage'	=> 0,
 					'apiLeftOverCharge'	=> 0,
 					'chargeDate'		=> $next_charge_date->format('Y-m-d H:i:s'),
 				]);
 
 				if($charge){
 
-					//get the user's first active billing details, remember there should only be one
-					//for each user, and the active one should not be invalid
-					$billing_record = $this->Billing_model->read_all($user['id'], true)[0];
-					
-					$customer_token = $billing_record['customerToken'];
+					//if charge is less than 5 dollars, add it to the apiLeftOverCharge for the next month and skip this month
+					if($charge < 500){
 
-					//prepare the charge the customer
-					$charge_query = $this->Pin_model->charge_customer([
-						'email'			=> $user['email'],
-						'description'	=> $product_description,
-						'amount'		=> $charge,
-						'ipAddress'		=> $user['ipAddress'],
-						'currency'		=> $currency,
-						'customerToken'	=> $customer_token,
-					]);
-
-					if(!$charge_query){
-
-						//charge was unsuccessful
-
-						//retrieve the errors, there could be system or validation errors
-						$charge_errors = $this->Pin_model->get_errors();
-						$charge_error_message = '';
-						if(isset($charge_errors['validation_error'])){
-							$charge_error_message .= implode(' | ', $charge_errors['validation_error']);
-						}elseif(isset($charge_errors['system_error'])){
-							$charge_error_message .= $charge_errors['system_error'];
-						}
-
-						//update the account with the left over charge
-						//apiLimit gets reset to apiFreeLimit
 						$this->Accounts_model->update($user['id'], [
+							'apiLeftOverUsage'	=> $total_usage,
+							'apiLeftOverCharge'	=> $charge,
+						]);
+
+						//skip to the next user
+						continue;
+					
+					}
+
+					//get the user's active and not invalid credit card
+					$billing_record = $this->Billing_model->read_all($user['id'], true, true);
+
+					if(!$billing_record){
+
+						//if there are no active cards to be used, we'll add this charge back to the apiLeftOverCharge, reset the apiLimit and send the billing error email
+
+						$this->Accounts_model->update($user['id'], [
+							'apiLeftOverUsage'	=> $total_usage,
 							'apiLeftOverCharge'	=> $charge,
 							'apiLimit'			=> $user['apiFreeLimit'],
 						]);
 
-						//update the billing details in order to make the current customer object invalid
-						$this->Billing_model->update($billing_record['id'], [
-							'active'			=> 0,
-							'cardInvalid'		=> 1,
-							'cardInvalidReason'	=> $charge_error_message,							
-						]);
-
-						//prepare the billing error email
-						$email = $this->Email_model->prepare_email('emails/billing_error_email', [
+						$email = $this->Email_model->prepare_email('email/billing_error_email', [
 							'month'			=> $today->format('F'),
 							'year'			=> $today->format('Y'),
 							'username'		=> $user['username'],
-							'charge_error'	=> $charge_error_message,
+							'charge_error'	=> 'No active and valid credit cards were found in the billing records.',
 							'user_id'		=> $user['id'],
 						]);
 
-						//send the email
-						$this->Email_model->send_email([
+						$this->Email_model->send_email(
 							'enquiry@polycademy.com',
 							[$user['email']],
 							'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
-							$email,
-						]);
-
-						//move on to the next user!
+							$email
+						);
 
 					}else{
 
-						$payment_history = [
-							'userId'		=> $user['id'],
-							'chargeToken'	=> $charge_query['token'],
-							'item'			=> $product_description,
-							'usageRate'		=> $user['apiUsage'],
-							'amount'		=> $charge,
-							'currency'		=> $currency,
+						//get the first credit card
+						$billing_record = $billing_record[0];
+
+						$customer_token = $billing_record['customerToken'];
+
+						//prepare the charge the customer
+						$charge_query = $this->Pin_model->charge_customer([
 							'email'			=> $user['email'],
-							'country'		=> $charge_query['card']['address_country'],
-						];
-
-						//add the payment date from the charge query's date
-						$payment_date = new DateTime($charge_query['created_at']);
-						$payment_date = $payment_date->format('Y-m-d H:i:s');
-						$payment_history['date'] = $payment_date;
-
-						if(!empty($charge_query['card']['address_line1'])) $address[] = $charge_query['card']['address_line1'];
-						if(!empty($charge_query['card']['address_line2'])) $address[] = $charge_query['card']['address_line2'];
-						if(!empty($charge_query['card']['address_city'])) $address[] = $charge_query['card']['address_city'];
-						if(!empty($charge_query['card']['address_postcode'])) $address[] = $charge_query['card']['address_postcode'];
-						if(!empty($charge_query['card']['address_state'])) $address[] = $charge_query['card']['address_state'];
-
-						$payment_history['address'] = implode(' ', $address);
-
-						$payment_id = $this->Payments_model->create($payment_history);
-
-						$invoice_file_location = $this->Payments_model->read($payment_id)['invoiceFilePath'];
-
-						$email = $this->Email_model->prepare_email('emails/invoice_email', [
-							'month'			=> $today->format('F'),
-							'year'			=> $today->format('Y'),
-							'username'		=> $user['username'],
-							'user_id'		=> $user['id'],
+							'description'	=> $product_description,
+							'amount'		=> $charge,
+							'ipAddress'		=> $user['ipAddress'],
+							'currency'		=> $currency,
+							'customerToken'	=> $customer_token,
 						]);
 
-						//send the email
-						$this->Email_model->send_email([
-							'enquiry@polycademy.com',
-							[$user['email']],
-							'SnapSearch Monthly Invoice for ' . $today->format('F') . ' ' . $today->format('Y'),
-							$email,
-							[
-								'SnapSearch Invoice for ' . $today->format('F') . $today->format('Y') . '.pdf'	=> $invoice_file_location
-							]
-						]);
+						if(!$charge_query){
+
+							//charge was unsuccessful
+
+							//retrieve the errors, there could be system or validation errors
+							$charge_errors = $this->Pin_model->get_errors();
+							$charge_error_message = '';
+							if(isset($charge_errors['validation_error'])){
+								$charge_error_message .= implode(' | ', $charge_errors['validation_error']);
+							}elseif(isset($charge_errors['system_error'])){
+								$charge_error_message .= $charge_errors['system_error'];
+							}
+
+							//update the account with the left over charge
+							//apiLimit gets reset to apiFreeLimit
+							$query = $this->Accounts_model->update($user['id'], [
+								'apiLeftOverUsage'	=> $total_usage,
+								'apiLeftOverCharge'	=> $charge,
+								'apiLimit'			=> $user['apiFreeLimit'],
+							]);
+
+							//update the billing details in order to make the current customer object invalid
+							$this->Billing_model->update($billing_record['id'], [
+								'active'			=> 0,
+								'cardInvalid'		=> 1,
+								'cardInvalidReason'	=> $charge_error_message,							
+							]);
+
+							//prepare the billing error email
+							$email = $this->Email_model->prepare_email('email/billing_error_email', [
+								'month'			=> $today->format('F'),
+								'year'			=> $today->format('Y'),
+								'username'		=> $user['username'],
+								'charge_error'	=> $charge_error_message,
+								'user_id'		=> $user['id'],
+							]);
+
+							//send the email
+							$this->Email_model->send_email(
+								'enquiry@polycademy.com',
+								[$user['email']],
+								'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+								$email
+							);
+
+							//move on to the next user!
+
+						}else{
+
+							$payment_history = [
+								'userId'		=> $user['id'],
+								'chargeToken'	=> $charge_query['token'],
+								'item'			=> $product_description,
+								'usageRate'		=> $total_usage,
+								'amount'		=> $charge,
+								'currency'		=> $currency,
+								'email'			=> $user['email'],
+								'country'		=> $charge_query['card']['address_country'],
+							];
+
+							//add the payment date from the charge query's date
+							$payment_date = new DateTime($charge_query['created_at']);
+							$payment_date = $payment_date->format('Y-m-d H:i:s');
+							$payment_history['date'] = $payment_date;
+
+							if(!empty($charge_query['card']['address_line1'])) $address[] = $charge_query['card']['address_line1'];
+							if(!empty($charge_query['card']['address_line2'])) $address[] = $charge_query['card']['address_line2'];
+							if(!empty($charge_query['card']['address_city'])) $address[] = $charge_query['card']['address_city'];
+							if(!empty($charge_query['card']['address_postcode'])) $address[] = $charge_query['card']['address_postcode'];
+							if(!empty($charge_query['card']['address_state'])) $address[] = $charge_query['card']['address_state'];
+
+							$payment_history['address'] = implode(' ', $address);
+
+							$payment_id = $this->Payments_model->create($payment_history);
+
+							$invoice_file_location = $this->Payments_model->read($payment_id)['invoiceFilePath'];
+
+							$email = $this->Email_model->prepare_email('email/invoice_email', [
+								'month'			=> $today->format('F'),
+								'year'			=> $today->format('Y'),
+								'username'		=> $user['username'],
+								'user_id'		=> $user['id'],
+							]);
+
+							//send the email
+							$this->Email_model->send_email(
+								'enquiry@polycademy.com',
+								[$user['email']],
+								'SnapSearch Monthly Invoice for ' . $today->format('F') . ' ' . $today->format('Y'),
+								$email,
+								[
+									'SnapSearch Invoice for ' . $today->format('F') . ' ' . $today->format('Y') . '.pdf'	=> $invoice_file_location
+								]
+							);
+
+						}
 
 					}
 

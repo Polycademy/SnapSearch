@@ -54,8 +54,8 @@ Pigeon::map(function($r){
 		$r->route('cron/purge_cache/(.*)/(.*)', 'cron#purge_cache');
 
 		//Monthly Billing
-		//php index.php cli cron monthly_billing
-		$r->route('cron/monthly_billing', 'cron#monthly_billing');
+		//php index.php cli cron monthly_tracking
+		$r->route('cron/monthly_tracking', 'cron#monthly_tracking');
 		
 	});
 	

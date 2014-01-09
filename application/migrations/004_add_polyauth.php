@@ -48,6 +48,7 @@ class Migration_add_polyauth extends CI_Migration {
 				'apiFreeLimit'			=> 100000000,
 				'apiUsage'				=> 0,
 				'apiRequests'			=> 0,
+				'apiLeftOverUsage'		=> 0,
 				'apiLeftOverCharge'		=> 0,
 				'chargeInterval'		=> 'P30D',
 			],
@@ -65,6 +66,7 @@ class Migration_add_polyauth extends CI_Migration {
 				'apiFreeLimit'			=> 1000,
 				'apiUsage'				=> 0,
 				'apiRequests'			=> 0,
+				'apiLeftOverUsage'		=> 0,
 				'apiLeftOverCharge'		=> 0,
 				'chargeInterval'		=> 'P30D',
 			]
@@ -237,6 +239,11 @@ class Migration_add_polyauth extends CI_Migration {
 				'type'		=> 'INT',
 				'default'	=> 0,
 				'unsigned' => TRUE,
+			],
+			'apiLeftOverUsage'	=> [
+				'type'		=> 'INT',
+				'default'	=> 0,
+				'unsigned'	=> TRUE,
 			],
 			'apiLeftOverCharge'	=> [
 				'type'		=> 'INT',

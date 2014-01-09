@@ -58,6 +58,8 @@ class Usage_model extends CI_Model{
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
 
+		$this->validator->reset_validation();
+
 		if(!empty($validation_errors)){
 
 			$this->errors = array(
@@ -166,6 +168,8 @@ class Usage_model extends CI_Model{
 		if($this->validator->run() ==  false){
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
+
+		$this->validator->reset_validation();
 
 		if(!empty($validation_errors)){
 

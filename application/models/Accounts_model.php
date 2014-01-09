@@ -118,6 +118,8 @@ class Accounts_model extends CI_Model{
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
 
+		$this->validator->reset_validation();
+
 		if(!empty($validation_errors)){
 
 			$this->errors = array(
@@ -135,6 +137,8 @@ class Accounts_model extends CI_Model{
 		$data['apiUsage'] = 0;
 
 		$data['apiRequests'] = 0;
+
+		$data['apiLeftOverUsage'] = 0;
 
 		$data['apiLeftOverCharge'] = 0;
 
@@ -220,6 +224,7 @@ class Accounts_model extends CI_Model{
 			'apiFreeLimit',
 			'apiUsage',
 			'apiRequests',
+			'apiLeftOverUsage',
 			'apiLeftOverCharge',
 			'chargeInterval',
 			'chargeDate',
@@ -269,9 +274,14 @@ class Accounts_model extends CI_Model{
 				'rules'	=> 'integer',
 			),
 			array(
+				'field'	=> 'apiLeftOverUsage', //apiLeftOverUsage can only be updated directly in the model, which is from the CRON billing, not from the controller
+				'label'	=> 'API Left Over Usage',
+				'rules'	=> 'integer',
+			),
+			array(
 				'field'	=> 'apiLeftOverCharge', //apiLeftOverCharge can only be updated directly in the model, which is from the CRON billing, not from the controller. This relies on assuming only one currency is used! This is a pre-tax charge.
 				'label'	=> 'API Left Over Charge',
-				'rules'	=> 'numeric',
+				'rules'	=> 'integer',
 			),
 			array(
 				'field'	=> 'chargeInterval',
@@ -310,6 +320,8 @@ class Accounts_model extends CI_Model{
 			$validation_errors = $this->validator->error_array();
 		}
 
+		$this->validator->reset_validation();
+
 		if(!empty($validation_errors)){
 
 			$this->errors = array(
@@ -333,7 +345,7 @@ class Accounts_model extends CI_Model{
 
 			if($query){
 
-				return $id;
+				return true;
 
 			}else{
 
@@ -474,6 +486,8 @@ class Accounts_model extends CI_Model{
 		if($this->validator->run() ==  false){
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
+
+		$this->validator->reset_validation();
 
 		if(!empty($validation_errors)){
 

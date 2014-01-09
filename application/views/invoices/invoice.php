@@ -33,7 +33,7 @@
         <table class="invoice">
             <tr class="head">
                 <td>Item</td>
-                <td>Usage Rate</td>
+                <td>Billed Usage Rate (including any previous unbilled usage)</td>
                 <td>Currency</td>
                 <td>Amount</td>
                 <td>Includes GST 10%</td>

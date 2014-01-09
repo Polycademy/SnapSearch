@@ -63,6 +63,8 @@ class Pin_model extends CI_Model{
 			'cardCountry',
 		), $input_data, null, true);
 
+		$this->validator->set_data($data);
+
 		$this->validator->set_rules(array(
 			array(
 				'field'	=> 'email',
@@ -130,6 +132,8 @@ class Pin_model extends CI_Model{
 		if($this->validator->run() ==  false){
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
+
+		$this->validator->reset_validation();
 
 		if(!empty($validation_errors)){
 
@@ -273,6 +277,8 @@ class Pin_model extends CI_Model{
 			'cardCountry',
 		), $input_data, null, true);
 
+		$this->validator->set_data($data);
+
 		$rules = [];
 
 		$updating_email = false;
@@ -311,7 +317,7 @@ class Pin_model extends CI_Model{
 		if($updating_card){
 
 			//its attempting to update the card, so we need to validate the card details
-			$rules += array(
+			$rules = array_merge($rules, [
 				array(
 					'field'	=> 'cardNumber',
 					'label'	=> 'Credit Card Number',
@@ -362,7 +368,7 @@ class Pin_model extends CI_Model{
 					'label'	=> 'Card Country',
 					'rules'	=> 'required'
 				),
-			);
+			]);
 
 		}
 
@@ -377,6 +383,8 @@ class Pin_model extends CI_Model{
 		if($this->validator->run() ==  false){
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
+
+		$this->validator->reset_validation();
 
 		if(!empty($validation_errors)){
 
@@ -522,6 +530,8 @@ class Pin_model extends CI_Model{
 			'customerToken',
 		), $input_data, null, true);
 
+		$this->validator->set_data($data);
+
 		$this->validator->set_rules(array(
 			array(
 				'field'	=> 'email',
@@ -564,6 +574,8 @@ class Pin_model extends CI_Model{
 		if($this->validator->run() ==  false){
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
+
+		$this->validator->reset_validation();
 
 		if(!empty($validation_errors)){
 
