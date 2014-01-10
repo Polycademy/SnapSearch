@@ -46,7 +46,7 @@ class Robot extends CI_Controller{
 			$content = 'Not authorized to use SnapSearch.';
 			$code = 'error';
 
-		}elseif($this->reachedApiLimit()){
+		}elseif($this->reached_api_limit()){
 
 			$this->auth_response->setStatusCode(429);
 			$content = 'Reached API Limit.';
