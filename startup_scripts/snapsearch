@@ -1,0 +1,8 @@
+# Cron script that runs daily for the purposes of SnapSearch billing
+# This should be copied to /etc/cron.d/
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+PROJECT_DIR=/www/snapsearch
+
+* 0 * * * www-data /usr/bin/env php $PROJECT_DIR/index.php cli cron monthly_tracking

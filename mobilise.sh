@@ -50,18 +50,26 @@ bower install --allow-root </dev/null
 composer dump-autoload --optimize </dev/null
 
 # Download SlimerJS
-echo "Downloading SlimerJS 0.9.0"
-curl http://download.slimerjs.org/v0.9/0.9.0/slimerjs-0.9.0-linux-i686.tar.bz2 -o slimerjs.tar.bz2
-echo "Uncompressing and extracting SlimerJS into ./slimerjs"
-mkdir -p slimerjs && tar xjvf slimerjs.tar.bz2 -C slimerjs --strip-components 1
-rm slimerjs.tar.bz2
-echo "Adding SlimerJS to the PATH"
-sudo ln -sf `pwd`/slimerjs/slimerjs /usr/local/bin/slimerjs
+read -p "$(tput bold)$(tput setaf 2)Setup SlimerJS? [Y/n]: $(tput sgr0)" -n 1 -r DOWNLOAD_SLIMERJS
+echo
+if [[ $DOWNLOAD_SLIMERJS =~ ^[Y]$ ]]; then
+	echo "Downloading SlimerJS 0.9.0"
+	curl http://download.slimerjs.org/v0.9/0.9.0/slimerjs-0.9.0-linux-i686.tar.bz2 -o slimerjs.tar.bz2
+	echo "Uncompressing and extracting SlimerJS into ./slimerjs"
+	mkdir -p slimerjs && tar xjvf slimerjs.tar.bz2 -C slimerjs --strip-components 1
+	rm slimerjs.tar.bz2
+	echo "Adding SlimerJS to the PATH"
+	sudo ln -sf `pwd`/slimerjs/slimerjs /usr/local/bin/slimerjs
+fi
 
 # Bring in Secret Keys
-echo "Downloading secret keys relevant to Snapsearch"
-mkdir -p secrets
-curl -u 'CMCDragonkai' -L https://raw.github.com/CMCDragonkai/keys/master/snapsearch/keys.php > secrets/keys.php
+read -p "$(tput bold)$(tput setaf 2)Setup Secrets? [Y/n]: $(tput sgr0)" -n 1 -r DOWNLOAD_SECRETS
+echo
+if [[ $DOWNLOAD_SECRETS =~ ^[Y]$ ]]; then
+	echo "Downloading secret keys relevant to Snapsearch"
+	mkdir -p secrets
+	curl -u 'CMCDragonkai' -L https://raw.github.com/CMCDragonkai/keys/master/snapsearch/keys.php > secrets/keys.php
+fi
 
 # How many robots do you want to start?
 # Prompt for robot numbers, note that port starts at 8500
@@ -69,7 +77,7 @@ curl -u 'CMCDragonkai' -L https://raw.github.com/CMCDragonkai/keys/master/snapse
 
 # Should create the database if it's not available
 echo "Creating database for snapsearch"
-read -p "$(tput bold)$(tput setaf 2)Enter username for mysql, followed by enter: $(tput sgr0)" -r MYSQL_USER
+read -p "$(tput bold)$(tput setaf 2)Enter username for mysql to setup database, followed by enter, or just hit enter to ignore: $(tput sgr0)" -r MYSQL_USER
 # Check if the username has been set
 if [ ! -z "$MYSQL_USER" ]; then
 	mysql -u $MYSQL_USER -p -e "CREATE DATABASE IF NOT EXISTS snapsearch; show databases;"
@@ -84,7 +92,7 @@ if [[ $DATABASE_MIGRATION =~ ^[Y]$ ]]; then
 fi
 
 # Setup hosts redirection for snapsearch.io and www.snapsearch.io
-read -p "$(tput bold)$(tput setaf 2)Setup /etc/hosts redirection for snapsearch.io?. [Y/n]: $(tput sgr0)" -n 1 -r HOST_REDIRECTION
+read -p "$(tput bold)$(tput setaf 2)Setup /etc/hosts redirection for snapsearch.io? [Y/n]: $(tput sgr0)" -n 1 -r HOST_REDIRECTION
 echo
 if [[ $HOST_REDIRECTION =~ ^[Y]$ ]]; then
 	# This will not overwrite the previous clone
@@ -113,6 +121,14 @@ perl -pi -e "s/root .*/root $ESCAPED_PROJECT_DIR;/g" server_config/snapsearch.io
 echo "Establishing a symlink from snapsearch.io to NGINX sites-enabled"
 sudo ln -sf `pwd`/server_config/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
 sudo service nginx restart
+
+# Setting up Cron Billing
+echo "Setting up SnapSearch billing as a crontab"
+ESCAPED_PROJECT_DIR="${PROJECT_DIR//\//\\/}"
+perl -pi -e "s/PROJECT_DIR=.*/PROJECT_DIR=$ESCAPED_PROJECT_DIR;/g" startup_scripts/snapsearch
+echo "Copying startup_scripts/snapsearch to /etc/cron.d/snapsearch"
+sudo cp `pwd`/startup_scripts/snapsearch /etc/cron.d/snapsearch
+sudo service cron restart
 
 # Changing owner to www-data
 echo "Changing owner of downloaded files to www-data"
