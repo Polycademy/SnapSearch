@@ -131,7 +131,7 @@ class Robot extends CI_Controller{
 
 		$api_requests = $this->user['apiRequests'] + 1;
 
-		$this->Accounts_model->update($user['id'], [
+		$this->Accounts_model->update($this->user['id'], [
 			'apiRequests'	=> $api_requests,
 		]);
 
@@ -141,7 +141,7 @@ class Robot extends CI_Controller{
 
 		$api_usage = $this->user['apiUsage'] + 1;
 
-		$this->Accounts_model->update($user['id'], [
+		$this->Accounts_model->update($this->user['id'], [
 			'apiUsage'	=> $api_usage,
 		]);
 
