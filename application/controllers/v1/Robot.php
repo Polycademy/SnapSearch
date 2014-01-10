@@ -120,10 +120,10 @@ class Robot extends CI_Controller{
 		$api_usage = $this->user['apiUsage'] + 1;
 
 		if($api_usage > $api_limit){
-			return false;
+			return true;
 		}
 
-		return true;
+		return false;
 
 	}
 
