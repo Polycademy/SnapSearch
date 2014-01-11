@@ -5,4 +5,4 @@ SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 PROJECT_DIR=/www/snapsearch
 
-* 0 * * * www-data /usr/bin/env php $PROJECT_DIR/index.php cli cron monthly_tracking
+* 0 * * * www-data /usr/bin/env php $PROJECT_DIR/index.php cli cron monthly_tracking >> $PROJECT_DIR/startup_scripts/cron.log 2>&1
