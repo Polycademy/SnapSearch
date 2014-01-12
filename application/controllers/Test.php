@@ -313,13 +313,88 @@ class Test extends CI_Controller{
 
 	}
 
-	public function cron(){
+	public function amazon(){
 
-		//simulate a cron...
+		$start = microtime(true);
+
+		$s3_service = Aws\S3\S3Client::factory([
+			'key'		=> $_ENV['secrets']['s3_api_key'],
+			'secret'	=> $_ENV['secrets']['s3_api_secret'],
+		]);
+
+		$filesystem = new Gaufrette\Filesystem(
+			new Gaufrette\Adapter\AwsS3(
+				$s3_service,
+				'snapsearch'
+			)
+		);
+
+		do{
+			$snapshot_name = uniqid('snapshot', true);
+			if(!$filesystem->has($snapshot_name)) break;
+		}while(true);
+
+		$file = new Gaufrette\File($snapshot_name, $filesystem);
+		$content = bzcompress('Hi I am going to be compressed!', 9);
+		$size = $file->setContent($content, [
+			'ContentType'	=> 'application/x-bzip2',
+			'StorageClass'	=> 'REDUCED_REDUNDANCY'
+		]);
+
+		if($size){
+
+			var_dump($file->getContent());
+
+		}
+
+		$finish = microtime(true);
+
+		$time = $finish - $start;
+
+		echo $time;
 
 	}
 
-	//test out navigation false (redirect false)
+	public function amazon2(){
+
+		$start = microtime(true);
+
+		$s3_service = Aws\S3\S3Client::factory([
+			'key'		=> $_ENV['secrets']['s3_api_key'],
+			'secret'	=> $_ENV['secrets']['s3_api_secret'],
+		]);
+
+		$filesystem = new Gaufrette\Filesystem(
+			new Gaufrette\Adapter\AwsS3(
+				$s3_service,
+				'snapsearch'
+			)
+		);
+
+		$snapshot_name = uniqid('snapshot', true);
+
+		$file = new Gaufrette\File($snapshot_name, $filesystem);
+		$content = bzcompress('Hi I am going to be compressed!', 9);
+		$size = $file->setContent($content, [
+			'ContentType'	=> 'application/x-bzip2',
+			'StorageClass'	=> 'REDUCED_REDUNDANCY'
+		]);
+
+		if($size){
+
+			var_dump($file->getContent());
+
+		}
+
+		$finish = microtime(true);
+
+		$time = $finish - $start;
+
+		echo $time;
+
+	}
+
+
 	//then add SSL
 	//then deploy
 	//and modify dreamitapp

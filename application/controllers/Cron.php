@@ -22,8 +22,8 @@ class Cron extends CI_Controller{
 
 	/**
 	 * Purge (clean) the snapshot cache. If no allowed_length is passed, all of the cache is deleted
-	 * @param  boolean $allowed_length Allowed length in ISO8601
-	 * @param  boolean $user_id        Cache a specific user's snapshot
+	 * @param  boolean $allowed_length Allowed length in ISO8601 duration format
+	 * @param  boolean $user_id        Purge a specific user's snapshot
 	 */
 	public function purge_cache($allowed_length = false, $user_id = false){
 

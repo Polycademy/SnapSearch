@@ -4,8 +4,11 @@ use Guzzle\Http\Client;
 use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\CurlException;
 
+use Aws\S3\S3Client;
+
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\Local as LocalAdapter;
+use Gaufrette\Adapter\AwsS3 as AwsS3Adapter;
+use Gaufrette\File;
 
 class Robot_model extends CI_Model{
 
@@ -24,8 +27,19 @@ class Robot_model extends CI_Model{
 		$this->client = new Client;
 		$this->client->setUserAgent('Snapsearch');
 
-		//snapshots should be a relative directory to index.php
-		$this->filesystem = new Filesystem(new LocalAdapter('snapshots', true));
+		//using amazon s3 to store the snapshot cache, it will be stored in the snapsearch bucket, and if the bucket doesn't exist, it will create it
+		$this->filesystem = new Filesystem(
+			new AwsS3Adapter(
+				S3Client::factory([
+					'key'		=> $_ENV['secrets']['s3_api_key'],
+					'secret'	=> $_ENV['secrets']['s3_api_secret'],
+				]),
+				'snapsearch',
+				[
+					'create'	=> true
+				]
+			)
+		);
 
 		$this->load->library('form_validation', false, 'validator');
 
@@ -109,7 +123,7 @@ class Robot_model extends CI_Model{
 			[
 				'field'	=> 'cachetime',
 				'label'	=> 'Cache time (cachetime)',
-				'rules'	=> 'greater_than_equal_to[1]|less_than_equal_to[50]',
+				'rules'	=> 'greater_than_equal_to[1]|less_than_equal_to[100]',
 			],
 		]);
 
@@ -282,13 +296,14 @@ class Robot_model extends CI_Model{
 				'parametersChecksum'	=> $row->parametersChecksum
 			];
 
-			if(!$this->filesystem->has($data['snapshot'])){
+			$snapshot_file = new File($data['snapshot'], $this->filesystem);
+
+			if(!$snapshot_file->exists()){
 				$this->delete_cache($data['id']);
 				return false;
 			}
 
-			$snapshot_data = $this->filesystem->read($data['snapshot']);
-			$snapshot_data = gzuncompress($snapshot_data);
+			$snapshot_data = bzdecompress($snapshot_file->getContent());
 			$data['snapshotData'] = $snapshot_data;
 
 			return $data;
@@ -304,38 +319,38 @@ class Robot_model extends CI_Model{
 	public function insert_cache($user_id, $url, $snapshot_data, $parameters_checksum){
 
 		//get a unique filename first
-		do{
-			$snapshot = uniqid('snapshot', true);
-			if(!$this->filesystem->has($snapshot)) break;
-		}while(true);
+		$snapshot_name = uniqid('snapshot', true);
 
 		//compress the data
-		$snapshot_data = gzcompress($snapshot_data, 9);
+		$snapshot_data = bzcompress($snapshot_data, 9);
+
+		//setup the file object
+		$snapshot_file = new File($snapshot_name, $this->filesystem);
 
 		//write the snapshot data, and potentially overwrite it
-		$this->filesystem->write($snapshot, $snapshot_data, true);
+		$s3_query = $snapshot_file->setContent($snapshot_data, [
+			'ContentType'	=> 'application/x-bzip2',
+			'StorageClass'	=> 'REDUCED_REDUNDANCY'
+		]);
 
-		//insert the snapshot filename to the database
-		$query = $this->db->insert('snapshots', array(
-			'userId'				=> $user_id,
-			'url'					=> $url,
-			'date'					=> date('Y-m-d H:i:s'),
-			'snapshot'				=> $snapshot,
-			'parametersChecksum'	=> $parameters_checksum,
-		));
+		if($s3_query){
 
-		if(!$query){
-			$msg = $this->db->error()['message'];
-			$num = $this->db->error()['code'];
-			$last_query = $this->db->last_query();
-			log_message('error', 'Problem inserting into snapshots table: ' . $msg . ' (' . $num . '), using this query: "' . $last_query . '"');
+			//insert the snapshot filename to the database
+			$this->db->insert('snapshots', array(
+				'userId'				=> $user_id,
+				'url'					=> $url,
+				'date'					=> date('Y-m-d H:i:s'),
+				'snapshot'				=> $snapshot_name,
+				'parametersChecksum'	=> $parameters_checksum,
+			));
+
 		}
 
 		return true;
 
 	}
 
-	public function update_cache($id, $snapshot, $snapshot_data){
+	public function update_cache($id, $snapshot_name, $snapshot_data){
 
 		//update the date timestamp for this cached data
 		$this->db->where('id', $id);
@@ -344,21 +359,30 @@ class Robot_model extends CI_Model{
 		));
 
 		//compress the snapshot
-		$snapshot_data = gzcompress($snapshot_data, 9);
+		$snapshot_data = bzcompress($snapshot_data, 9);
 
-		//overwrite the cached file
-		$this->filesystem->write($snapshot, $snapshot_data, true);
+		//setup the file object
+		$snapshot_file = new File($snapshot_name, $this->filesystem);
+
+		//update the cached file
+		$snapshot_file->setContent($snapshot_data, [
+			'ContentType'	=> 'application/x-bzip2',
+			'StorageClass'	=> 'REDUCED_REDUNDANCY'
+		]);
 
 		return true;
 
 	}
 
-	public function delete_cache($id, $filename = false){
+	public function delete_cache($id, $snapshot_name = false){
 
 		$query = $this->db->delete('snapshots', array('id' => $id));
 
-		if($filename AND $this->filesystem->has($filename)){
-			$this->filesystem->delete($filename);
+		if($snapshot_name){
+			$snapshot_file = new File($snapshot_name, $this->filesystem);
+			if($snapshot_file->exists()){
+				$snapshot_file->delete();
+			}
 		}
 
 		return true;
@@ -370,7 +394,7 @@ class Robot_model extends CI_Model{
 		$cutoff_date = false;
 		try{
 			if($allowed_length){
-				$current_date = new DateTime();
+				$current_date = new DateTime;
 				$allowed_length = new DateInterval($allowed_length);
 				$cutoff_date = $current_date->sub($allowed_length)->format('Y-m-d H:i:s');
 			}
