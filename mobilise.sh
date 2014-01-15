@@ -120,6 +120,10 @@ ESCAPED_PROJECT_DIR="${PROJECT_DIR//\//\\/}"
 perl -pi -e "s/root .*/root $ESCAPED_PROJECT_DIR;/g" server_config/snapsearch.io
 echo "Establishing a symlink from snapsearch.io to NGINX sites-enabled"
 sudo ln -sf `pwd`/server_config/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
+echo "Establishing a symlink from SSL certificate and key to NGINX ssl directory"
+mkdir -p /etc/nginx/ssl
+sudo ln -sf `pwd`/secrets/snapsearch.io.pem /etc/nginx/ssl/snapsearch.io.pem
+sudo ln -sf `pwd`/secrets/snapsearch.io.key /etc/nginx/ssl/snapsearch.io.key
 sudo service nginx restart
 
 # Setting up Cron Billing

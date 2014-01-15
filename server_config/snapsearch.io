@@ -28,10 +28,10 @@ server {
 # php application
 server {
 
-  listen 80;
-  listen [::]:80;
-  listen 443 ssl;
-  listen [::]:443 ssl;
+  listen 80 deferred;
+  listen [::]:80 deferred;
+  listen 443 deferred ssl;
+  listen [::]:443 deferred ssl;
 
   # The host name to respond to, this will require mapping hostname to ip address on dev server
   server_name snapsearch.io;
@@ -41,6 +41,15 @@ server {
 
   # Index search file to serve if in a directory
   index index.php index.html index.htm;
+
+  # SSL Settings
+  keepalive_timeout 70;
+  ssl_certificate      ssl/snapsearch.io.pem;
+  ssl_certificate_key  ssl/snapsearch.io.key;
+  # Force ssl
+  if ($ssl_protocol = "") {
+    return 301 https://snapsearch.io$request_uri;
+  }
 
   #Specify a charset
   charset utf-8;
