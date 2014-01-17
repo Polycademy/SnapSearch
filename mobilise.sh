@@ -144,4 +144,10 @@ sudo service cron restart
 echo "Changing owner of downloaded files to www-data"
 chown -R www-data:www-data $PROJECT_DIR
 
+# Synchronising clock time
+echo "Synchronising clock time to prevent synchronisation problems with external services such as Amazon"
+ntpdate ntp.ubuntu.com
+echo "ntpdate ntp.ubuntu.com" > /etc/cron.daily/ntpdate
+chmod 755 /etc/cron.daily/ntpdate
+
 echo "All done!"
