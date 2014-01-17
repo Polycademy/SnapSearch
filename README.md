@@ -8,6 +8,7 @@ sudo apt-get install -y make libc6 libstdc++6 libgcc1 xvfb git python-setuptools
 (MySQL config: https://www.digitalocean.com/community/articles/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-12-04)
 (PHP FPM config: http://arstechnica.com/information-technology/2012/12/web-served-part-3-bolting-on-php-with-php-fpm/)
 (PHP-FPM Mcrypt Fix http://askubuntu.com/a/360657 | sudo ln -s /etc/php5/conf.d/mcrypt.ini /etc/php5/mods-available/mcrypt.ini | sudo php5enmod mcrypt | sudo service php5-fpm restart)
+Make sure the `session_save_path()` is writable!
 
 If SlimerJS doesn't start, make sure firefox is installed
 
@@ -63,8 +64,6 @@ Tests: API tests functional tests using Codeception
 
 Combine onCallback with the custom callback to allow users to call back to SlimerJS. Perhaps a wait timer is good too! This needs to be resolved automatically if the user forgot to do so. So if no custom callback, this will not be set. If there is a custom callback, they need to window.callPhantom(). Which would resolve to true, so this just delays the async further if need be. https://github.com/ariya/phantomjs/wiki/API-Reference-WebPage#wiki-webpage-onCallback On SlimerJS is it window.callSlimer()?
 
-Test SSL + Cron + Robot + Build process for the front end + HTTP Basic Auth for the library
-
 How to deal with 404s:
 
 1. 404s for random URLs:
@@ -107,3 +106,5 @@ onNavigationRequested won't tell us what the status code is of the resource bein
 
 We will need some way bridging the id between onNavigationRequested and onResourceReceived...
 Perhaps based on the URl...
+
+Test Cron + Build process for the front end + HTTP Basic Auth for the library
