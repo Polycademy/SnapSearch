@@ -62,6 +62,9 @@ if [[ $DOWNLOAD_SLIMERJS =~ ^[Y]$ ]]; then
 	sudo ln -sf `pwd`/slimerjs/slimerjs /usr/local/bin/slimerjs
 fi
 
+# Switch on globbing extension. It cannot be part of an If block
+shopt -s extglob
+
 # Bring in Secret Keys
 read -p "$(tput bold)$(tput setaf 2)Setup Secrets? [Y/n]: $(tput sgr0)" -n 1 -r DOWNLOAD_SECRETS
 echo
@@ -69,8 +72,6 @@ if [[ $DOWNLOAD_SECRETS =~ ^[Y]$ ]]; then
 	echo "Downloading secret keys relevant to Snapsearch"
 	mkdir -p secrets
 	curl -L -k -u 'CMCDragonkai' https://github.com/CMCDragonkai/keys/tarball/master | tar xzv -C secrets --strip-components 1
-	# Switch on globbing extension!
-	shopt -s extglob
 	rm -r secrets/!(snapsearch)
 	cp -r secrets/snapsearch/* secrets
 	rm -r secrets/snapsearch
