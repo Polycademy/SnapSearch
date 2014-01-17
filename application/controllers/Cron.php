@@ -33,7 +33,9 @@ class Cron extends CI_Controller{
 
 		if($query === true){
 			$output = "Purged cache using length: $allowed_length";
-			if($user_id) $output .= " and user id: $user_id"
+			if($user_id){
+				$output .= " and user id: $user_id";
+			}
 			$output .= ".\n";
 			echo $output;
 		}else{
