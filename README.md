@@ -65,5 +65,28 @@ Combine onCallback with the custom callback to allow users to call back to Slime
 
 Test SSL + Cron + Robot + Build process for the front end + HTTP Basic Auth for the library
 
-Get the certificate from Comodo.
-Add it to NGINX.
+How to deal with 404s:
+
+1. 404s for random URLs:
+
+Server side routing needs to copy the rules of client side routing. So that when a URL that doesn't match the client and server side routing, it's treated as a 404 page from the server side. This can be done like this. The server side returns a 404 status code, but leaves the routing to the client side. The client side has a other routing rule, and in this case it will return a 404 page from the client side.
+This problem is a problem for machine and human clients. So this solves it for the machine and human clients.
+This is easy to keep synchronised.
+
+2. 404s for missing objects
+
+This is a problem for mainly machine clients.
+When an object is missing based on a dynamic page that uses ids. The server side cannot know if the object is missing unless it implements object checking logic. This becomes harder to synchronise.
+On the client side, your object checking logic will check if the object exists, and if it doesn't it'll show a dynamic 404 state on the page. However by this time, a 200 status code has already been returned from the server side.
+In this case, a human client will see a 404 page easily and not be bothered by the 200 status code. However for machine clients such as search engines, this is a big problem. The solution to this, is to implement the object checking logic, OR use snapsearch's meta tag commands.
+
+Snapsearch needs to check for SnapSearch specific meta tags. These meta tags can specify specific headers or status codes to return instead of the normal ones.
+If the meta tags are empty, SnapSearch won't use them. Only if they are filled and fit the HTTP spec.
+Just like the google meta tags!
+These meta tags can be modified by the client side javascript during runtime and changed just after the object asynchronous requests is finished.
+
+Could mix with onCallback.
+
+Now synchronising routes is fairly easy, could even use a independent configuration file.
+How about synchronising object checking logic?
+Is there an easy way?
