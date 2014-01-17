@@ -69,6 +69,8 @@ if [[ $DOWNLOAD_SECRETS =~ ^[Y]$ ]]; then
 	echo "Downloading secret keys relevant to Snapsearch"
 	mkdir -p secrets
 	curl -L -k -u 'CMCDragonkai' https://github.com/CMCDragonkai/keys/tarball/master | tar xzv -C secrets --strip-components 1
+	# Switch on globbing extension!
+	shopt -s extglob
 	rm -r secrets/!(snapsearch)
 	cp -r secrets/snapsearch/* secrets
 	rm -r secrets/snapsearch
