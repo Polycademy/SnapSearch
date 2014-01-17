@@ -6,7 +6,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 PROJECT_DIR=/www/snapsearch
 
 # Every day check whether a user should be billed, and if so record their monthly usage
-* 0 * * * www-data /usr/bin/env php $PROJECT_DIR/index.php cli cron monthly_tracking >> $PROJECT_DIR/startup_scripts/cron.log 2>&1
+* 0 * * * www-data /usr/bin/env php $PROJECT_DIR/index.php cli cron monthly_tracking >> $PROJECT_DIR/startup_scripts/cron_billing.log 2>&1
 
 # Every month purge the cache of items that are older than 100 hours which is the maximum cache time
-* * 1 * * www-data /usr/bin/env php $PROJECT_DIR/index.php cli cron purge_cache PT101H >> $PROJECT_DIR/startup_scripts/cron.log 2>&1
+* * 1 * * www-data /usr/bin/env php $PROJECT_DIR/index.php cli cron purge_cache PT101H >> $PROJECT_DIR/startup_scripts/cron_purge.log 2>&1
