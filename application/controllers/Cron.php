@@ -32,9 +32,12 @@ class Cron extends CI_Controller{
 		$query = $this->Robot_model->purge_cache($allowed_length, $user_id);
 
 		if($query === true){
-			echo 'Purged cache using length: ' . intval($allowed_length) . ' and user id: ' . $user_id;
+			$output = "Purged cache using length: $allowed_length";
+			if($user_id) $output .= " and user id: $user_id"
+			$output .= ".\n";
+			echo $output;
 		}else{
-			echo $query;
+			echo $query . "\n";
 		}
 
 	}
