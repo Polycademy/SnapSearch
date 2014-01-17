@@ -90,3 +90,20 @@ Could mix with onCallback.
 Now synchronising routes is fairly easy, could even use a independent configuration file.
 How about synchronising object checking logic?
 Is there an easy way?
+
+Currently returning status code of the first page. However it's also following redirects.
+We need to send the status code for the last redirected page.
+This can be done with the client side redirects easily.
+But header redirects needs to be checked with the onResourceReceived...
+Perhaps it can be checked with a 301/302 status code.
+Basically when there is a unbroken sequence of 301/302 in the onResourceReceived, we need to get the last
+one's http status code! This will resolve header redirects. This is the last code that is not a 302 or 301.
+Imagine: First Request -> 301 -> 302 -> 301 -> 200 
+The 200 is what we want.
+This would work for header redirects and any early synchronous client side redirects.
+It will not work for late client side redirects. 
+
+onNavigationRequested won't tell us what the status code is of the resource being received.
+
+We will need some way bridging the id between onNavigationRequested and onResourceReceived...
+Perhaps based on the URl...
