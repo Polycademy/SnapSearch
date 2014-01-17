@@ -47,7 +47,7 @@ server {
   # Index search file to serve if in a directory
   index index.php index.html index.htm;
 
-  # Force ssl
+  # Force SSL
   if ($ssl_protocol = "") {
     return 301 https://snapsearch.io$request_uri;
   }
