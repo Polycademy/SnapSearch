@@ -31,8 +31,11 @@ class Cron extends CI_Controller{
 
 		$query = $this->Robot_model->purge_cache($allowed_length, $user_id);
 
+		$today = new DateTime;
+		$output = $today->format('Y-m-d H:i:s') . ' - ';
+
 		if($query === true){
-			$output = "Purged cache using length: $allowed_length";
+			$output .= "Purged cache using length: $allowed_length";
 			if($user_id){
 				$output .= " and user id: $user_id";
 			}
@@ -53,6 +56,7 @@ class Cron extends CI_Controller{
 		$charge_per_request = 0.5;
 		$currency = 'AUD';
 		$product_description = 'SnapSearch API Usage';
+		$today = new DateTime;
 
 		$this->load->model('Accounts_model');
 		$this->load->model('Usage_model');
@@ -81,7 +85,6 @@ class Cron extends CI_Controller{
 			foreach($users as $user){
 
 				//first determine if the $user is currently scheduled for a monthly checkup
-				$today = new DateTime;
 				$charge_date = new DateTime($user['chargeDate']);
 
 				//if the charge_date is after today, then we'll skip this user, as this user is not scheduled for a monthly checkup
@@ -129,6 +132,8 @@ class Cron extends CI_Controller{
 					'apiLeftOverCharge'	=> 0,
 					'chargeDate'		=> $next_charge_date->format('Y-m-d H:i:s'),
 				]);
+
+				echo $today->format('Y-m-d H:i:s') . " - USER: #{$user['id']} {$user['email']} USAGE: $usage CHARGE: $charge.\n";
 
 				if($charge){
 
