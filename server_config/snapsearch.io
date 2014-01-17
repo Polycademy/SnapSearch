@@ -20,6 +20,11 @@ server {
   # listen on the www host
   server_name www.snapsearch.io;
 
+  # SSL Settings
+  keepalive_timeout 70;
+  ssl_certificate      ssl/snapsearch.io.pem;
+  ssl_certificate_key  ssl/snapsearch.io.key;
+
   # and redirect to the non-www host (declared below)
   return 301 $scheme://snapsearch.io$request_uri;
 
@@ -42,14 +47,15 @@ server {
   # Index search file to serve if in a directory
   index index.php index.html index.htm;
 
-  # SSL Settings
-  keepalive_timeout 70;
-  ssl_certificate      ssl/snapsearch.io.pem;
-  ssl_certificate_key  ssl/snapsearch.io.key;
   # Force ssl
   if ($ssl_protocol = "") {
     return 301 https://snapsearch.io$request_uri;
   }
+
+  # SSL Settings
+  keepalive_timeout 70;
+  ssl_certificate      ssl/snapsearch.io.pem;
+  ssl_certificate_key  ssl/snapsearch.io.key;
 
   #Specify a charset
   charset utf-8;
