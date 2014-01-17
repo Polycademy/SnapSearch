@@ -379,7 +379,7 @@
                 {
                     "name": "Jamie Rumbelow",
                     "email": "jamie@jamierumbelow.net",
-                    "homepage": "http://jamierumbelow.net/"
+                    "homepage": "http://jamierumbelow.net"
                 }
             ],
             "description": "Intelligent, elegant routing for CodeIgniter",
