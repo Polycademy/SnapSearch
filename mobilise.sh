@@ -68,7 +68,10 @@ echo
 if [[ $DOWNLOAD_SECRETS =~ ^[Y]$ ]]; then
 	echo "Downloading secret keys relevant to Snapsearch"
 	mkdir -p secrets
-	curl -u 'CMCDragonkai' -L https://raw.github.com/CMCDragonkai/keys/master/snapsearch/keys.php > secrets/keys.php
+	curl -L -k -u 'CMCDragonkai' https://github.com/CMCDragonkai/keys/tarball/master | tar xzv -C secrets --strip-components 1
+	rm -r secrets/!(snapsearch)
+	cp -r secrets/snapsearch/* secrets
+	rm -r secrets/snapsearch
 fi
 
 # How many robots do you want to start?
