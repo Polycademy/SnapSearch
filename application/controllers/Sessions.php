@@ -130,9 +130,9 @@ class Sessions extends CI_Controller{
 
 				}else{
 
-					//this part can only be happening if the login function is used with a strategy that doesn't support the login function such as HTTP Basic. This controller should not be users with HTTP basic
+					//this part can only be happening if the login function is used with a strategy that doesn't support the login function such as HTTP Basic. This controller should not be used with HTTP basic
 					$this->auth_response->setStatusCode(400);
-					$content = 'This Sessions Controller should not be user with HTTP Basic Auth. Please report.';
+					$content = 'This Sessions Controller should not be used with HTTP Basic Auth. Please report.';
 					$code = 'system_error';
 
 				}

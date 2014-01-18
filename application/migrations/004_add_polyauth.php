@@ -44,6 +44,7 @@ class Migration_add_polyauth extends CI_Migration {
 				'createdOn'				=> date('Y-m-d H:i:s'),
 				'lastLogin'				=> date('Y-m-d H:i:s'),
 				'active'				=> '1',
+				'sharedKey'				=> 'Nc2lNhDeC+g74YCzkCqUlvM+r3g91c1X16aGN+gIkKp4xBUDC/jvMDlhrU6KVRvI2WIGnQOf0JRoVGW/Strqeg==',
 				'apiLimit'				=> 100000000,
 				'apiFreeLimit'			=> 100000000,
 				'apiUsage'				=> 0,
@@ -62,6 +63,8 @@ class Migration_add_polyauth extends CI_Migration {
 				'createdOn'				=> date('Y-m-d H:i:s'),
 				'lastLogin'				=> date('Y-m-d H:i:s'),
 				'active'				=> '1',
+				//demo key is a2XEBCF6H5Tm9aYiwYRtdz7EirJDKbKHXl7LzA21boJVkxXD3E
+				'sharedKey'				=> 'g5U/xe/cLZOpdsTKNayP+Gfkx5gwf1jXyCxbOiSOd12OtiKwgeuqU1qhVbgp9El/cS9U3zmUW70c4702uKVXuw==',
 				'apiLimit'				=> 1000,
 				'apiFreeLimit'			=> 1000,
 				'apiUsage'				=> 0,

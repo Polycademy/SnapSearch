@@ -43,7 +43,7 @@ class Accounts extends CI_Controller{
 		if($query){
 
 			//if admin we get to see all the details, but if not admin we need to remove properties
-			if(!$this->user->authorized(false, 'admin')){
+			if(!$this->user->authorized(['roles' => 'admin'])){
 				foreach($query as &$user){
 					unset(
 						$user['email'],
@@ -95,8 +95,13 @@ class Accounts extends CI_Controller{
 
 		if($query){
 
-			//if not admin nor the user that owns this resource			
-			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $id)){
+			//if user is not an admin and does not match the user id
+			//then unset all the private variables	
+			if(!$this->user->authorized([
+				'roles'	=> 'admin'
+			], [
+				'users'	=> $id
+			])){	
 				unset(
 					$query['email'],
 					$query['passwordChange'],
@@ -143,7 +148,7 @@ class Accounts extends CI_Controller{
 
 		$data = $this->input->json(false);
 
-		if(!$this->user->authorized(false, 'admin')){
+		if(!$this->user->authorized(['roles' => 'admin'])){
 			unset(
 				$data['apiLimit'],
 				$data['apiFreeLimit'],
@@ -187,10 +192,14 @@ class Accounts extends CI_Controller{
 
 	}
 
-	//can only be done by the admin or resource owner
 	public function update($id){
 
-		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $id)){
+		//can only be done by the admin or resource owner
+		if(!$this->user->authorized([
+			'roles'	=> 'admin'
+		], [
+			'users'	=> $id
+		])){
 
 			$content = 'You\'re not authorized to update this user!';
 			$code = 'error';
@@ -200,7 +209,7 @@ class Accounts extends CI_Controller{
 
 			$data = $this->input->json(false);
 
-			if(!$this->user->authorized(false, 'admin')){
+			if(!$this->user->authorized(['roles' => 'admin'])){
 				unset(
 					$data['apiFreeLimit'],
 					$data['apiUsage'],
@@ -247,7 +256,11 @@ class Accounts extends CI_Controller{
 
 	public function delete($id){
 
-		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $id)){
+		if(!$this->user->authorized([
+			'roles'	=> 'admin'
+		], [
+			'users'	=> $id
+		])){
 
 			$content = 'You\'re not authorized to delete this user!';
 			$code = 'error';

@@ -96,7 +96,10 @@ $ioc['PolyAuth\Authentication\HTTPBasicStrategy'] = $ioc->share(function($c){
 			$c['PolyAuth\Options'], 
 			$c['PolyAuth\Language'], 
 			new PolyAuth\Sessions\Persistence\MemoryPersistence
-		)
+		),
+		[
+			'secret'	=> 'key'
+		]
 	);
 });
 

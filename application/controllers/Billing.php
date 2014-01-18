@@ -38,7 +38,7 @@ class Billing extends CI_Controller{
 
 		if(!$user_id){
 
-			if($this->user->authorized(false, 'admin')){
+			if($this->user->authorized(['roles' => 'admin'])){
 
 				$authorized = true;
 
@@ -52,7 +52,11 @@ class Billing extends CI_Controller{
 			
 		}else{
 
-			if($this->user->authorized(false, 'admin') OR $this->user->authorized(false, false, $user_id)){
+			if($this->user->authorized([
+				'roles'	=> 'admin'
+			], [
+				'users'	=> $user_id
+			])){
 
 				$authorized = true;
 
@@ -103,7 +107,11 @@ class Billing extends CI_Controller{
 		if($query){
 
 			$user_id = $query['userId'];
-			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
+			if(!$this->user->authorized([
+				'roles'	=> 'admin'
+			], [
+				'users'	=> $user_id
+			])){
 
 				$this->auth_response->setStatusCode(401);
 				$content = 'Not authorized to view this information.';
@@ -140,7 +148,11 @@ class Billing extends CI_Controller{
 		$data = $this->input->json(false);
 		$user_id = (isset($data['userId'])) ? intval($user_id) : 0;
 
-		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
+		if(!$this->user->authorized([
+			'roles'	=> 'admin'
+		], [
+			'users'	=> $user_id
+		])){
 
 			$this->auth_response->setStatusCode(401);
 			$content = 'Not authorized to submitting billing information.';
@@ -200,7 +212,11 @@ class Billing extends CI_Controller{
 		$data = $this->input->json(false);
 		$user_id = (isset($data['userId'])) ? intval($user_id) : 0;
 
-		if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
+		if(!$this->user->authorized([
+			'roles'	=> 'admin'
+		], [
+			'users'	=> $user_id
+		])){
 
 			$this->auth_response->setStatusCode(401);
 			$content = 'Not authorized to update billing information.';
@@ -211,7 +227,7 @@ class Billing extends CI_Controller{
 			//non administrators are not allowed the change whether card is invalid or not
 			//the only way for people to resolve their billing error is delete their errored card
 			//and create a new card
-			if(!$this->user->authorized(false, 'admin')){
+			if(!$this->user->authorized(['roles' => 'admin'])){
 				unset(
 					$data['cardInvalid'],
 					$data['cardInvalidReason']
@@ -282,7 +298,11 @@ class Billing extends CI_Controller{
 
 			$user_id = $query['userId'];
 
-			if(!$this->user->authorized(false, 'admin') AND !$this->user->authorized(false, false, $user_id)){
+			if(!$this->user->authorized([
+				'roles'	=> 'admin'
+			], [
+				'users'	=> $user_id
+			])){
 
 				$this->auth_response->setStatusCode(401);
 				$content = 'Not authorized to delete billing information.';

@@ -27,7 +27,7 @@ class Usage extends CI_Controller{
 
 		if(!$user_id){
 
-			if($this->user->authorized(false, 'admin')){
+			if($this->user->authorized(['roles' => 'admin'])){
 
 				$authorized = true;
 
@@ -41,8 +41,12 @@ class Usage extends CI_Controller{
 
 		}else{
 
-			if($this->user->authorized(false, 'admin') OR $this->user->authorized(false, false, $user_id)){
-
+			if($this->user->authorized([
+				'roles'	=> 'admin'
+			], [
+				'users'	=> $user_id
+			])){
+				
 				$authorized = true;
 
 			}else{
