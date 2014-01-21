@@ -61,6 +61,7 @@ var defaultConfig = {
 	maxtimeout: 5000, 
 	initialwait: 1000, //initial wait for asynchronous requests to fill up
 	callback: false, 
+	meta: true, //enable checking for meta tags to affect the headers or status code
 	logfile: false // Log file is recorded in the current working directory of where you started the web server, it is not the same as this script's path (can be log.txt), will auto create the file it doesn't exist
 };
 
@@ -96,6 +97,7 @@ args.forEach(function(value, index){
 	if (key === 'maxtimeout') defaultConfig.maxtimeout = propValue;
 	if (key === 'initialwait') defaultConfig.initialwait = propValue;
 	if (key === 'callback') defaultConfig.callback = propValue;
+	if (key === 'meta') defaultConfig.meta = propValue;
 	if (key === 'logfile') defaultConfig.logfile = propValue;
 
 });
@@ -144,7 +146,8 @@ if(service){
 		javascriptenabled:
 		maxtimeout: //milliseconds on the maximum wait before timing out and rendering/return html snapshot
 		initialwait: 
-		callback //string
+		callback: //string
+		meta: 
 	}
  */
 var parseInputJson = function(input){
@@ -287,6 +290,95 @@ var processTask = function(task){
 				var evaluatePage = function(){
 
 					console.log('Robot has loaded all asynchronous requests or requests have hit max timeout');
+
+					//retrieve SnapSearch specific meta tags to overwrite headers or status code
+					if(currentConfig.meta){
+
+						console.log('Robot is looking for SnapSearch specific meta tags');
+
+						//find <meta name="snapsearch-status" content="301" />
+						var metaStatus = page.evaluate(function(){
+
+							var tag = document.querySelector('meta[name=snapsearch-status]');
+
+							if(tag){
+								return tag.content;
+							}
+
+						});
+
+						//find <meta name="snapsearch-header" content="Content-Type:text/html" />
+						var metaHeaders = page.evaluate(function(){
+
+							var headers = [];
+							var tags = document.querySelectorAll('meta[name=snapsearch-header]');
+
+							if(tags){
+
+								//can only return string type elements, no forEach on NodeList
+								for(var i = 0, j = tags.length; i < j; i++){
+									if(tags[i].content){
+										headers.push(tags[i].content);
+									}
+								}
+
+								return headers;
+
+							}
+
+						});
+
+						if(metaStatus){
+
+							console.log('Robot overwrote status code with meta status code of ' . metaStatus);
+							output.status = metaStatus;
+
+						}
+
+						if(metaHeaders && metaHeaders.length > 0){
+
+							console.log('Robot is adding or overwriting headers from meta headers');
+
+							metaHeaders.forEach(function(headerString){
+
+								var headerParts = headerString.split(':');
+								var headerName = headerParts.shift();
+								var headerValue = headerParts.join(':');
+
+								if(headerName && headerValue){
+
+									var headerIndex = false;
+
+									output.headers.every(function(headerObject, index){
+										if(headerObject.name === headerName){
+											headerIndex = index;
+											return false;
+										}
+									});
+
+									if(typeof headerIndex === 'integer'){
+
+										output.headers[headerIndex] = {
+											name: headerName,
+											value: headerValue
+										};
+
+									}else{
+
+										output.headers.push({
+											name: headerName,
+											value: headerValue
+										});
+
+									}
+
+								}
+
+							});
+
+						}
+
+					}
 
 					//default white background
 					page.evaluate(function(){
