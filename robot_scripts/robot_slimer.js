@@ -344,14 +344,14 @@ var processTask = function(task){
 
 						if(metaStatus){
 
-							console.log('Robot overwrote status code with meta status code of ' . metaStatus);
+							console.log('Robot overwrote status code with meta status code of ' + metaStatus);
 							output.status = metaStatus;
 
 						}
 
 						if(metaHeaders && metaHeaders.length > 0){
 
-							console.log('Robot is adding or overwriting headers from meta headers');
+							console.log('Robot is adding headers from meta headers');
 
 							metaHeaders.forEach(function(headerString){
 
@@ -362,15 +362,14 @@ var processTask = function(task){
 								if(headerName && headerValue){
 
 									var headerIndex = false;
-
-									output.headers.every(function(headerObject, index){
-										if(headerObject.name === headerName){
-											headerIndex = index;
-											return false;
+									for(var i = 0, j = output.headers.length; i < j; i++){
+										if(output.headers[i].name === headerName){
+											headerIndex = i;
+											break;
 										}
-									});
+									}
 
-									if(typeof headerIndex === 'integer'){
+									if(typeof headerIndex === 'number'){
 
 										output.headers[headerIndex] = {
 											name: headerName,
