@@ -154,15 +154,26 @@ var parseInputJson = function(input){
 
 	try{
 		input = JSON.parse(input);
-		if ('screenshot' in input) input['screenshot'] = parseBooleanStyle(input['screenshot']);
-		if ('navigate' in input) input['navigate'] = parseBooleanStyle(input['navigate']);
-		if ('loadimages' in input) input['loadimages'] = parseBooleanStyle(input['loadimages']);
-		if ('javascriptenabled' in input) input['javascriptenabled'] = parseBooleanStyle(input['javascriptenabled']);
 		return input;
 	}catch(e){
 		logError(e);
 		return false;
 	}
+
+};
+
+/*
+	Parse all the string booleans into booleans
+ */
+var parseBooleans = function(input){
+
+	if ('screenshot' in input) input['screenshot'] = parseBooleanStyle(input['screenshot']);
+	if ('navigate' in input) input['navigate'] = parseBooleanStyle(input['navigate']);
+	if ('loadimages' in input) input['loadimages'] = parseBooleanStyle(input['loadimages']);
+	if ('javascriptenabled' in input) input['javascriptenabled'] = parseBooleanStyle(input['javascriptenabled']);
+	if ('meta' in input) input['meta'] = parseBooleanStyle(input['meta']);
+
+	return input;
 
 };
 
@@ -201,7 +212,7 @@ var processTask = function(task){
 			screenshot: '',
 			date: ''
 		}, 
-		currentConfig = JSON.parse(JSON.stringify(defaultConfig));
+		currentConfig = JSON.parse(JSON.stringify(defaultConfig)); //clone the object
 
 	if(!input){
 		output.message = 'Input was not valid JSON';
@@ -215,6 +226,9 @@ var processTask = function(task){
 	for(var key in input){
 		currentConfig[key] = input[key];
 	}
+
+	//parse all string booleans into booleans
+	currentConfig = parseBooleans(currentConfig);
 
 	//allow redirection or not (from header, js, html or user action)
 	//this flips the navigate boolean
