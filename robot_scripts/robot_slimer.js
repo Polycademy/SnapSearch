@@ -1,7 +1,5 @@
 //STILL TO ADD:
 //1. Mutation Observation (refresh timeout) (inside the context of web page, using blocking page.evaluate)
-//3. PHP should compress the JSON before sending...? Or allow parameter to allow the option of compressing it
-//using msgpack or other styles (using gzip compression?)
 
 console.log('Robot is waking up');
 
@@ -10,6 +8,17 @@ var fs = require('fs'),
 	system = require('system'),
 	server = require('webserver').create(),
 	page = require('webpage').create();
+
+//list of redirecting status codes
+var redirectingStatusCodes = [
+	'301',
+	'302',
+	'303',
+	'305',
+	'306',
+	'307',
+	'308'
+];
 
 //this needs to be placed in a module
 var parseBooleanStyle = function(value){
@@ -224,6 +233,9 @@ var processTask = function(task){
 	//this stores the current url that openPage will be using
 	var currentlyRequestedUrl = currentConfig.url;
 
+	//is the current resource redirecting, only used for the initial page redirections
+	var isRedirecting = false;
+
 	//the resource checking timer will be cleared when we're redirecting to a new page
 	var resourceRequestsTimer = false;
 
@@ -239,7 +251,7 @@ var processTask = function(task){
 
 	};
 
-	//this is to prevent pages from taking too long to open (10s max)
+	//this is to prevent pages from taking too long to open
 	var pageOpened = false;
 
 	//30s for page opening time
@@ -343,12 +355,11 @@ var processTask = function(task){
 	//no effect on header redirects
 	//beware on _blank pages, this is a bug in gecko
 	page.onNavigationRequested = function(url, type, willNavigate, main){
-
 		//if this navigation request is not the original request url and main and willNavigate is true
 		//then we'll restart the page open process
 		if(url != currentlyRequestedUrl && url.replace(/\/$/,"") != currentlyRequestedUrl){
 			if(main && willNavigate){
-				console.log('Robot is redirecting to ' + url);
+				console.log('Robot is executing client side redirection to ' + url);
 				numberOfRedirects++;
 				//reset the current state
 				output = {
@@ -360,6 +371,7 @@ var processTask = function(task){
 					date: ''
 				};
 				pageRequests = [];
+				isRedirecting = false;
 				//cancel the asynchronous resource checker
 				if(resourceRequestsTimer){
 					clearTimeout(resourceRequestsTimer);
@@ -367,7 +379,6 @@ var processTask = function(task){
 				}
 				//change the currentlyRequestedUrl to the redirection
 				currentlyRequestedUrl = url;
-
 				//if the number of redirects is greater than 10, we need to fail the page instead of reopening
 				if(numberOfRedirects > 10){	
 					console.log('Robot has exceeded client side redirection limit');
@@ -380,10 +391,8 @@ var processTask = function(task){
 					//reopen the redirected page
 					openPage(url);
 				}
-				
 			}
 		}
-
 	};
 
 	page.onResourceRequested = function(resource){
@@ -398,11 +407,27 @@ var processTask = function(task){
 			if (index != -1) {
 				pageRequests.splice(index, 1);
 			}
-			//the first resource would have any header redirections resolved and will always be the page's headers/status code
+			//upon first resource, we are going to check if the resource is redirecting and switch on isRedirecting
+			//on each subsequent resource, if the previous resource was redirecting with isRedirecting being true,
+			//then we're going to replace the output's headers and status code with the current resource
+			//this will iterate until the first occurence of a status code that does not redirect which will switch off isRedirect, this resource is also the final resolved resource that has the "true" status code and headers for the output
+			//headers will be an array of objects {name:'', value: ''}
 			if(resource.id == 1){
-				//headers will be an array of objects {name:'', value: ''}
-				output.headers = resource.headers;
 				output.status = resource.status;
+				output.headers = resource.headers;
+				if(redirectingStatusCodes.indexOf(resource.status.toString()) !== -1){
+					console.log('Robot is starting header redirection');
+					isRedirecting = true;
+				}
+			}else if(isRedirecting){
+				//we only check if isRedirecting is true after the first resource has already been resolved
+				output.status = resource.status;
+				output.headers = resource.headers;
+				//if is not redirecting, we're going to flip off redirecting
+				if(redirectingStatusCodes.indexOf(resource.status.toString()) === -1){
+					console.log('Robot has finished header redirection');
+					isRedirecting = false;
+				}
 			}
 		}
 	};
