@@ -135,7 +135,7 @@ sudo service nginx restart
 # Setting up Cron Billing
 echo "Setting up SnapSearch billing as a crontab"
 ESCAPED_PROJECT_DIR="${PROJECT_DIR//\//\\/}"
-perl -pi -e "s/PROJECT_DIR=.*/PROJECT_DIR=$ESCAPED_PROJECT_DIR;/g" startup_scripts/snapsearch
+perl -pi -e "s/PROJECT_DIR/$ESCAPED_PROJECT_DIR/g" startup_scripts/snapsearch
 echo "Copying startup_scripts/snapsearch to /etc/cron.d/snapsearch"
 sudo cp `pwd`/startup_scripts/snapsearch /etc/cron.d/snapsearch
 sudo service cron restart
