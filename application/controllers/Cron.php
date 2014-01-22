@@ -39,7 +39,7 @@ class Cron extends CI_Controller{
 			if($user_id){
 				$output .= " and user id: $user_id";
 			}
-			$output .= ".\n";
+			$output .= "\n";
 			echo $output;
 		}else{
 			echo $query . "\n";
@@ -51,6 +51,8 @@ class Cron extends CI_Controller{
 	 * This function will be ran from the Cron service. Make sure this is done well and no bugs!
 	 */
 	public function monthly_tracking(){
+
+		echo $today->format('Y-m-d H:i:s') . " - Started Charge Cycle\n";
 
 		//0.5 cent per request
 		$charge_per_request = 0.5;
@@ -69,6 +71,7 @@ class Cron extends CI_Controller{
 		$offset = 0;
 		$limit = 300;
 		$total_number_of_users = $this->Accounts_model->count();
+		$charged_number_of_users = 0;
 
 		//divide the total number of users by the limit to get the number of iterations
 		//round to highest nearest integer so we run the query at least once
@@ -92,6 +95,9 @@ class Cron extends CI_Controller{
 				if($charge_date > $today){
 					continue;
 				}
+
+				//plus one to the number of users being charged
+				$charged_number_of_users = $charged_number_of_users + 1;
 
 				//there are 2 situations in which a charge will occur, when the apiUsage - apiFreeLimit > 0 or when there is apiLeftOverCharge
 
@@ -133,12 +139,14 @@ class Cron extends CI_Controller{
 					'chargeDate'		=> $next_charge_date->format('Y-m-d H:i:s'),
 				]);
 
-				echo $today->format('Y-m-d H:i:s') . " - USER: #{$user['id']} {$user['email']} USAGE: $usage CHARGE: $charge.\n";
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} {$user['email']} Usage: $usage Charge: $charge\n";
 
 				if($charge){
 
 					//if charge is less than 5 dollars, add it to the apiLeftOverCharge for the next month and skip this month
 					if($charge < 500){
+
+						echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Rollover Charge\n";
 
 						$this->Accounts_model->update($user['id'], [
 							'apiLeftOverUsage'	=> $total_usage,
@@ -156,6 +164,8 @@ class Cron extends CI_Controller{
 					if(!$billing_record){
 
 						//if there are no active cards to be used, we'll add this charge back to the apiLeftOverCharge, reset the apiLimit and send the billing error email
+
+						echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} No Active Billing Record\n";
 
 						$this->Accounts_model->update($user['id'], [
 							'apiLeftOverUsage'	=> $total_usage,
@@ -198,6 +208,8 @@ class Cron extends CI_Controller{
 						if(!$charge_query){
 
 							//charge was unsuccessful
+
+							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Charge Invalid\n";
 
 							//retrieve the errors, there could be system or validation errors
 							$charge_errors = $this->Pin_model->get_errors();
@@ -243,6 +255,8 @@ class Cron extends CI_Controller{
 							//move on to the next user!
 
 						}else{
+
+							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Charge Successful\n";
 
 							$payment_history = [
 								'userId'		=> $user['id'],
@@ -299,6 +313,8 @@ class Cron extends CI_Controller{
 			}
 
 		}
+
+		echo $today->format('Y-m-d H:i:s') . " - Charged $charged_number_of_users Users\n";
 
 	}
 
