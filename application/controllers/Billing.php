@@ -146,7 +146,7 @@ class Billing extends CI_Controller{
 	public function create(){
 
 		$data = $this->input->json(false);
-		$user_id = (isset($data['userId'])) ? intval($user_id) : 0;
+		$user_id = (isset($data['userId'])) ? intval($data['userId']) : 0;
 
 		if(!$this->user->authorized([
 			'roles'	=> 'admin'
@@ -181,7 +181,7 @@ class Billing extends CI_Controller{
 
 			}else{
 
-				$content = $query;
+				$content = $billing_query;
 				$code = 'success';
 
 			}
@@ -210,7 +210,7 @@ class Billing extends CI_Controller{
 	public function update($id){
 
 		$data = $this->input->json(false);
-		$user_id = (isset($data['userId'])) ? intval($user_id) : 0;
+		$user_id = (isset($data['userId'])) ? intval($data['userId']) : 0;
 
 		if(!$this->user->authorized([
 			'roles'	=> 'admin'
@@ -264,7 +264,7 @@ class Billing extends CI_Controller{
 
 			}else{
 
-				$content = $query;
+				$content = $billing_query;
 				$code = 'success';
 
 			}
