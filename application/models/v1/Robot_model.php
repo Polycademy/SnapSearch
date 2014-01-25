@@ -53,11 +53,13 @@ class Robot_model extends CI_Model{
 			'height',
 			'imgformat',
 			'screenshot',
+			'navigate',
 			'loadimages',
 			'javascriptenabled',
 			'maxtimeout',
 			'initialwait',
 			'callback',
+			'meta',
 			'cache',
 			'cachetime',
 		), $input_parameters, null, true);
@@ -114,6 +116,11 @@ class Robot_model extends CI_Model{
 				'field'	=> 'callback',
 				'label'	=> 'Callback (callback)',
 				'rules'	=> 'min_length[1]|max_length[5000]',
+			],
+			[
+				'field'	=> 'meta',
+				'label'	=> 'Meta (meta)',
+				'rules'	=> 'boolean_style',
 			],
 			[
 				'field'	=> 'cache',
