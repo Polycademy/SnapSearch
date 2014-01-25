@@ -818,12 +818,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Polycademy/PolyAuth.git",
-                "reference": "49293ea5ef16f2b11f43be5159258b241389ac44"
+                "reference": "d2687067157a59e6fa38a0c75e9829141fcd85bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/49293ea5ef16f2b11f43be5159258b241389ac44",
-                "reference": "49293ea5ef16f2b11f43be5159258b241389ac44",
+                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/d2687067157a59e6fa38a0c75e9829141fcd85bc",
+                "reference": "d2687067157a59e6fa38a0c75e9829141fcd85bc",
                 "shasum": ""
             },
             "require": {
@@ -845,7 +845,7 @@
             },
             "suggest": {
                 "ext-SimpleXML": "Required for authentication responses to be encoded in XML format.",
-                "ext-mcrypt": "Required for encryption and decryption of shared keys for HTTP Digest and Hawk."
+                "ext-mcrypt": "Required for encryption and decryption of shared keys and tokens for HTTP Basic, HTTP Digest, Hawk and OAuth."
             },
             "type": "library",
             "autoload": {
@@ -876,7 +876,7 @@
                 "sessions",
                 "user accounts"
             ],
-            "time": "2014-01-18 07:21:52"
+            "time": "2014-01-22 09:16:49"
         },
         {
             "name": "psliwa/php-pdf",
