@@ -569,6 +569,15 @@ var processTask = function(task){
 		}
 	};
 
+	//Resource timeouts not yet supported
+	// page.onResourceTimeout = function(resource){
+	// 	console.log('Robot could not receive: ' + resource.id + ' - ' + resource.url + ' due to ' + resource.errorCode + ':' + resource.errorString);
+	// 	var index = pageRequests.indexOf(resource.id);
+	// 	if (index != -1) {
+	// 		pageRequests.splice(index, 1);
+	// 	}
+	// };
+
 	//once the page has been closed, then we are free to do more work
 	page.onClosing = function(){
 		console.log('Robot has closed the page');
