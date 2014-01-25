@@ -52,13 +52,13 @@ class Cron extends CI_Controller{
 	 */
 	public function monthly_tracking(){
 
-		echo $today->format('Y-m-d H:i:s') . " - Started Charge Cycle\n";
-
 		//0.5 cent per request
 		$charge_per_request = 0.5;
 		$currency = 'AUD';
 		$product_description = 'SnapSearch API Usage';
 		$today = new DateTime;
+
+		echo $today->format('Y-m-d H:i:s') . " - Started Charge Cycle\n";
 
 		$this->load->model('Accounts_model');
 		$this->load->model('Usage_model');
