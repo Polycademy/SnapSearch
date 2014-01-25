@@ -451,49 +451,54 @@ var processTask = function(task){
 
 	};
 
-	//deal with js sync & async redirection, html meta redirection and user actions
-	//no effect on header redirects
-	//beware on _blank pages, this is a bug in gecko
-	page.onNavigationRequested = function(url, type, willNavigate, main){
-		//if this navigation request is not the original request url and main and willNavigate is true
-		//then we'll restart the page open process
-		if(url != currentlyRequestedUrl && url.replace(/\/$/,"") != currentlyRequestedUrl){
-			if(main && willNavigate){
-				console.log('Robot is executing client side redirection to ' + url);
-				numberOfRedirects++;
-				//reset the current state
-				output = {
-					status: '',
-					headers: [],
-					message: '',
-					html: '',
-					screenshot: '',
-					date: ''
-				};
-				pageRequests = [];
-				isRedirecting = false;
-				//cancel the asynchronous resource checker
-				if(resourceRequestsTimer){
-					clearTimeout(resourceRequestsTimer);
-					resourceRequestsTimer = false;
-				}
-				//change the currentlyRequestedUrl to the redirection
-				currentlyRequestedUrl = url;
-				//if the number of redirects is greater than 10, we need to fail the page instead of reopening
-				if(numberOfRedirects > 10){	
-					console.log('Robot has exceeded client side redirection limit');
-					failedOpeningPage();
-				}else{
-					//close and reopen the page
-					page.close();
-					//we're still busy
-					busy = true;
-					//reopen the redirected page
-					openPage(url);
+	//only if redirects are allowed do we listen for client side redirections
+	if(currentConfig.navigate){
+
+		//deal with js sync & async redirection, html meta redirection and user actions
+		//no effect on header redirects
+		//beware on _blank pages, this is a bug in gecko
+		page.onNavigationRequested = function(url, type, willNavigate, main){
+			//if this navigation request is not the original request url and main and willNavigate is true
+			//then we'll restart the page open process
+			if(url != currentlyRequestedUrl && url.replace(/\/$/,"") != currentlyRequestedUrl){
+				if(main && willNavigate){
+					console.log('Robot is executing client side redirection to ' + url);
+					numberOfRedirects++;
+					//reset the current state
+					output = {
+						status: '',
+						headers: [],
+						message: '',
+						html: '',
+						screenshot: '',
+						date: ''
+					};
+					pageRequests = [];
+					isRedirecting = false;
+					//cancel the asynchronous resource checker
+					if(resourceRequestsTimer){
+						clearTimeout(resourceRequestsTimer);
+						resourceRequestsTimer = false;
+					}
+					//change the currentlyRequestedUrl to the redirection
+					currentlyRequestedUrl = url;
+					//if the number of redirects is greater than 10, we need to fail the page instead of reopening
+					if(numberOfRedirects > 10){	
+						console.log('Robot has exceeded client side redirection limit');
+						failedOpeningPage();
+					}else{
+						//close and reopen the page
+						page.close();
+						//we're still busy
+						busy = true;
+						//reopen the redirected page
+						openPage(url);
+					}
 				}
 			}
-		}
-	};
+		};
+
+	}
 
 	page.onResourceRequested = function(resource){
 		console.log('Robot is requesting: ' + resource.id + ' - ' + resource.url);
