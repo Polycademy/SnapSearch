@@ -55,7 +55,7 @@ var defaultConfig = {
 	imgformat: 'png', 
 	useragent: 'SnapSearch', 
 	screenshot: false, 
-	navigate: false, // allow redirection of the page or not
+	navigate: true, // allow redirection of the page or not, if this is false, and there is a redirection, screenshots are not available
 	loadimages: false, 
 	javascriptenabled: true, 
 	maxtimeout: 5000, 
@@ -230,11 +230,6 @@ var processTask = function(task){
 	//parse all string booleans into booleans
 	currentConfig = parseBooleans(currentConfig);
 
-	//allow redirection or not (from header, js, html or user action)
-	//this flips the navigate boolean
-	//CURRENTLY NOT WORKING: https://github.com/laurentj/slimerjs/issues/114
-	//page.navigationLocked = !currentConfig.navigate;
-
 	page.viewportSize = {
 		width: currentConfig.width,
 		height: currentConfig.height
@@ -243,7 +238,7 @@ var processTask = function(task){
 	page.settings.userAgent = currentConfig.useragent;
 	page.settings.loadImages = currentConfig.loadimages;
 	page.settings.javascriptEnabled = currentConfig.javascriptenabled;
-
+	
 	//queue up all the asynchronous and synchronous requests that the page will execute
 	var pageRequests = [];
 
@@ -509,31 +504,55 @@ var processTask = function(task){
 		console.log('Robot received: ' + resource.id + ' with ' + resource.status + ' - ' + resource.url + ' at ' + resource.stage);
 		if(resource.stage == 'end'){
 			var index = pageRequests.indexOf(resource.id);
-			if (index != -1) {
+			if(index != -1){
 				pageRequests.splice(index, 1);
 			}
+
 			//upon first resource, we are going to check if the resource is redirecting and switch on isRedirecting
 			//on each subsequent resource, if the previous resource was redirecting with isRedirecting being true,
 			//then we're going to replace the output's headers and status code with the current resource
-			//this will iterate until the first occurence of a status code that does not redirect which will switch off isRedirect, this resource is also the final resolved resource that has the "true" status code and headers for the output
-			//headers will be an array of objects {name:'', value: ''}
+			//this will iterate until the first occurrence of a status code that does not redirect which will switch off isRedirect, this resource is also the final resolved resource that has the "true" status code and headers for the output
 			if(resource.id == 1){
+
 				output.status = resource.status;
 				output.headers = resource.headers;
+
 				if(redirectingStatusCodes.indexOf(resource.status.toString()) !== -1){
 					console.log('Robot is starting header redirection');
 					isRedirecting = true;
 				}
+
+				//if no redirects are allowed, and the first request is redirecting, we're going to end this task here
+				if(isRedirecting && !currentConfig.navigate){
+					console.log('Robot is intercepting this header redirect as redirects are not allowed, and outputting the redirect information');
+					//page is opened here
+					pageOpened = true;
+					//screenshots are not available for redirections
+					output = {
+						status: resource.status,
+						headers: resource.headers,
+						message: 'Success',
+						html: resource.body,
+					};
+					outputResult(output, response);
+					page.close();
+					console.log('Robot has finished a task');
+				}
+
 			}else if(isRedirecting){
+
 				//we only check if isRedirecting is true after the first resource has already been resolved
 				output.status = resource.status;
 				output.headers = resource.headers;
+
 				//if is not redirecting, we're going to flip off redirecting
 				if(redirectingStatusCodes.indexOf(resource.status.toString()) === -1){
 					console.log('Robot has finished header redirection');
 					isRedirecting = false;
 				}
+
 			}
+
 		}
 	};
 
