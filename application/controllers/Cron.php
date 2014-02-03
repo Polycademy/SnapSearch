@@ -53,7 +53,7 @@ class Cron extends CI_Controller{
 	public function monthly_tracking(){
 
 		//0.5 cent per request
-		$charge_per_request = 0.5;
+		$charge_per_request = 0.2;
 		$currency = 'AUD';
 		$product_description = 'SnapSearch API Usage';
 		$today = new DateTime;
