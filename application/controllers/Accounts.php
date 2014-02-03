@@ -25,7 +25,7 @@ class Accounts extends CI_Controller{
 		$this->user = $this->authenticator->get_user();
 
 		//configurable properties
-		$this->api_free_limit = 1500;
+		$this->api_free_limit = 1000;
 		$this->charge_interval = 'P30D';
 
 	}
