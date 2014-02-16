@@ -62,8 +62,9 @@ class Robot extends CI_Controller{
 
 			if($query){
 				
-				//only update the api usage if it wasn't a cached response
-				if(empty($query['cache'])){
+				//only update the api usage if it wasn't a cached response, which means the value is identical to false
+				//if the cache value is null, then it was in test mode
+				if(isset($query['cache']) AND $query['cache'] === false){
 					$this->update_api_usage();
 				}
 

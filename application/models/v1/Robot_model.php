@@ -62,6 +62,7 @@ class Robot_model extends CI_Model{
 			'meta',
 			'cache',
 			'cachetime',
+			'test'
 		), $input_parameters, null, true);
 
 		$this->validator->set_data($parameters);
@@ -132,6 +133,11 @@ class Robot_model extends CI_Model{
 				'label'	=> 'Cache time (cachetime)',
 				'rules'	=> 'greater_than_equal_to[1]|less_than_equal_to[100]',
 			],
+			[
+				'field'	=> 'test',
+				'label'	=> 'Test Mode (test)',
+				'rules'	=> 'boolean_style'
+			]
 		]);
 
 		$validation_errors = [];
@@ -174,6 +180,33 @@ class Robot_model extends CI_Model{
 			);
 
 			return false;
+
+		}
+
+		//is it in test mode?
+		if(isset($parameters['test'])){
+			$test_mode = filter_var($parameters['cache'], FILTER_VALIDATE_BOOLEAN);
+		}else{
+			$test_mode = false;
+		}
+		unset($parameters['test']);
+
+		//if test mode is true, just respond with a message, as test mode has succeeded!
+		if($test_mode){
+
+			$response_array = [
+				'cache' 			=> null,
+				'callbackResult'	=> '',
+				'date'				=> time(),
+				'headers'			=> [],
+				'html'				=> '',
+				'message'			=> 'You are in test mode. Your request was received!',
+				'pageErrors'		=> [],
+				'screensot'			=> '',
+				'status'			=> 200
+			];
+
+			return $response_array;
 
 		}
 
@@ -232,6 +265,9 @@ class Robot_model extends CI_Model{
 			$response = $request->send();
 			$response_string = $response->getBody(true);
 			$response_array = $response->json();
+
+			//this is not a cached response
+			$response_array['cache'] = false;
 
 		}catch(BadResponseException $e){
 
