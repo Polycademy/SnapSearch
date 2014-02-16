@@ -115,7 +115,7 @@ class Robot_model extends CI_Model{
 			[
 				'field'	=> 'callback',
 				'label'	=> 'Callback (callback)',
-				'rules'	=> 'min_length[1]|max_length[5000]',
+				'rules'	=> 'min_length[1]|max_length[8000]',
 			],
 			[
 				'field'	=> 'meta',

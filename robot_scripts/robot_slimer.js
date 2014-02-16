@@ -210,7 +210,9 @@ var processTask = function(task){
 			message: '',
 			html: '',
 			screenshot: '',
-			date: ''
+			date: '',
+			callbackResult: '',
+			pageErrors: []
 		}, 
 		currentConfig = JSON.parse(JSON.stringify(defaultConfig)); //clone the object
 
@@ -400,8 +402,8 @@ var processTask = function(task){
 					//custom callback can be evaluated before rendering
 					if(typeof currentConfig.callback == 'string'){
 						console.log('Robot is evaluating custom callback');
-						page.evaluate(function(callback){
-							eval(callback);
+						var callbackResult = page.evaluate(function(callback){
+							return new Function(callback)();
 						}, currentConfig.callback);
 					}
 
@@ -417,6 +419,7 @@ var processTask = function(task){
 					output.message = 'Success';
 					output.html = html;
 					output.screenshot = screenshot;
+					output.callbackResult = callbackResult;
 
 					outputResult(output, response);
 					page.close();
@@ -471,7 +474,9 @@ var processTask = function(task){
 						message: '',
 						html: '',
 						screenshot: '',
-						date: ''
+						date: '',
+						callbackResult: '',
+						pageErrors: []
 					};
 					pageRequests = [];
 					isRedirecting = false;
@@ -537,7 +542,7 @@ var processTask = function(task){
 						status: resource.status,
 						headers: resource.headers,
 						message: 'Success',
-						html: resource.body,
+						html: resource.body
 					};
 					outputResult(output, response);
 					page.close();
@@ -569,14 +574,23 @@ var processTask = function(task){
 		}
 	};
 
-	//Resource timeouts not yet supported
-	// page.onResourceTimeout = function(resource){
-	// 	console.log('Robot could not receive: ' + resource.id + ' - ' + resource.url + ' due to ' + resource.errorCode + ':' + resource.errorString);
-	// 	var index = pageRequests.indexOf(resource.id);
-	// 	if (index != -1) {
-	// 		pageRequests.splice(index, 1);
-	// 	}
-	// };
+	// Resource timeouts not yet supported
+	page.onResourceTimeout = function(resource){
+		console.log('Robot could not receive: ' + resource.id + ' - ' + resource.url + ' due to ' + resource.errorCode + ':' + resource.errorString);
+		var index = pageRequests.indexOf(resource.id);
+		if (index != -1) {
+			pageRequests.splice(index, 1);
+		}
+	};
+
+	page.onError = function(message, trace){
+
+		console.log('Robot is recording javascript errors on the web page');
+		var errorObject = {};
+		errorObject[message] = trace;
+		output.pageErrors.push(errorObject);
+
+	};
 
 	//once the page has been closed, then we are free to do more work
 	page.onClosing = function(){
