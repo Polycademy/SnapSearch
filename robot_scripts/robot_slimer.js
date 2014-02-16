@@ -586,9 +586,10 @@ var processTask = function(task){
 	page.onError = function(message, trace){
 
 		console.log('Robot is recording javascript errors on the web page');
-		var errorObject = {};
-		errorObject[message] = trace;
-		output.pageErrors.push(errorObject);
+		output.pageErrors.push({
+			error: message,
+			trace: trace
+		});
 
 	};
 
