@@ -22,6 +22,7 @@
 		
 		<link rel="stylesheet" href="css/main.css">
 
+		<!-- Todo: Modernizr should be built in production -->
 		<script src="components/modernizr/modernizr.js"></script>
 		<script src="components/respond/dest/respond.min.js"></script>
 
