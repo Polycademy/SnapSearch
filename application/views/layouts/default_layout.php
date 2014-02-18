@@ -5,40 +5,46 @@
 <!--[if IE 9]>         <html class="no-js lt-ie10 ie9"> <![endif]-->
 <!--[if gt IE 9]><!--> <html class="no-js"> <!--<![endif]-->
 	<head>
+
 		<base href="<?= base_url() ?>" />
+
 		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<title><?= $title ?> - <?= $desc ?></title>
-		<meta name="description" content="<?= $meta_desc ?>">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+		<title>SnapSearch - Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</title>
+		<meta name="description" content="SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications. Make your sites crawlable with SnapSearch.">
+
 		<meta name="fragment" content="!" />
-		<link rel="shortcut icon" href="favicon.ico">
-		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/apple-touch-icon-144x144-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" sizes="120x120" href="img/apple-touch-icon-120x120-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/apple-touch-icon-114x114-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/apple-touch-icon-72x72-precomposed.png">
-		<link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon-57x57-precomposed.png">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link rel="shortcut icon" href="assets/img/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" href="assets/img/apple-touch-icon-precomposed.png">
+		
 		<link rel="stylesheet" href="css/main.css">
-		<script src="js/lib/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-		<script src="js/config.js"></script>
+
+		<script src="components/modernizr/modernizr.js"></script>
+		<script src="components/respond/dest/respond.min.js"></script>
+
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 			<? if(ENVIRONMENT == 'development'){ ?>
-				ga('create', '<?= $google_analytics_key ?>', {'cookieDomain': 'none'});
+				ga('create', 'GOOGLE ANALYTICS KEY', {'cookieDomain': 'none'});
 			<? }elseif(ENVIRONMENT == 'production'){ ?>
-				ga('create', '<?= $google_analytics_key ?>', '<?= $domain ?>');
+				ga('create', 'GOOGLE ANALYTICS KEY', 'auto');
 			<? } ?>
 		</script>
-		<script data-main="js/bootstrap.js" src="js/lib/require.min.js"></script>
+
+		<script src="js/app/Config.js"></script>
+
 	</head>
 	<body class="ng-cloak" ng-cloak>
 
-		<!--[if lt IE 7]>
-			<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
-		<![endif]-->
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
 
         <header class="navbar navbar-static-top" ng-controller="HeaderCtrl">
 			<div class="container">
