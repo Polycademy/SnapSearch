@@ -22,7 +22,7 @@
 		
 		<link rel="stylesheet" href="css/main.css">
 
-		<!-- Todo: Modernizr should be built in production -->
+		<!-- TODO: Modernizr should be built in production -->
 		<script src="components/modernizr/modernizr.js"></script>
 		<script src="components/respond/dest/respond.min.js"></script>
 
@@ -47,15 +47,21 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <header class="navbar navbar-static-top" ng-controller="HeaderCtrl">
+		<!-- TODO: Convert to Bootstrap 3 Compatible Template! -->
+        <header class="navbar navbar-static-top">
 			<div class="container">
 				<div class="navbar-inner">
 					<a class="logo" href="<?php echo site_url() ?>" title="Home">
 						<img src="img/logo.png" />
 					</a>
 					<ul class="nav">
-						<li ng-class="{'active_link': $state.includes('about')}"><a href="about" title="Learn more about Snapsearch">About</a></li>
-						<li ng-class="{'active_link': $state.includes('blog')}"><a href="blog" title="Keep up with Snapsearch">Blog</a></li>
+						<li ng-class="{'active_link': $state.includes('home')}"><a href="home">Home</a></li>
+						<li ng-class="{'active_link': $state.includes('documentation')}"><a href="documentation">Documentation</a></li>
+						<li ng-class="{'active_link': $state.includes('pricing')}"><a href="pricing">Pricing</a></li>
+						<li ng-class="{'active_link': $state.includes('about')}"><a href="about">About</a></li>
+						<li><a href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">Blog</a></li>
+						<li><a>Sign Up</a></li>
+						<li><a>Log In</a></li>
 					</ul>
 				</div>
 			</div>
@@ -63,6 +69,10 @@
 
 		<!-- The side bar will be contained inside the container and ui-view to allow Angularjs to handle it -->
 		<div class="main" ui-view></div>
+
+		<!-- TODO: Footer! Also these should be moved out into their own templates. And the ui-viewed templates can load them or not. -->
+		<footer>
+		</footer>
 
 		<!-- Client Side Templates -->
 		<?
