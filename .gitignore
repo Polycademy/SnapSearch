@@ -11,7 +11,7 @@ vendor/*
 bin/*
 build/*
 node_modules/*
-bower_components/*
+js/bower_components/*
 .c9revisions/*
 secrets/*
 !secrets/*.example
