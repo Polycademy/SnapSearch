@@ -92,7 +92,7 @@
         </script>
 
         <!-- Here we go! Weee! -->
-        <script src="js/build.min.js"></script>
+        <script src="js/release/app.js"></script>
 
     </body>
 </html>

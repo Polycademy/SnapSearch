@@ -1,1 +1,14 @@
-//is there a way to simply use the "app" object as a dependency?
+'use strict';
+
+module.exports = ['$scope', HomeCtrl];
+
+/**
+ * Home Controller
+ * 
+ * @param {Object} $scope
+ */
+function HomeCtrl ($scope) {
+
+
+
+}

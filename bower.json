@@ -11,13 +11,12 @@
     "angular-resource": "1.2.13",
     "angular-sanitize": "1.2.13",
     "angular-animate": "1.2.13",
-    "angular-ui-router": "0.2.8",
+    "angular-ui-router": "0.2.8-bowratic-tedium",
     "angular-bootstrap": "0.10.0",
     "angulartics": "0.8.7",
     "es6-shim": "0.9.3",
-    "es5-shim": "2.3.0",
+    "es5-shim": "~2.3.0",
     "json3": "3.3.0",
-    "lodash": "2.4.1",
-    "domready": "~1.0.2"
+    "lodash": "2.4.1"
   }
 }

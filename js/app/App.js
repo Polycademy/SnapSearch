@@ -1,28 +1,35 @@
 'use strict';
 
-var config = require('./Config');
-    domready = require('domready'),
-    es5Shim = require('es5-shim'),
-    es6Shim = require('es6-shim'),
-    json3 = require('json3'),
-    jQuery = $ = require('jquery'), //these need to be put into globals for angular and bootstrap to take advantage
-    bootstrap = require('bootstrap'), //THIS MIGHT HAVE A PROBLEM SINCE THERE ARE MULTIPLE "main" files!
-    angular = require('angular'),
-    angularCookies = require('angular-cookies'),
-    angularResource = require('angular-resource'),
-    angularSanitize = require('angular-sanitize'),
-    angularAnimate = require('angular-animate'),
-    uiRouter = require('angular-ui-router'),
-    uiBootstrap = require('angular-ui-bootstrap'),
-    angulartics = require('angulartics');
+/**
+ * Shims and Polyfills
+ */
+require('es5-shim');
+require('es6-shim');
+require('json3');
 
-//app is an module that is dependent on several top level modules
+/**
+ * Globals (to be eventually converted and shimmed and compiled into common.js)
+ */
+require('../../components/jquery/dist/jquery'); //see: https://github.com/jquery/jquery/pull/1521
+require('bootstrap');
+require('angular');
+require('angular-cookies');
+require('angular-resource');
+require('angular-sanitize');
+require('angular-animate');
+require('angular-ui-router');
+require('angular-bootstrap');
+require('angulartics');
+
+/**
+ * Modules
+ */
+var config = require('./Config');
+
+/**
+ * Bootstrapping Angular Modules
+ */
 var app = angular.module('App', [
-    'Controllers',
-    'Directives',
-    'Elements',
-    'Filters',
-    'Services',
     'ngCookies',
     'ngResource',
     'ngSanitize',
@@ -33,17 +40,15 @@ var app = angular.module('App', [
     'angulartics-google-analytics'
 ]);
 
-//parent core modules for the registry, they have the [] allowing functions to be appended to them
-angular.module('Controllers', []);
-angular.module('Directives', []);
-angular.module('Elements', []);
-angular.module('Filters', []);
-angular.module('Services', []);
-
-/*
-    HERE we require all the controllers..etc.
+/**
+ * Controllers, Directives, Elements, Filters, Services
+ * In the future they can be moved into their own modules.
  */
+app.controller('HomeCtrl', require('./controllers/HomeCtrl'));
 
+/**
+ * Configuration & Routing
+ */
 app.config([
     '$locationProvider',
     '$stateProvider',
@@ -53,6 +58,9 @@ app.config([
         //HTML5 Mode URLs
         $locationProvider.html5Mode(true).hashPrefix('!');
 
+        //We should eventually move to precompiled templates. No need to extract it from the DOM. Nor should we need to download them asynchronously since they are very small.
+        //I guess the best solution would be asynchronous download, but with a resolve ability!
+        //But precompiled templates is faster than loading from DOM. Easier to implement. Cleaner than the current solution.
         $stateProvider
             .state(
                 'home',
@@ -68,6 +76,9 @@ app.config([
     }
 ]);
 
+/**
+ * Initialisation
+ */
 app.run([
     '$rootScope',
     '$cookies',
@@ -94,12 +105,15 @@ app.run([
         $rootScope.config = config;
 
         //PROVIDING BASE URL
-        $rootScope.baseUrl = jQuery('base').attr('href');
+        $rootScope.baseUrl = angular.element('base').attr('href');
 
     }
 ]);
 
-domready(function(){
+/**
+ * Execute!
+ */
+angular.element(document).ready(function(){
 
     angular.bootstrap(document, ['App']);
 
