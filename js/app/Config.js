@@ -1,10 +1,6 @@
-/*
-    Client side configuration loaded synchronously at the start.
- */
-
 'use strict';
 
-var snapsearchConfig = {
+module.exports = {
     meta: {
         email: 'enquiry@snapsearch.io'
     }
