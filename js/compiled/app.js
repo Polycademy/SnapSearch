@@ -44140,6 +44140,12 @@ require("./..\\..\\components\\json3\\lib\\json3.min.js");
 
 /**
  * Globals (to be eventually converted and shimmed and compiled into common.js)
+ * We should stop using jQuery and Bootstrap javascript. They are not required.
+ * Also Polymer Elements & Brick! (Web UI Components) <- Will be integrated into AngularJS 2.0
+ * Elements can be asynchronous or completely compiled. It depends on templateUrl or compiled version!
+ * Elements can also use React components
+ * http://facebook.github.io/react/ and http://stackoverflow.com/a/21244706/582917 (and using requestAnimationFrame http://stackoverflow.com/a/21395442/582917) http://www.youtube.com/watch?v=x7cQ3mrcKaY#t=749
+ * React is faster!
  */
 global.jQuery = require('../../components/jquery/dist/jquery'); //see: https://github.com/jquery/jquery/pull/1521
 require("./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js");
@@ -44272,12 +44278,12 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 /**
  * Controllers
  */
-angular.module('Controllers', [])
+angular.module('App.Controllers', [])
     //home
     .controller('HomeCtrl', require('./home/HomeCtrl'))
     .controller('CodeGroupCtrl', require('./home/CodeGroupCtrl'));
 
-module.exports = angular.module('Controllers');
+module.exports = angular.module('App.Controllers');
 },{"./..\\..\\..\\components\\angular\\angular.js":7,"./home/CodeGroupCtrl":18,"./home/HomeCtrl":19}],18:[function(require,module,exports){
 'use strict';
 
@@ -44320,9 +44326,9 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 /**
  * Directives
  */
-angular.module('Directives', []);
+angular.module('App.Directives', []);
 
-module.exports = angular.module('Directives');
+module.exports = angular.module('App.Directives');
 },{"./..\\..\\..\\components\\angular\\angular.js":7}],21:[function(require,module,exports){
 'use strict';
 
@@ -44331,9 +44337,9 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 /**
  * Elements
  */
-angular.module('Elements', []);
+angular.module('App.Elements', []);
 
-module.exports = angular.module('Elements');
+module.exports = angular.module('App.Elements');
 },{"./..\\..\\..\\components\\angular\\angular.js":7}],22:[function(require,module,exports){
 'use strict';
 
@@ -44342,9 +44348,9 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 /**
  * Filters
  */
-angular.module('Filters', []);
+angular.module('App.Filters', []);
 
-module.exports = angular.module('Filters');
+module.exports = angular.module('App.Filters');
 },{"./..\\..\\..\\components\\angular\\angular.js":7}],23:[function(require,module,exports){
 'use strict';
 
@@ -44353,7 +44359,7 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 /**
  * Services
  */
-angular.module('Services', []);
+angular.module('App.Services', []);
 
-module.exports = angular.module('Services');
+module.exports = angular.module('App.Services');
 },{"./..\\..\\..\\components\\angular\\angular.js":7}]},{},[15])

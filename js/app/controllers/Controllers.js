@@ -5,9 +5,9 @@ require('angular');
 /**
  * Controllers
  */
-angular.module('Controllers', [])
+angular.module('App.Controllers', [])
     //home
     .controller('HomeCtrl', require('./home/HomeCtrl'))
     .controller('CodeGroupCtrl', require('./home/CodeGroupCtrl'));
 
-module.exports = angular.module('Controllers');
+module.exports = angular.module('App.Controllers');

@@ -5,6 +5,6 @@ require('angular');
 /**
  * Services
  */
-angular.module('Services', []);
+angular.module('App.Services', []);
 
-module.exports = angular.module('Services');
+module.exports = angular.module('App.Services');

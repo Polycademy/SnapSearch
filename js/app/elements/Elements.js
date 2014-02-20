@@ -5,6 +5,6 @@ require('angular');
 /**
  * Elements
  */
-angular.module('Elements', []);
+angular.module('App.Elements', []);
 
-module.exports = angular.module('Elements');
+module.exports = angular.module('App.Elements');

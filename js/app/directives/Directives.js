@@ -5,6 +5,6 @@ require('angular');
 /**
  * Directives
  */
-angular.module('Directives', []);
+angular.module('App.Directives', []);
 
-module.exports = angular.module('Directives');
+module.exports = angular.module('App.Directives');

@@ -5,6 +5,6 @@ require('angular');
 /**
  * Filters
  */
-angular.module('Filters', []);
+angular.module('App.Filters', []);
 
-module.exports = angular.module('Filters');
+module.exports = angular.module('App.Filters');
