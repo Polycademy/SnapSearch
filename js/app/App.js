@@ -10,7 +10,7 @@ require('json3');
 /**
  * Globals (to be eventually converted and shimmed and compiled into common.js)
  */
-require('../../components/jquery/dist/jquery'); //see: https://github.com/jquery/jquery/pull/1521
+global.jQuery = require('../../components/jquery/dist/jquery'); //see: https://github.com/jquery/jquery/pull/1521
 require('bootstrap');
 require('angular');
 require('angular-cookies');
@@ -20,6 +20,7 @@ require('angular-animate');
 require('angular-ui-router');
 require('angular-bootstrap');
 require('angulartics');
+require('../../components/angulartics/src/angulartics-ga.js');
 
 /**
  * Modules
@@ -30,6 +31,11 @@ var config = require('./Config');
  * Bootstrapping Angular Modules
  */
 var app = angular.module('App', [
+    require('./controllers/Controllers').name,
+    require('./directives/Directives').name,
+    require('./elements/Elements').name,
+    require('./filters/Filters').name,
+    require('./services/Services').name,
     'ngCookies',
     'ngResource',
     'ngSanitize',
@@ -37,14 +43,8 @@ var app = angular.module('App', [
     'ui.router',
     'ui.bootstrap',
     'angulartics',
-    'angulartics-google-analytics'
+    'angulartics.google.analytics'
 ]);
-
-/**
- * Controllers, Directives, Elements, Filters, Services
- * In the future they can be moved into their own modules.
- */
-app.controller('HomeCtrl', require('./controllers/HomeCtrl'));
 
 /**
  * Configuration & Routing

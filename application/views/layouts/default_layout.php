@@ -20,7 +20,7 @@
         <link rel="shortcut icon" href="assets/img/favicon.ico">
         <link rel="apple-touch-icon-precomposed" href="assets/img/apple-touch-icon-precomposed.png">
         
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="assets/css/main.css">
 
         <!-- TODO: Modernizr should be built in production -->
         <script src="components/modernizr/modernizr.js"></script>
@@ -31,11 +31,7 @@
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-            <? if(ENVIRONMENT == 'development'){ ?>
-                ga('create', 'GOOGLE ANALYTICS KEY', {'cookieDomain': 'none'});
-            <? }elseif(ENVIRONMENT == 'production'){ ?>
-                ga('create', 'GOOGLE ANALYTICS KEY', 'auto');
-            <? } ?>
+            ga("create", "UA-48252325-1", "<?= (ENVIRONMENT == 'development') ? 'none' : 'snapsearch.io' ?>");
         </script>
 
     </head>
@@ -45,22 +41,30 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <!-- TODO: Convert to Bootstrap 3 Compatible Template! -->
-        <header class="navbar navbar-static-top">
-            <div class="container">
-                <div class="navbar-inner">
-                    <a class="logo" href="<?php echo site_url() ?>" title="Home">
-                        <img src="img/logo.png" />
-                    </a>
-                    <ul class="nav">
-                        <li ng-class="{'active_link': $state.includes('home')}"><a href="home">Home</a></li>
-                        <li ng-class="{'active_link': $state.includes('documentation')}"><a href="documentation">Documentation</a></li>
-                        <li ng-class="{'active_link': $state.includes('pricing')}"><a href="pricing">Pricing</a></li>
-                        <li ng-class="{'active_link': $state.includes('about')}"><a href="about">About</a></li>
-                        <li><a href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">Blog</a></li>
-                        <li><a>Sign Up</a></li>
-                        <li><a>Log In</a></li>
-                    </ul>
+        <header class="navbar navbar-default navbar-static-top">
+            <div class="panel panel-white">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-navbar">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="logo" ng-href="/" title="Home">
+                            <img src="assets/img/snapsearch_logo.png" />
+                        </a>
+                    </div>
+                    <div class="collapse navbar-collapse" id="header-navbar">
+                        <ul class="nav navbar-nav">
+                            <li ng-class="{'active': $state.includes('home')}"><a ng-href="home">Home</a></li>
+                            <li ng-class="{'active': $state.includes('documentation')}"><a ng-href="documentation">Documentation</a></li>
+                            <li ng-class="{'active': $state.includes('pricing')}"><a ng-href="pricing">Pricing</a></li>
+                            <li ng-class="{'active': $state.includes('about')}"><a ng-href="about">About</a></li>
+                            <li><a ng-href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">Blog</a></li>
+                            <li><button class="btn btn-default navbar-btn" type="button" ng-click="">Sign Up</button></li>
+                            <li><button class="btn btn-default navbar-btn" type="button" ng-click="">Log In</button></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </header>
@@ -68,8 +72,14 @@
         <!-- The side bar will be contained inside the container and ui-view to allow Angularjs to handle it -->
         <div class="main" ui-view></div>
 
-        <!-- TODO: Footer! Also these should be moved out into their own templates. And the ui-viewed templates can load them or not. -->
         <footer>
+            <div class="panel panel-yellow">
+                <div class="container">
+                    <div class="panel-body">
+                        
+                    </div>
+                </div>
+            </div>
         </footer>
 
         <!-- Client Side Templates -->

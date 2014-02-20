@@ -30234,6 +30234,39 @@ var styleDirective = valueFn({
 /**
  * @license Angulartics v0.8.5
  * (c) 2013 Luis Farzati http://luisfarzati.github.io/angulartics
+ * Universal Analytics update contributed by http://github.com/willmcclellan
+ * License: MIT
+ */
+(function(angular) {
+'use strict';
+
+/**
+ * @ngdoc overview
+ * @name angulartics.google.analytics
+ * Enables analytics support for Google Analytics (http://google.com/analytics)
+ */
+angular.module('angulartics.google.analytics', ['angulartics'])
+.config(['$analyticsProvider', function ($analyticsProvider) {
+
+  // GA already supports buffered invocations so we don't need
+  // to wrap these inside angulartics.waitForVendorApi
+
+  $analyticsProvider.registerPageTrack(function (path) {
+    if (window._gaq) _gaq.push(['_trackPageview', path]);
+    if (window.ga) ga('send', 'pageview', path);
+  });
+
+  $analyticsProvider.registerEventTrack(function (action, properties) {
+    if (window._gaq) _gaq.push(['_trackEvent', properties.category, action, properties.label, properties.value]);
+    if (window.ga) ga('send', 'event', properties.category, action, properties.label, properties.value);
+  });
+  
+}]);
+})(angular);
+},{}],9:[function(require,module,exports){
+/**
+ * @license Angulartics v0.8.5
+ * (c) 2013 Luis Farzati http://luisfarzati.github.io/angulartics
  * License: MIT
  */
 (function(angular, analytics) {
@@ -30364,7 +30397,7 @@ angular.module('angulartics', [])
 }]);
 })(angular);
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*!
  * Bootstrap v3.1.1 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
@@ -32317,7 +32350,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // Copyright 2009-2012 by contributors, MIT License
 // vim: ts=4 sts=4 sw=4 expandtab
 
@@ -33679,7 +33712,7 @@ var toObject = function (o) {
 
 });
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function (global){
 // ES6-shim 0.9.3 (c) 2013-2014 Paul Miller (http://paulmillr.com)
 // ES6-shim may be freely distributed under the MIT license.
@@ -34960,7 +34993,7 @@ var toObject = function (o) {
 })();
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.0
  * http://jquery.com/
@@ -44073,7 +44106,7 @@ return jQuery;
 
 }));
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 (function (global){
 /*! JSON v3.3.0 | http://bestiejs.github.io/json3 | Copyright 2012-2014, Kit Cambridge | http://kit.mit-license.org */
 (function(n){function K(p,q){function s(a){if(s[a]!==v)return s[a];var c;if("bug-string-char-index"==a)c="a"!="a"[0];else if("json"==a)c=s("json-stringify")&&s("json-parse");else{var e;if("json-stringify"==a){c=q.stringify;var b="function"==typeof c&&r;if(b){(e=function(){return 1}).toJSON=e;try{b="0"===c(0)&&"0"===c(new A)&&'""'==c(new B)&&c(t)===v&&c(v)===v&&c()===v&&"1"===c(e)&&"[1]"==c([e])&&"[null]"==c([v])&&"null"==c(null)&&"[null,null,null]"==c([v,t,null])&&'{"a":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}'==
@@ -44094,7 +44127,8 @@ a[0])&&":"==z()||k();c[a.slice(1)]=M(z())}return c}k()}return a},Q=function(a,b,
 A="object"==typeof global&&global;!A||A.global!==A&&A.window!==A||(n=A);if("object"!=typeof exports||!exports||exports.nodeType||J){var N=n.JSON,B=K(n,n.JSON3={noConflict:function(){n.JSON=N;return B}});n.JSON={parse:B.parse,stringify:B.stringify}}else K(n,exports);J&&define(function(){return B})})(this);
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
+(function (global){
 'use strict';
 
 /**
@@ -44107,7 +44141,7 @@ require("./..\\..\\components\\json3\\lib\\json3.min.js");
 /**
  * Globals (to be eventually converted and shimmed and compiled into common.js)
  */
-require('../../components/jquery/dist/jquery'); //see: https://github.com/jquery/jquery/pull/1521
+global.jQuery = require('../../components/jquery/dist/jquery'); //see: https://github.com/jquery/jquery/pull/1521
 require("./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js");
 require("./..\\..\\components\\angular\\angular.js");
 require("./..\\..\\components\\angular-cookies\\angular-cookies.js");
@@ -44117,6 +44151,7 @@ require("./..\\..\\components\\angular-animate\\angular-animate.js");
 require("./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js");
 require("./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js");
 require("./..\\..\\components\\angulartics\\src\\angulartics.js");
+require('../../components/angulartics/src/angulartics-ga.js');
 
 /**
  * Modules
@@ -44127,6 +44162,11 @@ var config = require('./Config');
  * Bootstrapping Angular Modules
  */
 var app = angular.module('App', [
+    require('./controllers/Controllers').name,
+    require('./directives/Directives').name,
+    require('./elements/Elements').name,
+    require('./filters/Filters').name,
+    require('./services/Services').name,
     'ngCookies',
     'ngResource',
     'ngSanitize',
@@ -44134,14 +44174,8 @@ var app = angular.module('App', [
     'ui.router',
     'ui.bootstrap',
     'angulartics',
-    'angulartics-google-analytics'
+    'angulartics.google.analytics'
 ]);
-
-/**
- * Controllers, Directives, Elements, Filters, Services
- * In the future they can be moved into their own modules.
- */
-app.controller('HomeCtrl', require('./controllers/HomeCtrl'));
 
 /**
  * Configuration & Routing
@@ -44215,7 +44249,8 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"../../components/jquery/dist/jquery":12,"./..\\..\\components\\angular-animate\\angular-animate.js":1,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":2,"./..\\..\\components\\angular-cookies\\angular-cookies.js":3,"./..\\..\\components\\angular-resource\\angular-resource.js":4,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":5,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":6,"./..\\..\\components\\angular\\angular.js":7,"./..\\..\\components\\angulartics\\src\\angulartics.js":8,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":9,"./..\\..\\components\\es5-shim\\es5-shim.js":10,"./..\\..\\components\\es6-shim\\es6-shim.js":11,"./..\\..\\components\\json3\\lib\\json3.min.js":13,"./Config":15,"./controllers/HomeCtrl":16}],15:[function(require,module,exports){
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../../components/angulartics/src/angulartics-ga.js":8,"../../components/jquery/dist/jquery":13,"./..\\..\\components\\angular-animate\\angular-animate.js":1,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":2,"./..\\..\\components\\angular-cookies\\angular-cookies.js":3,"./..\\..\\components\\angular-resource\\angular-resource.js":4,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":5,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":6,"./..\\..\\components\\angular\\angular.js":7,"./..\\..\\components\\angulartics\\src\\angulartics.js":9,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":10,"./..\\..\\components\\es5-shim\\es5-shim.js":11,"./..\\..\\components\\es6-shim\\es6-shim.js":12,"./..\\..\\components\\json3\\lib\\json3.min.js":14,"./Config":16,"./controllers/Controllers":17,"./directives/Directives":20,"./elements/Elements":21,"./filters/Filters":22,"./services/Services":23}],16:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -44229,7 +44264,40 @@ module.exports = {
         }
     }
 };
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
+'use strict';
+
+require("./..\\..\\..\\components\\angular\\angular.js");
+
+/**
+ * Controllers
+ */
+angular.module('Controllers', [])
+    //home
+    .controller('HomeCtrl', require('./home/HomeCtrl'))
+    .controller('CodeGroupCtrl', require('./home/CodeGroupCtrl'));
+
+module.exports = angular.module('Controllers');
+},{"./..\\..\\..\\components\\angular\\angular.js":7,"./home/CodeGroupCtrl":18,"./home/HomeCtrl":19}],18:[function(require,module,exports){
+'use strict';
+
+module.exports = ['$scope', CodeGroupCtrl];
+
+/**
+ * Home Controller
+ * 
+ * @param {Object} $scope
+ */
+function CodeGroupCtrl ($scope) {
+
+    $scope.activeCode = 'php';
+
+    $scope.changeCode = function(value){
+        $scope.activeCode = value;
+    }
+
+}
+},{}],19:[function(require,module,exports){
 'use strict';
 
 module.exports = ['$scope', HomeCtrl];
@@ -44244,4 +44312,48 @@ function HomeCtrl ($scope) {
 
 
 }
-},{}]},{},[14])
+},{}],20:[function(require,module,exports){
+'use strict';
+
+require("./..\\..\\..\\components\\angular\\angular.js");
+
+/**
+ * Directives
+ */
+angular.module('Directives', []);
+
+module.exports = angular.module('Directives');
+},{"./..\\..\\..\\components\\angular\\angular.js":7}],21:[function(require,module,exports){
+'use strict';
+
+require("./..\\..\\..\\components\\angular\\angular.js");
+
+/**
+ * Elements
+ */
+angular.module('Elements', []);
+
+module.exports = angular.module('Elements');
+},{"./..\\..\\..\\components\\angular\\angular.js":7}],22:[function(require,module,exports){
+'use strict';
+
+require("./..\\..\\..\\components\\angular\\angular.js");
+
+/**
+ * Filters
+ */
+angular.module('Filters', []);
+
+module.exports = angular.module('Filters');
+},{"./..\\..\\..\\components\\angular\\angular.js":7}],23:[function(require,module,exports){
+'use strict';
+
+require("./..\\..\\..\\components\\angular\\angular.js");
+
+/**
+ * Services
+ */
+angular.module('Services', []);
+
+module.exports = angular.module('Services');
+},{"./..\\..\\..\\components\\angular\\angular.js":7}]},{},[15])
