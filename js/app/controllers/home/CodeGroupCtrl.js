@@ -1,13 +1,12 @@
 'use strict';
 
-module.exports = ['$scope', CodeGroupCtrl];
-
 /**
- * Home Controller
+ * Code Group Controller
+ * Controls the code group allowing the ability to switch the code examples.
  * 
  * @param {Object} $scope
  */
-function CodeGroupCtrl ($scope) {
+module.exports = ['$scope', function ($scope) {
 
     $scope.activeCode = 'php';
 
@@ -15,4 +14,4 @@ function CodeGroupCtrl ($scope) {
         $scope.activeCode = value;
     }
 
-}
+}];

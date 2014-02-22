@@ -44287,14 +44287,13 @@ module.exports = angular.module('App.Controllers');
 },{"./..\\..\\..\\components\\angular\\angular.js":7,"./home/CodeGroupCtrl":18,"./home/HomeCtrl":19}],18:[function(require,module,exports){
 'use strict';
 
-module.exports = ['$scope', CodeGroupCtrl];
-
 /**
- * Home Controller
+ * Code Group Controller
+ * Controls the code group allowing the ability to switch the code examples.
  * 
  * @param {Object} $scope
  */
-function CodeGroupCtrl ($scope) {
+module.exports = ['$scope', function ($scope) {
 
     $scope.activeCode = 'php';
 
@@ -44302,22 +44301,19 @@ function CodeGroupCtrl ($scope) {
         $scope.activeCode = value;
     }
 
-}
+}];
 },{}],19:[function(require,module,exports){
 'use strict';
-
-module.exports = ['$scope', HomeCtrl];
 
 /**
  * Home Controller
  * 
  * @param {Object} $scope
  */
-function HomeCtrl ($scope) {
+module.exports = ['$scope', function ($scope) {
 
 
-
-}
+}];
 },{}],20:[function(require,module,exports){
 'use strict';
 
