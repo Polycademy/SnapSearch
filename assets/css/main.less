@@ -1,16 +1,36 @@
-/* ==========================================================================
-   IMPORT EXTERNALS, MIXINS, ELEMENTS, PRESETS, VARIABLES
-   ========================================================================== */
+//////////////////////
+// COMPOSITION ROOT //
+//////////////////////
 
-@import (less) "../../components/bootstrap/dist/css/bootstrap.css";
-@import (less) "../../components/bootstrap/dist/css/bootstrap-theme.css";
-@import "variables";
-@import "mixins";
-@import "fonts";
-@import "base";
-@import "helpers";
+/** Globals */
+@import "../../components/bootstrap/dist/css/bootstrap.css";
+@import "../../components/bootstrap/dist/css/bootstrap-theme.css";
+@import "global/Variables";
+@import "global/Mixins";
+@import "global/Fonts";
+@import "global/Base";
 
-/* ==========================================================================
-   HEADER
-   ========================================================================== */
+/** Header */
+//need to start using REM
+@import "header/Logo";
+@import "header/Nav";
 
+header{
+    .navbar-header{
+        #Logo.block-center();
+        .logo img {
+            #Logo.block-center();
+        }
+        @media (max-width: 768px) {
+            .navbar-toggle{
+                #Logo.block-center();
+            }
+        }
+    }
+}
+
+/** Footer */
+
+footer{
+
+}

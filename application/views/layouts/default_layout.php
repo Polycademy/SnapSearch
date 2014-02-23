@@ -20,7 +20,7 @@
         <link rel="shortcut icon" href="assets/img/favicon.ico">
         <link rel="apple-touch-icon-precomposed" href="assets/img/apple-touch-icon-precomposed.png">
         
-        <link rel="stylesheet" href="assets/css/main.css">
+        <link rel="stylesheet" href="assets/css/Main.css">
 
         <!-- TODO: Modernizr should be built in production -->
         <script src="components/modernizr/modernizr.js"></script>
@@ -45,14 +45,14 @@
             <div class="panel panel-white">
                 <div class="container">
                     <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-navbar">
+                        <a class="logo" ng-href="/" title="Home">
+                            <img src="assets/img/snapsearch_logo.png" />
+                        </a>
+                        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#header-navbar">
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="logo" ng-href="/" title="Home">
-                            <img src="assets/img/snapsearch_logo.png" />
-                        </a>
                     </div>
                     <div class="collapse navbar-collapse" id="header-navbar">
                         <ul class="nav navbar-nav">
@@ -102,7 +102,7 @@
         </script>
 
         <!-- Here we go! Weee! -->
-        <script src="js/compiled/app.js"></script>
+        <script src="js/compiled/App.js"></script>
 
     </body>
 </html>
