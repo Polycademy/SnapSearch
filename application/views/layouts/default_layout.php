@@ -37,47 +37,41 @@
     </head>
     <body class="ng-cloak" ng-cloak>
 
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-
-        <header class="navbar navbar-default navbar-static-top">
-            <div class="panel panel-white">
-                <div class="container">
+        <header class="panel-white">
+            <div class="container">
+                <nav class="navbar">
                     <div class="navbar-header">
                         <a class="logo" ng-href="/" title="Home">
                             <img src="assets/img/snapsearch_logo.png" />
                         </a>
-                        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#header-navbar">
+                        <button class="navbar-toggle" type="button" ng-click="navIsCollapsed = !navIsCollapsed">
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
                     </div>
-                    <div class="collapse navbar-collapse" id="header-navbar">
-                        <ul class="nav navbar-nav">
+                    <div class="navbar-collapse" collapse="navIsCollapsed">
+                        <ul class="navbar-list">
                             <li ng-class="{'active': $state.includes('home')}"><a ng-href="home">Home</a></li>
                             <li ng-class="{'active': $state.includes('documentation')}"><a ng-href="documentation">Documentation</a></li>
                             <li ng-class="{'active': $state.includes('pricing')}"><a ng-href="pricing">Pricing</a></li>
                             <li ng-class="{'active': $state.includes('about')}"><a ng-href="about">About</a></li>
                             <li><a ng-href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">Blog</a></li>
-                            <li><button class="btn btn-default navbar-btn" type="button" ng-click="">Sign Up</button></li>
-                            <li><button class="btn btn-default navbar-btn" type="button" ng-click="">Log In</button></li>
+                            <li><button class="btn navbar-btn" type="button" ng-click="">Sign Up</button></li>
+                            <li><button class="btn navbar-btn" type="button" ng-click="">Log In</button></li>
                         </ul>
                     </div>
-                </div>
+                </nav>
             </div>
         </header>
 
         <!-- The side bar will be contained inside the container and ui-view to allow Angularjs to handle it -->
-        <div class="main" ui-view></div>
+        <div class="main" ui-view autoscroll="false"></div>
 
-        <footer>
-            <div class="panel panel-yellow">
-                <div class="container">
-                    <div class="panel-body">
-                        
-                    </div>
+        <footer class="panel panel-yellow">
+            <div class="container">
+                <div class="panel-body">
+                    
                 </div>
             </div>
         </footer>

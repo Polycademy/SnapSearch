@@ -3,30 +3,79 @@
 //////////////////////
 
 /** Globals */
-@import "../../components/bootstrap/dist/css/bootstrap.css";
-@import "../../components/bootstrap/dist/css/bootstrap-theme.css";
+@import (less) "../../components/normalize-css/normalize.css";
 @import "global/Variables";
-@import "global/Mixins";
 @import "global/Fonts";
 @import "global/Base";
 
+//namespace the bootstrap files (waiting on (reference) capability: https://github.com/less/less.js/issues/1895;
+#Bootstrap{
+    @import (less, reference) "../../components/bootstrap/dist/css/bootstrap.css";
+    @import (less, reference) "../../components/bootstrap/dist/css/bootstrap-theme.css";
+}
+
+/** Mixins */
+@import "global/Mixins";
+
 /** Header */
-//need to start using REM
+@import "header/Header";
 @import "header/Logo";
 @import "header/Nav";
 
 header{
-    .navbar-header{
-        #Logo.block-center();
-        .logo img {
-            #Logo.block-center();
-        }
-        @media (max-width: 768px) {
-            .navbar-toggle{
-                #Logo.block-center();
+
+    .navbar{
+
+        .navbar-header{
+
+            #Mixins.block-center();
+
+            .logo img{
+
+                #Mixins.block-center();
+            
             }
+
         }
+
+        .navbar-collapse{
+
+        }
+
     }
+
+
+    // .navbar-header{
+    //     #Mixins.block-center();
+    //     .logo img {
+    //         #Mixins.block-center();
+    //     }
+    //     @media (max-width: 768px) {
+    //         .navbar-toggle{
+    //             #Mixins.block-center();
+    //         }
+    //     }
+    // }
+}
+
+/** Panels */
+@import "panels/Panels";
+
+.panel{
+    #Panels.panel-padding();
+}
+
+.panel-white{
+    #Panels.panel-bg-colour(@snapsearch-white);
+}
+
+.panel-yellow{
+    #Panels.panel-bg-colour(@snapsearch-yellow);
+}
+
+.panel-lego{
+    #Panels.panel-bg-colour(@snapsearch-dark);
+    #Panels.panel-bg-img(url('../img/lego_bg.png'));
 }
 
 /** Footer */
