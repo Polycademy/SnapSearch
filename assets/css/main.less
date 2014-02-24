@@ -2,84 +2,142 @@
 // COMPOSITION ROOT //
 //////////////////////
 
-/** Globals */
+/**
+ * Base
+ */
 @import (less) "../../components/normalize-css/normalize.css";
-@import "global/Variables";
-@import "global/Fonts";
-@import "global/Base";
+@import "variables";
+@import "fonts";
+@import "base";
 
-//namespace the bootstrap files (waiting on (reference) capability: https://github.com/less/less.js/issues/1895;
-#Bootstrap{
-    @import (less, reference) "../../components/bootstrap/dist/css/bootstrap.css";
-    @import (less, reference) "../../components/bootstrap/dist/css/bootstrap-theme.css";
-}
+/**
+ * Page Styles (lower cased files are page styles, they are not namespaced and have to be loaded in their entirety)
+ */
+@import "buttons";
 
-/** Mixins */
-@import "global/Mixins";
+@import "header";
 
-/** Header */
-@import "header/Header";
-@import "header/Logo";
-@import "header/Nav";
+@import "panels";
 
-header{
-
-    .navbar{
-
-        .navbar-header{
-
-            #Mixins.block-center();
-
-            .logo img{
-
-                #Mixins.block-center();
-            
-            }
-
-        }
-
-        .navbar-collapse{
-
-        }
-
-    }
+@import "footer";
 
 
-    // .navbar-header{
-    //     #Mixins.block-center();
-    //     .logo img {
-    //         #Mixins.block-center();
-    //     }
-    //     @media (max-width: 768px) {
-    //         .navbar-toggle{
-    //             #Mixins.block-center();
-    //         }
-    //     }
-    // }
-}
 
-/** Panels */
-@import "panels/Panels";
 
-.panel{
-    #Panels.panel-padding();
-}
 
-.panel-white{
-    #Panels.panel-bg-colour(@snapsearch-white);
-}
 
-.panel-yellow{
-    #Panels.panel-bg-colour(@snapsearch-yellow);
-}
 
-.panel-lego{
-    #Panels.panel-bg-colour(@snapsearch-dark);
-    #Panels.panel-bg-img(url('../img/lego_bg.png'));
-}
 
-/** Footer */
 
-footer{
 
-}
+//TO BE CHANGED!
+// /**
+//  * Mixins
+//  */
+// @import (reference) "global/Mixins";
+
+// /**
+//  * Buttons
+//  */
+// @import (reference) "global/Buttons";
+
+// .btn{
+//     #Buttons.standard();
+// }
+
+// /**
+//  * Animations
+//  */
+// .collapse {
+//     #Bootstrap.collapse();
+// }
+
+// .collapse.in {
+//     #Bootstrap.collapse.in();
+// }
+
+// .collapsing {
+//     #Bootstrap.collapsing();
+// }
+
+// /**
+//  * Header
+//  */
+// @import (reference) "header/Header";
+// @import (reference) "header/Logo";
+// @import (reference) "header/Nav";
+
+// header {
+//     .navbar {
+//         .navbar-header {
+//             #Mixins.block-center();
+//             .logo img {
+//                 #Mixins.block-center();
+//             }
+//             .navbar-toggle {
+//                 #Nav.collapse-toggle();
+//             }
+//         }
+//         .navbar-collapse {
+//             .navbar-list {
+//                 #Nav.list-style();
+//             }
+//         }
+//         @media (min-width: @snapsearch-nav-breakpoint) {
+//             .navbar-toggle {
+//                 display: none;
+//             }
+//             .navbar-collapse {
+//                 width: auto;
+//                 border-top: 0;
+//                 box-shadow: none;
+//                 padding-right: 0;
+//                 padding-left: 0;
+//                 .navbar-list {
+//                     text-align: center;
+//                     li{
+//                         display: inline-block;
+//                     }
+//                 }
+//             }
+//             .navbar-collapse.collapse {
+//                 display: block !important;
+//                 height: auto !important;
+//                 padding-bottom: 0;
+//                 overflow: visible !important;
+//             }
+//             .navbar-collapse.in{
+//                 overflow-y: visible;
+//             }
+//         }
+//     }
+// }
+
+// /**
+//  * Panels
+//  */
+// @import (reference) "panels/Panels";
+
+// .panel {
+//     #Panels.panel-padding();
+// }
+
+// .panel-white {
+//     #Panels.panel-bg-colour(@snapsearch-white);
+// }
+
+// .panel-yellow {
+//     #Panels.panel-bg-colour(@snapsearch-yellow);
+// }
+
+// .panel-lego {
+//     #Panels.panel-bg-colour(@snapsearch-dark);
+//     #Panels.panel-bg-img(url('../img/lego_bg.png'));
+// }
+
+// /**
+//  * Footer
+//  */
+// footer {
+
+// }

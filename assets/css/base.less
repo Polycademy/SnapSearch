@@ -2,23 +2,28 @@
 // BASE //
 //////////
 
-/** Base text colour */
-html,
-button,
-input,
-select,
-textarea {
+//reference bootstrap
+@import (reference) "modules/Bootstrap";
+
+/**
+ * Base text colour
+ */
+html, button, input, select, textarea {
     color: #222;
 }
 
-/** Base 10 font size */
+/**
+ * Base 10 font size
+ */
 html {
     font-size: 62.5%;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     line-height: 1.42857143;
 }
 
-/** Remove text-shadow in selections. */
+/**
+ * Remove text-shadow in selections
+ */
 ::-moz-selection {
     background: #b3d4fc;
     text-shadow: none;
@@ -29,15 +34,16 @@ html {
     text-shadow: none;
 }
 
-/** Angular Bootstrap Issue */
+/**
+ * Angular Bootstrap Issue
+ */
 .nav, .pagination, .carousel, .panel-title a {
     cursor: pointer;
 }
 
-/** Browse happy prompt */
-.browsehappy {
-    margin: 0.2em 0;
-    background: #ccc;
-    color: #000;
-    padding: 0.2em 0;
+/**
+ * Containers and Wrappers
+ */
+.container{
+    #Bootstrap.container();
 }

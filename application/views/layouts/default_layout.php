@@ -20,7 +20,7 @@
         <link rel="shortcut icon" href="assets/img/favicon.ico">
         <link rel="apple-touch-icon-precomposed" href="assets/img/apple-touch-icon-precomposed.png">
         
-        <link rel="stylesheet" href="assets/css/Main.css">
+        <link rel="stylesheet" href="assets/css/main.css">
 
         <!-- TODO: Modernizr should be built in production -->
         <script src="components/modernizr/modernizr.js"></script>
@@ -44,7 +44,7 @@
                         <a class="logo" ng-href="/" title="Home">
                             <img src="assets/img/snapsearch_logo.png" />
                         </a>
-                        <button class="navbar-toggle" type="button" ng-click="navIsCollapsed = !navIsCollapsed">
+                        <button class="navbar-toggle btn" type="button" ng-click="navIsCollapsed = !navIsCollapsed">
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
