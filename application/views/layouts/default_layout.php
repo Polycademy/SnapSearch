@@ -12,7 +12,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
         <title>SnapSearch - Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</title>
-        <meta name="description" content="SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications. Make your sites crawlable with SnapSearch.">
+        <meta name="description" content="SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications. Make your sites crawlable with SnapSearch. AngularJS SEO, BackboneJS SEO, Ember SEO, jQuery SEO Knockout SEO, Meteor SEO and Sails SEO.">
 
         <meta name="fragment" content="!" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
