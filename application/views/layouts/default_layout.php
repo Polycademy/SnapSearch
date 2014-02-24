@@ -37,7 +37,7 @@
     </head>
     <body class="ng-cloak" ng-cloak>
 
-        <header class="panel-white">
+        <header class="panel-white" ng-controller="HeaderCtrl">
             <div class="container">
                 <nav class="navbar">
                     <div class="navbar-header">

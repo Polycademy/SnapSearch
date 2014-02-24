@@ -1,10 +1,12 @@
 'use strict';
 
 /**
- * Home Controller
+ * Header Controller
  * 
  * @param {Object} $scope
  */
 module.exports = ['$scope', function ($scope) {
+
+    $scope.navIsCollapsed = true;
 
 }];
