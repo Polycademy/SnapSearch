@@ -1,0 +1,17 @@
+/* ==========================================================================
+   Header Controller
+   ========================================================================== */
+
+@import "Variables";
+@import (reference) "../mixins/Centering";
+
+header {
+    .navbar {
+        .navbar-header {
+            #Centering.block-center();
+            .logo img {
+                #Centering.block-center();
+            }
+        }
+    }
+}

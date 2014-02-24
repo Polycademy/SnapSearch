@@ -1,0 +1,23 @@
+/* ==========================================================================
+   Panels Controller
+   ========================================================================== */
+
+@import "Variables";
+@import (reference) "../mixins/Panels";
+
+.panel {
+    #Panels.panel-padding();
+}
+
+.panel-white {
+    #Panels.panel-bg-colour(@snapsearch-white);
+}
+
+.panel-yellow {
+    #Panels.panel-bg-colour(@snapsearch-yellow);
+}
+
+.panel-lego {
+    #Panels.panel-bg-colour(@snapsearch-dark);
+    #Panels.panel-bg-img(url('../img/lego_bg.png'));
+}
