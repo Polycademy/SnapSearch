@@ -11,15 +11,21 @@ header.navbar {
     border: 0;
     box-shadow: none;
     .navbar-header {
-        #Centering.block-center();
+        #Centering.blockCenter();
         .logo img {
-            #Centering.block-center();
+            max-width: 100%;
+            #Centering.blockCenter();
+        }
+        @media (max-width: @snapsearch-nav-breakpoint) {
+            .navbar-toggle {
+                #Centering.blockCenter();
+            }
         }
     }
     .navbar-nav{
         margin-top: 14px;
-        #Centering.block-center();
-        #Centering.list-center(li);
+        #Centering.blockCenter();
+        #Centering.listCenter(li);
         word-spacing: -8px;
         > li {
             font-size: 26px;
@@ -41,7 +47,7 @@ header.navbar {
             text-shadow: none;
             color: @snapsearch-link-dark;
             line-height: inherit;
-            display: initial;
+            display: inline;
             &:hover{
                 background: transparent;
                 color: lighten(@snapsearch-link-dark, 5%);
