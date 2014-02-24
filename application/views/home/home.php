@@ -1,5 +1,5 @@
 <script type="text/ng-template" id="home.html">
-    <div class="panel panel_lego">
+    <div class="panel panel_lego panel_transition_white_dark">
         <div class="container">
             <div class="panel-body">
                 <div class="row">
@@ -64,7 +64,7 @@
             </div>
         </div>
     </div>
-    <div class="panel panel_white">
+    <div class="panel panel_white panel_transition_white_dark">
         <div class="container">
             <div class="panel-heading">
                 <h2 class="panel-title">SnapSearch works with...</h2>
@@ -77,7 +77,7 @@
             </div>
         </div>
     </div>
-    <div class="panel panel_lego">
+    <div class="panel panel_lego panel_transition_yellow_dark">
         <div class="container">
             <div class="panel-heading">
                 <h2 class="panel-title">Why use SnapSearch?</h2>
@@ -87,7 +87,7 @@
             </div>
         </div>
     </div>
-    <div class="panel panel_yellow">
+    <div class="panel panel_yellow panel_transition_white_yellow">
         <div class="container">
             <div class="panel-heading">
                 <h2 class="panel-title">Features</h2>
@@ -97,7 +97,7 @@
             </div>
         </div>
     </div>
-    <div class="panel panel_white">
+    <div class="panel panel_white panel_transition_white_yellow">
         <div class="container">
             <div class="panel-heading">
                 <h2 class="panel-title">Try our demo here</h2>

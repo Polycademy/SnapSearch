@@ -6316,9 +6316,9 @@ html {
    Variables Controller
    ========================================================================== */
 header.navbar {
-  margin-top: 20px;
-  margin-bottom: 14px;
-  border: 0;
+  padding-top: 20px;
+  padding-bottom: 14px;
+  margin: 0;
   box-shadow: none;
 }
 header.navbar .navbar-header {
@@ -6428,6 +6428,15 @@ header.navbar .navbar-nav > li button {
 .panel_lego .panel-heading,
 .panel_lego .panel-body {
   color: #ffffff;
+}
+.panel_transition_white_dark {
+  border-bottom: 2px solid #3a4144;
+}
+.panel_transition_white_yellow {
+  border-bottom: 2px solid #fccb77;
+}
+.panel_transition_yellow_dark {
+  border-bottom: 2px solid #5c5736;
 }
 .panel-title {
   font-size: 36px;
