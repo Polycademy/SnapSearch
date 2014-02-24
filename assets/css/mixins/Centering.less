@@ -11,5 +11,13 @@
         float: none;
     }
 
+    .list-center(@child){
+        text-align: center;
+        > @{child} {
+            display: inline-block;
+            float: none;
+        }
+    }
+
 }
 

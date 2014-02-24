@@ -51,13 +51,13 @@
                 </div>
                 <nav class="collapse navbar-collapse" id="header-navbar">
                     <ul class="nav navbar-nav">
-                        <li ng-class="{'active': $state.includes('home')}"><a ng-href="home">Home</a></li>
-                        <li ng-class="{'active': $state.includes('documentation')}"><a ng-href="documentation">Documentation</a></li>
-                        <li ng-class="{'active': $state.includes('pricing')}"><a ng-href="pricing">Pricing</a></li>
-                        <li ng-class="{'active': $state.includes('about')}"><a ng-href="about">About</a></li>
-                        <li><a ng-href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">Blog</a></li>
-                        <li><button class="btn btn-default navbar-btn" type="button" ng-click="">Sign Up</button></li>
-                        <li><button class="btn btn-default navbar-btn" type="button" ng-click="">Log In</button></li>
+                        <li ng-class="{'active': $state.includes('home')}"><a ng-href="home">HOME</a></li>
+                        <li ng-class="{'active': $state.includes('documentation')}"><a ng-href="documentation">DOCUMENTATION</a></li>
+                        <li ng-class="{'active': $state.includes('pricing')}"><a ng-href="pricing">PRICING</a></li>
+                        <li ng-class="{'active': $state.includes('about')}"><a ng-href="about">ABOUT</a></li>
+                        <li><a ng-href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">BLOG</a></li>
+                        <li><button class="btn navbar-btn" type="button" ng-click="">SIGN UP</button></li>
+                        <li><button class="btn navbar-btn" type="button" ng-click="">LOG IN</button></li>
                     </ul>
                 </nav>
             </div>

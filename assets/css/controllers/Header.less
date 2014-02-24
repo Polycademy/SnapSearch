@@ -5,13 +5,55 @@
 @import "Variables";
 @import (reference) "../mixins/Centering";
 
-header {
-    .navbar {
-        .navbar-header {
+header.navbar {
+    margin-top: 20px;
+    margin-bottom: 14px;
+    border: 0;
+    box-shadow: none;
+    .navbar-header {
+        #Centering.block-center();
+        .logo img {
             #Centering.block-center();
-            .logo img {
-                #Centering.block-center();
+        }
+    }
+    .navbar-nav{
+        margin-top: 14px;
+        #Centering.block-center();
+        #Centering.list-center(li);
+        word-spacing: -8px;
+        > li {
+            font-size: 26px;
+            font-family: "fira_mono_otbold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        > li a {
+            color: @snapsearch-link-dark;
+            margin: 15px;
+            padding: 0;
+            &:hover{
+                background: transparent;
+                color: lighten(@snapsearch-link-dark, 5%);
             }
+        }
+        > li.active a {
+            border-bottom: 3px solid @snapsearch-link-underline;
+            background: transparent;
+            box-shadow: none;
+            text-shadow: none;
+            color: @snapsearch-link-dark;
+            line-height: inherit;
+            display: initial;
+            &:hover{
+                background: transparent;
+                color: lighten(@snapsearch-link-dark, 5%);
+                border-color: lighten(@snapsearch-link-underline, 5%);
+            }
+        }
+        > li button {
+            color: @snapsearch-link-dark;
+            font-size: inherit;
+            border: none;
+            border-radius: 0;
+            margin: 0;
         }
     }
 }
