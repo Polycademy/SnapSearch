@@ -6,18 +6,35 @@
 @import (reference) "../mixins/Panels";
 
 .panel {
-    #Panels.panel-padding();
+    #Panels.panelPadding();
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    margin: 0;
 }
 
-.panel-white {
-    #Panels.panel-bg-colour(@snapsearch-white);
+.panel_white {
+    #Panels.panelBgColour(@snapsearch-white);
+    .panel-heading, .panel-body {
+        color: @snapsearch-text-dark;
+    }
 }
 
-.panel-yellow {
-    #Panels.panel-bg-colour(@snapsearch-yellow);
+.panel_yellow {
+    #Panels.panelBgColour(@snapsearch-yellow);
+    .panel-heading, .panel-body {
+        color: @snapsearch-text-dark;
+    }
 }
 
-.panel-lego {
-    #Panels.panel-bg-colour(@snapsearch-dark);
-    #Panels.panel-bg-img(url('../img/lego_bg.png'));
+.panel_lego {
+    #Panels.panelBgColour(@snapsearch-dark);
+    #Panels.panelBgImg(url('../img/lego_bg.png'));
+    .panel-heading, .panel-body {
+        color: @snapsearch-text-light;
+    }
+}
+
+.panel-title {
+    font-size: 36px;
 }

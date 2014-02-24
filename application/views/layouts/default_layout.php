@@ -37,7 +37,7 @@
     </head>
     <body class="ng-cloak" ng-cloak>
 
-        <header class="navbar navbar-default navbar-static-top panel-white" ng-controller="HeaderCtrl">
+        <header class="navbar navbar-default navbar-static-top panel_white" ng-controller="HeaderCtrl">
             <div class="container">
                 <div class="navbar-header">
                     <a class="logo" ng-href="/" title="Home">
@@ -66,7 +66,7 @@
         <!-- The side bar will be contained inside the container and ui-view to allow Angularjs to handle it -->
         <div class="main" ui-view autoscroll="false"></div>
 
-        <footer class="panel panel-yellow">
+        <footer class="panel panel_yellow">
             <div class="container">
                 <div class="panel-body">
                     
