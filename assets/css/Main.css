@@ -6312,6 +6312,9 @@ html {
 /* ==========================================================================
    Header Controller
    ========================================================================== */
+/* ==========================================================================
+   Variables Controller
+   ========================================================================== */
 header.navbar {
   margin-top: 20px;
   margin-bottom: 14px;
@@ -6325,10 +6328,19 @@ header.navbar .navbar-header {
   float: none;
 }
 header.navbar .navbar-header .logo img {
+  max-width: 100%;
   margin-right: auto;
   margin-left: auto;
   display: block;
   float: none;
+}
+@media (max-width: 768px) {
+  header.navbar .navbar-header .navbar-toggle {
+    margin-right: auto;
+    margin-left: auto;
+    display: block;
+    float: none;
+  }
 }
 header.navbar .navbar-nav {
   margin-top: 14px;
@@ -6363,7 +6375,7 @@ header.navbar .navbar-nav > li.active a {
   text-shadow: none;
   color: #300733;
   line-height: inherit;
-  display: initial;
+  display: inline;
 }
 header.navbar .navbar-nav > li.active a:hover {
   background: transparent;
@@ -6386,21 +6398,37 @@ header.navbar .navbar-nav > li button {
 /* ==========================================================================
    Panels Controller
    ========================================================================== */
-/* ==========================================================================
-   Variables Controller
-   ========================================================================== */
 .panel {
-  padding-top: 2.4rem;
-  padding-bottom: 2.4rem;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  margin: 0;
 }
-.panel-white {
+.panel_white {
   background-color: #ffffff;
 }
-.panel-yellow {
+.panel_white .panel-heading,
+.panel_white .panel-body {
+  color: #2c3134;
+}
+.panel_yellow {
   background-color: #f4ac2e;
 }
-.panel-lego {
+.panel_yellow .panel-heading,
+.panel_yellow .panel-body {
+  color: #2c3134;
+}
+.panel_lego {
   background-color: #32373a;
   background-image: url('../img/lego_bg.png');
   background-repeat: repeat;
+}
+.panel_lego .panel-heading,
+.panel_lego .panel-body {
+  color: #ffffff;
+}
+.panel-title {
+  font-size: 36px;
 }
