@@ -394,16 +394,16 @@
         },
         {
             "name": "jeremykendall/php-domain-parser",
-            "version": "1.1.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jeremykendall/php-domain-parser.git",
-                "reference": "6a8765fbeb562b3b426f090db672151f865aad82"
+                "reference": "ec7866a625cacae846e60e905adfb9f0f3b6b9ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jeremykendall/php-domain-parser/zipball/6a8765fbeb562b3b426f090db672151f865aad82",
-                "reference": "6a8765fbeb562b3b426f090db672151f865aad82",
+                "url": "https://api.github.com/repos/jeremykendall/php-domain-parser/zipball/ec7866a625cacae846e60e905adfb9f0f3b6b9ef",
+                "reference": "ec7866a625cacae846e60e905adfb9f0f3b6b9ef",
                 "shasum": ""
             },
             "require": {
@@ -411,11 +411,11 @@
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "jeremykendall/phpctagger": "0.0.*",
                 "mikey179/vfsstream": "1.1.*",
                 "phpunit/phpunit": "3.7.*"
             },
             "bin": [
+                "bin/parser",
                 "bin/pdp-psl"
             ],
             "type": "library",
@@ -441,7 +441,7 @@
                 "domain parsing",
                 "url parsing"
             ],
-            "time": "2013-12-24 03:09:55"
+            "time": "2014-02-02 17:08:54"
         },
         {
             "name": "jwage/purl",
@@ -770,7 +770,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 }
             ],
             "description": "Pimple is a simple Dependency Injection Container for PHP 5.3",
@@ -1008,17 +1010,17 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.4.1",
+            "version": "v2.4.2",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher.git",
-                "reference": "e3ba42f6a70554ed05749e61b829550f6ac33601"
+                "reference": "4708b8cd41984a5ba29fe7dd40716f7f761ac501"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/e3ba42f6a70554ed05749e61b829550f6ac33601",
-                "reference": "e3ba42f6a70554ed05749e61b829550f6ac33601",
+                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/4708b8cd41984a5ba29fe7dd40716f7f761ac501",
+                "reference": "4708b8cd41984a5ba29fe7dd40716f7f761ac501",
                 "shasum": ""
             },
             "require": {
@@ -1049,7 +1051,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -1058,7 +1062,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "http://symfony.com",
-            "time": "2013-12-28 08:12:03"
+            "time": "2014-02-11 13:52:09"
         },
         {
             "name": "symfony/http-foundation",
@@ -1099,7 +1103,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
