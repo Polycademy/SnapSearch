@@ -7,6 +7,4 @@
  */
 module.exports = ['$scope', function ($scope) {
 
-    $scope.navIsCollapsed = true;
-
 }];
