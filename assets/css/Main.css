@@ -6234,8 +6234,8 @@ button.close {
 }
 @font-face {
   font-family: "fira_sans_otregular";
-  src: url("../fonts/firamonoot-regular-webfont.eot");
-  src: url("../fonts/firamonoot-regular-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/firamonoot-regular-webfont.woff") format("woff"), url("../fonts/firamonoot-regular-webfont.ttf") format("truetype"), url("../fonts/firamonoot-regular-webfont.svg#fira_sans_otregular") format("svg");
+  src: url("../fonts/firasansot-regular-webfont.eot");
+  src: url("../fonts/firasansot-regular-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/firasansot-regular-webfont.woff") format("woff"), url("../fonts/firasansot-regular-webfont.ttf") format("truetype"), url("../fonts/firasansot-regular-webfont.svg#fira_sans_otregular") format("svg");
   font-weight: normal;
   font-style: normal;
 }
@@ -6261,9 +6261,9 @@ button.close {
   font-style: normal;
 }
 @font-face {
-  font-family: "fira_mono_otbold";
-  src: url("../fonts/firamonoot-bold-webfont.eot");
-  src: url("../fonts/firamonoot-bold-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/firamonoot-bold-webfont.woff") format("woff"), url("../fonts/firamonoot-bold-webfont.ttf") format("truetype"), url("../fonts/firamonoot-bold-webfont.svg#fira_mono_otbold") format("svg");
+  font-family: 'fira_sans_otbold';
+  src: url('../fonts/firasansot-bold-webfont.eot');
+  src: url('../fonts/firasansot-bold-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/firasansot-bold-webfont.woff') format('woff'), url('../fonts/firasansot-bold-webfont.ttf') format('truetype'), url('../fonts/firasansot-bold-webfont.svg#fira_sans_otbold') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -6357,7 +6357,7 @@ header.navbar .navbar-nav > li {
 }
 header.navbar .navbar-nav > li {
   font-size: 26px;
-  font-family: "fira_mono_otbold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "fira_sans_otbold", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 header.navbar .navbar-nav > li a {
   color: #300733;
@@ -6440,4 +6440,51 @@ header.navbar .navbar-nav > li button {
 }
 .panel-title {
   font-size: 36px;
+  font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+}
+/**
+ * Home Page
+ */
+/* ==========================================================================
+   Home Controller
+   ========================================================================== */
+.introduction .page-header {
+  margin: 20px 0;
+  border-bottom: none;
+  padding: 0;
+}
+.introduction .page-header h1 {
+  font-size: 42px;
+  font-family: "fira_sans_otlight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+}
+.introduction .page-header h3 {
+  font-family: "fira_sans_otlight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+  font-size: 26px;
+  margin-top: 40px;
+  margin-bottom: 34px;
+}
+.introduction .page-header .call-to-action {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+}
+.introduction .page-header .call-to-action .call-to-action-text {
+  font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-shadow: none;
+}
+.introduction .page-header .call-to-action .call-to-action-text small {
+  font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #ffffff;
+}
+.introduction .page-header .call-to-action:hover {
+  background-position: 0 -100px;
+}
+.introduction .page-header .call-to-action:focus {
+  background-position: 0 -100px;
 }

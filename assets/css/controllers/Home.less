@@ -1,0 +1,50 @@
+/* ==========================================================================
+   Home Controller
+   ========================================================================== */
+
+@import "Variables";
+@import (reference) "../mixins/Centering";
+@import (reference) "../mixins/Fonts";
+
+.introduction {
+
+    .page-header {
+        margin: 20px 0;
+        border-bottom: none;
+        padding: 0;
+        h1 {
+            font-size: 42px;
+            #Fonts.family("fira_sans_otlight");
+            margin: 0;
+        }
+        h3 {
+            #Fonts.family("fira_sans_otlight");
+            text-align: center;
+            font-size: 26px;
+            margin-top: 40px;
+            margin-bottom: 34px;
+        }
+        .call-to-action {
+            #Centering.blockCenter();
+            padding: 8px 20px;
+            border-radius: 8px;
+            .call-to-action-text {
+                #Fonts.family("fira_sans_otmedium");
+                text-shadow: none;
+                small {
+                    #Fonts.family("fira_sans_otregular");
+                    color: @snapsearch-white;
+                }
+            }
+            &:hover {
+                background-position: 0 -100px;
+            }
+            &:focus {
+                background-position: 0 -100px;
+            }
+        }
+    }
+
+
+
+}

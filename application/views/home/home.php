@@ -1,14 +1,14 @@
 <script type="text/ng-template" id="home.html">
-    <div class="panel panel_lego panel_transition_white_dark">
+    <div class="introduction panel panel_lego panel_transition_white_dark">
         <div class="container">
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="page-header">
-                            <h1 class="page-header">SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>
+                            <h1>SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>
                             <h3>Make your sites crawlable with SnapSearch!</h3>
-                            <button class="btn btn-primary" type="button">
-                                <h4>Get Started for Free<br /><small>No Credit Card Required</small></h4>
+                            <button class="call-to-action btn btn-info" type="button">
+                                <h4 class="call-to-action-text">Get Started for Free<br /><small>No Credit Card Required</small></h4>
                             </button>
                         </div>
                     </div>
