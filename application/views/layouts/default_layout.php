@@ -40,7 +40,7 @@
         <header class="navbar navbar-default navbar-static-top panel_white panel_transition_white_dark" ng-controller="HeaderCtrl">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="logo" ng-href="/" title="Home">
+                    <a class="logo" href="/" title="Home">
                         <img src="assets/img/snapsearch_logo.png" />
                     </a>
                     <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#header-navbar">
@@ -95,6 +95,7 @@
 
         <!-- Here we go! Weee! -->
         <script src="js/compiled/App.js"></script>
+        <script></script>
 
     </body>
 </html>

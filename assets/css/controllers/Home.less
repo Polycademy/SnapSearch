@@ -7,7 +7,6 @@
 @import (reference) "../mixins/Fonts";
 
 .introduction {
-
     .page-header {
         margin: 20px 0;
         border-bottom: none;
@@ -21,30 +20,52 @@
             #Fonts.family("fira_sans_otlight");
             text-align: center;
             font-size: 26px;
-            margin-top: 40px;
-            margin-bottom: 34px;
+            margin-top: 30px;
+            margin-bottom: 24px;
         }
         .call-to-action {
             #Centering.blockCenter();
-            padding: 8px 20px;
-            border-radius: 8px;
-            .call-to-action-text {
-                #Fonts.family("fira_sans_otmedium");
-                text-shadow: none;
-                small {
-                    #Fonts.family("fira_sans_otregular");
-                    color: @snapsearch-white;
-                }
+        }
+    }
+}
+
+.code-group {
+    background-color: @snapsearch-white;
+    border-radius: 6px;
+    padding: 6px;
+    #Fonts.family("fira_sans_otregular");
+    .nav-tabs {
+        background-color: @snapsearch-dark;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        .tab {
+            #Fonts.family("fira_sans_otbold");
+            .btn {
+                font-size: 18px;
+                background: transparent;
+                border-radius: 0;
+                border: none;
+                color: @snapsearch-white;
             }
-            &:hover {
-                background-position: 0 -100px;
-            }
-            &:focus {
-                background-position: 0 -100px;
+        }
+        .tab.active { 
+            background: @snapsearch-white;
+            .btn {
+                color: @snapsearch-dark;
             }
         }
     }
-
-
-
+    .tab-content {
+        margin-top: 16px;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-bottom: 16px;
+        color: @snapsearch-text-black;
+        .code-usage {
+            height: 150px;
+            code {
+                white-space: nowrap;
+            }
+        }
+    }
 }

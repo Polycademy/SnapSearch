@@ -1,0 +1,37 @@
+/* ==========================================================================
+   Buttons Controller
+   ========================================================================== */
+
+@import "Variables";
+@import (reference) "../mixins/Fonts";
+
+.call-to-action {
+    padding: 8px 20px;
+    border-radius: 8px;
+    .call-to-action-text {
+        #Fonts.family("fira_sans_otmedium");
+        text-shadow: none;
+        small {
+            #Fonts.family("fira_sans_otregular");
+            color: @snapsearch-white;
+        }
+    }
+    &:hover {
+        background-position: 0 -100px;
+    }
+    &:focus {
+        background-position: 0 -100px;
+    }
+}
+
+.btn-fork {
+    #Fonts.family("fira_sans_otregular");
+    font-size: 14px;
+    img {
+        margin-right: 4px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: none;
+}
