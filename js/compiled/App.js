@@ -44147,7 +44147,7 @@ require("./..\\..\\components\\json3\\lib\\json3.min.js");
  * http://facebook.github.io/react/ and http://stackoverflow.com/a/21244706/582917 (and using requestAnimationFrame http://stackoverflow.com/a/21395442/582917) http://www.youtube.com/watch?v=x7cQ3mrcKaY#t=749
  * React is faster!
  */
-global.jQuery = require('../../components/jquery/dist/jquery'); //see: https://github.com/jquery/jquery/pull/1521
+global.jQuery = require("./..\\..\\components\\jquery\\dist\\jquery.js");
 require("./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js");
 require("./..\\..\\components\\angular\\angular.js");
 require("./..\\..\\components\\angular-cookies\\angular-cookies.js");
@@ -44256,7 +44256,7 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":8,"../../components/jquery/dist/jquery":13,"./..\\..\\components\\angular-animate\\angular-animate.js":1,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":2,"./..\\..\\components\\angular-cookies\\angular-cookies.js":3,"./..\\..\\components\\angular-resource\\angular-resource.js":4,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":5,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":6,"./..\\..\\components\\angular\\angular.js":7,"./..\\..\\components\\angulartics\\src\\angulartics.js":9,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":10,"./..\\..\\components\\es5-shim\\es5-shim.js":11,"./..\\..\\components\\es6-shim\\es6-shim.js":12,"./..\\..\\components\\json3\\lib\\json3.min.js":14,"./Config":16,"./controllers/Controllers":17,"./directives/Directives":21,"./elements/Elements":22,"./filters/Filters":23,"./services/Services":24}],16:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":8,"./..\\..\\components\\angular-animate\\angular-animate.js":1,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":2,"./..\\..\\components\\angular-cookies\\angular-cookies.js":3,"./..\\..\\components\\angular-resource\\angular-resource.js":4,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":5,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":6,"./..\\..\\components\\angular\\angular.js":7,"./..\\..\\components\\angulartics\\src\\angulartics.js":9,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":10,"./..\\..\\components\\es5-shim\\es5-shim.js":11,"./..\\..\\components\\es6-shim\\es6-shim.js":12,"./..\\..\\components\\jquery\\dist\\jquery.js":13,"./..\\..\\components\\json3\\lib\\json3.min.js":14,"./Config":16,"./controllers/Controllers":17,"./directives/Directives":21,"./elements/Elements":22,"./filters/Filters":23,"./services/Services":24}],16:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -44295,8 +44295,6 @@ module.exports = angular.module('App.Controllers');
  * @param {Object} $scope
  */
 module.exports = ['$scope', function ($scope) {
-
-    $scope.navIsCollapsed = true;
 
 }];
 },{}],19:[function(require,module,exports){

@@ -16,7 +16,7 @@ require('json3');
  * http://facebook.github.io/react/ and http://stackoverflow.com/a/21244706/582917 (and using requestAnimationFrame http://stackoverflow.com/a/21395442/582917) http://www.youtube.com/watch?v=x7cQ3mrcKaY#t=749
  * React is faster!
  */
-global.jQuery = require('../../components/jquery/dist/jquery'); //see: https://github.com/jquery/jquery/pull/1521
+global.jQuery = require('jquery');
 require('bootstrap');
 require('angular');
 require('angular-cookies');
