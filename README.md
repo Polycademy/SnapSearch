@@ -78,3 +78,7 @@ On the client side, your object checking logic will check if the object exists, 
 In this case, a human client will see a 404 page easily and not be bothered by the 200 status code. However for machine clients such as search engines, this is a big problem. The solution to this, is to implement the object checking logic, OR use snapsearch's meta tag commands.
 
 Load testing: http://jmeter.apache.org/ or Apache Bench (but for only cached requests!)
+
+Based on the idea of Freemium. We should expect the 1% to pay for the 99%. We need to scale quickly, so we reduce are marginal cost as much as possible. And provide a higher usage cap!
+
+Idea: Show the number of signups. The more signups we get the lower the usage cost per use. By percentages!
