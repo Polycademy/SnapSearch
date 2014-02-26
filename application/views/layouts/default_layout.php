@@ -95,7 +95,6 @@
 
         <!-- Here we go! Weee! -->
         <script src="js/compiled/App.js"></script>
-        <script></script>
 
     </body>
 </html>
