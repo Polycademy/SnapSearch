@@ -75,13 +75,38 @@
             </div>
         </div>
     </div>
-    <div class="panel panel_white panel_transition_white_dark">
+    <div class="framework-support panel panel_white panel_transition_white_dark">
         <div class="container">
             <div class="panel-heading">
                 <h2 class="panel-title">SnapSearch works with...</h2>
             </div>
             <div class="panel-body">
-                <!-- Add in the contents -->
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4 col-md-3">
+                        <img class="framework-logo" src="assets/img/sails_logo.png" />
+                    </div>
+                    <div class="col-xs-6 col-sm-4 col-md-3">
+                        <img class="framework-logo" src="assets/img/angular_logo.png" />
+                    </div>
+                    <div class="col-xs-6 col-sm-4 col-md-3">
+                        <img class="framework-logo" src="assets/img/js_logo.png" />
+                    </div>
+                    <div class="col-xs-6 col-sm-4 col-md-3">
+                        <img class="framework-logo" src="assets/img/jquery_logo.png" />
+                    </div>
+                    <div class="col-xs-6 col-sm-4 col-md-3">
+                        <img class="framework-logo" src="assets/img/backbone_logo.png" />
+                    </div>
+                    <div class="col-xs-6 col-sm-4 col-md-3">
+                        <img class="framework-logo" src="assets/img/ember_logo.png" />
+                    </div>
+                    <div class="col-xs-6 col-sm-4 col-md-3">
+                        <img class="framework-logo" src="assets/img/knockout_logo.png" />
+                    </div>
+                    <div class="col-xs-6 col-sm-4 col-md-3">
+                        <img class="framework-logo" src="assets/img/meteor_logo.png" />
+                    </div>
+                </div>
             </div>
             <div class="panel-footer">
                 <h2 class="panel-title">We’re 100% framework agnostic!</h2>

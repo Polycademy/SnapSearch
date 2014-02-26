@@ -6443,6 +6443,10 @@ header.navbar .navbar-nav > li button {
   font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-align: center;
 }
+.panel-footer {
+  background: none;
+  border: none;
+}
 /* ==========================================================================
    Buttons Controller
    ========================================================================== */
@@ -6544,4 +6548,15 @@ header.navbar .navbar-nav > li button {
 }
 .code-group .tab-content .code-usage code {
   white-space: nowrap;
+}
+.framework-support .row > div {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.framework-support .framework-logo {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+  max-width: 100%;
 }
