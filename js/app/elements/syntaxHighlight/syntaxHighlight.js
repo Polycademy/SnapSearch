@@ -36,7 +36,7 @@ module.exports = ['$sce', function($sce){
         replace: true, 
         link: function (scope, element, attributes, controller, transclude) {
 
-            //transclude's clone is children elements of the directive element, it will wrap any unwrapped text nodes with the span tag
+            //transclude's clone is the child elements of the directive element, it will wrap any unwrapped text nodes with the span tag
             transclude(scope, function (clone) {
 
                 //get the directive element's content as text, this will be the {{code}}
