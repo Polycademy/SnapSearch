@@ -6,6 +6,8 @@
   "devDependencies": {
     "browserify": "~3.30.1",
     "debowerify": "~0.6.0",
-    "deglobalify": "~0.2.0"
+    "deglobalify": "~0.2.0",
+    "brfs": "~1.0.0",
+    "insert-css": "~0.1.1"
   }
 }

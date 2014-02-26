@@ -31,18 +31,18 @@
                             <div class="tab-content clearfix" ng-switch="activeCode">
                                 <div class="tab-panel" ng-switch-when="php">
                                     <p>Installation:</p>
-                                    <pre><code>composer require snapsearch/snapsearch-client-php:1.0.0</code></pre>
+                                    <syntax syntax-language="bash">composer require snapsearch/snapsearch-client-php:1.0.0</syntax>
                                     <p>Usage:</p>
-                                    <pre class="code-usage"><code>//add content here, it needs to be encoded</code></pre>
+                                    <syntax class="code-usage" syntax-language="php">//add content here, it needs to be encoded</syntax>
                                     <button class="btn btn-primary btn-fork pull-right">
                                         <img src="assets/img/github_mark.png" />
                                         Fork me on Github
                                     </button>                                </div>
                                 <div class="tab-panel" ng-switch-when="ruby">
                                     <p>Installation:</p>
-                                    <pre><code>gem install snapsearch-client-ruby</code></pre>
+                                    <syntax syntax-language="bash">gem install snapsearch-client-ruby</syntax>
                                     <p>Usage:</p>
-                                    <pre class="code-usage"><code>//add content here, it needs to be encoded</code></pre>
+                                    <syntax class="code-usage" syntax-language="ruby">#add content here, it needs to be encoded</syntax>
                                     <button class="btn btn-primary btn-fork pull-right">
                                         <img src="assets/img/github_mark.png" />
                                         Fork me on Github
@@ -50,9 +50,9 @@
                                 </div>
                                 <div class="tab-panel" ng-switch-when="node.js">
                                     <p>Installation:</p>
-                                    <pre><code>npm install snapsearch-client-node:1.0.0</code></pre>
+                                    <syntax syntax-language="bash">npm install snapsearch-client-node:1.0.0</syntax>
                                     <p>Usage:</p>
-                                    <pre class="code-usage"><code>//add content here, it needs to be encoded</code></pre>
+                                    <syntax class="code-usage" syntax-language="javascript">//add content here, it needs to be encoded</syntax>
                                     <button class="btn btn-primary btn-fork pull-right">
                                         <img src="assets/img/github_mark.png" />
                                         Fork me on Github
@@ -60,9 +60,9 @@
                                 </div>
                                 <div class="tab-panel" ng-switch-when="python">
                                     <p>Installation:</p>
-                                    <pre><code>pip install snapsearch-client-python</code></pre>
+                                    <syntax syntax-language="bash">pip install snapsearch-client-python</syntax>
                                     <p>Usage:</p>
-                                    <pre class="code-usage"><code>//add content here, it needs to be encoded fgd gfgh fgh fgh fh gfh fh gfs hfg h gf hsfhg gh fg hfg hsh  sgh gfs fgh</code></pre>
+                                    <syntax class="code-usage" syntax-language="python">#comment</syntax>
                                     <button class="btn btn-primary btn-fork pull-right">
                                         <img src="assets/img/github_mark.png" />
                                         Fork me on Github
