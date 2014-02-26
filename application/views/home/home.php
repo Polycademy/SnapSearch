@@ -34,39 +34,39 @@
                                     <syntax syntax-language="bash">composer require snapsearch/snapsearch-client-php:1.0.0</syntax>
                                     <p>Usage:</p>
                                     <syntax class="code-usage" syntax-language="php">//add content here, it needs to be encoded</syntax>
-                                    <button class="btn btn-primary btn-fork pull-right">
+                                    <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-PHP" target="_blank">
                                         <img src="assets/img/github_mark.png" />
                                         Fork me on Github
-                                    </button>                                </div>
+                                    </a>                                </div>
                                 <div class="tab-panel" ng-switch-when="ruby">
                                     <p>Installation:</p>
                                     <syntax syntax-language="bash">gem install snapsearch-client-ruby</syntax>
                                     <p>Usage:</p>
                                     <syntax class="code-usage" syntax-language="ruby">#add content here, it needs to be encoded</syntax>
-                                    <button class="btn btn-primary btn-fork pull-right">
+                                    <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-Ruby" target="_blank">
                                         <img src="assets/img/github_mark.png" />
                                         Fork me on Github
-                                    </button>
+                                    </a>
                                 </div>
                                 <div class="tab-panel" ng-switch-when="node.js">
                                     <p>Installation:</p>
                                     <syntax syntax-language="bash">npm install snapsearch-client-node:1.0.0</syntax>
                                     <p>Usage:</p>
                                     <syntax class="code-usage" syntax-language="javascript">//add content here, it needs to be encoded</syntax>
-                                    <button class="btn btn-primary btn-fork pull-right">
+                                    <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-Node" target="_blank">
                                         <img src="assets/img/github_mark.png" />
                                         Fork me on Github
-                                    </button>
+                                    </a>
                                 </div>
                                 <div class="tab-panel" ng-switch-when="python">
                                     <p>Installation:</p>
                                     <syntax syntax-language="bash">pip install snapsearch-client-python</syntax>
                                     <p>Usage:</p>
                                     <syntax class="code-usage" syntax-language="python">#comment</syntax>
-                                    <button class="btn btn-primary btn-fork pull-right">
+                                    <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-Python" target="_blank">
                                         <img src="assets/img/github_mark.png" />
                                         Fork me on Github
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
