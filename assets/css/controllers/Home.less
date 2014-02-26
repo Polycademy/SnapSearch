@@ -82,3 +82,50 @@
         max-width: 100%;
     }
 }
+
+.problem-solution {
+    h3 {
+        #Fonts.family("fira_sans_otlight");
+        text-align: center;
+        font-size: 28px;
+    }
+    .problem-title {
+        margin-bottom: -64px;
+        margin-top: 26px;
+        @media (max-width: @snapsearch-md-breakpoint) {
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+    }
+    .problem {
+        img {
+            #Centering.blockCenter();
+            padding: 20px;
+            @media (max-width: @snapsearch-md-breakpoint) {
+                padding: 10px;
+            }
+        }
+        .problem-explanation {
+            background: @snapsearch-dark-blue;
+            border-radius: 16px;
+            padding: 24px;
+            p {
+                font-size: 17px;
+                text-shadow: 0 0 1px rgba(255, 255, 255, 0.32);
+                margin: 0;
+            }
+            @media (min-width: @snapsearch-md-breakpoint) {
+                height: 240px;
+                width: 90%;
+                position: relative;
+                margin: 0 auto;
+                p {
+                    #Centering.transformCenter(80%);
+                }
+            }
+        }
+    }
+    .solution-title {
+        margin-top: 60px;
+    }
+}

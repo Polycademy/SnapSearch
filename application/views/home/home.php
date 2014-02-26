@@ -113,13 +113,34 @@
             </div>
         </div>
     </div>
-    <div class="panel panel_lego panel_transition_yellow_dark">
+    <div class="problem-solution panel panel_lego panel_transition_yellow_dark">
         <div class="container">
             <div class="panel-heading">
                 <h2 class="panel-title">Why use SnapSearch?</h2>
             </div>
             <div class="panel-body">
-                <!-- Add in the contents -->
+                <h3 class="problem-title">The Problem</h3>
+                <div class="problem row">
+                    <div class="col-md-6">
+                        <img src="assets/img/user_coding.png" />
+                        <div class="problem-explanation">
+                            <p>You’ve coded up a javascript enhanced or single page application using the latest HTML5 technologies. Using a modern browser, you can see all the asynchronous or animated content appear.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="assets/img/spider_reading.png" />
+                        <div class="problem-explanation">
+                            <p>Search engines however see nothing. This is because search engine robots are simple HTTP clients that cannot execute advanced javascript. They do not execute AJAX, and thus cannot load asynchronous resources, nor can they activate javascript events that make your application dynamic and user friendly.</p>
+                        </div>
+                    </div>
+                </div>
+                <h3 class="solution-title">The Solution</h3>
+                <div class="solution row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3"></div>
+                </div>
             </div>
         </div>
     </div>

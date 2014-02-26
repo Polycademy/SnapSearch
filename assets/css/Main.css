@@ -6560,3 +6560,61 @@ header.navbar .navbar-nav > li button {
   float: none;
   max-width: 100%;
 }
+.problem-solution h3 {
+  font-family: "fira_sans_otlight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+  font-size: 28px;
+}
+.problem-solution .problem-title {
+  margin-bottom: -64px;
+  margin-top: 26px;
+}
+@media (max-width: 992px) {
+  .problem-solution .problem-title {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+}
+.problem-solution .problem img {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+  padding: 20px;
+}
+@media (max-width: 992px) {
+  .problem-solution .problem img {
+    padding: 10px;
+  }
+}
+.problem-solution .problem .problem-explanation {
+  background: #32383c;
+  border-radius: 16px;
+  padding: 24px;
+}
+.problem-solution .problem .problem-explanation p {
+  font-size: 17px;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.32);
+  margin: 0;
+}
+@media (min-width: 992px) {
+  .problem-solution .problem .problem-explanation {
+    height: 240px;
+    width: 90%;
+    position: relative;
+    margin: 0 auto;
+  }
+  .problem-solution .problem .problem-explanation p {
+    width: 80%;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+}
+.problem-solution .solution-title {
+  margin-top: 60px;
+}

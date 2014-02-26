@@ -4,19 +4,29 @@
 
 #Centering {
 
-    .blockCenter(){
+    .blockCenter() {
         margin-right: auto;
         margin-left: auto;
         display: block;
         float: none;
     }
 
-    .listCenter(@child){
+    .listCenter(@child) {
         text-align: center;
         > @{child} {
             display: inline-block;
             float: none;
         }
+    }
+
+    .transformCenter(@width) {
+        width: @width;
+        margin: auto;
+        position: absolute;
+        top: 50%; left: 50%;
+        -webkit-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+        transform: translate(-50%,-50%);
     }
 
 }
