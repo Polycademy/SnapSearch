@@ -1,5 +1,7 @@
 'use strict';
 
+var imagesloaded = require('imagesloaded');
+
 /**
  * Equalise Heights given a selector
  *
@@ -24,9 +26,11 @@ module.exports = [function () {
                     })
                     .height(maxHeight); //then make them all the same maximum height!
             };
-            
-            //run it once
-            equaliseHeight();
+
+            //run it once after all images are loaded
+            imagesloaded(items, function () {
+                equaliseHeight();
+            });
             
             //on the resize event from jquery, run a function, this function is a pointer!
             angular.element(window).resize(equaliseHeight);

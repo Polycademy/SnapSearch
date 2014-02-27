@@ -37054,6 +37054,896 @@ var toObject = function (o) {
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],15:[function(require,module,exports){
 /*!
+ * EventEmitter v4.2.7 - git.io/ee
+ * Oliver Caldwell
+ * MIT license
+ * @preserve
+ */
+
+(function () {
+	'use strict';
+
+	/**
+	 * Class for managing events.
+	 * Can be extended to provide event functionality in other classes.
+	 *
+	 * @class EventEmitter Manages event registering and emitting.
+	 */
+	function EventEmitter() {}
+
+	// Shortcuts to improve speed and size
+	var proto = EventEmitter.prototype;
+	var exports = this;
+	var originalGlobalValue = exports.EventEmitter;
+
+	/**
+	 * Finds the index of the listener for the event in it's storage array.
+	 *
+	 * @param {Function[]} listeners Array of listeners to search through.
+	 * @param {Function} listener Method to look for.
+	 * @return {Number} Index of the specified listener, -1 if not found
+	 * @api private
+	 */
+	function indexOfListener(listeners, listener) {
+		var i = listeners.length;
+		while (i--) {
+			if (listeners[i].listener === listener) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Alias a method while keeping the context correct, to allow for overwriting of target method.
+	 *
+	 * @param {String} name The name of the target method.
+	 * @return {Function} The aliased method
+	 * @api private
+	 */
+	function alias(name) {
+		return function aliasClosure() {
+			return this[name].apply(this, arguments);
+		};
+	}
+
+	/**
+	 * Returns the listener array for the specified event.
+	 * Will initialise the event object and listener arrays if required.
+	 * Will return an object if you use a regex search. The object contains keys for each matched event. So /ba[rz]/ might return an object containing bar and baz. But only if you have either defined them with defineEvent or added some listeners to them.
+	 * Each property in the object response is an array of listener functions.
+	 *
+	 * @param {String|RegExp} evt Name of the event to return the listeners from.
+	 * @return {Function[]|Object} All listener functions for the event.
+	 */
+	proto.getListeners = function getListeners(evt) {
+		var events = this._getEvents();
+		var response;
+		var key;
+
+		// Return a concatenated array of all matching events if
+		// the selector is a regular expression.
+		if (evt instanceof RegExp) {
+			response = {};
+			for (key in events) {
+				if (events.hasOwnProperty(key) && evt.test(key)) {
+					response[key] = events[key];
+				}
+			}
+		}
+		else {
+			response = events[evt] || (events[evt] = []);
+		}
+
+		return response;
+	};
+
+	/**
+	 * Takes a list of listener objects and flattens it into a list of listener functions.
+	 *
+	 * @param {Object[]} listeners Raw listener objects.
+	 * @return {Function[]} Just the listener functions.
+	 */
+	proto.flattenListeners = function flattenListeners(listeners) {
+		var flatListeners = [];
+		var i;
+
+		for (i = 0; i < listeners.length; i += 1) {
+			flatListeners.push(listeners[i].listener);
+		}
+
+		return flatListeners;
+	};
+
+	/**
+	 * Fetches the requested listeners via getListeners but will always return the results inside an object. This is mainly for internal use but others may find it useful.
+	 *
+	 * @param {String|RegExp} evt Name of the event to return the listeners from.
+	 * @return {Object} All listener functions for an event in an object.
+	 */
+	proto.getListenersAsObject = function getListenersAsObject(evt) {
+		var listeners = this.getListeners(evt);
+		var response;
+
+		if (listeners instanceof Array) {
+			response = {};
+			response[evt] = listeners;
+		}
+
+		return response || listeners;
+	};
+
+	/**
+	 * Adds a listener function to the specified event.
+	 * The listener will not be added if it is a duplicate.
+	 * If the listener returns true then it will be removed after it is called.
+	 * If you pass a regular expression as the event name then the listener will be added to all events that match it.
+	 *
+	 * @param {String|RegExp} evt Name of the event to attach the listener to.
+	 * @param {Function} listener Method to be called when the event is emitted. If the function returns true then it will be removed after calling.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.addListener = function addListener(evt, listener) {
+		var listeners = this.getListenersAsObject(evt);
+		var listenerIsWrapped = typeof listener === 'object';
+		var key;
+
+		for (key in listeners) {
+			if (listeners.hasOwnProperty(key) && indexOfListener(listeners[key], listener) === -1) {
+				listeners[key].push(listenerIsWrapped ? listener : {
+					listener: listener,
+					once: false
+				});
+			}
+		}
+
+		return this;
+	};
+
+	/**
+	 * Alias of addListener
+	 */
+	proto.on = alias('addListener');
+
+	/**
+	 * Semi-alias of addListener. It will add a listener that will be
+	 * automatically removed after it's first execution.
+	 *
+	 * @param {String|RegExp} evt Name of the event to attach the listener to.
+	 * @param {Function} listener Method to be called when the event is emitted. If the function returns true then it will be removed after calling.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.addOnceListener = function addOnceListener(evt, listener) {
+		return this.addListener(evt, {
+			listener: listener,
+			once: true
+		});
+	};
+
+	/**
+	 * Alias of addOnceListener.
+	 */
+	proto.once = alias('addOnceListener');
+
+	/**
+	 * Defines an event name. This is required if you want to use a regex to add a listener to multiple events at once. If you don't do this then how do you expect it to know what event to add to? Should it just add to every possible match for a regex? No. That is scary and bad.
+	 * You need to tell it what event names should be matched by a regex.
+	 *
+	 * @param {String} evt Name of the event to create.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.defineEvent = function defineEvent(evt) {
+		this.getListeners(evt);
+		return this;
+	};
+
+	/**
+	 * Uses defineEvent to define multiple events.
+	 *
+	 * @param {String[]} evts An array of event names to define.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.defineEvents = function defineEvents(evts) {
+		for (var i = 0; i < evts.length; i += 1) {
+			this.defineEvent(evts[i]);
+		}
+		return this;
+	};
+
+	/**
+	 * Removes a listener function from the specified event.
+	 * When passed a regular expression as the event name, it will remove the listener from all events that match it.
+	 *
+	 * @param {String|RegExp} evt Name of the event to remove the listener from.
+	 * @param {Function} listener Method to remove from the event.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.removeListener = function removeListener(evt, listener) {
+		var listeners = this.getListenersAsObject(evt);
+		var index;
+		var key;
+
+		for (key in listeners) {
+			if (listeners.hasOwnProperty(key)) {
+				index = indexOfListener(listeners[key], listener);
+
+				if (index !== -1) {
+					listeners[key].splice(index, 1);
+				}
+			}
+		}
+
+		return this;
+	};
+
+	/**
+	 * Alias of removeListener
+	 */
+	proto.off = alias('removeListener');
+
+	/**
+	 * Adds listeners in bulk using the manipulateListeners method.
+	 * If you pass an object as the second argument you can add to multiple events at once. The object should contain key value pairs of events and listeners or listener arrays. You can also pass it an event name and an array of listeners to be added.
+	 * You can also pass it a regular expression to add the array of listeners to all events that match it.
+	 * Yeah, this function does quite a bit. That's probably a bad thing.
+	 *
+	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to add to multiple events at once.
+	 * @param {Function[]} [listeners] An optional array of listener functions to add.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.addListeners = function addListeners(evt, listeners) {
+		// Pass through to manipulateListeners
+		return this.manipulateListeners(false, evt, listeners);
+	};
+
+	/**
+	 * Removes listeners in bulk using the manipulateListeners method.
+	 * If you pass an object as the second argument you can remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+	 * You can also pass it an event name and an array of listeners to be removed.
+	 * You can also pass it a regular expression to remove the listeners from all events that match it.
+	 *
+	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to remove from multiple events at once.
+	 * @param {Function[]} [listeners] An optional array of listener functions to remove.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.removeListeners = function removeListeners(evt, listeners) {
+		// Pass through to manipulateListeners
+		return this.manipulateListeners(true, evt, listeners);
+	};
+
+	/**
+	 * Edits listeners in bulk. The addListeners and removeListeners methods both use this to do their job. You should really use those instead, this is a little lower level.
+	 * The first argument will determine if the listeners are removed (true) or added (false).
+	 * If you pass an object as the second argument you can add/remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+	 * You can also pass it an event name and an array of listeners to be added/removed.
+	 * You can also pass it a regular expression to manipulate the listeners of all events that match it.
+	 *
+	 * @param {Boolean} remove True if you want to remove listeners, false if you want to add.
+	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to add/remove from multiple events at once.
+	 * @param {Function[]} [listeners] An optional array of listener functions to add/remove.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.manipulateListeners = function manipulateListeners(remove, evt, listeners) {
+		var i;
+		var value;
+		var single = remove ? this.removeListener : this.addListener;
+		var multiple = remove ? this.removeListeners : this.addListeners;
+
+		// If evt is an object then pass each of it's properties to this method
+		if (typeof evt === 'object' && !(evt instanceof RegExp)) {
+			for (i in evt) {
+				if (evt.hasOwnProperty(i) && (value = evt[i])) {
+					// Pass the single listener straight through to the singular method
+					if (typeof value === 'function') {
+						single.call(this, i, value);
+					}
+					else {
+						// Otherwise pass back to the multiple function
+						multiple.call(this, i, value);
+					}
+				}
+			}
+		}
+		else {
+			// So evt must be a string
+			// And listeners must be an array of listeners
+			// Loop over it and pass each one to the multiple method
+			i = listeners.length;
+			while (i--) {
+				single.call(this, evt, listeners[i]);
+			}
+		}
+
+		return this;
+	};
+
+	/**
+	 * Removes all listeners from a specified event.
+	 * If you do not specify an event then all listeners will be removed.
+	 * That means every event will be emptied.
+	 * You can also pass a regex to remove all events that match it.
+	 *
+	 * @param {String|RegExp} [evt] Optional name of the event to remove all listeners for. Will remove from every event if not passed.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.removeEvent = function removeEvent(evt) {
+		var type = typeof evt;
+		var events = this._getEvents();
+		var key;
+
+		// Remove different things depending on the state of evt
+		if (type === 'string') {
+			// Remove all listeners for the specified event
+			delete events[evt];
+		}
+		else if (evt instanceof RegExp) {
+			// Remove all events matching the regex.
+			for (key in events) {
+				if (events.hasOwnProperty(key) && evt.test(key)) {
+					delete events[key];
+				}
+			}
+		}
+		else {
+			// Remove all listeners in all events
+			delete this._events;
+		}
+
+		return this;
+	};
+
+	/**
+	 * Alias of removeEvent.
+	 *
+	 * Added to mirror the node API.
+	 */
+	proto.removeAllListeners = alias('removeEvent');
+
+	/**
+	 * Emits an event of your choice.
+	 * When emitted, every listener attached to that event will be executed.
+	 * If you pass the optional argument array then those arguments will be passed to every listener upon execution.
+	 * Because it uses `apply`, your array of arguments will be passed as if you wrote them out separately.
+	 * So they will not arrive within the array on the other side, they will be separate.
+	 * You can also pass a regular expression to emit to all events that match it.
+	 *
+	 * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
+	 * @param {Array} [args] Optional array of arguments to be passed to each listener.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.emitEvent = function emitEvent(evt, args) {
+		var listeners = this.getListenersAsObject(evt);
+		var listener;
+		var i;
+		var key;
+		var response;
+
+		for (key in listeners) {
+			if (listeners.hasOwnProperty(key)) {
+				i = listeners[key].length;
+
+				while (i--) {
+					// If the listener returns true then it shall be removed from the event
+					// The function is executed either with a basic call or an apply if there is an args array
+					listener = listeners[key][i];
+
+					if (listener.once === true) {
+						this.removeListener(evt, listener.listener);
+					}
+
+					response = listener.listener.apply(this, args || []);
+
+					if (response === this._getOnceReturnValue()) {
+						this.removeListener(evt, listener.listener);
+					}
+				}
+			}
+		}
+
+		return this;
+	};
+
+	/**
+	 * Alias of emitEvent
+	 */
+	proto.trigger = alias('emitEvent');
+
+	/**
+	 * Subtly different from emitEvent in that it will pass its arguments on to the listeners, as opposed to taking a single array of arguments to pass on.
+	 * As with emitEvent, you can pass a regex in place of the event name to emit to all events that match it.
+	 *
+	 * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
+	 * @param {...*} Optional additional arguments to be passed to each listener.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.emit = function emit(evt) {
+		var args = Array.prototype.slice.call(arguments, 1);
+		return this.emitEvent(evt, args);
+	};
+
+	/**
+	 * Sets the current value to check against when executing listeners. If a
+	 * listeners return value matches the one set here then it will be removed
+	 * after execution. This value defaults to true.
+	 *
+	 * @param {*} value The new value to check for when executing listeners.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.setOnceReturnValue = function setOnceReturnValue(value) {
+		this._onceReturnValue = value;
+		return this;
+	};
+
+	/**
+	 * Fetches the current value to check against when executing listeners. If
+	 * the listeners return value matches this one then it should be removed
+	 * automatically. It will return true by default.
+	 *
+	 * @return {*|Boolean} The current value to check for or the default, true.
+	 * @api private
+	 */
+	proto._getOnceReturnValue = function _getOnceReturnValue() {
+		if (this.hasOwnProperty('_onceReturnValue')) {
+			return this._onceReturnValue;
+		}
+		else {
+			return true;
+		}
+	};
+
+	/**
+	 * Fetches the events object and creates one if required.
+	 *
+	 * @return {Object} The events storage object.
+	 * @api private
+	 */
+	proto._getEvents = function _getEvents() {
+		return this._events || (this._events = {});
+	};
+
+	/**
+	 * Reverts the global {@link EventEmitter} to its previous value and returns a reference to this version.
+	 *
+	 * @return {Function} Non conflicting EventEmitter class.
+	 */
+	EventEmitter.noConflict = function noConflict() {
+		exports.EventEmitter = originalGlobalValue;
+		return EventEmitter;
+	};
+
+	// Expose the class either via AMD, CommonJS or the global object
+	if (typeof define === 'function' && define.amd) {
+		define(function () {
+			return EventEmitter;
+		});
+	}
+	else if (typeof module === 'object' && module.exports){
+		module.exports = EventEmitter;
+	}
+	else {
+		this.EventEmitter = EventEmitter;
+	}
+}.call(this));
+
+},{}],16:[function(require,module,exports){
+/*!
+ * eventie v1.0.5
+ * event binding helper
+ *   eventie.bind( elem, 'click', myFn )
+ *   eventie.unbind( elem, 'click', myFn )
+ * MIT license
+ */
+
+/*jshint browser: true, undef: true, unused: true */
+/*global define: false, module: false */
+
+( function( window ) {
+
+'use strict';
+
+var docElem = document.documentElement;
+
+var bind = function() {};
+
+function getIEEvent( obj ) {
+  var event = window.event;
+  // add event.target
+  event.target = event.target || event.srcElement || obj;
+  return event;
+}
+
+if ( docElem.addEventListener ) {
+  bind = function( obj, type, fn ) {
+    obj.addEventListener( type, fn, false );
+  };
+} else if ( docElem.attachEvent ) {
+  bind = function( obj, type, fn ) {
+    obj[ type + fn ] = fn.handleEvent ?
+      function() {
+        var event = getIEEvent( obj );
+        fn.handleEvent.call( fn, event );
+      } :
+      function() {
+        var event = getIEEvent( obj );
+        fn.call( obj, event );
+      };
+    obj.attachEvent( "on" + type, obj[ type + fn ] );
+  };
+}
+
+var unbind = function() {};
+
+if ( docElem.removeEventListener ) {
+  unbind = function( obj, type, fn ) {
+    obj.removeEventListener( type, fn, false );
+  };
+} else if ( docElem.detachEvent ) {
+  unbind = function( obj, type, fn ) {
+    obj.detachEvent( "on" + type, obj[ type + fn ] );
+    try {
+      delete obj[ type + fn ];
+    } catch ( err ) {
+      // can't delete window object properties
+      obj[ type + fn ] = undefined;
+    }
+  };
+}
+
+var eventie = {
+  bind: bind,
+  unbind: unbind
+};
+
+// ----- module definition ----- //
+
+if ( typeof define === 'function' && define.amd ) {
+  // AMD
+  define( eventie );
+} else if ( typeof exports === 'object' ) {
+  // CommonJS
+  module.exports = eventie;
+} else {
+  // browser global
+  window.eventie = eventie;
+}
+
+})( this );
+
+},{}],17:[function(require,module,exports){
+/*!
+ * imagesLoaded v3.1.4
+ * JavaScript is all like "You images are done yet or what?"
+ * MIT License
+ */
+
+( function( window, factory ) { 'use strict';
+  // universal module definition
+
+  /*global define: false, module: false, require: false */
+
+  if ( typeof define === 'function' && define.amd ) {
+    // AMD
+    define( [
+      'eventEmitter/EventEmitter',
+      'eventie/eventie'
+    ], function( EventEmitter, eventie ) {
+      return factory( window, EventEmitter, eventie );
+    });
+  } else if ( typeof exports === 'object' ) {
+    // CommonJS
+    module.exports = factory(
+      window,
+      require("./..\\eventEmitter\\EventEmitter.js"),
+      require("./..\\eventie\\eventie.js")
+    );
+  } else {
+    // browser global
+    window.imagesLoaded = factory(
+      window,
+      window.EventEmitter,
+      window.eventie
+    );
+  }
+
+})( this,
+
+// --------------------------  factory -------------------------- //
+
+function factory( window, EventEmitter, eventie ) {
+
+'use strict';
+
+var $ = window.jQuery;
+var console = window.console;
+var hasConsole = typeof console !== 'undefined';
+
+// -------------------------- helpers -------------------------- //
+
+// extend objects
+function extend( a, b ) {
+  for ( var prop in b ) {
+    a[ prop ] = b[ prop ];
+  }
+  return a;
+}
+
+var objToString = Object.prototype.toString;
+function isArray( obj ) {
+  return objToString.call( obj ) === '[object Array]';
+}
+
+// turn element or nodeList into an array
+function makeArray( obj ) {
+  var ary = [];
+  if ( isArray( obj ) ) {
+    // use object if already an array
+    ary = obj;
+  } else if ( typeof obj.length === 'number' ) {
+    // convert nodeList to array
+    for ( var i=0, len = obj.length; i < len; i++ ) {
+      ary.push( obj[i] );
+    }
+  } else {
+    // array of single index
+    ary.push( obj );
+  }
+  return ary;
+}
+
+  // -------------------------- imagesLoaded -------------------------- //
+
+  /**
+   * @param {Array, Element, NodeList, String} elem
+   * @param {Object or Function} options - if function, use as callback
+   * @param {Function} onAlways - callback function
+   */
+  function ImagesLoaded( elem, options, onAlways ) {
+    // coerce ImagesLoaded() without new, to be new ImagesLoaded()
+    if ( !( this instanceof ImagesLoaded ) ) {
+      return new ImagesLoaded( elem, options );
+    }
+    // use elem as selector string
+    if ( typeof elem === 'string' ) {
+      elem = document.querySelectorAll( elem );
+    }
+
+    this.elements = makeArray( elem );
+    this.options = extend( {}, this.options );
+
+    if ( typeof options === 'function' ) {
+      onAlways = options;
+    } else {
+      extend( this.options, options );
+    }
+
+    if ( onAlways ) {
+      this.on( 'always', onAlways );
+    }
+
+    this.getImages();
+
+    if ( $ ) {
+      // add jQuery Deferred object
+      this.jqDeferred = new $.Deferred();
+    }
+
+    // HACK check async to allow time to bind listeners
+    var _this = this;
+    setTimeout( function() {
+      _this.check();
+    });
+  }
+
+  ImagesLoaded.prototype = new EventEmitter();
+
+  ImagesLoaded.prototype.options = {};
+
+  ImagesLoaded.prototype.getImages = function() {
+    this.images = [];
+
+    // filter & find items if we have an item selector
+    for ( var i=0, len = this.elements.length; i < len; i++ ) {
+      var elem = this.elements[i];
+      // filter siblings
+      if ( elem.nodeName === 'IMG' ) {
+        this.addImage( elem );
+      }
+      // find children
+      var childElems = elem.querySelectorAll('img');
+      // concat childElems to filterFound array
+      for ( var j=0, jLen = childElems.length; j < jLen; j++ ) {
+        var img = childElems[j];
+        this.addImage( img );
+      }
+    }
+  };
+
+  /**
+   * @param {Image} img
+   */
+  ImagesLoaded.prototype.addImage = function( img ) {
+    var loadingImage = new LoadingImage( img );
+    this.images.push( loadingImage );
+  };
+
+  ImagesLoaded.prototype.check = function() {
+    var _this = this;
+    var checkedCount = 0;
+    var length = this.images.length;
+    this.hasAnyBroken = false;
+    // complete if no images
+    if ( !length ) {
+      this.complete();
+      return;
+    }
+
+    function onConfirm( image, message ) {
+      if ( _this.options.debug && hasConsole ) {
+        console.log( 'confirm', image, message );
+      }
+
+      _this.progress( image );
+      checkedCount++;
+      if ( checkedCount === length ) {
+        _this.complete();
+      }
+      return true; // bind once
+    }
+
+    for ( var i=0; i < length; i++ ) {
+      var loadingImage = this.images[i];
+      loadingImage.on( 'confirm', onConfirm );
+      loadingImage.check();
+    }
+  };
+
+  ImagesLoaded.prototype.progress = function( image ) {
+    this.hasAnyBroken = this.hasAnyBroken || !image.isLoaded;
+    // HACK - Chrome triggers event before object properties have changed. #83
+    var _this = this;
+    setTimeout( function() {
+      _this.emit( 'progress', _this, image );
+      if ( _this.jqDeferred && _this.jqDeferred.notify ) {
+        _this.jqDeferred.notify( _this, image );
+      }
+    });
+  };
+
+  ImagesLoaded.prototype.complete = function() {
+    var eventName = this.hasAnyBroken ? 'fail' : 'done';
+    this.isComplete = true;
+    var _this = this;
+    // HACK - another setTimeout so that confirm happens after progress
+    setTimeout( function() {
+      _this.emit( eventName, _this );
+      _this.emit( 'always', _this );
+      if ( _this.jqDeferred ) {
+        var jqMethod = _this.hasAnyBroken ? 'reject' : 'resolve';
+        _this.jqDeferred[ jqMethod ]( _this );
+      }
+    });
+  };
+
+  // -------------------------- jquery -------------------------- //
+
+  if ( $ ) {
+    $.fn.imagesLoaded = function( options, callback ) {
+      var instance = new ImagesLoaded( this, options, callback );
+      return instance.jqDeferred.promise( $(this) );
+    };
+  }
+
+
+  // --------------------------  -------------------------- //
+
+  function LoadingImage( img ) {
+    this.img = img;
+  }
+
+  LoadingImage.prototype = new EventEmitter();
+
+  LoadingImage.prototype.check = function() {
+    // first check cached any previous images that have same src
+    var resource = cache[ this.img.src ] || new Resource( this.img.src );
+    if ( resource.isConfirmed ) {
+      this.confirm( resource.isLoaded, 'cached was confirmed' );
+      return;
+    }
+
+    // If complete is true and browser supports natural sizes,
+    // try to check for image status manually.
+    if ( this.img.complete && this.img.naturalWidth !== undefined ) {
+      // report based on naturalWidth
+      this.confirm( this.img.naturalWidth !== 0, 'naturalWidth' );
+      return;
+    }
+
+    // If none of the checks above matched, simulate loading on detached element.
+    var _this = this;
+    resource.on( 'confirm', function( resrc, message ) {
+      _this.confirm( resrc.isLoaded, message );
+      return true;
+    });
+
+    resource.check();
+  };
+
+  LoadingImage.prototype.confirm = function( isLoaded, message ) {
+    this.isLoaded = isLoaded;
+    this.emit( 'confirm', this, message );
+  };
+
+  // -------------------------- Resource -------------------------- //
+
+  // Resource checks each src, only once
+  // separate class from LoadingImage to prevent memory leaks. See #115
+
+  var cache = {};
+
+  function Resource( src ) {
+    this.src = src;
+    // add to cache
+    cache[ src ] = this;
+  }
+
+  Resource.prototype = new EventEmitter();
+
+  Resource.prototype.check = function() {
+    // only trigger checking once
+    if ( this.isChecked ) {
+      return;
+    }
+    // simulate loading on detached element
+    var proxyImage = new Image();
+    eventie.bind( proxyImage, 'load', this );
+    eventie.bind( proxyImage, 'error', this );
+    proxyImage.src = this.src;
+    // set flag
+    this.isChecked = true;
+  };
+
+  // ----- events ----- //
+
+  // trigger specified handler for event type
+  Resource.prototype.handleEvent = function( event ) {
+    var method = 'on' + event.type;
+    if ( this[ method ] ) {
+      this[ method ]( event );
+    }
+  };
+
+  Resource.prototype.onload = function( event ) {
+    this.confirm( true, 'onload' );
+    this.unbindProxyEvents( event );
+  };
+
+  Resource.prototype.onerror = function( event ) {
+    this.confirm( false, 'onerror' );
+    this.unbindProxyEvents( event );
+  };
+
+  // ----- confirm ----- //
+
+  Resource.prototype.confirm = function( isLoaded, message ) {
+    this.isConfirmed = true;
+    this.isLoaded = isLoaded;
+    this.emit( 'confirm', this, message );
+  };
+
+  Resource.prototype.unbindProxyEvents = function( event ) {
+    eventie.unbind( event.target, 'load', this );
+    eventie.unbind( event.target, 'error', this );
+  };
+
+  // -----  ----- //
+
+  return ImagesLoaded;
+
+});
+
+},{"./..\\eventEmitter\\EventEmitter.js":15,"./..\\eventie\\eventie.js":16}],18:[function(require,module,exports){
+/*!
  * jQuery JavaScript Library v2.1.0
  * http://jquery.com/
  *
@@ -46165,7 +47055,7 @@ return jQuery;
 
 }));
 
-},{}],16:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 (function (global){
 /*! JSON v3.3.0 | http://bestiejs.github.io/json3 | Copyright 2012-2014, Kit Cambridge | http://kit.mit-license.org */
 (function(n){function K(p,q){function s(a){if(s[a]!==v)return s[a];var c;if("bug-string-char-index"==a)c="a"!="a"[0];else if("json"==a)c=s("json-stringify")&&s("json-parse");else{var e;if("json-stringify"==a){c=q.stringify;var b="function"==typeof c&&r;if(b){(e=function(){return 1}).toJSON=e;try{b="0"===c(0)&&"0"===c(new A)&&'""'==c(new B)&&c(t)===v&&c(v)===v&&c()===v&&"1"===c(e)&&"[1]"==c([e])&&"[null]"==c([v])&&"null"==c(null)&&"[null,null,null]"==c([v,t,null])&&'{"a":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}'==
@@ -46186,7 +47076,7 @@ a[0])&&":"==z()||k();c[a.slice(1)]=M(z())}return c}k()}return a},Q=function(a,b,
 A="object"==typeof global&&global;!A||A.global!==A&&A.window!==A||(n=A);if("object"!=typeof exports||!exports||exports.nodeType||J){var N=n.JSON,B=K(n,n.JSON3={noConflict:function(){n.JSON=N;return B}});n.JSON={parse:B.parse,stringify:B.stringify}}else K(n,exports);J&&define(function(){return B})})(this);
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],17:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -46317,7 +47207,7 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":15,"./..\\..\\components\\json3\\lib\\json3.min.js":16,"./Config":18,"./controllers/Controllers":19,"./directives/Directives":24,"./elements/Elements":26,"./filters/Filters":63,"./services/Services":64}],18:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./controllers/Controllers":22,"./directives/Directives":27,"./elements/Elements":29,"./filters/Filters":66,"./services/Services":67}],21:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -46331,7 +47221,7 @@ module.exports = {
         }
     }
 };
-},{}],19:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -46348,7 +47238,7 @@ angular.module('App.Controllers', [])
     .controller('DemoCtrl', require('./home/DemoCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":20,"./home/CodeGroupCtrl":21,"./home/DemoCtrl":22,"./home/HomeCtrl":23}],20:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":23,"./home/CodeGroupCtrl":24,"./home/DemoCtrl":25,"./home/HomeCtrl":26}],23:[function(require,module,exports){
 'use strict';
 
 /**
@@ -46359,7 +47249,7 @@ module.exports = angular.module('App.Controllers');
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],21:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 /**
@@ -46377,7 +47267,7 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],22:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /**
@@ -46411,12 +47301,13 @@ module.exports = ['$scope', function ($scope) {
         $scope.requestingDemoService = 'started';
 
         //send request to the back end service
-        //when the response comes back set requestingDemoService to 2
+        //when the response comes back set $scope.requestingDemoService = 'finished';
+        //set the content to $scope.demoServiceResponse = response.content;
 
     };
 
 }];
-},{}],23:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -46427,7 +47318,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],24:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -46439,8 +47330,10 @@ angular.module('App.Directives', []);
 
 module.exports = angular.module('App.Directives')
     .directive('equaliseHeights', require('./equaliseHeights'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./equaliseHeights":25}],25:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./equaliseHeights":28}],28:[function(require,module,exports){
 'use strict';
+
+var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
 
 /**
  * Equalise Heights given a selector
@@ -46466,9 +47359,11 @@ module.exports = [function () {
                     })
                     .height(maxHeight); //then make them all the same maximum height!
             };
-            
-            //run it once
-            equaliseHeight();
+
+            //run it once after all images are loaded
+            imagesloaded(items, function () {
+                equaliseHeight();
+            });
             
             //on the resize event from jquery, run a function, this function is a pointer!
             angular.element(window).resize(equaliseHeight);
@@ -46477,7 +47372,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],26:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],29:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -46491,7 +47386,7 @@ angular.module('App.Elements', []);
 
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./syntaxHighlight":62}],27:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./syntaxHighlight":65}],30:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -47182,7 +48077,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],28:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -47219,7 +48114,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":27,"./languages/apache.js":29,"./languages/bash.js":30,"./languages/clojure.js":31,"./languages/coffeescript.js":32,"./languages/cpp.js":33,"./languages/cs.js":34,"./languages/css.js":35,"./languages/diff.js":36,"./languages/erlang.js":37,"./languages/go.js":38,"./languages/haml.js":39,"./languages/haskell.js":40,"./languages/http.js":41,"./languages/ini.js":42,"./languages/java.js":43,"./languages/javascript.js":44,"./languages/json.js":45,"./languages/lisp.js":46,"./languages/lua.js":47,"./languages/makefile.js":48,"./languages/markdown.js":49,"./languages/nginx.js":50,"./languages/objectivec.js":51,"./languages/perl.js":52,"./languages/php.js":53,"./languages/python.js":54,"./languages/r.js":55,"./languages/ruby.js":56,"./languages/rust.js":57,"./languages/scala.js":58,"./languages/scss.js":59,"./languages/sql.js":60,"./languages/xml.js":61}],29:[function(require,module,exports){
+},{"./highlight":30,"./languages/apache.js":32,"./languages/bash.js":33,"./languages/clojure.js":34,"./languages/coffeescript.js":35,"./languages/cpp.js":36,"./languages/cs.js":37,"./languages/css.js":38,"./languages/diff.js":39,"./languages/erlang.js":40,"./languages/go.js":41,"./languages/haml.js":42,"./languages/haskell.js":43,"./languages/http.js":44,"./languages/ini.js":45,"./languages/java.js":46,"./languages/javascript.js":47,"./languages/json.js":48,"./languages/lisp.js":49,"./languages/lua.js":50,"./languages/makefile.js":51,"./languages/markdown.js":52,"./languages/nginx.js":53,"./languages/objectivec.js":54,"./languages/perl.js":55,"./languages/php.js":56,"./languages/python.js":57,"./languages/r.js":58,"./languages/ruby.js":59,"./languages/rust.js":60,"./languages/scala.js":61,"./languages/scss.js":62,"./languages/sql.js":63,"./languages/xml.js":64}],32:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -47265,7 +48160,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],30:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -47328,7 +48223,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],31:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -47426,7 +48321,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],32:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -47557,7 +48452,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],33:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -47621,7 +48516,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],34:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -47694,7 +48589,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],35:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -47798,7 +48693,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],36:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -47838,7 +48733,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],37:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -47993,7 +48888,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -48032,7 +48927,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],39:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -48154,7 +49049,7 @@ function(hljs) {
     ]
   };
 };
-},{}],40:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -48280,7 +49175,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],41:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -48314,7 +49209,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],42:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -48344,7 +49239,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],43:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -48399,7 +49294,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],44:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -48471,7 +49366,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -48509,7 +49404,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -48585,7 +49480,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -48642,7 +49537,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -48687,7 +49582,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -48789,7 +49684,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -48870,7 +49765,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -48955,7 +49850,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -49104,7 +49999,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -49213,7 +50108,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -49297,7 +50192,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -49367,7 +50262,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -49526,7 +50421,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -49575,7 +50470,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -49634,7 +50529,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -49751,7 +50646,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -49854,7 +50749,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -49958,7 +50853,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -50015,7 +50910,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":28,"fs":1,"insert-css":65}],63:[function(require,module,exports){
+},{"./lib/hljs/index":31,"fs":1,"insert-css":68}],66:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -50026,7 +50921,7 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{"./..\\..\\..\\components\\angular\\angular.js":9}],64:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9}],67:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -50037,7 +50932,7 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Services', []);
 
 module.exports = angular.module('App.Services');
-},{"./..\\..\\..\\components\\angular\\angular.js":9}],65:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9}],68:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {
@@ -50057,4 +50952,4 @@ module.exports = function (css) {
     head.appendChild(elem);
 };
 
-},{}]},{},[17])
+},{}]},{},[20])
