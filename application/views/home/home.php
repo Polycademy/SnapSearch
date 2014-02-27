@@ -136,10 +136,34 @@
                 </div>
                 <h3 class="solution-title">The Solution</h3>
                 <div class="solution row">
-                    <div class="col-md-3"></div>
-                    <div class="col-md-3"></div>
-                    <div class="col-md-3"></div>
-                    <div class="col-md-3"></div>
+                    <div class="col-md-3">
+                        <img src="assets/img/globe.png" />
+                        <div class="solution-explanation">
+                            <p class="request-pipe">Client initiates an HTTP Request. This client can be search engine robot or a social network crawler such as Facebook or Twitter.</p>
+                            <p class="response-pipe">The client will now receive the true full representation of your site’s content even though it cannot execute javascript.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="assets/img/application.png" />
+                        <div class="solution-explanation">
+                            <p class="request-pipe">Your application using our supplied middleware detects whether the client cannot execute javascript. The middleware then initiates a snapshot request to SnapSearch. The request contains the client request URL, authentication credentials and custom API parameters.</p>
+                            <p class="response-pipe">Once the response is received, it outputs your page’s status code, HTML content and any HTTP response headers.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="assets/img/cloud_service.png" />
+                        <div class="solution-explanation">
+                            <p class="request-pipe">SnapSearch receives the request and commands our load balanced browser workers to scrape your site based on the client request URL while executing your javascript. Your content will be cached for future requests.</p>
+                            <p class="response-pipe">A response is constructed containing the resulting status code, HTML content, headers and optionally a screenshot of your resource. This is returned to your application’s middleware.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="assets/img/cache.png" />
+                        <div class="solution-explanation">
+                            <p class="request-pipe">A cache of the content is securely and safely stored on Amazon S3. All cached content are distinguished by a parameter checksum, so the same URL with different API parameters will be stored independently.</p>
+                            <p class="response-pipe">If a resource has been cached before, SnapSearch will return the cached content. All cached content have adjustable cache lifetime.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

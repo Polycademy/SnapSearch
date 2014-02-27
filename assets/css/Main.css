@@ -6422,7 +6422,7 @@ header.navbar .navbar-nav > li button {
 }
 .panel_lego {
   background-color: #32373a;
-  background-image: url('../img/lego_bg.png');
+  background-image: url("../img/lego_bg.png");
   background-repeat: repeat;
 }
 .panel_lego .panel-heading,
@@ -6616,5 +6616,49 @@ header.navbar .navbar-nav > li button {
   }
 }
 .problem-solution .solution-title {
-  margin-top: 60px;
+  margin-top: 64px;
+  margin-bottom: 16px;
+}
+.problem-solution .solution img {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+}
+.problem-solution .solution .solution-explanation {
+  background: #32383c;
+  border-radius: 10px;
+  padding: 0;
+}
+.problem-solution .solution .solution-explanation p {
+  font-size: 17px;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.32);
+  margin: 0;
+}
+@media (min-width: 992px) {
+  .problem-solution .solution .solution-explanation p {
+    font-size: 15px;
+  }
+}
+.problem-solution .solution.row > div {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.request-pipe {
+  background: url("../img/request_arrow.png") no-repeat left top;
+  padding: 50px 50px 30px 50px;
+}
+@media (min-width: 992px) {
+  .request-pipe {
+    padding: 26px 26px 13px 26px;
+  }
+}
+.response-pipe {
+  background: url("../img/response_arrow.png") no-repeat right bottom;
+  padding: 30px 50px 50px 50px;
+}
+@media (min-width: 992px) {
+  .response-pipe {
+    padding: 13px 26px 26px 26px;
+  }
 }
