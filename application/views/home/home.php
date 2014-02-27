@@ -134,7 +134,7 @@
                         </div>
                     </div>
                 </div>
-                <h3 class="solution-title">The Solution</h3>
+                <h3 class="solution-title">Our Solution</h3>
                 <div class="solution row">
                     <div class="col-md-3">
                         <img src="assets/img/globe.png" />
@@ -168,13 +168,54 @@
             </div>
         </div>
     </div>
-    <div class="panel panel_yellow panel_transition_white_yellow">
+    <div class="features panel panel_yellow panel_transition_white_yellow">
         <div class="container">
             <div class="panel-heading">
                 <h2 class="panel-title">Features</h2>
             </div>
             <div class="panel-body">
-                <!-- Add in the contents -->
+                <div class="row" equalise-heights=".features .feature-object">
+                    <div class="feature-object col-sm-6 col-md-4 col-lg-3">
+                        <h3 class="feature-title">On Demand</h3>
+                        <img class="feature-image" src="assets/img/snapsearch_bolt.png" />
+                        <p class="feature-explanation">Snapshots are created on the fly as you request it from the API. Resources are cached for a default time of 24 hrs.</p>
+                    </div>
+                    <div class="feature-object col-sm-6 col-md-4 col-lg-3">
+                        <h3 class="feature-title">Real Browser Workers</h3>
+                        <img class="feature-image" src="assets/img/firefox.png" />
+                        <p class="feature-explanation">Our scrapers are powered by nightly versions of Mozilla Firefox. We’re able to run cutting edge HTML5 techniques. Our scrapers evolve as the web evolves.</p>
+                    </div>
+                    <div class="feature-object col-sm-6 col-md-4 col-lg-3">
+                        <h3 class="feature-title">Google Approved</h3>
+                        <img class="feature-image" src="assets/img/google.png" />
+                        <p class="feature-explanation">SnapSearch complies with the AJAX Crawling Specification by Google. SnapSearch responds with the same content as a normal user would see, so you’re not in violation of cloaking rules.</p>
+                    </div>
+                    <div class="feature-object col-sm-6 col-md-4 col-lg-3">
+                        <h3 class="feature-title">Powerful Middleware</h3>
+                        <img class="feature-image" src="assets/img/middleware.png" />
+                        <p class="feature-explanation">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect 196 robots. They can be configured to support custom clients.</p>
+                    </div>
+                    <div class="feature-object col-sm-6 col-md-4 col-lg-3">
+                        <h3 class="feature-title">Flexibility</h3>
+                        <img class="feature-image" src="assets/img/flexibility.png" />
+                        <p class="feature-explanation">The API supports image snapshots, soft 404s, following redirects, custom headers and status code, cache time settings, width and height of the scraper (useful for infinite scrolling), and custom javascript callbacks that are evaled on the page.</p>
+                    </div>
+                    <div class="feature-object col-sm-6 col-md-4 col-lg-3">
+                        <h3 class="feature-title">Pay for What You Use</h3>
+                        <img class="feature-image" src="assets/img/tiger_face.png" />
+                        <p class="feature-explanation">You only pay for each usage of the API that initiates a fresh snapshot. There is no minimum monthly fee. Requests hitting the cache is free, and storage of the cache is free.</p>
+                    </div>
+                    <div class="feature-object col-sm-6 col-md-4 col-lg-3">
+                        <h3 class="feature-title">Load Balanced</h3>
+                        <img class="feature-image" src="assets/img/load_balanced.png" />
+                        <p class="feature-explanation">SnapSearch was built as a fault-tolerant load balanced service. We can handle small and big sites. Scrapers are horizontally scaled according to the number of users.</p>
+                    </div>
+                    <div class="feature-object col-sm-6 col-md-4 col-lg-3">
+                        <h3 class="feature-title">Analytics</h3>
+                        <img class="feature-image" src="assets/img/analytics.png" />
+                        <p class="feature-explanation">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

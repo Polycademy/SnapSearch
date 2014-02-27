@@ -6662,3 +6662,26 @@ header.navbar .navbar-nav > li button {
     padding: 13px 26px 26px 26px;
   }
 }
+.features .panel-body {
+  margin-bottom: 20px;
+}
+.features .feature-object {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+.features .feature-object .feature-title {
+  text-align: center;
+  font-family: "fira_sans_otlight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.features .feature-object .feature-image {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+  max-width: 100%;
+}
+.features .feature-object .feature-explanation {
+  font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  margin: 0;
+}

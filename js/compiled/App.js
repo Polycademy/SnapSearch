@@ -44258,7 +44258,7 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":9,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular\\angular.js":8,"./..\\..\\components\\angulartics\\src\\angulartics.js":10,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":11,"./..\\..\\components\\es5-shim\\es5-shim.js":12,"./..\\..\\components\\es6-shim\\es6-shim.js":13,"./..\\..\\components\\jquery\\dist\\jquery.js":14,"./..\\..\\components\\json3\\lib\\json3.min.js":15,"./Config":17,"./controllers/Controllers":18,"./directives/Directives":22,"./elements/Elements":23,"./filters/Filters":60,"./services/Services":61}],17:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":9,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular\\angular.js":8,"./..\\..\\components\\angulartics\\src\\angulartics.js":10,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":11,"./..\\..\\components\\es5-shim\\es5-shim.js":12,"./..\\..\\components\\es6-shim\\es6-shim.js":13,"./..\\..\\components\\jquery\\dist\\jquery.js":14,"./..\\..\\components\\json3\\lib\\json3.min.js":15,"./Config":17,"./controllers/Controllers":18,"./directives/Directives":22,"./elements/Elements":24,"./filters/Filters":61,"./services/Services":62}],17:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -44338,8 +44338,42 @@ require("./..\\..\\..\\components\\angular\\angular.js");
  */
 angular.module('App.Directives', []);
 
-module.exports = angular.module('App.Directives');
-},{"./..\\..\\..\\components\\angular\\angular.js":8}],23:[function(require,module,exports){
+module.exports = angular.module('App.Directives')
+    .directive('equaliseHeights', require('./equaliseHeights'));
+},{"./..\\..\\..\\components\\angular\\angular.js":8,"./equaliseHeights":23}],23:[function(require,module,exports){
+'use strict';
+
+module.exports = [function () {
+    
+    return {
+        link: function(scope, element, attributes){
+        
+            //we're not using scope.watch here because, watch would require the values to change, and it can't watch browser events like window.resize, also we're not watching value changes, but events! therefore we're doing jquery event binding
+            //another method here: http://jsfiddle.net/bY5qe/
+            var items = angular.element(attributes.equaliseHeights);
+            
+            var equaliseHeight = function(){
+                var maxHeight = 0;
+                items
+                    .height('auto') //reset the heights to auto to see if the content pushes down to the same height
+                    .each(function(){
+                        //find out which has the max height (wrap it in angular.element, or else each this is the raw DOM)
+                        maxHeight = angular.element(this).height() > maxHeight ? angular.element(this).height() : maxHeight; 
+                    })
+                    .height(maxHeight); //then make them all the same maximum height!
+            };
+            
+            //run it once
+            equaliseHeight();
+            
+            //on the resize event from jquery, run a function, this function is a pointer!
+            angular.element(window).resize(equaliseHeight);
+        
+        }
+    };
+
+}];
+},{}],24:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -44353,7 +44387,7 @@ angular.module('App.Elements', []);
 
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'));
-},{"./..\\..\\..\\components\\angular\\angular.js":8,"./syntaxHighlight":59}],24:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":8,"./syntaxHighlight":60}],25:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -45044,7 +45078,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -45081,7 +45115,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":24,"./languages/apache.js":26,"./languages/bash.js":27,"./languages/clojure.js":28,"./languages/coffeescript.js":29,"./languages/cpp.js":30,"./languages/cs.js":31,"./languages/css.js":32,"./languages/diff.js":33,"./languages/erlang.js":34,"./languages/go.js":35,"./languages/haml.js":36,"./languages/haskell.js":37,"./languages/http.js":38,"./languages/ini.js":39,"./languages/java.js":40,"./languages/javascript.js":41,"./languages/json.js":42,"./languages/lisp.js":43,"./languages/lua.js":44,"./languages/makefile.js":45,"./languages/markdown.js":46,"./languages/nginx.js":47,"./languages/objectivec.js":48,"./languages/perl.js":49,"./languages/php.js":50,"./languages/python.js":51,"./languages/r.js":52,"./languages/ruby.js":53,"./languages/rust.js":54,"./languages/scala.js":55,"./languages/scss.js":56,"./languages/sql.js":57,"./languages/xml.js":58}],26:[function(require,module,exports){
+},{"./highlight":25,"./languages/apache.js":27,"./languages/bash.js":28,"./languages/clojure.js":29,"./languages/coffeescript.js":30,"./languages/cpp.js":31,"./languages/cs.js":32,"./languages/css.js":33,"./languages/diff.js":34,"./languages/erlang.js":35,"./languages/go.js":36,"./languages/haml.js":37,"./languages/haskell.js":38,"./languages/http.js":39,"./languages/ini.js":40,"./languages/java.js":41,"./languages/javascript.js":42,"./languages/json.js":43,"./languages/lisp.js":44,"./languages/lua.js":45,"./languages/makefile.js":46,"./languages/markdown.js":47,"./languages/nginx.js":48,"./languages/objectivec.js":49,"./languages/perl.js":50,"./languages/php.js":51,"./languages/python.js":52,"./languages/r.js":53,"./languages/ruby.js":54,"./languages/rust.js":55,"./languages/scala.js":56,"./languages/scss.js":57,"./languages/sql.js":58,"./languages/xml.js":59}],27:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -45127,7 +45161,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -45190,7 +45224,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -45288,7 +45322,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -45419,7 +45453,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -45483,7 +45517,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -45556,7 +45590,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -45660,7 +45694,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -45700,7 +45734,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -45855,7 +45889,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -45894,7 +45928,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -46016,7 +46050,7 @@ function(hljs) {
     ]
   };
 };
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -46142,7 +46176,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -46176,7 +46210,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -46206,7 +46240,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -46261,7 +46295,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -46333,7 +46367,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -46371,7 +46405,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -46447,7 +46481,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -46504,7 +46538,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -46549,7 +46583,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -46651,7 +46685,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -46732,7 +46766,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -46817,7 +46851,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -46966,7 +47000,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -47075,7 +47109,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -47159,7 +47193,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -47229,7 +47263,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -47388,7 +47422,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -47437,7 +47471,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -47496,7 +47530,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -47613,7 +47647,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -47716,7 +47750,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -47820,7 +47854,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -47859,7 +47893,7 @@ module.exports = ['$sce', function($sce){
         replace: true, 
         link: function (scope, element, attributes, controller, transclude) {
 
-            //transclude's clone is children elements of the directive element, it will wrap any unwrapped text nodes with the span tag
+            //transclude's clone is the child elements of the directive element, it will wrap any unwrapped text nodes with the span tag
             transclude(scope, function (clone) {
 
                 //get the directive element's content as text, this will be the {{code}}
@@ -47877,7 +47911,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":25,"fs":1,"insert-css":62}],60:[function(require,module,exports){
+},{"./lib/hljs/index":26,"fs":1,"insert-css":63}],61:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -47888,7 +47922,7 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{"./..\\..\\..\\components\\angular\\angular.js":8}],61:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":8}],62:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -47899,7 +47933,7 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Services', []);
 
 module.exports = angular.module('App.Services');
-},{"./..\\..\\..\\components\\angular\\angular.js":8}],62:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":8}],63:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {
