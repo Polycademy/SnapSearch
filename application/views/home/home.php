@@ -219,13 +219,47 @@
             </div>
         </div>
     </div>
-    <div class="panel panel_white panel_transition_white_yellow">
+    <div class="demo panel panel_white panel_transition_white_yellow">
         <div class="container">
             <div class="panel-heading">
                 <h2 class="panel-title">Try our demo here</h2>
             </div>
             <div class="panel-body">
-                <!-- Add in the contents -->
+                <form class="demo-form" ng-controller="DemoCtrl" name="demoForm">
+                    <div 
+                        class="form-group" 
+                        ng-class="{
+                            'has-error': !!demoForm.url.$error.invalidUrl && demoForm.url.$dirty
+                        }"
+                    >
+                        <div class="input-group input-group-lg">
+                            <input 
+                                class="form-control" 
+                                type="url" 
+                                name="url" 
+                                ng-model="demo.url" 
+                                required 
+                                ui-validate="{invalidUrl: 'validateUrl($value)'}" 
+                                placeholder="http://your-site.com/" 
+                            />
+                            <span class="input-group-btn">
+                                <button 
+                                    class="btn btn-primary" 
+                                    type="submit" 
+                                    ng-disabled="demoForm.$invalid" 
+                                    ng-click="submit(demo)" 
+                                >
+                                    Scrape
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="demo-output" ng-switch="requestingDemoService">
+                        <p class="demo-explanation" ng-switch-when="never">For best results, try it on a single page application! Make sure to add (http(s)://) to the URL.</p>
+                        <img class="demo-loading" ng-switch-when="started" src="assets/img/loading.gif" />
+                        <pre class="demo-response" ng-switch-when="finished"><code>{{demoServiceResponse}}</code></pre>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

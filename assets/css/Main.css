@@ -6685,3 +6685,27 @@ header.navbar .navbar-nav > li button {
   font-size: 14px;
   margin: 0;
 }
+.demo .demo-form {
+  margin-top: 10px;
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+  max-width: 890px;
+}
+@media (min-width: 992px) {
+  .demo .demo-form {
+    width: 80%;
+  }
+}
+.demo .demo-output .demo-explanation {
+  margin-top: 30px;
+  text-align: center;
+  font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.demo .demo-output .demo-loading {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+}

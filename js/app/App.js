@@ -25,6 +25,7 @@ require('angular-sanitize');
 require('angular-animate');
 require('angular-ui-router');
 require('angular-bootstrap');
+require('angular-ui-utils');
 require('angulartics');
 require('../../components/angulartics/src/angulartics-ga.js');
 
@@ -48,6 +49,7 @@ var app = angular.module('App', [
     'ngAnimate',
     'ui.router',
     'ui.bootstrap',
+    'ui.utils',
     'angulartics',
     'angulartics.google.analytics'
 ]);

@@ -10,6 +10,7 @@ angular.module('App.Controllers', [])
     .controller('HeaderCtrl', require('./common/HeaderCtrl'))
     //home
     .controller('HomeCtrl', require('./home/HomeCtrl'))
-    .controller('CodeGroupCtrl', require('./home/CodeGroupCtrl'));
+    .controller('CodeGroupCtrl', require('./home/CodeGroupCtrl'))
+    .controller('DemoCtrl', require('./home/DemoCtrl'));
 
 module.exports = angular.module('App.Controllers');
