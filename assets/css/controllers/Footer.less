@@ -2,6 +2,128 @@
    Footer Controller
    ========================================================================== */
 
+@import "Variables";
+@import (reference) "../mixins/Centering";
+@import (reference) "../mixins/Fonts";
+
+footer.panel_yellow .panel-body {
+    color: @snapsearch-text-light;
+    a {
+        color: darken(@snapsearch-text-light, 5%);
+    }
+}
+
 footer {
-    background: url("../img/tiger_jump.png") no-repeat center center;
+    overflow: hidden; //this is for the tiger-jump as it extends outwards
+    .tiger-jump {
+        position: relative;
+        &:before { //this hack extends the background image beyond the element's width
+            background: url("../img/tiger_jump.png") no-repeat;
+            content: " ";
+            position: absolute;
+            height: 551px;
+            width: 838px;
+            margin-left: -600px;
+            @media (min-width: @snapsearch-xs-breakpoint) {
+                margin-left: -580px;
+            }
+            @media (min-width: (@snapsearch-xs-breakpoint + 0.5 * (@snapsearch-sm-breakpoint - @snapsearch-xs-breakpoint)) ) {
+                margin-left: -510px;
+            }
+            @media (min-width: @snapsearch-sm-breakpoint) {
+                margin-left: -460px;
+            }
+            @media (min-width: @snapsearch-md-breakpoint) {
+                margin-left: -200px;
+            }
+            @media (min-width: @snapsearch-lg-breakpoint) {
+                margin-left: -60px;
+            }
+        }
+    }
+    .contact-information {
+        width: 180px;
+        #Fonts.family("fira_sans_otlight");
+        font-size: 16px;
+        text-align: center;
+        float: right;
+        margin-right: 0px;
+        margin-top: 40px;
+        margin-bottom: 150px;
+        .social-links {
+            font-size: 14px;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
+        @media (min-width: @snapsearch-xs-breakpoint) {
+            width: 200px;
+            font-size: 18px;
+            margin-bottom: 140px;
+            .social-links {
+                font-size: 16px;
+            }
+        }
+        @media (min-width: (@snapsearch-xs-breakpoint + 0.5 * (@snapsearch-sm-breakpoint - @snapsearch-xs-breakpoint)) ) {
+            width: 260px;
+            font-size: 20px;
+            margin-right: 20px;
+        }
+        @media (min-width: @snapsearch-sm-breakpoint) {
+            margin-top: 20px;
+            width: 300px;
+            margin-right: 30px;
+            font-size: 24px;
+            margin-bottom: 90px;
+            .social-links {
+                font-size: 18px;
+            }
+        }
+    }
+    .founder-information {
+        clear: both;
+        margin: 0 auto;
+        width: 400px;
+        .profile-object {
+            float: left;
+            width: 50%;
+            text-align: center;
+            .profile-image {
+                #Centering.blockCenter();
+                padding: 10px;
+            }
+            .profile-name {
+                #Fonts.family("fira_sans_otmedium");
+                font-size: 24px;
+            }
+            .profile-title, .profile-social {
+                #Fonts.family("fira_sans_otmedium");
+                font-size: 18px;
+            }
+        }
+    }
+    .polycademy-block {
+        clear: both;
+        font-size: 18px;
+        #Fonts.family("fira_sans_otlight");
+        padding-top: 30px;
+        text-align: center;
+        img {
+            vertical-align: text-bottom;
+        }
+    }
+    .attributions {
+        clear: both;
+        #Fonts.family("fira_sans_otmedium");
+        font-size: 12px;
+        margin-top: 20px;
+        p {
+            margin: 0;
+        }
+        strong {
+            font-size: 14px;
+            font-style: normal;
+            font-weight: normal;
+        }
+    }
 }
