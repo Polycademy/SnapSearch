@@ -52,7 +52,7 @@ footer {
         float: right;
         margin-right: 0px;
         margin-top: 40px;
-        margin-bottom: 110px;
+        margin-bottom: 160px;
         .social-links {
             font-size: 13px;
             text-align: center;
@@ -61,6 +61,7 @@ footer {
         }
         @media (min-width: @snapsearch-ss-breakpoint) {
             font-size: 16px;
+            margin-bottom: 140px;
             .social-links {
                 font-size: 14px;
             }
@@ -106,11 +107,19 @@ footer {
             }
             .profile-name {
                 #Fonts.family("fira_sans_otmedium");
-                font-size: 24px;
+                font-size: 20px;
             }
             .profile-title, .profile-social {
                 #Fonts.family("fira_sans_otmedium");
-                font-size: 18px;
+                font-size: 16px;
+            }
+            @media (min-width: @snapsearch-sm-breakpoint) {
+                .profile-name {
+                    font-size: 24px;
+                }
+                .profile-title, .profile-social {
+                    font-size: 18px;
+                }
             }
         }
     }

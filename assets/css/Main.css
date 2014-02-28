@@ -6450,7 +6450,7 @@ footer .contact-information {
   float: right;
   margin-right: 0px;
   margin-top: 40px;
-  margin-bottom: 110px;
+  margin-bottom: 160px;
 }
 footer .contact-information .social-links {
   font-size: 13px;
@@ -6461,6 +6461,7 @@ footer .contact-information .social-links {
 @media (min-width: 320px) {
   footer .contact-information {
     font-size: 16px;
+    margin-bottom: 140px;
   }
   footer .contact-information .social-links {
     font-size: 14px;
@@ -6519,12 +6520,21 @@ footer .founder-information .profile-object .profile-image {
 }
 footer .founder-information .profile-object .profile-name {
   font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 24px;
+  font-size: 20px;
 }
 footer .founder-information .profile-object .profile-title,
 footer .founder-information .profile-object .profile-social {
   font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 18px;
+  font-size: 16px;
+}
+@media (min-width: 768px) {
+  footer .founder-information .profile-object .profile-name {
+    font-size: 24px;
+  }
+  footer .founder-information .profile-object .profile-title,
+  footer .founder-information .profile-object .profile-social {
+    font-size: 18px;
+  }
 }
 footer .polycademy-block {
   clear: both;
