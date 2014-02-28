@@ -6392,6 +6392,9 @@ header.navbar .navbar-nav > li button {
 /* ==========================================================================
    Footer Controller
    ========================================================================== */
+footer {
+  background: url("../img/tiger_jump.png") no-repeat center center;
+}
 /**
  * UI Elements
  */
