@@ -11,6 +11,10 @@ angular.module('App.Controllers', [])
     //home
     .controller('HomeCtrl', require('./home/HomeCtrl'))
     .controller('CodeGroupCtrl', require('./home/CodeGroupCtrl'))
-    .controller('DemoCtrl', require('./home/DemoCtrl'));
+    .controller('DemoCtrl', require('./home/DemoCtrl'))
+    //home
+    .controller('DocumentationCtrl', require('./documentation/DocumentationCtrl'))
+    //pricing
+    .controller('PricingCtrl', require('./pricing/PricingCtrl'));
 
 module.exports = angular.module('App.Controllers');

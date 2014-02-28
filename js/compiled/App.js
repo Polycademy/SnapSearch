@@ -47113,6 +47113,7 @@ require('../../components/angulartics/src/angulartics-ga.js');
  * Modules
  */
 var config = require('./Config');
+var fs = require('fs');
 
 /**
  * Bootstrapping Angular Modules
@@ -47146,16 +47147,30 @@ app.config([
         //HTML5 Mode URLs
         $locationProvider.html5Mode(true).hashPrefix('!');
 
-        //We should eventually move to precompiled templates. No need to extract it from the DOM. Nor should we need to download them asynchronously since they are very small.
-        //I guess the best solution would be asynchronous download, but with a resolve ability!
-        //But precompiled templates is faster than loading from DOM. Easier to implement. Cleaner than the current solution.
+        //precompiled templates, these routes should be used with ui-sref and ui-sref-active
         $stateProvider
             .state(
                 'home',
                 {
                     url: '/',
-                    templateUrl: 'home.html',
+                    template: "<div class=\"introduction panel panel_lego panel_transition_white_dark\">\n    <div class=\"container\">\n        <div class=\"panel-body\">\n            <div class=\"row\">\n                <div class=\"col-md-6\">\n                    <div class=\"page-header\">\n                        <h1>SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>\n                        <h3>Make your sites crawlable with SnapSearch!</h3>\n                        <button class=\"call-to-action btn btn-primary\" type=\"button\">\n                            <h4 class=\"call-to-action-text\">Get Started for Free<br /><small>No Credit Card Required</small></h4>\n                        </button>\n                    </div>\n                </div>\n                <div class=\"col-md-6\">\n                    <div class=\"code-group clearfix\" ng-controller=\"CodeGroupCtrl\">\n                        <ul class=\"nav nav-tabs\">\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'php'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('php')\">PHP</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'ruby'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('ruby')\">Ruby</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'node.js'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('node.js')\">Node.js</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'python'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('python')\">Python</button>\n                            </li>\n                        </ul>\n                        <div class=\"tab-content clearfix\" ng-switch=\"activeCode\">\n                            <div class=\"tab-panel\" ng-switch-when=\"php\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">composer require snapsearch/snapsearch-client-php:1.0.0</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"php\">//add content here, it needs to be encoded</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Fork me on Github\n                                </a>                                </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"ruby\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">gem install snapsearch-client-ruby</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"ruby\">#add content here, it needs to be encoded</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Fork me on Github\n                                </a>\n                            </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"node.js\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">npm install snapsearch-client-node:1.0.0</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"javascript\">//add content here, it needs to be encoded</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Fork me on Github\n                                </a>\n                            </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"python\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">pip install snapsearch-client-python</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"python\">#comment</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Fork me on Github\n                                </a>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"framework-support panel panel_white panel_transition_white_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">SnapSearch works with...</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"row\">\n                <div class=\"col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/sails_logo.png\" />\n                </div>\n                <div class=\"col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/angular_logo.png\" />\n                </div>\n                <div class=\"col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/js_logo.png\" />\n                </div>\n                <div class=\"col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/jquery_logo.png\" />\n                </div>\n                <div class=\"col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/backbone_logo.png\" />\n                </div>\n                <div class=\"col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/ember_logo.png\" />\n                </div>\n                <div class=\"col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/knockout_logo.png\" />\n                </div>\n                <div class=\"col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/meteor_logo.png\" />\n                </div>\n            </div>\n        </div>\n        <div class=\"panel-footer\">\n            <h2 class=\"panel-title\">We’re 100% framework agnostic!</h2>\n        </div>\n    </div>\n</div>\n<div class=\"problem-solution panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Why use SnapSearch?</h2>\n        </div>\n        <div class=\"panel-body\">\n            <h3 class=\"problem-title\">The Problem</h3>\n            <div class=\"problem row\">\n                <div class=\"col-md-6\">\n                    <img src=\"assets/img/user_coding.png\" />\n                    <div class=\"problem-explanation\">\n                        <p>You’ve coded up a javascript enhanced or single page application using the latest HTML5 technologies. Using a modern browser, you can see all the asynchronous or animated content appear.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-6\">\n                    <img src=\"assets/img/spider_reading.png\" />\n                    <div class=\"problem-explanation\">\n                        <p>Search engines however see nothing. This is because search engine robots are simple HTTP clients that cannot execute advanced javascript. They do not execute AJAX, and thus cannot load asynchronous resources, nor can they activate javascript events that make your application dynamic and user friendly.</p>\n                    </div>\n                </div>\n            </div>\n            <h3 class=\"solution-title\">Our Solution</h3>\n            <div class=\"solution row\">\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/globe.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">Client initiates an HTTP Request. This client can be search engine robot or a social network crawler such as Facebook or Twitter.</p>\n                        <p class=\"response-pipe\">The client will now receive the true full representation of your site’s content even though it cannot execute javascript.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/application.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">Your application using our supplied middleware detects whether the client cannot execute javascript. The middleware then initiates a snapshot request to SnapSearch. The request contains the client request URL, authentication credentials and custom API parameters.</p>\n                        <p class=\"response-pipe\">Once the response is received, it outputs your page’s status code, HTML content and any HTTP response headers.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/cloud_service.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">SnapSearch receives the request and commands our load balanced browser workers to scrape your site based on the client request URL while executing your javascript. Your content will be cached for future requests.</p>\n                        <p class=\"response-pipe\">A response is constructed containing the resulting status code, HTML content, headers and optionally a screenshot of your resource. This is returned to your application’s middleware.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/cache.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">A cache of the content is securely and safely stored on Amazon S3. All cached content are distinguished by a parameter checksum, so the same URL with different API parameters will be stored independently.</p>\n                        <p class=\"response-pipe\">If a resource has been cached before, SnapSearch will return the cached content. All cached content have adjustable cache lifetime.</p>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"features panel panel_yellow panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Features</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"row\" equalise-heights=\".features .feature-object\">\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">On Demand</h3>\n                    <img class=\"feature-image\" src=\"assets/img/snapsearch_bolt.png\" />\n                    <p class=\"feature-explanation\">Snapshots are created on the fly as you request it from the API. Resources are cached for a default time of 24 hrs.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Real Browser Workers</h3>\n                    <img class=\"feature-image\" src=\"assets/img/firefox.png\" />\n                    <p class=\"feature-explanation\">Our scrapers are powered by nightly versions of Mozilla Firefox. We’re able to run cutting edge HTML5 techniques. Our scrapers evolve as the web evolves.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Google Approved</h3>\n                    <img class=\"feature-image\" src=\"assets/img/google.png\" />\n                    <p class=\"feature-explanation\">SnapSearch complies with the AJAX Crawling Specification by Google. SnapSearch responds with the same content as a normal user would see, so you’re not in violation of cloaking rules.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Powerful Middleware</h3>\n                    <img class=\"feature-image\" src=\"assets/img/middleware.png\" />\n                    <p class=\"feature-explanation\">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect 196 robots. They can be configured to support custom clients.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Flexibility</h3>\n                    <img class=\"feature-image\" src=\"assets/img/flexibility.png\" />\n                    <p class=\"feature-explanation\">The API supports image snapshots, soft 404s, following redirects, custom headers and status code, cache time settings, width and height of the scraper (useful for infinite scrolling), and custom javascript callbacks that are evaled on the page.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Pay for What You Use</h3>\n                    <img class=\"feature-image\" src=\"assets/img/tiger_face.png\" />\n                    <p class=\"feature-explanation\">You only pay for each usage of the API that initiates a fresh snapshot. There is no minimum monthly fee. Requests hitting the cache is free, and storage of the cache is free.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Load Balanced</h3>\n                    <img class=\"feature-image\" src=\"assets/img/load_balanced.png\" />\n                    <p class=\"feature-explanation\">SnapSearch was built as a fault-tolerant load balanced service. We can handle small and big sites. Scrapers are horizontally scaled according to the number of users.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Analytics</h3>\n                    <img class=\"feature-image\" src=\"assets/img/analytics.png\" />\n                    <p class=\"feature-explanation\">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"demo panel panel_white panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Try our demo here</h2>\n        </div>\n        <div class=\"panel-body\">\n            <form class=\"demo-form\" ng-controller=\"DemoCtrl\" name=\"demoForm\">\n                <div \n                    class=\"form-group\" \n                    ng-class=\"{\n                        'has-error': !!demoForm.url.$error.invalidUrl && demoForm.url.$dirty\n                    }\"\n                >\n                    <div class=\"input-group input-group-lg\">\n                        <input \n                            class=\"form-control\" \n                            type=\"url\" \n                            name=\"url\" \n                            ng-model=\"demo.url\" \n                            required \n                            ui-validate=\"{invalidUrl: 'validateUrl($value)'}\" \n                            placeholder=\"http://your-site.com/\" \n                        />\n                        <span class=\"input-group-btn\">\n                            <button \n                                class=\"btn btn-primary\" \n                                type=\"submit\" \n                                ng-disabled=\"demoForm.$invalid\" \n                                ng-click=\"submit(demo)\" \n                            >\n                                Scrape\n                            </button>\n                        </span>\n                    </div>\n                </div>\n                <div class=\"demo-output\" ng-switch=\"requestingDemoService\">\n                    <p class=\"demo-explanation\" ng-switch-when=\"never\">For best results, try it on a single page application! Make sure to add (http(s)://) to the URL.</p>\n                    <img class=\"demo-loading\" ng-switch-when=\"started\" src=\"assets/img/loading.gif\" />\n                    <pre class=\"demo-response\" ng-switch-when=\"finished\"><code>{{demoServiceResponse}}</code></pre>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>",
                     controller: 'HomeCtrl'
+                }
+            )
+            .state(
+                'documentation',
+                {
+                    url: '/documentation',
+                    template: "",
+                    controller: 'DocumentationCtrl'
+                }
+            )
+            .state(
+                'pricing',
+                {
+                    url: '/pricing',
+                    template: "",
+                    controller: 'PricingCtrl'
                 }
             );
 
@@ -47207,7 +47222,7 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./controllers/Controllers":22,"./directives/Directives":27,"./elements/Elements":29,"./filters/Filters":66,"./services/Services":67}],21:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./controllers/Controllers":22,"./directives/Directives":29,"./elements/Elements":31,"./filters/Filters":68,"./services/Services":69,"fs":1}],21:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -47235,10 +47250,14 @@ angular.module('App.Controllers', [])
     //home
     .controller('HomeCtrl', require('./home/HomeCtrl'))
     .controller('CodeGroupCtrl', require('./home/CodeGroupCtrl'))
-    .controller('DemoCtrl', require('./home/DemoCtrl'));
+    .controller('DemoCtrl', require('./home/DemoCtrl'))
+    //home
+    .controller('DocumentationCtrl', require('./documentation/DocumentationCtrl'))
+    //pricing
+    .controller('PricingCtrl', require('./pricing/PricingCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":23,"./home/CodeGroupCtrl":24,"./home/DemoCtrl":25,"./home/HomeCtrl":26}],23:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":23,"./documentation/DocumentationCtrl":24,"./home/CodeGroupCtrl":25,"./home/DemoCtrl":26,"./home/HomeCtrl":27,"./pricing/PricingCtrl":28}],23:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47250,6 +47269,17 @@ module.exports = ['$scope', function ($scope) {
 
 }];
 },{}],24:[function(require,module,exports){
+'use strict';
+
+/**
+ * Documentation Controller
+ * 
+ * @param {Object} $scope
+ */
+module.exports = ['$scope', function ($scope) {
+
+}];
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47267,7 +47297,7 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47307,7 +47337,7 @@ module.exports = ['$scope', function ($scope) {
     };
 
 }];
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47318,7 +47348,18 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
+'use strict';
+
+/**
+ * Pricing Controller
+ * 
+ * @param {Object} $scope
+ */
+module.exports = ['$scope', function ($scope) {
+
+}];
+},{}],29:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -47330,7 +47371,7 @@ angular.module('App.Directives', []);
 
 module.exports = angular.module('App.Directives')
     .directive('equaliseHeights', require('./equaliseHeights'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./equaliseHeights":28}],28:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./equaliseHeights":30}],30:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -47372,7 +47413,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],29:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],31:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -47386,7 +47427,7 @@ angular.module('App.Elements', []);
 
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./syntaxHighlight":65}],30:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./syntaxHighlight":67}],32:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -48077,7 +48118,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -48114,7 +48155,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":30,"./languages/apache.js":32,"./languages/bash.js":33,"./languages/clojure.js":34,"./languages/coffeescript.js":35,"./languages/cpp.js":36,"./languages/cs.js":37,"./languages/css.js":38,"./languages/diff.js":39,"./languages/erlang.js":40,"./languages/go.js":41,"./languages/haml.js":42,"./languages/haskell.js":43,"./languages/http.js":44,"./languages/ini.js":45,"./languages/java.js":46,"./languages/javascript.js":47,"./languages/json.js":48,"./languages/lisp.js":49,"./languages/lua.js":50,"./languages/makefile.js":51,"./languages/markdown.js":52,"./languages/nginx.js":53,"./languages/objectivec.js":54,"./languages/perl.js":55,"./languages/php.js":56,"./languages/python.js":57,"./languages/r.js":58,"./languages/ruby.js":59,"./languages/rust.js":60,"./languages/scala.js":61,"./languages/scss.js":62,"./languages/sql.js":63,"./languages/xml.js":64}],32:[function(require,module,exports){
+},{"./highlight":32,"./languages/apache.js":34,"./languages/bash.js":35,"./languages/clojure.js":36,"./languages/coffeescript.js":37,"./languages/cpp.js":38,"./languages/cs.js":39,"./languages/css.js":40,"./languages/diff.js":41,"./languages/erlang.js":42,"./languages/go.js":43,"./languages/haml.js":44,"./languages/haskell.js":45,"./languages/http.js":46,"./languages/ini.js":47,"./languages/java.js":48,"./languages/javascript.js":49,"./languages/json.js":50,"./languages/lisp.js":51,"./languages/lua.js":52,"./languages/makefile.js":53,"./languages/markdown.js":54,"./languages/nginx.js":55,"./languages/objectivec.js":56,"./languages/perl.js":57,"./languages/php.js":58,"./languages/python.js":59,"./languages/r.js":60,"./languages/ruby.js":61,"./languages/rust.js":62,"./languages/scala.js":63,"./languages/scss.js":64,"./languages/sql.js":65,"./languages/xml.js":66}],34:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -48160,7 +48201,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -48223,7 +48264,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -48321,7 +48362,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -48452,7 +48493,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -48516,7 +48557,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -48589,7 +48630,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -48693,7 +48734,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -48733,7 +48774,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -48888,7 +48929,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -48927,7 +48968,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -49049,7 +49090,7 @@ function(hljs) {
     ]
   };
 };
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -49175,7 +49216,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -49209,7 +49250,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -49239,7 +49280,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -49294,7 +49335,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -49366,7 +49407,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -49404,7 +49445,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -49480,7 +49521,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -49537,7 +49578,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -49582,7 +49623,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -49684,7 +49725,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -49765,7 +49806,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -49850,7 +49891,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -49999,7 +50040,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -50108,7 +50149,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -50192,7 +50233,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -50262,7 +50303,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -50421,7 +50462,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -50470,7 +50511,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -50529,7 +50570,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -50646,7 +50687,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -50749,7 +50790,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -50853,7 +50894,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -50910,7 +50951,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":31,"fs":1,"insert-css":68}],66:[function(require,module,exports){
+},{"./lib/hljs/index":33,"fs":1,"insert-css":70}],68:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -50921,7 +50962,7 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{"./..\\..\\..\\components\\angular\\angular.js":9}],67:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9}],69:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -50932,7 +50973,7 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Services', []);
 
 module.exports = angular.module('App.Services');
-},{"./..\\..\\..\\components\\angular\\angular.js":9}],68:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9}],70:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {

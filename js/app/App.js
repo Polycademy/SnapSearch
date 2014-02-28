@@ -33,6 +33,7 @@ require('../../components/angulartics/src/angulartics-ga.js');
  * Modules
  */
 var config = require('./Config');
+var fs = require('fs');
 
 /**
  * Bootstrapping Angular Modules
@@ -66,16 +67,30 @@ app.config([
         //HTML5 Mode URLs
         $locationProvider.html5Mode(true).hashPrefix('!');
 
-        //We should eventually move to precompiled templates. No need to extract it from the DOM. Nor should we need to download them asynchronously since they are very small.
-        //I guess the best solution would be asynchronous download, but with a resolve ability!
-        //But precompiled templates is faster than loading from DOM. Easier to implement. Cleaner than the current solution.
+        //precompiled templates, these routes should be used with ui-sref and ui-sref-active
         $stateProvider
             .state(
                 'home',
                 {
                     url: '/',
-                    templateUrl: 'home.html',
+                    template: fs.readFileSync(__dirname + '/../templates/home.html', 'utf8'),
                     controller: 'HomeCtrl'
+                }
+            )
+            .state(
+                'documentation',
+                {
+                    url: '/documentation',
+                    template: fs.readFileSync(__dirname + '/../templates/documentation.html', 'utf8'),
+                    controller: 'DocumentationCtrl'
+                }
+            )
+            .state(
+                'pricing',
+                {
+                    url: '/pricing',
+                    template: fs.readFileSync(__dirname + '/../templates/pricing.html', 'utf8'),
+                    controller: 'PricingCtrl'
                 }
             );
 
