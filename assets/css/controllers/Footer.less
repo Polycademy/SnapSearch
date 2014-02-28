@@ -23,7 +23,10 @@ footer {
             position: absolute;
             height: 551px;
             width: 838px;
-            margin-left: -600px;
+            margin-left: -730px;
+            @media (min-width: @snapsearch-ss-breakpoint) {
+                margin-left: -696px;
+            }
             @media (min-width: @snapsearch-xs-breakpoint) {
                 margin-left: -580px;
             }
@@ -44,22 +47,28 @@ footer {
     .contact-information {
         width: 180px;
         #Fonts.family("fira_sans_otlight");
-        font-size: 16px;
+        font-size: 14px;
         text-align: center;
         float: right;
         margin-right: 0px;
         margin-top: 40px;
-        margin-bottom: 150px;
+        margin-bottom: 110px;
         .social-links {
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
             padding: 0;
             margin: 0;
         }
+        @media (min-width: @snapsearch-ss-breakpoint) {
+            font-size: 16px;
+            .social-links {
+                font-size: 14px;
+            }
+        }
         @media (min-width: @snapsearch-xs-breakpoint) {
             width: 200px;
             font-size: 18px;
-            margin-bottom: 140px;
+            margin-bottom: 100px;
             .social-links {
                 font-size: 16px;
             }
@@ -83,7 +92,9 @@ footer {
     .founder-information {
         clear: both;
         margin: 0 auto;
-        width: 400px;
+        @media (min-width: @snapsearch-sm-breakpoint) {
+            width: 400px;
+        }
         .profile-object {
             float: left;
             width: 50%;
@@ -91,6 +102,7 @@ footer {
             .profile-image {
                 #Centering.blockCenter();
                 padding: 10px;
+                max-width: 100%;
             }
             .profile-name {
                 #Fonts.family("fira_sans_otmedium");

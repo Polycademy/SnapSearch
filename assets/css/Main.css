@@ -6410,7 +6410,12 @@ footer .tiger-jump:before {
   position: absolute;
   height: 551px;
   width: 838px;
-  margin-left: -600px;
+  margin-left: -730px;
+}
+@media (min-width: 320px) {
+  footer .tiger-jump:before {
+    margin-left: -696px;
+  }
 }
 @media (min-width: 460px) {
   footer .tiger-jump:before {
@@ -6440,24 +6445,32 @@ footer .tiger-jump:before {
 footer .contact-information {
   width: 180px;
   font-family: "fira_sans_otlight", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   text-align: center;
   float: right;
   margin-right: 0px;
   margin-top: 40px;
-  margin-bottom: 150px;
+  margin-bottom: 110px;
 }
 footer .contact-information .social-links {
-  font-size: 14px;
+  font-size: 13px;
   text-align: center;
   padding: 0;
   margin: 0;
+}
+@media (min-width: 320px) {
+  footer .contact-information {
+    font-size: 16px;
+  }
+  footer .contact-information .social-links {
+    font-size: 14px;
+  }
 }
 @media (min-width: 460px) {
   footer .contact-information {
     width: 200px;
     font-size: 18px;
-    margin-bottom: 140px;
+    margin-bottom: 100px;
   }
   footer .contact-information .social-links {
     font-size: 16px;
@@ -6485,7 +6498,11 @@ footer .contact-information .social-links {
 footer .founder-information {
   clear: both;
   margin: 0 auto;
-  width: 400px;
+}
+@media (min-width: 768px) {
+  footer .founder-information {
+    width: 400px;
+  }
 }
 footer .founder-information .profile-object {
   float: left;
@@ -6498,6 +6515,7 @@ footer .founder-information .profile-object .profile-image {
   display: block;
   float: none;
   padding: 10px;
+  max-width: 100%;
 }
 footer .founder-information .profile-object .profile-name {
   font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
