@@ -108,7 +108,9 @@ app.run([
     '$http',
     '$state',
     '$stateParams',
-    function($rootScope, $cookies, $http, $state, $stateParams){
+    '$anchorScroll',
+    '$location',
+    function($rootScope, $cookies, $http, $state, $stateParams, $anchorScroll, $location){
 
         //XSRF INTEGRATION
         $rootScope.$watch(
@@ -129,6 +131,11 @@ app.run([
 
         //PROVIDING BASE URL
         $rootScope.baseUrl = angular.element('base').attr('href');
+
+        $rootScope.scroll = function (hash) {
+            $location.hash(hash);
+            $anchorScroll();
+        };
 
     }
 ]);

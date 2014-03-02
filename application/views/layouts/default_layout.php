@@ -66,7 +66,7 @@
                         <li ng-class="{'active': $state.includes('home')}"><a ng-href="home">HOME</a></li>
                         <li ng-class="{'active': $state.includes('documentation')}"><a ng-href="documentation">DOCUMENTATION</a></li>
                         <li ng-class="{'active': $state.includes('pricing')}"><a ng-href="pricing">PRICING</a></li>
-                        <li ng-class="{'active': $state.includes('about')}"><a ng-href="about">ABOUT</a></li>
+                        <li><a ng-click="scroll('about')">ABOUT</a></li>
                         <li><a ng-href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">BLOG</a></li>
                         <li><button class="btn navbar-btn" type="button" ng-click="">SIGN UP</button></li>
                         <li><button class="btn navbar-btn" type="button" ng-click="">LOG IN</button></li>
@@ -78,7 +78,7 @@
         <!-- The side bar will be contained inside the container and ui-view to allow Angularjs to handle it -->
         <div class="main" ui-view autoscroll="false"></div>
 
-        <footer class="panel panel_yellow">
+        <footer class="panel panel_yellow" anchor="about">
             <div class="container tiger-jump">
                 <div class="panel-body">
                     <div class="contact-information">

@@ -6305,6 +6305,9 @@ html {
   background: #b3d4fc;
   text-shadow: none;
 }
+a {
+  cursor: pointer;
+}
 /**
  * Common
  */
