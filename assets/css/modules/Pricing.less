@@ -2,3 +2,89 @@
    Pricing Module
    ========================================================================== */
 
+@import "Variables";
+@import (reference) "../mixins/Centering";
+@import (reference) "../mixins/Fonts";
+
+.pricing-box {
+    background-color: lighten(@snapsearch-yellow, 2%);
+    border-radius: 10px;
+    border: 4px darken(average(@snapsearch-yellow, @snapsearch-dark), 10%) solid;
+    padding: 20px;
+    color: @snapsearch-text-dark;
+    max-width: 800px;
+    #Centering.blockCenter();
+    .pricing-heading {
+        text-align: center;
+        #Fonts.family("fira_sans_otbold");
+        font-size: 48px;
+    }
+
+    .pricing-subheading {
+        text-align: center;
+        #Fonts.family("fira_sans_otbold");
+        font-size: 24px;
+    }
+    .price-per-month {
+        margin-top: 40px;
+        text-align: center;
+        #Fonts.family("fira_sans_otmedium");
+        font-size: 36px;
+        small {
+            font-size: 30px;
+        }
+    }
+    .feature-set {
+        font-size: 16px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        dt {
+            float: left; 
+            clear: left; 
+            margin-left: 30%;
+            font-weight: bold;
+            padding: 6px;
+            &:after {
+                content: ":";
+            }
+        }
+        dd {
+            #Fonts.family("fira_sans_otlight");
+            margin-left: 50%;
+            padding: 6px;
+        }
+    }
+    .usage-price-explanation {
+        max-width: 500px;
+        #Centering.blockCenter();
+        margin-bottom: 20px;
+        p.lead {
+            font-size: 21px;
+            #Fonts.family("fira_sans_otmedium");
+        }
+        p {
+            #Fonts.family("fira_sans_otregular");
+            font-size: 14px;
+        }
+    }
+}
+
+.cost-estimator {
+    max-width: 800px;
+    #Centering.blockCenter();
+    .cost-heading {
+        font-size: 36px;
+        #Fonts.family("fira_sans_otmedium");
+        text-align: center;
+    }
+    .cost-explanation {
+        #Centering.blockCenter();
+        max-width: 500px;
+    }
+    .cost-calculator {
+        h4 {
+            #Fonts.family("fira_sans_otregular");
+            font-size: 24px;
+        }
+    }
+}

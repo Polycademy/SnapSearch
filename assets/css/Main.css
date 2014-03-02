@@ -6886,3 +6886,93 @@ footer .attributions strong {
 /* ==========================================================================
    Pricing Module
    ========================================================================== */
+.pricing-box {
+  background-color: #f5b038;
+  border-radius: 10px;
+  border: 4px #6d5427 solid;
+  padding: 20px;
+  color: #2c3134;
+  max-width: 800px;
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+}
+.pricing-box .pricing-heading {
+  text-align: center;
+  font-family: "fira_sans_otbold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 48px;
+}
+.pricing-box .pricing-subheading {
+  text-align: center;
+  font-family: "fira_sans_otbold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 24px;
+}
+.pricing-box .price-per-month {
+  margin-top: 40px;
+  text-align: center;
+  font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 36px;
+}
+.pricing-box .price-per-month small {
+  font-size: 30px;
+}
+.pricing-box .feature-set {
+  font-size: 16px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.pricing-box .feature-set dt {
+  float: left;
+  clear: left;
+  margin-left: 30%;
+  font-weight: bold;
+  padding: 6px;
+}
+.pricing-box .feature-set dt:after {
+  content: ":";
+}
+.pricing-box .feature-set dd {
+  font-family: "fira_sans_otlight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin-left: 50%;
+  padding: 6px;
+}
+.pricing-box .usage-price-explanation {
+  max-width: 500px;
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+  margin-bottom: 20px;
+}
+.pricing-box .usage-price-explanation p.lead {
+  font-size: 21px;
+  font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.pricing-box .usage-price-explanation p {
+  font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+.cost-estimator {
+  max-width: 800px;
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+}
+.cost-estimator .cost-heading {
+  font-size: 36px;
+  font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+}
+.cost-estimator .cost-explanation {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+  max-width: 500px;
+}
+.cost-estimator .cost-calculator h4 {
+  font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 24px;
+}

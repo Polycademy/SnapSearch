@@ -7,32 +7,36 @@
             <div class="pricing-box">
                 <h3 class="pricing-heading">Pay for What You Use</h3>
                 <h4 class="pricing-subheading">never exceed your budget with a flexible cap</h4>
-                <p>$0.002 AUD per Usage*<br />(free 1000 Usages Per Month)</p>
+                <p class="price-per-month">$0.002 AUD per Usage*<br /><small>(free 1000 Usages Per Month)</small></p>
                 <dl class="feature-set">
-                    <dt>Pages:</dt>
+                    <dt>Pages</dt>
                     <dd>Unlimited</dd>
-                    <dt>Free Usage Cap:</dt>
-                    <dd>1000 Usages per Month<small>(good for small applications)</small></dd>
-                    <dt>Cache Requests:</dt>
+                    <dt>Free Usage Cap</dt>
+                    <dd>1000 Usages per Month<br /><small>(good for small applications)</small></dd>
+                    <dt>Cache Requests</dt>
                     <dd>Unlimited</dd>
-                    <dt>Cache Storage:</dt>
+                    <dt>Cache Storage</dt>
                     <dd>Unlimited</dd>
-                    <dt>Cache Lifetime:</dt>
+                    <dt>Cache Lifetime</dt>
                     <dd>Configurable from 1 - 100 hrs</dd>
-                    <dt>Feature Set:</dt>
+                    <dt>Feature Set</dt>
                     <dd>Complete</dd>
                 </dl>
-                <p class="lead">* What is a Usage?</p>
-                <p>Each request to the SnapSearch API either results in content being dynamically scraped using the SnapSearch scrapers, or content being fetched from the cache.  A usage refers to a request that does not hit the cache, and initiates a fresh snapshot.</p>
-                <p>The number of usages per month is used for the calculation of the cost per month. The number of requests per month is not capped, but the number of usages per month can be capped in your control panel.</p>
-                <p>If you’ve exceeded your usage cap, our middleware simply returns your content normally. So it’s best to keep your cap above average in case of search engine traffic spikes.</p>
+                <div class="usage-price-explanation">
+                    <p class="lead">* What is a Usage?</p>
+                    <p>Each request to the SnapSearch API either results in content being dynamically scraped using the SnapSearch scrapers, or content being fetched from the cache.  A usage refers to a request that does not hit the cache, and initiates a fresh snapshot.</p>
+                    <p>The number of usages per month is used for the calculation of the cost per month. The number of requests per month is not capped, but the number of usages per month can be capped in your control panel.</p>
+                    <p>If you’ve exceeded your usage cap, our middleware simply returns your content normally. So it’s best to keep your cap above average in case of search engine traffic spikes.</p>
+                </div>
             </div>
             <div class="cost-estimator">
                 <h3 class="cost-heading">Cost Estimator</h3>
-                <p>Use this tool to estimate your monthly payment. If you’re using a 24 hr cache lifetime, <strong>requests per month are roughly cut in half when converted to usages per month</strong>. The cost per month is calculated from total usages minus free usage cap, multiplied by the price per usage, rounded to the nearest cent.</p>
-                <p>This is an estimation, to get proper usage figures, we recommend that you try our service with the free usage cap, and use our analytics to determine how many usages per month your web application needs.</p>
-                <p>Our research shows that most small websites generate between 1000 to 2000 requests per month and hence 500 to 1000 usages per month.</p>
-                <p>Checkout our strategies for reducing usages per month. (link to using Robots.txt or Robots.json in documentation)</p>
+                <div class="cost-explanation">
+                    <p>Use this tool to estimate your monthly payment. If you’re using a 24 hr cache lifetime, <strong>requests per month are roughly cut in half when converted to usages per month</strong>. The cost per month is calculated from total usages minus free usage cap, multiplied by the price per usage, rounded to the nearest cent.</p>
+                    <p>This is an estimation, to get proper usage figures, we recommend that you try our service with the free usage cap, and use our analytics to determine how many usages per month your web application needs.</p>
+                    <p>Our research shows that most small websites generate between 1000 to 2000 requests per month and hence 500 to 1000 usages per month.</p>
+                    <p>Checkout our <a href="documentation">strategies</a> for reducing usages per month.</p>
+                </div>
                 <form class="cost-calculator" ng-controller="CostCalculatorCtrl" name="costCalculatorForm">
                     <h4>Usages per Month</h4>
                     <div class="form-group">
@@ -45,7 +49,7 @@
                         />
                     </div>
                     <h4>Cost per Month<small>(discounting Free Usage Cap)</small></h4>
-                    <p class="price-per-month">${{price}} AUD per Month</p>
+                    <p class="calculated-price-per-month">${{price}} AUD per Month</p>
                 </form>
                 <em>Need an absurd number of Usages Per Month?<br /><br />Contact us! We can figure out an economical plan for your business.</em>
             </div>
