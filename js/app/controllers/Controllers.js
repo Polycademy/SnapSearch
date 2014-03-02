@@ -15,6 +15,7 @@ angular.module('App.Controllers', [])
     //home
     .controller('DocumentationCtrl', require('./documentation/DocumentationCtrl'))
     //pricing
-    .controller('PricingCtrl', require('./pricing/PricingCtrl'));
+    .controller('PricingCtrl', require('./pricing/PricingCtrl'))
+    .controller('CostCalculatorCtrl', require('./pricing/CostCalculatorCtrl'));
 
 module.exports = angular.module('App.Controllers');
