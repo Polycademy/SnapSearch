@@ -6563,8 +6563,11 @@ footer .attributions strong {
   font-style: normal;
   font-weight: normal;
 }
+#chatTab {
+  width: 200px;
+}
 #chatTab button {
-  font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
 }
 /**
  * UI Elements
