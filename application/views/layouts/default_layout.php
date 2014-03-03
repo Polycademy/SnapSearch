@@ -109,5 +109,7 @@
             </div>
         </footer>
 
+        <chat-tab chat-url="{{config.meta.chatUrl}}" id="chatTab"></chat-tab>
+
     </body>
 </html>

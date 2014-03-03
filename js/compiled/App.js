@@ -47428,14 +47428,15 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./controllers/Controllers":22,"./directives/Directives":30,"./elements/Elements":33,"./filters/Filters":70,"./services/Services":72,"fs":1}],21:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./controllers/Controllers":22,"./directives/Directives":30,"./elements/Elements":33,"./filters/Filters":71,"./services/Services":73,"fs":1}],21:[function(require,module,exports){
 'use strict';
 
 module.exports = {
     meta: {
         email: 'enquiry@snapsearch.io',
         price: 0.002,
-        freeUsageCap: 1000
+        freeUsageCap: 1000,
+        chatUrl: 'http://www.hipchat.com/gz6yae0iP'
     },
     apiKeys: {
         demo: {
@@ -47775,8 +47776,45 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Elements', []);
 
 module.exports = angular.module('App.Elements')
-    .directive('syntax', require('./syntaxHighlight'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./syntaxHighlight":69}],34:[function(require,module,exports){
+    .directive('syntax', require('./syntaxHighlight'))
+    .directive('chatTab', require('./chatTab'));
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./chatTab":34,"./syntaxHighlight":70}],34:[function(require,module,exports){
+'use strict';
+
+var fs = require('fs');
+var insertCss = require('insert-css');
+var css = ".chatTab {\n    position: fixed;\n    right: 1%;\n    bottom: 0;\n    width: 180px;\n}\n\n.chatTab button {\n    color: #FFF;\n    margin: 0 auto;\n    display: block;\n    padding: 6px;\n    background: #428bca;\n    border-top-left-radius: 6px;\n    border-top-right-radius: 6px;\n    border-left: 1px solid #357ebd;\n    border-right: 1px solid #357ebd;\n    border-top: 1px solid #357ebd;\n    border-bottom: none;\n    width: 100%;\n}\n\n.chatTab button:hover {\n    background-color: #2D6CA2;\n    border-color: #2B669A;\n}\n\n.chatTab-content {\n    background: #FFF;\n    width: auto;\n    height: auto;\n    padding: 10px;\n    border-left: 1px solid #dcdcdc;\n    border-right: 1px solid #dcdcdc;\n}\n\n.chatTab-content.crushed {\n    width: 0;\n    height: 0;\n    display: none;\n}\n\n.chatTab-link {\n    display: block;\n    margin-bottom: 5px;\n    text-align: center;\n}";
+var chatTemplate = "<div class=\"chatTab\">\n    <button ng-click=\"openCloseChatTab()\">Chat with the Developers</button>\n    <div class=\"chatTab-content crushed\">\n        <a class=\"chatTab-link\" ng-href=\"{{chatUrl}}\" target=\"_blank\">Access WebChat</a>\n        <p>If we're not online, just leave a message or ping us as we will receive it on our mobile phones.</p>\n    </div>\n</div>";
+
+insertCss(css);
+
+/**
+ * Chat Tab
+ *
+ * Relies on Angular jQuery
+ */
+module.exports = [function () {
+
+    return {
+        scope: {
+            'chatUrl': '@' //this gets passed in directly
+        }, 
+        restrict: 'AE',
+        template: chatTemplate, 
+        replace: true, 
+        link: function (scope, element, attributes) {
+
+            scope.openCloseChatTab = function () {
+
+                element.children('.chatTab-content').toggleClass('crushed');
+
+            };
+
+        }
+    };
+
+}];
+},{"fs":1,"insert-css":74}],35:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -48467,7 +48505,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -48504,7 +48542,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":34,"./languages/apache.js":36,"./languages/bash.js":37,"./languages/clojure.js":38,"./languages/coffeescript.js":39,"./languages/cpp.js":40,"./languages/cs.js":41,"./languages/css.js":42,"./languages/diff.js":43,"./languages/erlang.js":44,"./languages/go.js":45,"./languages/haml.js":46,"./languages/haskell.js":47,"./languages/http.js":48,"./languages/ini.js":49,"./languages/java.js":50,"./languages/javascript.js":51,"./languages/json.js":52,"./languages/lisp.js":53,"./languages/lua.js":54,"./languages/makefile.js":55,"./languages/markdown.js":56,"./languages/nginx.js":57,"./languages/objectivec.js":58,"./languages/perl.js":59,"./languages/php.js":60,"./languages/python.js":61,"./languages/r.js":62,"./languages/ruby.js":63,"./languages/rust.js":64,"./languages/scala.js":65,"./languages/scss.js":66,"./languages/sql.js":67,"./languages/xml.js":68}],36:[function(require,module,exports){
+},{"./highlight":35,"./languages/apache.js":37,"./languages/bash.js":38,"./languages/clojure.js":39,"./languages/coffeescript.js":40,"./languages/cpp.js":41,"./languages/cs.js":42,"./languages/css.js":43,"./languages/diff.js":44,"./languages/erlang.js":45,"./languages/go.js":46,"./languages/haml.js":47,"./languages/haskell.js":48,"./languages/http.js":49,"./languages/ini.js":50,"./languages/java.js":51,"./languages/javascript.js":52,"./languages/json.js":53,"./languages/lisp.js":54,"./languages/lua.js":55,"./languages/makefile.js":56,"./languages/markdown.js":57,"./languages/nginx.js":58,"./languages/objectivec.js":59,"./languages/perl.js":60,"./languages/php.js":61,"./languages/python.js":62,"./languages/r.js":63,"./languages/ruby.js":64,"./languages/rust.js":65,"./languages/scala.js":66,"./languages/scss.js":67,"./languages/sql.js":68,"./languages/xml.js":69}],37:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -48550,7 +48588,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -48613,7 +48651,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -48711,7 +48749,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -48842,7 +48880,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -48906,7 +48944,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -48979,7 +49017,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -49083,7 +49121,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -49123,7 +49161,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -49278,7 +49316,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -49317,7 +49355,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -49439,7 +49477,7 @@ function(hljs) {
     ]
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -49565,7 +49603,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -49599,7 +49637,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -49629,7 +49667,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -49684,7 +49722,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -49756,7 +49794,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -49794,7 +49832,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -49870,7 +49908,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -49927,7 +49965,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -49972,7 +50010,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -50074,7 +50112,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -50155,7 +50193,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -50240,7 +50278,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -50389,7 +50427,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -50498,7 +50536,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -50582,7 +50620,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -50652,7 +50690,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -50811,7 +50849,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -50860,7 +50898,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -50919,7 +50957,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -51036,7 +51074,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -51139,7 +51177,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -51243,7 +51281,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -51300,7 +51338,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":35,"fs":1,"insert-css":73}],70:[function(require,module,exports){
+},{"./lib/hljs/index":36,"fs":1,"insert-css":74}],71:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -51311,7 +51349,7 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{"./..\\..\\..\\components\\angular\\angular.js":9}],71:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9}],72:[function(require,module,exports){
 'use strict';
 
 /**
@@ -51348,7 +51386,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -51360,7 +51398,7 @@ angular.module('App.Services', []);
 
 module.exports = angular.module('App.Services')
     .service('Calculate', require('./Calculate'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./Calculate":71}],73:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./Calculate":72}],74:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {

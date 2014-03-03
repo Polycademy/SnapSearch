@@ -10,4 +10,5 @@ require('angular');
 angular.module('App.Elements', []);
 
 module.exports = angular.module('App.Elements')
-    .directive('syntax', require('./syntaxHighlight'));
+    .directive('syntax', require('./syntaxHighlight'))
+    .directive('chatTab', require('./chatTab'));

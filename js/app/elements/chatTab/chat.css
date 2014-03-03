@@ -1,0 +1,47 @@
+.chatTab {
+    position: fixed;
+    right: 1%;
+    bottom: 0;
+    width: 180px;
+}
+
+.chatTab button {
+    color: #FFF;
+    margin: 0 auto;
+    display: block;
+    padding: 6px;
+    background: #428bca;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-left: 1px solid #357ebd;
+    border-right: 1px solid #357ebd;
+    border-top: 1px solid #357ebd;
+    border-bottom: none;
+    width: 100%;
+}
+
+.chatTab button:hover {
+    background-color: #2D6CA2;
+    border-color: #2B669A;
+}
+
+.chatTab-content {
+    background: #FFF;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    border-left: 1px solid #dcdcdc;
+    border-right: 1px solid #dcdcdc;
+}
+
+.chatTab-content.crushed {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+.chatTab-link {
+    display: block;
+    margin-bottom: 5px;
+    text-align: center;
+}
