@@ -74,10 +74,10 @@
         </div>
     </div>
 </div>
-<div class="demo panel panel_white">
+<div class="demo panel panel_white panel_transition_white_dark">
     <div class="container">
         <div class="panel-heading">
-            <h2 class="panel-title">Try our demo here</h2>
+            <h2 class="panel-title">Try our Demo</h2>
         </div>
         <div class="panel-body">
             <form class="demo-form" ng-controller="DemoCtrl" name="demoForm">
@@ -110,60 +110,22 @@
                     </div>
                 </div>
                 <div class="demo-output" ng-switch="requestingDemoService">
-                    <p class="demo-explanation" ng-switch-when="never">For best results, try it on a single page application! Make sure to add (http(s)://) to the URL.</p>
+                    <p class="demo-explanation" ng-switch-when="never">Try this on a single page application like https://snapsearch.io/. You'll see the difference between how "javascriptless" search engine robots view your application without SnapSearch, and how they view your application with SnapSearch.</p>
                     <img class="demo-loading" ng-switch-when="started" src="assets/img/loading.gif" />
                     <div class="demo-response row" ng-switch-when="finished">
                         <div class="col-sm-6">
                             <h4 class="demo-response-title">Source Code without SnapSearch</h4>
                             <pre class="demo-response-code"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>
-                            <span class="demo-response-length">Characters: {{demoServiceResponse.withoutSnapSearch.length}}</span>
+                            <span class="demo-response-length">Content Length: {{demoServiceResponse.withoutSnapSearch.length}}</span>
                         </div>
                         <div class="col-sm-6">
                             <h4 class="demo-response-title">Source Code with SnapSearch</h4>
                             <pre class="demo-response-code"><code>{{demoServiceResponse.withSnapSearch}}</code></pre>
-                            <span class="demo-response-length">Characters: {{demoServiceResponse.withSnapSearch.length}}</span>
+                            <span class="demo-response-length">Content Length: {{demoServiceResponse.withSnapSearch.length}}</span>
                         </div>
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
-</div>
-<div class="framework-support panel panel_white panel_transition_white_dark">
-    <div class="container">
-        <div class="panel-heading">
-            <h2 class="panel-title">SnapSearch works with...</h2>
-        </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                    <img class="framework-logo" src="assets/img/sails_logo.png" />
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                    <img class="framework-logo" src="assets/img/angular_logo.png" />
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                    <img class="framework-logo" src="assets/img/js_logo.png" />
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                    <img class="framework-logo" src="assets/img/jquery_logo.png" />
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                    <img class="framework-logo" src="assets/img/backbone_logo.png" />
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                    <img class="framework-logo" src="assets/img/ember_logo.png" />
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                    <img class="framework-logo" src="assets/img/knockout_logo.png" />
-                </div>
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                    <img class="framework-logo" src="assets/img/meteor_logo.png" />
-                </div>
-            </div>
-        </div>
-        <div class="panel-footer">
-            <h2 class="panel-title">We’re 100% framework agnostic!</h2>
         </div>
     </div>
 </div>
@@ -268,6 +230,49 @@
                     <h3 class="feature-title">Analytics</h3>
                     <img class="feature-image" src="assets/img/analytics.png" />
                     <p class="feature-explanation">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="framework-support panel panel_white panel_transition_white_yellow">
+    <div class="container">
+        <div class="panel-heading">
+            <h2 class="panel-title">We’re 100% framework agnostic!</h2>
+        </div>
+        <div class="panel-body">
+            <div class="framework-logos row">
+                <div class="framework-box col-xs-6 col-sm-4 col-md-3">
+                    <img class="framework-logo" src="assets/img/sails_logo.png" />
+                    <a href="http://sailsjs.org/">Sails.js</a>
+                </div>
+                <div class="framework-box col-xs-6 col-sm-4 col-md-3">
+                    <img class="framework-logo" src="assets/img/angular_logo.png" />
+                    <a href="http://angularjs.org/">AngularJS</a>
+                </div>
+                <div class="framework-box col-xs-6 col-sm-4 col-md-3">
+                    <img class="framework-logo" src="assets/img/js_logo.png" />
+                    <a href="http://http://www.html5rocks.com/">HTML5 Javascript</a>
+                </div>
+                <div class="framework-box col-xs-6 col-sm-4 col-md-3">
+                    <img class="framework-logo" src="assets/img/jquery_logo.png" />
+                    <a href="http://jquery.com/">jQuery</a>
+                </div>
+                <div class="framework-box col-xs-6 col-sm-4 col-md-3">
+                    <img class="framework-logo" src="assets/img/backbone_logo.png" />
+                    <a href="http://backbonejs.org/">Backbone</a>
+                </div>
+                <div class="framework-box col-xs-6 col-sm-4 col-md-3">
+                    <img class="framework-logo" src="assets/img/ember_logo.png" />
+                    <a href="http://emberjs.com/">ember</a>
+                </div>
+                <div class="framework-box col-xs-6 col-sm-4 col-md-3">
+                    <img class="framework-logo" src="assets/img/knockout_logo.png" />
+                    <a href="http://knockoutjs.com/">Knockout</a>
+                </div>
+                <div class="framework-box col-xs-6 col-sm-4 col-md-3">
+                    <img class="framework-logo" src="assets/img/meteor_logo.png" />
+                    <a href="https://www.meteor.com/">Meteor</a>
                 </div>
             </div>
         </div>

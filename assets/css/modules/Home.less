@@ -70,16 +70,28 @@
     }
 }
 
-.framework-support {
-    .row {
-        > div {
-            margin-top: 20px;
-            margin-bottom: 20px;
+.demo {
+    .demo-form {
+        margin-top: 40px;
+        margin-bottom: 50px;
+        #Centering.blockCenter();
+        max-width: 890px;
+        @media (min-width: @snapsearch-md-breakpoint) {
+            width: 80%;
         }
     }
-    .framework-logo {
-        #Centering.blockCenter();
-        max-width: 100%;
+    .demo-output {
+        .demo-explanation {
+            margin-top: 46px;
+            text-align: center;
+            #Fonts.family("fira_sans_otregular");
+        }
+        .demo-loading {
+            #Centering.blockCenter();
+        }
+        .demo-response {
+            //need to style these 2
+        }
     }
 }
 
@@ -193,26 +205,20 @@
     }
 }
 
-.demo {
-    .demo-form {
-        margin-top: 10px;
-        #Centering.blockCenter();
-        max-width: 890px;
-        @media (min-width: @snapsearch-md-breakpoint) {
-            width: 80%;
+.framework-support {
+    .framework-logos {
+        .framework-box {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            a {
+                #Centering.blockCenter();
+                text-align: center;
+                #Fonts.family("fira_sans_otregular");
+            }
         }
     }
-    .demo-output {
-        .demo-explanation {
-            margin-top: 30px;
-            text-align: center;
-            #Fonts.family("fira_sans_otregular");
-        }
-        .demo-loading {
-            #Centering.blockCenter();
-        }
-        .demo-response {
-
-        }
+    .framework-logo {
+        #Centering.blockCenter();
+        max-width: 100%;
     }
 }

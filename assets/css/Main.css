@@ -6720,16 +6720,30 @@ footer .attributions strong {
 .code-group .tab-content .code-usage code {
   white-space: nowrap;
 }
-.framework-support .row > div {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-.framework-support .framework-logo {
+.demo .demo-form {
+  margin-top: 40px;
+  margin-bottom: 50px;
   margin-right: auto;
   margin-left: auto;
   display: block;
   float: none;
-  max-width: 100%;
+  max-width: 890px;
+}
+@media (min-width: 992px) {
+  .demo .demo-form {
+    width: 80%;
+  }
+}
+.demo .demo-output .demo-explanation {
+  margin-top: 46px;
+  text-align: center;
+  font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.demo .demo-output .demo-loading {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
 }
 .problem-solution h3 {
   font-family: "fira_sans_otlight", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -6856,29 +6870,24 @@ footer .attributions strong {
   font-size: 14px;
   margin: 0;
 }
-.demo .demo-form {
-  margin-top: 10px;
+.framework-support .framework-logos .framework-box {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.framework-support .framework-logos .framework-box a {
   margin-right: auto;
   margin-left: auto;
   display: block;
   float: none;
-  max-width: 890px;
-}
-@media (min-width: 992px) {
-  .demo .demo-form {
-    width: 80%;
-  }
-}
-.demo .demo-output .demo-explanation {
-  margin-top: 30px;
   text-align: center;
   font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-.demo .demo-output .demo-loading {
+.framework-support .framework-logo {
   margin-right: auto;
   margin-left: auto;
   display: block;
   float: none;
+  max-width: 100%;
 }
 /**
  * Pricing Page
