@@ -7,12 +7,12 @@
             <div class="pricing-box">
                 <h3 class="pricing-heading">Pay for What You Use</h3>
                 <h4 class="pricing-subheading">never exceed your budget with a flexible cap</h4>
-                <p class="price-per-month">$0.002 AUD per Usage*<br /><small>(free 1000 Usages Per Month)</small></p>
+                <p class="price-per-month">${{pricePerUsage}} AUD per Usage*<br /><small>(free {{freeUsageCap}} Usages Per Month)</small></p>
                 <dl class="feature-set">
                     <dt>Pages</dt>
                     <dd>Unlimited</dd>
                     <dt>Free Usage Cap</dt>
-                    <dd>1000 Usages per Month<br /><small>(good for small applications)</small></dd>
+                    <dd>{{freeUsageCap}} Usages per Month<br /><small>(good for small applications)</small></dd>
                     <dt>Cache Requests</dt>
                     <dd>Unlimited</dd>
                     <dt>Cache Storage</dt>
@@ -41,17 +41,19 @@
                     <h4>Usages per Month</h4>
                     <div class="form-group">
                         <input 
-                            class="form-control" 
+                            class="form-control input-lg" 
                             type="number" 
                             name="quantity" 
                             ng-model="cost.quantity" 
-                            value=0 
+                            placeholder="1000" 
+                            maxlength="5" 
                         />
+                        <span class="help-block">Try a number above the free usage cap.</span>
                     </div>
-                    <h4>Cost per Month<small>(discounting Free Usage Cap)</small></h4>
+                    <h4>Cost per Month <small>(discounting Free Usage Cap)</small></h4>
                     <p class="calculated-price-per-month">${{price}} AUD per Month</p>
                 </form>
-                <em>Need an absurd number of Usages Per Month?<br /><br />Contact us! We can figure out an economical plan for your business.</em>
+                <em class="custom-plan">Need an absurd number of Usages Per Month?<br /><a href="http://www.google.com/recaptcha/mailhide/d?k=01KxkEAwiT1nfx-BhMp7WKWg==&amp;c=iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24=" onclick="window.open('http://www.google.com/recaptcha/mailhide/d?k\07501KxkEAwiT1nfx-BhMp7WKWg\75\75\46c\75iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;" title="Reveal this e-mail address">Contact us!</a> We can figure out an economical plan for your business.</em>
             </div>
         </div>
     </div>

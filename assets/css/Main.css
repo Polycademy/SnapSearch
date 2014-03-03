@@ -6955,6 +6955,8 @@ footer .attributions strong {
 }
 .cost-estimator {
   max-width: 800px;
+  margin-top: 40px;
+  margin-bottom: 30px;
   margin-right: auto;
   margin-left: auto;
   display: block;
@@ -6964,15 +6966,50 @@ footer .attributions strong {
   font-size: 36px;
   font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-align: center;
+  margin-bottom: 30px;
 }
 .cost-estimator .cost-explanation {
   margin-right: auto;
   margin-left: auto;
   display: block;
   float: none;
-  max-width: 500px;
+  max-width: 600px;
+  margin-bottom: 40px;
+  font-size: 15px;
 }
 .cost-estimator .cost-calculator h4 {
   font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 24px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.cost-estimator .cost-calculator h4 small {
+  color: #ffffff;
+  font-size: 14px;
+}
+.cost-estimator .cost-calculator input {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+  max-width: 90px;
+  text-align: center;
+}
+.cost-estimator .cost-calculator .help-block {
+  text-align: center;
+  color: #ffffff;
+  margin-top: 16px;
+}
+.cost-estimator .cost-calculator .calculated-price-per-month {
+  font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 48px;
+  text-align: center;
+}
+.cost-estimator .custom-plan {
+  margin-top: 20px;
+  text-align: center;
+  display: block;
+  font-family: "fira_sans_otbold_italic", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-style: normal;
 }

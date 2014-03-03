@@ -7,4 +7,5 @@ require('angular');
  */
 angular.module('App.Services', []);
 
-module.exports = angular.module('App.Services');
+module.exports = angular.module('App.Services')
+    .service('Calculate', require('./Calculate'));

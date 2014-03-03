@@ -2,7 +2,9 @@
 
 module.exports = {
     meta: {
-        email: 'enquiry@snapsearch.io'
+        email: 'enquiry@snapsearch.io',
+        price: 0.002,
+        freeUsageCap: 1000
     },
     apiKeys: {
         demo: {

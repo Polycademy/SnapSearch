@@ -47368,7 +47368,7 @@ app.config([
                 'pricing',
                 {
                     url: '/pricing',
-                    template: "<div class=\"pricing panel panel_lego panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Pricing</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"pricing-box\">\n                <h3 class=\"pricing-heading\">Pay for What You Use</h3>\n                <h4 class=\"pricing-subheading\">never exceed your budget with a flexible cap</h4>\n                <p class=\"price-per-month\">$0.002 AUD per Usage*<br /><small>(free 1000 Usages Per Month)</small></p>\n                <dl class=\"feature-set\">\n                    <dt>Pages</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Free Usage Cap</dt>\n                    <dd>1000 Usages per Month<br /><small>(good for small applications)</small></dd>\n                    <dt>Cache Requests</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Storage</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Lifetime</dt>\n                    <dd>Configurable from 1 - 100 hrs</dd>\n                    <dt>Feature Set</dt>\n                    <dd>Complete</dd>\n                </dl>\n                <div class=\"usage-price-explanation\">\n                    <p class=\"lead\">* What is a Usage?</p>\n                    <p>Each request to the SnapSearch API either results in content being dynamically scraped using the SnapSearch scrapers, or content being fetched from the cache.  A usage refers to a request that does not hit the cache, and initiates a fresh snapshot.</p>\n                    <p>The number of usages per month is used for the calculation of the cost per month. The number of requests per month is not capped, but the number of usages per month can be capped in your control panel.</p>\n                    <p>If you’ve exceeded your usage cap, our middleware simply returns your content normally. So it’s best to keep your cap above average in case of search engine traffic spikes.</p>\n                </div>\n            </div>\n            <div class=\"cost-estimator\">\n                <h3 class=\"cost-heading\">Cost Estimator</h3>\n                <div class=\"cost-explanation\">\n                    <p>Use this tool to estimate your monthly payment. If you’re using a 24 hr cache lifetime, <strong>requests per month are roughly cut in half when converted to usages per month</strong>. The cost per month is calculated from total usages minus free usage cap, multiplied by the price per usage, rounded to the nearest cent.</p>\n                    <p>This is an estimation, to get proper usage figures, we recommend that you try our service with the free usage cap, and use our analytics to determine how many usages per month your web application needs.</p>\n                    <p>Our research shows that most small websites generate between 1000 to 2000 requests per month and hence 500 to 1000 usages per month.</p>\n                    <p>Checkout our <a href=\"documentation\">strategies</a> for reducing usages per month.</p>\n                </div>\n                <form class=\"cost-calculator\" ng-controller=\"CostCalculatorCtrl\" name=\"costCalculatorForm\">\n                    <h4>Usages per Month</h4>\n                    <div class=\"form-group\">\n                        <input \n                            class=\"form-control\" \n                            type=\"number\" \n                            name=\"quantity\" \n                            ng-model=\"cost.quantity\" \n                            value=0 \n                        />\n                    </div>\n                    <h4>Cost per Month<small>(discounting Free Usage Cap)</small></h4>\n                    <p class=\"calculated-price-per-month\">${{price}} AUD per Month</p>\n                </form>\n                <em>Need an absurd number of Usages Per Month?<br /><br />Contact us! We can figure out an economical plan for your business.</em>\n            </div>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"pricing panel panel_lego panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Pricing</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"pricing-box\">\n                <h3 class=\"pricing-heading\">Pay for What You Use</h3>\n                <h4 class=\"pricing-subheading\">never exceed your budget with a flexible cap</h4>\n                <p class=\"price-per-month\">${{pricePerUsage}} AUD per Usage*<br /><small>(free {{freeUsageCap}} Usages Per Month)</small></p>\n                <dl class=\"feature-set\">\n                    <dt>Pages</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Free Usage Cap</dt>\n                    <dd>{{freeUsageCap}} Usages per Month<br /><small>(good for small applications)</small></dd>\n                    <dt>Cache Requests</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Storage</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Lifetime</dt>\n                    <dd>Configurable from 1 - 100 hrs</dd>\n                    <dt>Feature Set</dt>\n                    <dd>Complete</dd>\n                </dl>\n                <div class=\"usage-price-explanation\">\n                    <p class=\"lead\">* What is a Usage?</p>\n                    <p>Each request to the SnapSearch API either results in content being dynamically scraped using the SnapSearch scrapers, or content being fetched from the cache.  A usage refers to a request that does not hit the cache, and initiates a fresh snapshot.</p>\n                    <p>The number of usages per month is used for the calculation of the cost per month. The number of requests per month is not capped, but the number of usages per month can be capped in your control panel.</p>\n                    <p>If you’ve exceeded your usage cap, our middleware simply returns your content normally. So it’s best to keep your cap above average in case of search engine traffic spikes.</p>\n                </div>\n            </div>\n            <div class=\"cost-estimator\">\n                <h3 class=\"cost-heading\">Cost Estimator</h3>\n                <div class=\"cost-explanation\">\n                    <p>Use this tool to estimate your monthly payment. If you’re using a 24 hr cache lifetime, <strong>requests per month are roughly cut in half when converted to usages per month</strong>. The cost per month is calculated from total usages minus free usage cap, multiplied by the price per usage, rounded to the nearest cent.</p>\n                    <p>This is an estimation, to get proper usage figures, we recommend that you try our service with the free usage cap, and use our analytics to determine how many usages per month your web application needs.</p>\n                    <p>Our research shows that most small websites generate between 1000 to 2000 requests per month and hence 500 to 1000 usages per month.</p>\n                    <p>Checkout our <a href=\"documentation\">strategies</a> for reducing usages per month.</p>\n                </div>\n                <form class=\"cost-calculator\" ng-controller=\"CostCalculatorCtrl\" name=\"costCalculatorForm\">\n                    <h4>Usages per Month</h4>\n                    <div class=\"form-group\">\n                        <input \n                            class=\"form-control input-lg\" \n                            type=\"number\" \n                            name=\"quantity\" \n                            ng-model=\"cost.quantity\" \n                            placeholder=\"1000\" \n                            maxlength=\"5\" \n                        />\n                        <span class=\"help-block\">Try a number above the free usage cap.</span>\n                    </div>\n                    <h4>Cost per Month <small>(discounting Free Usage Cap)</small></h4>\n                    <p class=\"calculated-price-per-month\">${{price}} AUD per Month</p>\n                </form>\n                <em class=\"custom-plan\">Need an absurd number of Usages Per Month?<br /><a href=\"http://www.google.com/recaptcha/mailhide/d?k=01KxkEAwiT1nfx-BhMp7WKWg==&amp;c=iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24=\" onclick=\"window.open('http://www.google.com/recaptcha/mailhide/d?k\\07501KxkEAwiT1nfx-BhMp7WKWg\\75\\75\\46c\\75iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24\\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;\" title=\"Reveal this e-mail address\">Contact us!</a> We can figure out an economical plan for your business.</em>\n            </div>\n        </div>\n    </div>\n</div>",
                     controller: 'PricingCtrl'
                 }
             );
@@ -47428,12 +47428,14 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./controllers/Controllers":22,"./directives/Directives":30,"./elements/Elements":33,"./filters/Filters":70,"./services/Services":71,"fs":1}],21:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./controllers/Controllers":22,"./directives/Directives":30,"./elements/Elements":33,"./filters/Filters":70,"./services/Services":72,"fs":1}],21:[function(require,module,exports){
 'use strict';
 
 module.exports = {
     meta: {
-        email: 'enquiry@snapsearch.io'
+        email: 'enquiry@snapsearch.io',
+        price: 0.002,
+        freeUsageCap: 1000
     },
     apiKeys: {
         demo: {
@@ -47558,16 +47560,54 @@ module.exports = ['$scope', function ($scope) {
 },{}],28:[function(require,module,exports){
 'use strict';
 
+var config = require('../../Config.js');
+
 /**
  * Cost Calculator Controller
  * 
  * @param {Object} $scope
  */
-module.exports = ['$scope', function ($scope) {
+module.exports = ['$scope', 'Calculate', function ($scope, Calculate) {
+
+    var pricingPerUsage = config.meta.price;
+    var freeUsageCap = config.meta.freeUsageCap;
+
+    //setup the cost object
+    $scope.cost = {};
+
+    $scope.$watch(function (scope) {
+
+        return scope.cost.quantity;
+
+    }, function (quantity) {
+
+        if (!quantity) {
+            quantity = 0;
+        }
+
+        //coerce to integer
+        quantity = parseInt(quantity);
+
+        //calculate the price while subtracting from freeUsageCap
+        var price = pricingPerUsage * (quantity - freeUsageCap);
+
+        //if the price is negative, reset to zero
+        if (price < 0) {
+            price = 0;
+        }
+
+        //round to 2 decimal points, nearest cent
+        price = Calculate.round(price, 2);
+
+        $scope.price = price;
+
+    });
 
 }];
-},{}],29:[function(require,module,exports){
+},{"../../Config.js":21}],29:[function(require,module,exports){
 'use strict';
+
+var config = require('../../Config.js');
 
 /**
  * Pricing Controller
@@ -47576,8 +47616,11 @@ module.exports = ['$scope', function ($scope) {
  */
 module.exports = ['$scope', function ($scope) {
 
+    $scope.pricePerUsage = config.meta.price;
+    $scope.freeUsageCap = config.meta.freeUsageCap;
+
 }];
-},{}],30:[function(require,module,exports){
+},{"../../Config.js":21}],30:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -51250,7 +51293,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":35,"fs":1,"insert-css":72}],70:[function(require,module,exports){
+},{"./lib/hljs/index":35,"fs":1,"insert-css":73}],70:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -51264,6 +51307,43 @@ module.exports = angular.module('App.Filters');
 },{"./..\\..\\..\\components\\angular\\angular.js":9}],71:[function(require,module,exports){
 'use strict';
 
+/**
+ * Calculate Service
+ */
+module.exports = [function () {
+
+    /**
+     * Rounds to the nearest place. It can be decimal place, or negative place.
+     * 
+     * @param  {string|integer|float} value  Number to be rounded
+     * @param  {integer}              places Places can be positive or negative.
+     * @return {integer|float}
+     */
+    this.round = function round(value, places) {
+
+        if (typeof places === 'undefined' || +places === 0)
+        return Math.round(value);
+
+        value = +value;
+        places  = +places;
+
+        if (isNaN(value) || !(typeof places === 'number' && places % 1 === 0))
+        return NaN;
+
+        // Shift
+        value = value.toString().split('e');
+        value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + places) : places)));
+
+        // Shift back
+        value = value.toString().split('e');
+        return +(value[0] + 'e' + (value[1] ? (+value[1] - places) : -places));
+
+    };
+
+}];
+},{}],72:[function(require,module,exports){
+'use strict';
+
 require("./..\\..\\..\\components\\angular\\angular.js");
 
 /**
@@ -51271,8 +51351,9 @@ require("./..\\..\\..\\components\\angular\\angular.js");
  */
 angular.module('App.Services', []);
 
-module.exports = angular.module('App.Services');
-},{"./..\\..\\..\\components\\angular\\angular.js":9}],72:[function(require,module,exports){
+module.exports = angular.module('App.Services')
+    .service('Calculate', require('./Calculate'));
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./Calculate":71}],73:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {
