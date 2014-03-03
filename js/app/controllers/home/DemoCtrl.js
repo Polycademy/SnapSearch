@@ -1,11 +1,16 @@
 'use strict';
 
+var config = require('../../Config.js');
+
 /**
  * Demo Controller
  * 
  * @param {Object} $scope
  */
 module.exports = ['$scope', function ($scope) {
+
+    var demoUsername = config.apiKeys.demo.user;
+    var demoPassword = config.apiKeys.demo.pass;
 
     /**
      * State to indicate requesting status.
@@ -33,6 +38,8 @@ module.exports = ['$scope', function ($scope) {
         //send request to the back end service
         //when the response comes back set $scope.requestingDemoService = 'finished';
         //set the content to $scope.demoServiceResponse = response.content;
+        //set $scope.demoServiceResponseWithoutSnapSearch - with robots
+        //set $scope.demoServiceResponseWithSnapSearch - standard curl
 
     };
 

@@ -74,6 +74,61 @@
         </div>
     </div>
 </div>
+<div class="demo panel panel_white">
+    <div class="container">
+        <div class="panel-heading">
+            <h2 class="panel-title">Try our demo here</h2>
+        </div>
+        <div class="panel-body">
+            <form class="demo-form" ng-controller="DemoCtrl" name="demoForm">
+                <div 
+                    class="form-group" 
+                    ng-class="{
+                        'has-error': !!demoForm.url.$error.invalidUrl && demoForm.url.$dirty
+                    }"
+                >
+                    <div class="input-group input-group-lg">
+                        <input 
+                            class="form-control" 
+                            type="url" 
+                            name="url" 
+                            ng-model="demo.url" 
+                            required 
+                            ui-validate="{invalidUrl: 'validateUrl($value)'}" 
+                            placeholder="http://your-site.com/" 
+                        />
+                        <span class="input-group-btn">
+                            <button 
+                                class="btn btn-primary" 
+                                type="submit" 
+                                ng-disabled="demoForm.$invalid" 
+                                ng-click="submit(demo)" 
+                            >
+                                Scrape
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="demo-output" ng-switch="requestingDemoService">
+                    <p class="demo-explanation" ng-switch-when="never">For best results, try it on a single page application! Make sure to add (http(s)://) to the URL.</p>
+                    <img class="demo-loading" ng-switch-when="started" src="assets/img/loading.gif" />
+                    <div class="demo-response row" ng-switch-when="finished">
+                        <div class="col-sm-6">
+                            <h4 class="demo-response-title">Source Code without SnapSearch</h4>
+                            <pre class="demo-response-code"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>
+                            <span class="demo-response-length">Characters: {{demoServiceResponse.withoutSnapSearch.length}}</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4 class="demo-response-title">Source Code with SnapSearch</h4>
+                            <pre class="demo-response-code"><code>{{demoServiceResponse.withSnapSearch}}</code></pre>
+                            <span class="demo-response-length">Characters: {{demoServiceResponse.withSnapSearch.length}}</span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="framework-support panel panel_white panel_transition_white_dark">
     <div class="container">
         <div class="panel-heading">
@@ -215,50 +270,6 @@
                     <p class="feature-explanation">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-<div class="demo panel panel_white panel_transition_white_yellow">
-    <div class="container">
-        <div class="panel-heading">
-            <h2 class="panel-title">Try our demo here</h2>
-        </div>
-        <div class="panel-body">
-            <form class="demo-form" ng-controller="DemoCtrl" name="demoForm">
-                <div 
-                    class="form-group" 
-                    ng-class="{
-                        'has-error': !!demoForm.url.$error.invalidUrl && demoForm.url.$dirty
-                    }"
-                >
-                    <div class="input-group input-group-lg">
-                        <input 
-                            class="form-control" 
-                            type="url" 
-                            name="url" 
-                            ng-model="demo.url" 
-                            required 
-                            ui-validate="{invalidUrl: 'validateUrl($value)'}" 
-                            placeholder="http://your-site.com/" 
-                        />
-                        <span class="input-group-btn">
-                            <button 
-                                class="btn btn-primary" 
-                                type="submit" 
-                                ng-disabled="demoForm.$invalid" 
-                                ng-click="submit(demo)" 
-                            >
-                                Scrape
-                            </button>
-                        </span>
-                    </div>
-                </div>
-                <div class="demo-output" ng-switch="requestingDemoService">
-                    <p class="demo-explanation" ng-switch-when="never">For best results, try it on a single page application! Make sure to add (http(s)://) to the URL.</p>
-                    <img class="demo-loading" ng-switch-when="started" src="assets/img/loading.gif" />
-                    <pre class="demo-response" ng-switch-when="finished"><code>{{demoServiceResponse}}</code></pre>
-                </div>
-            </form>
         </div>
     </div>
 </div>
