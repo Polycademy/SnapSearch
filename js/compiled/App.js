@@ -47347,7 +47347,7 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./Run":22,"./controllers/Controllers":24,"./directives/Directives":32,"./elements/Elements":35,"./filters/Filters":73,"./services/Services":75}],21:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./Run":22,"./controllers/Controllers":24,"./directives/Directives":35,"./elements/Elements":38,"./filters/Filters":76,"./services/Services":79}],21:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -47378,7 +47378,7 @@ module.exports = [
                 'documentation',
                 {
                     url: '/documentation',
-                    template: "<div class=\"documentation panel panel_lego panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-header\">\n            <h2>Documentation</h2>\n        </div>\n        <div class=\"panel-body\">\n            \n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"documentation panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Documentation</h2>\n        </div>\n        <div class=\"panel-body\">\n            <p>Starting Documentation</p>\n        </div>\n    </div>\n</div>",
                     controller: 'DocumentationCtrl'
                 }
             )
@@ -47386,8 +47386,16 @@ module.exports = [
                 'pricing',
                 {
                     url: '/pricing',
-                    template: "<div class=\"pricing panel panel_lego panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Pricing</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"pricing-box\">\n                <h3 class=\"pricing-heading\">Pay for What You Use</h3>\n                <h4 class=\"pricing-subheading\">never exceed your budget with a flexible cap</h4>\n                <p class=\"price-per-month\">${{pricePerUsage}} AUD per Usage*<br /><small>(free {{freeUsageCap}} Usages Per Month)</small></p>\n                <dl class=\"feature-set\">\n                    <dt>Pages</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Free Usage Cap</dt>\n                    <dd>{{freeUsageCap}} Usages per Month<br /><small>(good for small applications)</small></dd>\n                    <dt>Cache Requests</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Storage</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Lifetime</dt>\n                    <dd>Configurable from 1 - 100 hrs</dd>\n                    <dt>Feature Set</dt>\n                    <dd>Complete</dd>\n                </dl>\n                <div class=\"usage-price-explanation\">\n                    <p class=\"lead\">* What is a Usage?</p>\n                    <p>Each request to the SnapSearch API either results in content being dynamically scraped using the SnapSearch scrapers, or content being fetched from the cache.  A usage refers to a request that does not hit the cache, and initiates a fresh snapshot.</p>\n                    <p>The number of usages per month is used for the calculation of the cost per month. The number of requests per month is not capped, but the number of usages per month can be capped in your control panel.</p>\n                    <p>If you’ve exceeded your usage cap, our middleware simply returns your content normally. So it’s best to keep your cap above average in case of search engine traffic spikes.</p>\n                </div>\n            </div>\n            <div class=\"cost-estimator\">\n                <h3 class=\"cost-heading\">Cost Estimator</h3>\n                <div class=\"cost-explanation\">\n                    <p>Use this tool to estimate your monthly payment. If you’re using a 24 hr cache lifetime, <strong>requests per month are roughly cut in half when converted to usages per month</strong>. The cost per month is calculated from total usages minus free usage cap, multiplied by the price per usage, rounded to the nearest cent.</p>\n                    <p>This is an estimation, to get proper usage figures, we recommend that you try our service with the free usage cap, and use our analytics to determine how many usages per month your web application needs.</p>\n                    <p>Our research shows that most small websites generate between 1000 to 2000 requests per month and hence 500 to 1000 usages per month.</p>\n                    <p>Checkout our <a href=\"documentation\">strategies</a> for reducing usages per month.</p>\n                </div>\n                <form class=\"cost-calculator\" ng-controller=\"CostCalculatorCtrl\" name=\"costCalculatorForm\">\n                    <h4>Usages per Month</h4>\n                    <div class=\"form-group\">\n                        <input \n                            class=\"form-control input-lg\" \n                            type=\"number\" \n                            name=\"quantity\" \n                            ng-model=\"cost.quantity\" \n                            placeholder=\"1000\" \n                            maxlength=\"5\" \n                        />\n                        <span class=\"help-block\">Try a number above the free usage cap.</span>\n                    </div>\n                    <h4>Cost per Month <small>(discounting Free Usage Cap)</small></h4>\n                    <p class=\"calculated-price-per-month\">${{price}} AUD per Month</p>\n                </form>\n                <em class=\"custom-plan\">Need an absurd number of Usages Per Month?<br /><a href=\"http://www.google.com/recaptcha/mailhide/d?k=01KxkEAwiT1nfx-BhMp7WKWg==&amp;c=iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24=\" onclick=\"window.open('http://www.google.com/recaptcha/mailhide/d?k\\07501KxkEAwiT1nfx-BhMp7WKWg\\75\\75\\46c\\75iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24\\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;\" title=\"Reveal this e-mail address\">Contact us!</a> We can figure out an economical plan for your business.</em>\n            </div>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"pricing panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Pricing</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"pricing-box\">\n                <h3 class=\"pricing-heading\">Pay for What You Use</h3>\n                <h4 class=\"pricing-subheading\">never exceed your budget with a flexible cap</h4>\n                <p class=\"price-per-month\">${{pricePerUsage}} AUD per Usage*<br /><small>(free {{freeUsageCap}} Usages Per Month)</small></p>\n                <dl class=\"feature-set\">\n                    <dt>Pages</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Free Usage Cap</dt>\n                    <dd>{{freeUsageCap}} Usages per Month<br /><small>(good for small applications)</small></dd>\n                    <dt>Cache Requests</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Storage</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Lifetime</dt>\n                    <dd>Configurable from 1 - 100 hrs</dd>\n                    <dt>Feature Set</dt>\n                    <dd>Complete</dd>\n                </dl>\n                <div class=\"usage-price-explanation\">\n                    <p class=\"lead\">* What is a Usage?</p>\n                    <p>Each request to the SnapSearch API either results in content being dynamically scraped using the SnapSearch scrapers, or content being fetched from the cache.  A usage refers to a request that does not hit the cache, and initiates a fresh snapshot.</p>\n                    <p>The number of usages per month is used for the calculation of the cost per month. The number of requests per month is not capped, but the number of usages per month can be capped in your control panel.</p>\n                    <p>If you’ve exceeded your usage cap, our middleware simply returns your content normally. So it’s best to keep your cap above average in case of search engine traffic spikes.</p>\n                </div>\n            </div>\n            <div class=\"cost-estimator\">\n                <h3 class=\"cost-heading\">Cost Estimator</h3>\n                <div class=\"cost-explanation\">\n                    <p>Use this tool to estimate your monthly payment. If you’re using a 24 hr cache lifetime, <strong>requests per month are roughly cut in half when converted to usages per month</strong>. The cost per month is calculated from total usages minus free usage cap, multiplied by the price per usage, rounded to the nearest cent.</p>\n                    <p>This is an estimation, to get proper usage figures, we recommend that you try our service with the free usage cap, and use our analytics to determine how many usages per month your web application needs.</p>\n                    <p>Our research shows that most small websites generate between 1000 to 2000 requests per month and hence 500 to 1000 usages per month.</p>\n                    <p>Checkout our <a href=\"documentation\">strategies</a> for reducing usages per month.</p>\n                </div>\n                <form class=\"cost-calculator\" ng-controller=\"CostCalculatorCtrl\" name=\"costCalculatorForm\">\n                    <h4>Usages per Month</h4>\n                    <div class=\"form-group\">\n                        <input \n                            class=\"form-control input-lg\" \n                            type=\"number\" \n                            name=\"quantity\" \n                            ng-model=\"cost.quantity\" \n                            placeholder=\"1000\" \n                            maxlength=\"5\" \n                        />\n                        <span class=\"help-block\">Try a number above the free usage cap.</span>\n                    </div>\n                    <h4>Cost per Month <small>(discounting Free Usage Cap)</small></h4>\n                    <p class=\"calculated-price-per-month\">${{price}} AUD per Month</p>\n                </form>\n                <em class=\"custom-plan\">Need an absurd number of Usages Per Month?<br /><a href=\"http://www.google.com/recaptcha/mailhide/d?k=01KxkEAwiT1nfx-BhMp7WKWg==&amp;c=iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24=\" onclick=\"window.open('http://www.google.com/recaptcha/mailhide/d?k\\07501KxkEAwiT1nfx-BhMp7WKWg\\75\\75\\46c\\75iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24\\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;\" title=\"Reveal this e-mail address\">Contact us!</a> We can figure out an economical plan for your business.</em>\n            </div>\n        </div>\n    </div>\n</div>",
                     controller: 'PricingCtrl'
+                }
+            )
+            .state(
+                'controlPanel',
+                {
+                    url: '/control_panel',
+                    template: "",
+                    controller: 'ControlPanelCtrl'
                 }
             );
 
@@ -47485,21 +47493,143 @@ angular.module('App.Controllers', [])
     .controller('DocumentationCtrl', require('./documentation/DocumentationCtrl'))
     //pricing
     .controller('PricingCtrl', require('./pricing/PricingCtrl'))
-    .controller('CostCalculatorCtrl', require('./pricing/CostCalculatorCtrl'));
+    .controller('CostCalculatorCtrl', require('./pricing/CostCalculatorCtrl'))
+    //control panel
+    .controller('ControlPanelCtrl', require('./control_panel/ControlPanelCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":25,"./documentation/DocumentationCtrl":26,"./home/CodeGroupCtrl":27,"./home/DemoCtrl":28,"./home/HomeCtrl":29,"./pricing/CostCalculatorCtrl":30,"./pricing/PricingCtrl":31}],25:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":25,"./control_panel/ControlPanelCtrl":28,"./documentation/DocumentationCtrl":29,"./home/CodeGroupCtrl":30,"./home/DemoCtrl":31,"./home/HomeCtrl":32,"./pricing/CostCalculatorCtrl":33,"./pricing/PricingCtrl":34}],25:[function(require,module,exports){
 'use strict';
+
+var fs = require('fs');
 
 /**
  * Header Controller
  * 
  * @param {Object} $scope
  */
-module.exports = ['$scope', function ($scope) {
+module.exports = ['$scope', '$modal', function ($scope, $modal) {
+
+    /**
+     * In the future, these 2 functions opening up the signup and login modal could be replaced with "modal" states that transition to and from the parent state which would whichever state that the person activated the modal box.
+     * Watch: https://github.com/angular-ui/ui-router/issues/92
+     * Then these states could be bound to a particular URL.
+     * Also look into multiple inheritance of states.
+     */
+
+    $scope.openSignUpModal = function () {
+
+        $modal.open({
+            template: "<div class=\"modal-header\">\n    <h3>Sign Up</h3>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"signupForm\">\n        <div class=\"form-group\">\n            <label for=\"signupFormUsername\">Username:</label>\n            <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required />\n        </div>\n        <div class=\"form-group\">\n            <label for=\"signupFormEmail\">Email:</label>\n            <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required />\n        </div>\n        <div class=\"form-group\">\n            <label for=\"signupFormPassword\">Password:</label>\n            <input id=\"signupFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"user.password\" required />\n        </div>\n    </form>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\">OK</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Cancel</button>\n</div>", 
+            controller: require('./SignUpCtrl')
+        }).result.then(function () {
+
+            console.log('logged in!');
+
+            //successfully signed in, should autologin
+
+        }, function () {
+
+            console.log('cancelled');
+
+            //fail modal
+
+        });
+
+    };
+
+    $scope.openLogInModal = function () {
+
+        $modal.open({
+            template: "<div class=\"modal-header\">\n    <h3>Log In</h3>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"loginForm\">\n        <div class=\"form-group\">\n            <label for=\"loginFormEmail\">Email:</label>\n            <input id=\"loginFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required />\n        </div>\n        <div class=\"form-group\">\n            <label for=\"loginFormPassword\">Password:</label>\n            <input id=\"loginFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"user.password\" required />\n        </div>\n    </form>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"login(user)\">OK</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Cancel</button>\n</div>",
+            controller: require('./LogInCtrl')
+        }).result.then(function () {
+
+            //successfully logged in
+
+        }, function () {
+
+            //closed the modal
+
+        });
+
+    };
+
+    $scope.logout = function () {
+
+        //just log the person out
+
+    };
 
 }];
-},{}],26:[function(require,module,exports){
+},{"./LogInCtrl":26,"./SignUpCtrl":27,"fs":1}],26:[function(require,module,exports){
+'use strict';
+
+/**
+ * Login Modal Controller
+ */
+module.exports = ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+
+    //default user object containing the email and password
+    $scope.user = {};
+
+    $scope.login = function (user) {
+
+        //user.email
+        //user.password
+        //
+        //then call $modalInstance.close('logged_in');
+
+    };
+
+    $scope.cancel = function () {
+
+        $modalInstance.dismiss('cancel');
+
+    };
+
+}];
+},{}],27:[function(require,module,exports){
+'use strict';
+
+/**
+ * Sign Up Modal Controller
+ */
+module.exports = ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+
+    //default user object containing the email and password
+    $scope.user = {};
+
+    $scope.signup = function (user) {
+
+        //user.username
+        //user.email
+        //user.password
+        //
+        //then call $modalInstance.close('logged_in');
+
+    };
+
+    $scope.cancel = function () {
+
+        $modalInstance.dismiss('cancel');
+
+    };
+
+}];
+},{}],28:[function(require,module,exports){
+'use strict';
+
+/**
+ * Control Panel Controller
+ *
+ * @param {Object} $scope
+ */
+module.exports = ['$scope', function ($scope) {
+
+
+}];
+},{}],29:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47510,7 +47640,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],27:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47528,7 +47658,7 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],28:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -47575,7 +47705,7 @@ module.exports = ['$scope', function ($scope) {
     };
 
 }];
-},{"../../Settings":23}],29:[function(require,module,exports){
+},{"../../Settings":23}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47586,7 +47716,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],30:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -47633,7 +47763,7 @@ module.exports = ['$scope', 'Calculate', function ($scope, Calculate) {
     });
 
 }];
-},{"../../Settings":23}],31:[function(require,module,exports){
+},{"../../Settings":23}],34:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -47649,7 +47779,7 @@ module.exports = ['$scope', function ($scope) {
     $scope.freeUsageCap = settings.meta.freeUsageCap;
 
 }];
-},{"../../Settings":23}],32:[function(require,module,exports){
+},{"../../Settings":23}],35:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -47662,7 +47792,7 @@ angular.module('App.Directives', []);
 module.exports = angular.module('App.Directives')
     .directive('equaliseHeights', require('./equaliseHeights'))
     .directive('anchor', require('./anchor'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./anchor":33,"./equaliseHeights":34}],33:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./anchor":36,"./equaliseHeights":37}],36:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -47742,7 +47872,7 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
         };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],34:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],37:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -47784,7 +47914,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],35:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],38:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -47799,7 +47929,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./chatTab":36,"./syntaxHighlight":72}],36:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./chatTab":39,"./syntaxHighlight":75}],39:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -47835,7 +47965,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":76}],37:[function(require,module,exports){
+},{"fs":1,"insert-css":80}],40:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -48526,7 +48656,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -48563,7 +48693,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":37,"./languages/apache.js":39,"./languages/bash.js":40,"./languages/clojure.js":41,"./languages/coffeescript.js":42,"./languages/cpp.js":43,"./languages/cs.js":44,"./languages/css.js":45,"./languages/diff.js":46,"./languages/erlang.js":47,"./languages/go.js":48,"./languages/haml.js":49,"./languages/haskell.js":50,"./languages/http.js":51,"./languages/ini.js":52,"./languages/java.js":53,"./languages/javascript.js":54,"./languages/json.js":55,"./languages/lisp.js":56,"./languages/lua.js":57,"./languages/makefile.js":58,"./languages/markdown.js":59,"./languages/nginx.js":60,"./languages/objectivec.js":61,"./languages/perl.js":62,"./languages/php.js":63,"./languages/python.js":64,"./languages/r.js":65,"./languages/ruby.js":66,"./languages/rust.js":67,"./languages/scala.js":68,"./languages/scss.js":69,"./languages/sql.js":70,"./languages/xml.js":71}],39:[function(require,module,exports){
+},{"./highlight":40,"./languages/apache.js":42,"./languages/bash.js":43,"./languages/clojure.js":44,"./languages/coffeescript.js":45,"./languages/cpp.js":46,"./languages/cs.js":47,"./languages/css.js":48,"./languages/diff.js":49,"./languages/erlang.js":50,"./languages/go.js":51,"./languages/haml.js":52,"./languages/haskell.js":53,"./languages/http.js":54,"./languages/ini.js":55,"./languages/java.js":56,"./languages/javascript.js":57,"./languages/json.js":58,"./languages/lisp.js":59,"./languages/lua.js":60,"./languages/makefile.js":61,"./languages/markdown.js":62,"./languages/nginx.js":63,"./languages/objectivec.js":64,"./languages/perl.js":65,"./languages/php.js":66,"./languages/python.js":67,"./languages/r.js":68,"./languages/ruby.js":69,"./languages/rust.js":70,"./languages/scala.js":71,"./languages/scss.js":72,"./languages/sql.js":73,"./languages/xml.js":74}],42:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -48609,7 +48739,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],40:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -48672,7 +48802,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],41:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -48770,7 +48900,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],42:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -48901,7 +49031,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],43:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -48965,7 +49095,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],44:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -49038,7 +49168,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -49142,7 +49272,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -49182,7 +49312,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -49337,7 +49467,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -49376,7 +49506,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -49498,7 +49628,7 @@ function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -49624,7 +49754,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -49658,7 +49788,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -49688,7 +49818,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -49743,7 +49873,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -49815,7 +49945,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -49853,7 +49983,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -49929,7 +50059,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -49986,7 +50116,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -50031,7 +50161,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -50133,7 +50263,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -50214,7 +50344,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -50299,7 +50429,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -50448,7 +50578,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -50557,7 +50687,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -50641,7 +50771,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -50711,7 +50841,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -50870,7 +51000,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -50919,7 +51049,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -50978,7 +51108,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -51095,7 +51225,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -51198,7 +51328,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -51302,7 +51432,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -51359,7 +51489,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":38,"fs":1,"insert-css":76}],73:[function(require,module,exports){
+},{"./lib/hljs/index":41,"fs":1,"insert-css":80}],76:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -51370,7 +51500,34 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{"./..\\..\\..\\components\\angular\\angular.js":9}],74:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9}],77:[function(require,module,exports){
+'use strict';
+
+/**
+ * Authentication State Run Block
+ */
+module.exports = ['$rootScope', function ($rootScope) {
+
+    //initial parameters will be changed 
+    $rootScope.loggedIn = false;
+    $rootScope.loggedOut = true;
+
+    $rootScope.$on('authenticationProvided', function (event, args) {
+
+        $rootScope.loggedIn = true;
+        $rootScope.loggedOut = false;
+
+    });
+
+    $rootScope.$on('authenticationLogout', function (event, args) {
+
+        $rootScope.loggedIn = false;
+        $rootScope.loggedOut = true;
+
+    });
+
+}];
+},{}],78:[function(require,module,exports){
 'use strict';
 
 /**
@@ -51407,7 +51564,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],75:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -51418,8 +51575,11 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Services', []);
 
 module.exports = angular.module('App.Services')
+    //Initialisation Services
+    .run(require('./AuthenticationState'))
+    //Service Objects
     .service('Calculate', require('./Calculate'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./Calculate":74}],76:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./AuthenticationState":77,"./Calculate":78}],80:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {

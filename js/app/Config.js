@@ -39,6 +39,14 @@ module.exports = [
                     template: fs.readFileSync(__dirname + '/../templates/pricing.html', 'utf8'),
                     controller: 'PricingCtrl'
                 }
+            )
+            .state(
+                'controlPanel',
+                {
+                    url: '/control_panel',
+                    template: fs.readFileSync(__dirname + '/../templates/control_panel.html', 'utf8'),
+                    controller: 'ControlPanelCtrl'
+                }
             );
 
         $urlRouterProvider.otherwise('/');

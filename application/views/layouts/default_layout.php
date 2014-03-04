@@ -68,8 +68,10 @@
                         <li ng-class="{'active': $state.includes('pricing')}"><a ng-href="pricing">PRICING</a></li>
                         <li><a ng-click="scroll('about')">ABOUT</a></li>
                         <li><a ng-href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">BLOG</a></li>
-                        <li><button class="btn navbar-btn" type="button" ng-click="openSignUpModal()">SIGN UP</button></li>
-                        <li><button class="btn navbar-btn" type="button" ng-click="openLogInModal()">LOG IN</button></li>
+                        <li ng-show="loggedOut"><button class="btn navbar-btn" type="button" ng-click="openSignUpModal()">SIGN UP</button></li>
+                        <li ng-show="loggedOut"><button class="btn navbar-btn" type="button" ng-click="openLogInModal()">LOG IN</button></li>
+                        <li ng-show="loggedIn" ng-class="{'active': $state.includes('controlPanel')}"><a ng-href="control_panel">CONTROL PANEL</a></li>
+                        <li ng-show="loggedIn"><button class="btn navbar-btn" type="button" ng-click="logout()">LOG OUT</button></li>
                     </ul>
                 </nav>
             </div>
