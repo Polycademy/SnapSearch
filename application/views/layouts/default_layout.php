@@ -68,8 +68,8 @@
                         <li ng-class="{'active': $state.includes('pricing')}"><a ng-href="pricing">PRICING</a></li>
                         <li><a ng-click="scroll('about')">ABOUT</a></li>
                         <li><a ng-href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">BLOG</a></li>
-                        <li><button class="btn navbar-btn" type="button" ng-click="">SIGN UP</button></li>
-                        <li><button class="btn navbar-btn" type="button" ng-click="">LOG IN</button></li>
+                        <li><button class="btn navbar-btn" type="button" ng-click="openSignUpModal()">SIGN UP</button></li>
+                        <li><button class="btn navbar-btn" type="button" ng-click="openLogInModal()">LOG IN</button></li>
                     </ul>
                 </nav>
             </div>
@@ -109,7 +109,7 @@
             </div>
         </footer>
 
-        <chat-tab chat-url="{{config.meta.chatUrl}}" id="chatTab"></chat-tab>
+        <chat-tab chat-url="{{settings.meta.chatUrl}}" id="chatTab"></chat-tab>
 
     </body>
 </html>

@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('../../Config.js');
+var settings = require('../../Settings');
 
 /**
  * Cost Calculator Controller
@@ -9,8 +9,8 @@ var config = require('../../Config.js');
  */
 module.exports = ['$scope', 'Calculate', function ($scope, Calculate) {
 
-    var pricingPerUsage = config.meta.price;
-    var freeUsageCap = config.meta.freeUsageCap;
+    var pricingPerUsage = settings.meta.price;
+    var freeUsageCap = settings.meta.freeUsageCap;
 
     //setup the cost object
     $scope.cost = {};

@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('../../Config.js');
+var settings = require('../../Settings');
 
 /**
  * Pricing Controller
@@ -9,7 +9,7 @@ var config = require('../../Config.js');
  */
 module.exports = ['$scope', function ($scope) {
 
-    $scope.pricePerUsage = config.meta.price;
-    $scope.freeUsageCap = config.meta.freeUsageCap;
+    $scope.pricePerUsage = settings.meta.price;
+    $scope.freeUsageCap = settings.meta.freeUsageCap;
 
 }];

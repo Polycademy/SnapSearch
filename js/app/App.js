@@ -30,12 +30,6 @@ require('angulartics');
 require('../../components/angulartics/src/angulartics-ga.js');
 
 /**
- * Modules
- */
-var config = require('./Config');
-var fs = require('fs');
-
-/**
  * Bootstrapping Angular Modules
  */
 var app = angular.module('App', [
@@ -58,87 +52,12 @@ var app = angular.module('App', [
 /**
  * Configuration & Routing
  */
-app.config([
-    '$locationProvider',
-    '$stateProvider',
-    '$urlRouterProvider',
-    function($locationProvider, $stateProvider, $urlRouterProvider){
-
-        //HTML5 Mode URLs
-        $locationProvider.html5Mode(true).hashPrefix('!');
-
-        //precompiled templates, these routes should be used with ui-sref and ui-sref-active
-        $stateProvider
-            .state(
-                'home',
-                {
-                    url: '/',
-                    template: fs.readFileSync(__dirname + '/../templates/home.html', 'utf8'),
-                    controller: 'HomeCtrl'
-                }
-            )
-            .state(
-                'documentation',
-                {
-                    url: '/documentation',
-                    template: fs.readFileSync(__dirname + '/../templates/documentation.html', 'utf8'),
-                    controller: 'DocumentationCtrl'
-                }
-            )
-            .state(
-                'pricing',
-                {
-                    url: '/pricing',
-                    template: fs.readFileSync(__dirname + '/../templates/pricing.html', 'utf8'),
-                    controller: 'PricingCtrl'
-                }
-            );
-
-        $urlRouterProvider.otherwise('/');
-
-    }
-]);
+app.config(require('./Config'));
 
 /**
  * Initialisation
  */
-app.run([
-    '$rootScope',
-    '$cookies',
-    '$http',
-    '$state',
-    '$stateParams',
-    '$anchorScroll',
-    '$location',
-    function($rootScope, $cookies, $http, $state, $stateParams, $anchorScroll, $location){
-
-        //XSRF INTEGRATION
-        $rootScope.$watch(
-            function(){
-                return $cookies[serverVars.csrfCookieName];
-            },
-            function(){
-                $http.defaults.headers.common['X-XSRF-TOKEN'] = $cookies[serverVars.csrfCookieName];
-            }
-        );
-
-        //PROVIDING STATE ON ROOTSCOPE
-        $rootScope.$state = $state;
-        $rootScope.$stateParams = $stateParams;
-
-        //CONFIGURATION
-        $rootScope.config = config;
-
-        //PROVIDING BASE URL
-        $rootScope.baseUrl = angular.element('base').attr('href');
-
-        $rootScope.scroll = function (hash) {
-            $location.hash(hash);
-            $anchorScroll();
-        };
-
-    }
-]);
+app.run(require('./Run'));
 
 /**
  * Execute!

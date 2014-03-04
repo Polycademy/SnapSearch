@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('../../Config.js');
+var settings = require('../../Settings');
 
 /**
  * Demo Controller
@@ -9,8 +9,8 @@ var config = require('../../Config.js');
  */
 module.exports = ['$scope', function ($scope) {
 
-    var demoUsername = config.apiKeys.demo.user;
-    var demoPassword = config.apiKeys.demo.pass;
+    var demoUsername = settings.apiKeys.demo.user;
+    var demoPassword = settings.apiKeys.demo.pass;
 
     /**
      * State to indicate requesting status.

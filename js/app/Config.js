@@ -1,16 +1,47 @@
 'use strict';
 
-module.exports = {
-    meta: {
-        email: 'enquiry@snapsearch.io',
-        price: 0.002,
-        freeUsageCap: 1000,
-        chatUrl: 'http://www.hipchat.com/gz6yae0iP'
-    },
-    apiKeys: {
-        demo: {
-            user: 'demo@polycademy.com',
-            pass: 'a2XEBCF6H5Tm9aYiwYRtdz7EirJDKbKHXl7LzA21boJVkxXD3E'
-        }
+var fs = require('fs');
+
+/**
+ * Angular Configuration & Routing
+ */
+module.exports = [
+    '$locationProvider', 
+    '$stateProvider', 
+    '$urlRouterProvider', 
+    function ($locationProvider, $stateProvider, $urlRouterProvider) {
+
+        //HTML5 Mode URLs
+        $locationProvider.html5Mode(true).hashPrefix('!');
+
+        //precompiled templates, these routes should be used with ui-sref and ui-sref-active
+        $stateProvider
+            .state(
+                'home',
+                {
+                    url: '/',
+                    template: fs.readFileSync(__dirname + '/../templates/home.html', 'utf8'),
+                    controller: 'HomeCtrl'
+                }
+            )
+            .state(
+                'documentation',
+                {
+                    url: '/documentation',
+                    template: fs.readFileSync(__dirname + '/../templates/documentation.html', 'utf8'),
+                    controller: 'DocumentationCtrl'
+                }
+            )
+            .state(
+                'pricing',
+                {
+                    url: '/pricing',
+                    template: fs.readFileSync(__dirname + '/../templates/pricing.html', 'utf8'),
+                    controller: 'PricingCtrl'
+                }
+            );
+
+        $urlRouterProvider.otherwise('/');
+
     }
-};
+];

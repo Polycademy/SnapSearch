@@ -47309,12 +47309,6 @@ require("./..\\..\\components\\angulartics\\src\\angulartics.js");
 require('../../components/angulartics/src/angulartics-ga.js');
 
 /**
- * Modules
- */
-var config = require('./Config');
-var fs = require('fs');
-
-/**
  * Bootstrapping Angular Modules
  */
 var app = angular.module('App', [
@@ -47337,11 +47331,35 @@ var app = angular.module('App', [
 /**
  * Configuration & Routing
  */
-app.config([
-    '$locationProvider',
-    '$stateProvider',
-    '$urlRouterProvider',
-    function($locationProvider, $stateProvider, $urlRouterProvider){
+app.config(require('./Config'));
+
+/**
+ * Initialisation
+ */
+app.run(require('./Run'));
+
+/**
+ * Execute!
+ */
+angular.element(document).ready(function(){
+
+    angular.bootstrap(document, ['App']);
+
+});
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./Run":22,"./controllers/Controllers":24,"./directives/Directives":32,"./elements/Elements":35,"./filters/Filters":73,"./services/Services":75}],21:[function(require,module,exports){
+'use strict';
+
+var fs = require('fs');
+
+/**
+ * Angular Configuration & Routing
+ */
+module.exports = [
+    '$locationProvider', 
+    '$stateProvider', 
+    '$urlRouterProvider', 
+    function ($locationProvider, $stateProvider, $urlRouterProvider) {
 
         //HTML5 Mode URLs
         $locationProvider.html5Mode(true).hashPrefix('!');
@@ -47376,12 +47394,24 @@ app.config([
         $urlRouterProvider.otherwise('/');
 
     }
-]);
+];
+},{"fs":1}],22:[function(require,module,exports){
+'use strict';
+
+var settings = require('./Settings');
 
 /**
- * Initialisation
+ * Angular Initialisation & Front Controller
+ *
+ * @param {Object}   $rootScope
+ * @param {Object}   $cookies
+ * @param {Object}   $http
+ * @param {Object}   $state 
+ * @param {Object}   $stateParams
+ * @param {Function} $anchorScroll
+ * @param {Object}   $location
  */
-app.run([
+module.exports = [
     '$rootScope',
     '$cookies',
     '$http',
@@ -47406,29 +47436,20 @@ app.run([
         $rootScope.$stateParams = $stateParams;
 
         //CONFIGURATION
-        $rootScope.config = config;
+        $rootScope.settings = settings;
 
         //PROVIDING BASE URL
         $rootScope.baseUrl = angular.element('base').attr('href');
 
+        //hash scroll function, this can be replaced by a directive
         $rootScope.scroll = function (hash) {
             $location.hash(hash);
             $anchorScroll();
         };
 
     }
-]);
-
-/**
- * Execute!
- */
-angular.element(document).ready(function(){
-
-    angular.bootstrap(document, ['App']);
-
-});
-}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./controllers/Controllers":22,"./directives/Directives":30,"./elements/Elements":33,"./filters/Filters":71,"./services/Services":73,"fs":1}],21:[function(require,module,exports){
+];
+},{"./Settings":23}],23:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -47445,7 +47466,7 @@ module.exports = {
         }
     }
 };
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -47467,7 +47488,7 @@ angular.module('App.Controllers', [])
     .controller('CostCalculatorCtrl', require('./pricing/CostCalculatorCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":23,"./documentation/DocumentationCtrl":24,"./home/CodeGroupCtrl":25,"./home/DemoCtrl":26,"./home/HomeCtrl":27,"./pricing/CostCalculatorCtrl":28,"./pricing/PricingCtrl":29}],23:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":25,"./documentation/DocumentationCtrl":26,"./home/CodeGroupCtrl":27,"./home/DemoCtrl":28,"./home/HomeCtrl":29,"./pricing/CostCalculatorCtrl":30,"./pricing/PricingCtrl":31}],25:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47478,7 +47499,7 @@ module.exports = angular.module('App.Controllers');
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47489,7 +47510,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47507,10 +47528,10 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
-var config = require('../../Config.js');
+var settings = require('../../Settings');
 
 /**
  * Demo Controller
@@ -47519,8 +47540,8 @@ var config = require('../../Config.js');
  */
 module.exports = ['$scope', function ($scope) {
 
-    var demoUsername = config.apiKeys.demo.user;
-    var demoPassword = config.apiKeys.demo.pass;
+    var demoUsername = settings.apiKeys.demo.user;
+    var demoPassword = settings.apiKeys.demo.pass;
 
     /**
      * State to indicate requesting status.
@@ -47554,7 +47575,7 @@ module.exports = ['$scope', function ($scope) {
     };
 
 }];
-},{"../../Config.js":21}],27:[function(require,module,exports){
+},{"../../Settings":23}],29:[function(require,module,exports){
 'use strict';
 
 /**
@@ -47565,10 +47586,10 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
-var config = require('../../Config.js');
+var settings = require('../../Settings');
 
 /**
  * Cost Calculator Controller
@@ -47577,8 +47598,8 @@ var config = require('../../Config.js');
  */
 module.exports = ['$scope', 'Calculate', function ($scope, Calculate) {
 
-    var pricingPerUsage = config.meta.price;
-    var freeUsageCap = config.meta.freeUsageCap;
+    var pricingPerUsage = settings.meta.price;
+    var freeUsageCap = settings.meta.freeUsageCap;
 
     //setup the cost object
     $scope.cost = {};
@@ -47612,10 +47633,10 @@ module.exports = ['$scope', 'Calculate', function ($scope, Calculate) {
     });
 
 }];
-},{"../../Config.js":21}],29:[function(require,module,exports){
+},{"../../Settings":23}],31:[function(require,module,exports){
 'use strict';
 
-var config = require('../../Config.js');
+var settings = require('../../Settings');
 
 /**
  * Pricing Controller
@@ -47624,11 +47645,11 @@ var config = require('../../Config.js');
  */
 module.exports = ['$scope', function ($scope) {
 
-    $scope.pricePerUsage = config.meta.price;
-    $scope.freeUsageCap = config.meta.freeUsageCap;
+    $scope.pricePerUsage = settings.meta.price;
+    $scope.freeUsageCap = settings.meta.freeUsageCap;
 
 }];
-},{"../../Config.js":21}],30:[function(require,module,exports){
+},{"../../Settings":23}],32:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -47641,7 +47662,7 @@ angular.module('App.Directives', []);
 module.exports = angular.module('App.Directives')
     .directive('equaliseHeights', require('./equaliseHeights'))
     .directive('anchor', require('./anchor'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./anchor":31,"./equaliseHeights":32}],31:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./anchor":33,"./equaliseHeights":34}],33:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -47721,7 +47742,7 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
         };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],32:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],34:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -47763,7 +47784,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],33:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],35:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -47778,7 +47799,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./chatTab":34,"./syntaxHighlight":70}],34:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./chatTab":36,"./syntaxHighlight":72}],36:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -47814,7 +47835,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":74}],35:[function(require,module,exports){
+},{"fs":1,"insert-css":76}],37:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -48505,7 +48526,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -48542,7 +48563,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":35,"./languages/apache.js":37,"./languages/bash.js":38,"./languages/clojure.js":39,"./languages/coffeescript.js":40,"./languages/cpp.js":41,"./languages/cs.js":42,"./languages/css.js":43,"./languages/diff.js":44,"./languages/erlang.js":45,"./languages/go.js":46,"./languages/haml.js":47,"./languages/haskell.js":48,"./languages/http.js":49,"./languages/ini.js":50,"./languages/java.js":51,"./languages/javascript.js":52,"./languages/json.js":53,"./languages/lisp.js":54,"./languages/lua.js":55,"./languages/makefile.js":56,"./languages/markdown.js":57,"./languages/nginx.js":58,"./languages/objectivec.js":59,"./languages/perl.js":60,"./languages/php.js":61,"./languages/python.js":62,"./languages/r.js":63,"./languages/ruby.js":64,"./languages/rust.js":65,"./languages/scala.js":66,"./languages/scss.js":67,"./languages/sql.js":68,"./languages/xml.js":69}],37:[function(require,module,exports){
+},{"./highlight":37,"./languages/apache.js":39,"./languages/bash.js":40,"./languages/clojure.js":41,"./languages/coffeescript.js":42,"./languages/cpp.js":43,"./languages/cs.js":44,"./languages/css.js":45,"./languages/diff.js":46,"./languages/erlang.js":47,"./languages/go.js":48,"./languages/haml.js":49,"./languages/haskell.js":50,"./languages/http.js":51,"./languages/ini.js":52,"./languages/java.js":53,"./languages/javascript.js":54,"./languages/json.js":55,"./languages/lisp.js":56,"./languages/lua.js":57,"./languages/makefile.js":58,"./languages/markdown.js":59,"./languages/nginx.js":60,"./languages/objectivec.js":61,"./languages/perl.js":62,"./languages/php.js":63,"./languages/python.js":64,"./languages/r.js":65,"./languages/ruby.js":66,"./languages/rust.js":67,"./languages/scala.js":68,"./languages/scss.js":69,"./languages/sql.js":70,"./languages/xml.js":71}],39:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -48588,7 +48609,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -48651,7 +48672,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -48749,7 +48770,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -48880,7 +48901,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -48944,7 +48965,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -49017,7 +49038,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -49121,7 +49142,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -49161,7 +49182,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -49316,7 +49337,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -49355,7 +49376,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -49477,7 +49498,7 @@ function(hljs) {
     ]
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -49603,7 +49624,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -49637,7 +49658,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -49667,7 +49688,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -49722,7 +49743,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -49794,7 +49815,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -49832,7 +49853,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -49908,7 +49929,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -49965,7 +49986,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -50010,7 +50031,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -50112,7 +50133,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -50193,7 +50214,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -50278,7 +50299,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -50427,7 +50448,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -50536,7 +50557,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -50620,7 +50641,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -50690,7 +50711,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -50849,7 +50870,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -50898,7 +50919,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -50957,7 +50978,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -51074,7 +51095,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -51177,7 +51198,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -51281,7 +51302,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -51338,7 +51359,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":36,"fs":1,"insert-css":74}],71:[function(require,module,exports){
+},{"./lib/hljs/index":38,"fs":1,"insert-css":76}],73:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -51349,7 +51370,7 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{"./..\\..\\..\\components\\angular\\angular.js":9}],72:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9}],74:[function(require,module,exports){
 'use strict';
 
 /**
@@ -51386,7 +51407,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],73:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -51398,7 +51419,7 @@ angular.module('App.Services', []);
 
 module.exports = angular.module('App.Services')
     .service('Calculate', require('./Calculate'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./Calculate":72}],74:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./Calculate":74}],76:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {
