@@ -18,6 +18,10 @@ angular.module('App.Controllers', [])
     .controller('PricingCtrl', require('./pricing/PricingCtrl'))
     .controller('CostCalculatorCtrl', require('./pricing/CostCalculatorCtrl'))
     //control panel
-    .controller('ControlPanelCtrl', require('./control_panel/ControlPanelCtrl'));
+    .controller('ControlPanelCtrl', require('./control_panel/ControlPanelCtrl'))
+    //terms
+    .controller('TermsCtrl', require('./terms/TermsCtrl'))
+    //privacy
+    .controller('PrivacyCtrl', require('./privacy/PrivacyCtrl'));
 
 module.exports = angular.module('App.Controllers');

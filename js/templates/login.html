@@ -4,16 +4,33 @@
 <div class="modal-body">
     <form class="form-horizontal" name="loginForm">
         <div class="form-group">
-            <label for="loginFormEmail">Email:</label>
-            <input id="loginFormEmail" class="form-control" type="email" name="email" ng-model="user.email" required />
+            <label class="control-label col-sm-2" for="loginFormEmail">Email:</label>
+            <div class="col-sm-10">
+                <input id="loginFormEmail" class="form-control" type="email" name="email" ng-model="user.email" required ng-maxlength="100" />
+                <span class="help-block" ng-show="loginForm.email.$error.required">Required</span>
+                <span class="help-block" ng-show="loginForm.email.$error.maxlength">Email is too long</span>
+            </div>
         </div>
         <div class="form-group">
-            <label for="loginFormPassword">Password:</label>
-            <input id="loginFormPassword" class="form-control" type="password" name="password" ng-model="user.password" required />
+            <label class="control-label col-sm-2" for="loginFormPassword">Password:</label>
+            <div class="col-sm-10">
+                <input id="loginFormPassword" class="form-control" type="password" name="password" ng-model="user.password" required ng-maxlength="100" />
+                <span class="help-block" ng-show="loginForm.password.$error.required">Required</span>
+                <span class="help-block" ng-show="loginForm.password.$error.maxlength">Password is too long</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="autologin" ng-model="user.autologin"> Remember Me
+                    </label>
+                </div>
+            </div>
         </div>
     </form>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="login(user)">OK</button>
-    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-click="login(user)">Log In</button>
+    <button class="btn btn-warning" ng-click="cancel()">Close</button>
 </div>

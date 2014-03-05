@@ -20,7 +20,8 @@ module.exports = ['$scope', '$modal', function ($scope, $modal) {
 
         $modal.open({
             template: fs.readFileSync(__dirname + '/../../../templates/signup.html', 'utf8'), 
-            controller: require('./SignUpCtrl')
+            controller: require('./SignUpCtrl'),
+            windowClass: 'signup-modal form-modal'
         }).result.then(function () {
 
             console.log('logged in!');
@@ -41,7 +42,8 @@ module.exports = ['$scope', '$modal', function ($scope, $modal) {
 
         $modal.open({
             template: fs.readFileSync(__dirname + '/../../../templates/login.html', 'utf8'),
-            controller: require('./LogInCtrl')
+            controller: require('./LogInCtrl'),
+            windowClass: 'login-modal form-modal'
         }).result.then(function () {
 
             //successfully logged in

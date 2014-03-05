@@ -6314,9 +6314,6 @@ a {
 /* ==========================================================================
    Header Module
    ========================================================================== */
-/* ==========================================================================
-   Variables Module
-   ========================================================================== */
 header.navbar {
   padding-top: 20px;
   padding-bottom: 14px;
@@ -6394,6 +6391,9 @@ header.navbar .navbar-nav > li button {
 }
 /* ==========================================================================
    Footer Module
+   ========================================================================== */
+/* ==========================================================================
+   Variables Module
    ========================================================================== */
 footer.panel_yellow .panel-body {
   color: #ffffff;
@@ -6549,11 +6549,18 @@ footer .polycademy-block {
 footer .polycademy-block img {
   vertical-align: text-bottom;
 }
+footer .footer-links {
+  text-align: center;
+}
+footer .footer-links li {
+  padding: 10px;
+  display: inline-block;
+}
 footer .attributions {
   clear: both;
   font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
-  margin-top: 20px;
+  margin-top: 12px;
 }
 footer .attributions p {
   margin: 0;
@@ -7031,4 +7038,16 @@ footer .attributions strong {
   font-family: "fira_sans_otbold_italic", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 16px;
   font-style: normal;
+}
+/**
+ * Modals
+ */
+/* ==========================================================================
+   Modals Module
+   ========================================================================== */
+.form-modal .modal-header {
+  font-family: "fira_sans_otbold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.form-modal .modal-footer {
+  margin-top: 0;
 }

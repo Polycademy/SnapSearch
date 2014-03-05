@@ -47,6 +47,22 @@ module.exports = [
                     template: fs.readFileSync(__dirname + '/../templates/control_panel.html', 'utf8'),
                     controller: 'ControlPanelCtrl'
                 }
+            )
+            .state(
+                'terms',
+                {
+                    url: '/terms',
+                    template: fs.readFileSync(__dirname + '/../templates/terms.html', 'utf8'),
+                    controller: 'TermsCtrl'
+                }
+            )
+            .state(
+                'privacy',
+                {
+                    url: '/privacy',
+                    template: fs.readFileSync(__dirname + '/../templates/privacy.html', 'utf8'),
+                    controller: 'PrivacyCtrl'
+                }
             );
 
         $urlRouterProvider.otherwise('/');

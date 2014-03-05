@@ -78,7 +78,7 @@
         </header>
 
         <!-- The side bar will be contained inside the container and ui-view to allow Angularjs to handle it -->
-        <div class="main" ui-view autoscroll="false"></div>
+        <div class="main" ui-view autoscroll="!$state.includes('home')"></div>
 
         <footer class="panel panel_yellow" anchor="about">
             <div class="container tiger-jump">
@@ -104,6 +104,10 @@
                     <div class="polycademy-block">
                         <p>SnapSearch is a product from <a href="http://polycademy.com/" target="_blank"><img src="assets/img/polycademy_logo.png" /></a></p>
                     </div>
+                    <ul class="footer-links">
+                        <li><a href="terms">Terms of Service</a></li>
+                        <li><a href="privacy">Privacy Policy</a></li>
+                    </ul>
                     <div class="attributions">
                         <p><strong>Attributions:</strong> Browser by Fernando Vasconcelos from The Noun Project | Browser by Konstantin Velichko from The Noun Project | Spider Bot by Siwat Vatatiyaporn from The Noun Project | Thought Bubble by Irene Hoffman from The Noun Project | User by Wilson Joseph from The Noun Project | Globe by Gustav Salomonsson from The Noun Project | Settings by Stefan Parnarov from The Noun Project | Cloud Database by Roman Kovbasyuk from The Noun Project | Arrows by Alex Fuller from The Noun Project | Layers by Oriol Carbonell from The Noun Project | Happy by Simple Icons from The Noun Project | Network by Nicholas Menghini from The Noun Project | Statistics by Calvin Ng from The Noun Project | Arrows by Juan Pablo Bravo from The Noun Project | Tiger by Christy Presler from The Noun Project | Tiger by Allison Dominguez from The Noun Project</p>
                     </div>

@@ -47347,7 +47347,7 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./Run":22,"./controllers/Controllers":24,"./directives/Directives":35,"./elements/Elements":38,"./filters/Filters":76,"./services/Services":79}],21:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./Config":21,"./Run":22,"./controllers/Controllers":24,"./directives/Directives":37,"./elements/Elements":40,"./filters/Filters":78,"./services/Services":81}],21:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -47396,6 +47396,22 @@ module.exports = [
                     url: '/control_panel',
                     template: "",
                     controller: 'ControlPanelCtrl'
+                }
+            )
+            .state(
+                'terms',
+                {
+                    url: '/terms',
+                    template: "<div class=\"terms panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">SnapSearch Terms of Service (\"Agreement\")</h2>\n        </div>\n        <div class=\"panel-body\">\n            <p>This Agreement was last modified on March 05, 2014.</p>\n\n            <p>Please read these Terms of Service (\"Agreement\", \"Terms of Service\") carefully before using https://snapsearch.io (\"the Site\") operated by Golden World (au) pty ltd (\"us\", \"we\", or \"our\"). This Agreement sets forth the legally binding terms and conditions for your use of the Site at https://snapsearch.io.</p>\n\n            <p>By accessing or using the Site in any manner, including, but not limited to, visiting or browsing the Site or contributing content or other materials to the Site, you agree to be bound by these Terms of Service. Capitalized terms are defined in this Agreement.</p>\n\n            <p><strong>Intellectual Property</strong><br />The Site and its original content, features and functionality are owned by Golden World (au) pty ltd and are protected by international copyright, trademark, patent, trade secret and other intellectual property or proprietary rights laws.</p>\n\n            <p><strong>Termination</strong><br />We may terminate your access to the Site, without cause or notice, which may result in the forfeiture and destruction of all information associated with you. All provisions of this Agreement that by their nature should survive termination shall survive termination, including, without limitation, ownership provisions, warranty disclaimers, indemnity, and limitations of liability.</p>\n\n            <p><strong>Links To Other Sites</strong><br />Our Site may contain links to third-party sites that are not owned or controlled by Golden World (au) pty ltd.</p>\n\n            <p>Golden World (au) pty ltd has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third party sites or services. We strongly advise you to read the terms and conditions and privacy policy of any third-party site that you visit.</p>\n\n            <p><strong>Governing Law</strong><br />This Agreement (and any further rules, polices, or guidelines incorporated by reference) shall be governed and construed in accordance with the laws of NSW, Australia, without giving effect to any principles of conflicts of law.</p>\n\n            <p><strong>Changes To This Agreement</strong><br />We reserve the right, at our sole discretion, to modify or replace these Terms of Service by posting the updated terms on the Site. Your continued use of the Site after any such changes constitutes your acceptance of the new Terms of Service.</p>\n\n            <p>Please review this Agreement periodically for changes. If you do not agree to any of this Agreement or any changes to this Agreement, do not use, access or continue to access the Site or discontinue any use of the Site immediately.</p>\n\n            <p><strong>Contact Us</strong><br />If you have any questions about this Agreement, please contact us.</p>\n        </div>\n    </div>\n</div>",
+                    controller: 'TermsCtrl'
+                }
+            )
+            .state(
+                'privacy',
+                {
+                    url: '/privacy',
+                    template: "<div class=\"privacy panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">SnapSearch Privacy Policy</h2>\n        </div>\n        <div class=\"panel-body\">\n            <p>This Privacy Policy was last modified on March 05, 2014.</p>\n\n            <p>Golden World (au) pty ltd (\"us\", \"we\", or \"our\") operates https://snapsearch.io (the \"Site\"). This page informs you of our policies regarding the collection, use and disclosure of Personal Information we receive from users of the Site.</p>\n\n            <p>We use your Personal Information only for providing and improving the Site. By using the Site, you agree to the collection and use of information in accordance with this policy. Unless otherwise defined in this Privacy Policy, terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, accessible at https://snapsearch.io.</p>\n\n            <p><strong>Information Collection And Use</strong><br />While using our Site, we may ask you to provide us with certain personally identifiable information that can be used to contact or identify you. Personally identifiable information may include, but is not limited to, your name, email address, postal address and phone number (\"Personal Information\").</p>\n\n            <p><strong>Log Data</strong><br />Like many site operators, we collect information that your browser sends whenever you visit our Site (\"Log Data\"). This Log Data may include information such as your computer's Internet Protocol (\"IP\") address, browser type, browser version, the pages of our Site that you visit, the time and date of your visit, the time spent on those pages and other statistics.</p>\n\n            <p><strong>Cookies</strong><br />Cookies are files with small amount of data, which may include an anonymous unique identifier. Cookies are sent to your browser from a web site and stored on your computer's hard drive.</p>\n\n            <p>Like many sites, we use \"cookies\" to collect information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our Site.</p>\n\n            <p><strong>Security</strong><br />The security of your Personal Information is important to us, but remember that no method of transmission over the Internet, or method of electronic storage, is 100% secure. While we strive to use commercially acceptable means to protect your Personal Information, we cannot guarantee its absolute security.</p>\n\n            <p><strong>Links To Other Sites</strong><br />Our Site may contain links to other sites that are not operated by us. If you click on a third party link, you will be directed to that third party's site. We strongly advise you to review the Privacy Policy of every site you visit.</p>\n            \n            <p>Golden World (au) pty ltd has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third party sites or services.</p>\n\n            <p><strong>Changes To This Privacy Policy</strong><br />Golden World (au) pty ltd may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on the Site. You are advised to review this Privacy Policy periodically for any changes.</p>\n\n            <p><strong>Contact Us</strong><br />If you have any questions about this Privacy Policy, please contact us.</p>\n        </div>\n    </div>\n</div>",
+                    controller: 'PrivacyCtrl'
                 }
             );
 
@@ -47495,10 +47511,14 @@ angular.module('App.Controllers', [])
     .controller('PricingCtrl', require('./pricing/PricingCtrl'))
     .controller('CostCalculatorCtrl', require('./pricing/CostCalculatorCtrl'))
     //control panel
-    .controller('ControlPanelCtrl', require('./control_panel/ControlPanelCtrl'));
+    .controller('ControlPanelCtrl', require('./control_panel/ControlPanelCtrl'))
+    //terms
+    .controller('TermsCtrl', require('./terms/TermsCtrl'))
+    //privacy
+    .controller('PrivacyCtrl', require('./privacy/PrivacyCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":25,"./control_panel/ControlPanelCtrl":28,"./documentation/DocumentationCtrl":29,"./home/CodeGroupCtrl":30,"./home/DemoCtrl":31,"./home/HomeCtrl":32,"./pricing/CostCalculatorCtrl":33,"./pricing/PricingCtrl":34}],25:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":25,"./control_panel/ControlPanelCtrl":28,"./documentation/DocumentationCtrl":29,"./home/CodeGroupCtrl":30,"./home/DemoCtrl":31,"./home/HomeCtrl":32,"./pricing/CostCalculatorCtrl":33,"./pricing/PricingCtrl":34,"./privacy/PrivacyCtrl":35,"./terms/TermsCtrl":36}],25:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -47520,8 +47540,9 @@ module.exports = ['$scope', '$modal', function ($scope, $modal) {
     $scope.openSignUpModal = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\n    <h3>Sign Up</h3>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"signupForm\">\n        <div class=\"form-group\">\n            <label for=\"signupFormUsername\">Username:</label>\n            <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required />\n        </div>\n        <div class=\"form-group\">\n            <label for=\"signupFormEmail\">Email:</label>\n            <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required />\n        </div>\n        <div class=\"form-group\">\n            <label for=\"signupFormPassword\">Password:</label>\n            <input id=\"signupFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"user.password\" required />\n        </div>\n    </form>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\">OK</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Cancel</button>\n</div>", 
-            controller: require('./SignUpCtrl')
+            template: "<div class=\"modal-header\">\n    <h3>Sign Up</h3>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"signupForm\">\n        <div class=\"form-group\">\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\n            </div>\n        </div>\n        <div class=\"form-group\">\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\n            </div>\n        </div>\n        <div class=\"form-group\">\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"signupFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"user.password\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\n            </div>\n        </div>\n        <div class=\"form-group\">\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"signupFormPasswordConfirm\" class=\"form-control\" type=\"password\" name=\"passwordConfirm\" ng-model=\"user.passwordConfirm\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\n            </div>\n        </div>\n        <div class=\"form-group\">\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\n            <div class=\"col-sm-4\">\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\n                <span class=\"help-block\">Optional Promo Code</span>\n            </div>\n        </div>\n    </form>\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\">Sign Up</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>", 
+            controller: require('./SignUpCtrl'),
+            windowClass: 'signup-modal form-modal'
         }).result.then(function () {
 
             console.log('logged in!');
@@ -47541,8 +47562,9 @@ module.exports = ['$scope', '$modal', function ($scope, $modal) {
     $scope.openLogInModal = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\n    <h3>Log In</h3>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"loginForm\">\n        <div class=\"form-group\">\n            <label for=\"loginFormEmail\">Email:</label>\n            <input id=\"loginFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required />\n        </div>\n        <div class=\"form-group\">\n            <label for=\"loginFormPassword\">Password:</label>\n            <input id=\"loginFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"user.password\" required />\n        </div>\n    </form>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"login(user)\">OK</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Cancel</button>\n</div>",
-            controller: require('./LogInCtrl')
+            template: "<div class=\"modal-header\">\n    <h3>Log In</h3>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"loginForm\">\n        <div class=\"form-group\">\n            <label class=\"control-label col-sm-2\" for=\"loginFormEmail\">Email:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"loginFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.maxlength\">Email is too long</span>\n            </div>\n        </div>\n        <div class=\"form-group\">\n            <label class=\"control-label col-sm-2\" for=\"loginFormPassword\">Password:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"loginFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"user.password\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.maxlength\">Password is too long</span>\n            </div>\n        </div>\n        <div class=\"form-group\">\n            <div class=\"col-sm-offset-2 col-sm-10\">\n                <div class=\"checkbox\">\n                    <label>\n                        <input type=\"checkbox\" name=\"autologin\" ng-model=\"user.autologin\"> Remember Me\n                    </label>\n                </div>\n            </div>\n        </div>\n    </form>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"login(user)\">Log In</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>",
+            controller: require('./LogInCtrl'),
+            windowClass: 'login-modal form-modal'
         }).result.then(function () {
 
             //successfully logged in
@@ -47782,6 +47804,24 @@ module.exports = ['$scope', function ($scope) {
 },{"../../Settings":23}],35:[function(require,module,exports){
 'use strict';
 
+/**
+ * Privacy Controller
+ */
+module.exports = ['$scope', function ($scope) {
+
+}];
+},{}],36:[function(require,module,exports){
+'use strict';
+
+/**
+ * Terms Controller
+ */
+module.exports = ['$scope', function ($scope) {
+
+}];
+},{}],37:[function(require,module,exports){
+'use strict';
+
 require("./..\\..\\..\\components\\angular\\angular.js");
 
 /**
@@ -47792,7 +47832,7 @@ angular.module('App.Directives', []);
 module.exports = angular.module('App.Directives')
     .directive('equaliseHeights', require('./equaliseHeights'))
     .directive('anchor', require('./anchor'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./anchor":36,"./equaliseHeights":37}],36:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./anchor":38,"./equaliseHeights":39}],38:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -47872,7 +47912,7 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
         };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],37:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],39:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -47914,7 +47954,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],38:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],40:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -47929,7 +47969,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./chatTab":39,"./syntaxHighlight":75}],39:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./chatTab":41,"./syntaxHighlight":77}],41:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -47965,7 +48005,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":80}],40:[function(require,module,exports){
+},{"fs":1,"insert-css":82}],42:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -48656,7 +48696,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -48693,7 +48733,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":40,"./languages/apache.js":42,"./languages/bash.js":43,"./languages/clojure.js":44,"./languages/coffeescript.js":45,"./languages/cpp.js":46,"./languages/cs.js":47,"./languages/css.js":48,"./languages/diff.js":49,"./languages/erlang.js":50,"./languages/go.js":51,"./languages/haml.js":52,"./languages/haskell.js":53,"./languages/http.js":54,"./languages/ini.js":55,"./languages/java.js":56,"./languages/javascript.js":57,"./languages/json.js":58,"./languages/lisp.js":59,"./languages/lua.js":60,"./languages/makefile.js":61,"./languages/markdown.js":62,"./languages/nginx.js":63,"./languages/objectivec.js":64,"./languages/perl.js":65,"./languages/php.js":66,"./languages/python.js":67,"./languages/r.js":68,"./languages/ruby.js":69,"./languages/rust.js":70,"./languages/scala.js":71,"./languages/scss.js":72,"./languages/sql.js":73,"./languages/xml.js":74}],42:[function(require,module,exports){
+},{"./highlight":42,"./languages/apache.js":44,"./languages/bash.js":45,"./languages/clojure.js":46,"./languages/coffeescript.js":47,"./languages/cpp.js":48,"./languages/cs.js":49,"./languages/css.js":50,"./languages/diff.js":51,"./languages/erlang.js":52,"./languages/go.js":53,"./languages/haml.js":54,"./languages/haskell.js":55,"./languages/http.js":56,"./languages/ini.js":57,"./languages/java.js":58,"./languages/javascript.js":59,"./languages/json.js":60,"./languages/lisp.js":61,"./languages/lua.js":62,"./languages/makefile.js":63,"./languages/markdown.js":64,"./languages/nginx.js":65,"./languages/objectivec.js":66,"./languages/perl.js":67,"./languages/php.js":68,"./languages/python.js":69,"./languages/r.js":70,"./languages/ruby.js":71,"./languages/rust.js":72,"./languages/scala.js":73,"./languages/scss.js":74,"./languages/sql.js":75,"./languages/xml.js":76}],44:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -48739,7 +48779,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -48802,7 +48842,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -48900,7 +48940,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -49031,7 +49071,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -49095,7 +49135,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -49168,7 +49208,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -49272,7 +49312,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -49312,7 +49352,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -49467,7 +49507,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -49506,7 +49546,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -49628,7 +49668,7 @@ function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -49754,7 +49794,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -49788,7 +49828,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -49818,7 +49858,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -49873,7 +49913,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -49945,7 +49985,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -49983,7 +50023,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -50059,7 +50099,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -50116,7 +50156,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -50161,7 +50201,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -50263,7 +50303,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -50344,7 +50384,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -50429,7 +50469,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -50578,7 +50618,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -50687,7 +50727,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -50771,7 +50811,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -50841,7 +50881,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -51000,7 +51040,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -51049,7 +51089,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -51108,7 +51148,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -51225,7 +51265,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -51328,7 +51368,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -51432,7 +51472,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],75:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -51489,7 +51529,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":41,"fs":1,"insert-css":80}],76:[function(require,module,exports){
+},{"./lib/hljs/index":43,"fs":1,"insert-css":82}],78:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -51500,7 +51540,7 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{"./..\\..\\..\\components\\angular\\angular.js":9}],77:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9}],79:[function(require,module,exports){
 'use strict';
 
 /**
@@ -51527,7 +51567,7 @@ module.exports = ['$rootScope', function ($rootScope) {
     });
 
 }];
-},{}],78:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -51564,7 +51604,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],79:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 'use strict';
 
 require("./..\\..\\..\\components\\angular\\angular.js");
@@ -51579,7 +51619,7 @@ module.exports = angular.module('App.Services')
     .run(require('./AuthenticationState'))
     //Service Objects
     .service('Calculate', require('./Calculate'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./AuthenticationState":77,"./Calculate":78}],80:[function(require,module,exports){
+},{"./..\\..\\..\\components\\angular\\angular.js":9,"./AuthenticationState":79,"./Calculate":80}],82:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {

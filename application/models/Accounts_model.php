@@ -30,6 +30,7 @@ class Accounts_model extends CI_Model{
 			'apiLimit',
 			'apiFreeLimit',
 			'chargeInterval',
+			'code'
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -48,12 +49,12 @@ class Accounts_model extends CI_Model{
 			array(
 				'field'	=> 'password',
 				'label'	=> 'Password',
-				'rules'	=> 'required'
+				'rules'	=> 'required|max_length[100]'
 			),
 			array(
 				'field'	=> 'passwordConfirm',
 				'label'	=> 'Password Confirm',
-				'rules'	=> 'required|matches[password]'
+				'rules'	=> 'required|matches[password]|max_length[100]'
 			),
 			array(
 				'field'	=> 'tac',
@@ -74,6 +75,11 @@ class Accounts_model extends CI_Model{
 				'field'	=> 'chargeInterval',
 				'label'	=> 'Charge Interval',
 				'rules'	=> 'required|valid_date_duration',
+			),
+			array(
+				'field'	=> 'code',
+				'label'	=> 'Promo Code',
+				'rules'	=> 'alpha_numeric'
 			),
 		));
 
