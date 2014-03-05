@@ -49,6 +49,7 @@ class Robot_model extends CI_Model{
 
 		$parameters = elements(array(
 			'url',
+			'useragent',
 			'width',
 			'height',
 			'imgformat',
@@ -72,6 +73,11 @@ class Robot_model extends CI_Model{
 				'field'	=> 'url',
 				'label'	=> 'Url (url)',
 				'rules'	=> 'required',
+			],
+			[
+				'field'	=> 'useragent',
+				'label'	=> 'User Agent (useragent)',
+				'rules'	=> 'max_length[120]',
 			],
 			[
 				'field'	=> 'width',
