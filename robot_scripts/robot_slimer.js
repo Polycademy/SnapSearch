@@ -53,7 +53,7 @@ var defaultConfig = {
 	width: '1280', 
 	height: '1024', //this can be used to facilitate scroll based pagination
 	imgformat: 'png', 
-	useragent: 'SnapSearch', 
+	useragent: page.settings.userAgent + ' Firefox/' + slimer.geckoVersion.major + '.' + slimer.geckoVersion.minor + '.' + slimer.geckoVersion.patch + ' SnapSearch', 
 	screenshot: false, 
 	navigate: true, // allow redirection of the page or not, if this is false, and there is a redirection, screenshots are not available
 	loadimages: false, 
