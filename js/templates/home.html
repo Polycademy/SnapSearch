@@ -84,7 +84,7 @@
                 <div 
                     class="form-group" 
                     ng-class="{
-                        'has-error': !!demoForm.url.$error.invalidUrl && demoForm.url.$dirty
+                        'has-error': demoForm.url.$invalid && demoForm.url.$dirty
                     }"
                 >
                     <div class="input-group input-group-lg">
@@ -94,7 +94,6 @@
                             name="url" 
                             ng-model="demo.url" 
                             required 
-                            ui-validate="{invalidUrl: 'validateUrl($value)'}" 
                             placeholder="http://your-site.com/" 
                         />
                         <span class="input-group-btn">
