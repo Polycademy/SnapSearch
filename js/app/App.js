@@ -55,7 +55,7 @@ var app = angular.module('App', [
 /**
  * Configuration & Routing
  */
-app.config(require('./Config'));
+app.config(require('./Router'));
 
 /**
  * Initialisation

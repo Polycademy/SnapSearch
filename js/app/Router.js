@@ -3,7 +3,7 @@
 var fs = require('fs');
 
 /**
- * Angular Configuration & Routing
+ * Angular Router
  */
 module.exports = [
     '$locationProvider', 

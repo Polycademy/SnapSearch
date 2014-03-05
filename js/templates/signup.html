@@ -84,6 +84,15 @@
         </div>
     </form>
     <p>By clicking "Sign Up", you agree to our <a href="terms" ng-click="cancel()">terms of service</a> and <a href="privacy" ng-click="cancel()">privacy policy</a>.</p>
+    <div class="form-errors" ng-show="formErrors">
+        <em class="text-warning">Oops! Please fix up these errors:</em>
+        <ul class="form-errors-list">
+            <li class="form-errors-list-item alert alert-error" ng-repeat="error in formErrors">{{error}}</li>
+        </ul>
+    </div>
+    <div class="form-success alert alert-success" ng-show="formSuccess">
+        {{formSuccess}}
+    </div>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-click="signup(user)" ng-disabled="signupForm.$invalid">Sign Up</button>
