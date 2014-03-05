@@ -55,7 +55,7 @@ var defaultConfig = {
 	imgformat: 'png', 
 	useragent: page.settings.userAgent + ' Firefox/' + slimer.geckoVersion.major + '.' + slimer.geckoVersion.minor + '.' + slimer.geckoVersion.patch + ' SnapSearch', 
 	screenshot: false, 
-	navigate: true, // allow redirection of the page or not, if this is false, and there is a redirection, screenshots are not available
+	navigate: false, // allow redirection of the page or not, if this is false, and there is a redirection, screenshots are not available
 	loadimages: false, 
 	javascriptenabled: true, 
 	maxtimeout: 5000, 

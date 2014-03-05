@@ -25,7 +25,7 @@ class Robot_model extends CI_Model{
 		$this->robot_uri = 'http://127.0.0.1:8499';
 		
 		$this->client = new Client;
-		$this->client->setUserAgent('Snapsearch');
+		$this->client->setUserAgent('Snapsearch', true);
 
 		//using amazon s3 to store the snapshot cache, it will be stored in the snapsearch bucket, and if the bucket doesn't exist, it will create it
 		$this->filesystem = new Filesystem(
@@ -229,7 +229,6 @@ class Robot_model extends CI_Model{
 
 		$existing_cache_id = false;
 		$existing_cache_name = false;
-		//we need the user id, for now we're going to assume 1 for everybody
 		$cache = $this->read_cache($user_id, $parameters_checksum);
 
 		if($cache){
@@ -304,6 +303,55 @@ class Robot_model extends CI_Model{
 			);
 			if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
 			return false;
+
+		}
+
+		//SHIM: this is a shim for supporting the scraping of redirected pages, this is because slimerjs currently does not support acquiring the headers or body of a redirection
+		if($this->is_redirect($response_array['status'])){
+
+			try{
+
+				//we don't want to follow redirects in this case
+				$request = $this->client->get($parameters['url'], [], [
+					'allow_redirects': false
+				]);
+				//try to get a compressed response
+				$request->addHeader('Accept-Encoding', 'gzip, deflate, identity');
+
+				$response = $request->send();
+
+				//shim the headers as [['name' => 'Header Name', 'value' => 'Header Value']]
+				$response_array = [];
+				foreach($response->getHeaders() as $header_key => $header_value){
+					$response_array['headers'][] = [
+						'name'	=> $header_key,
+						'value'	=> $header_value,
+					];
+				}
+
+				//shim the body
+				$response_array['html'] = $response->getBody(true);
+
+				//replace the response string, it'll be json encoded!
+				$response_string = json_encode($response_array);
+
+			}catch(BadResponseException $e){
+
+				$this->errors = array(
+					'system_error'	=> 'Robot service is a bit broken. Try again later.',
+				);
+				if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
+				return false;
+
+			}catch(CurlException $e){
+
+				$this->errors = array(
+					'system_error'	=> 'Curl failed. Try again later.'
+				);
+				if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
+				return false;
+
+			}
 
 		}
 		
@@ -484,6 +532,20 @@ class Robot_model extends CI_Model{
 	public function get_fallback(){
 
 		return $this->fallback;
+
+	}
+
+	protected function is_redirect($status){
+
+		return in_array((string) $status, [
+			'301',
+			'302',
+			'303',
+			'305',
+			'306',
+			'307',
+			'308'
+		]);
 
 	}
 
