@@ -1,11 +1,12 @@
 'use strict';
 
 /**
- * Shims and Polyfills
+ * Shims and Polyfills and Utilities
  */
 require('es5-shim');
 require('es6-shim');
 require('json3');
+global._ = require('lodash');
 
 /**
  * Globals (to be eventually converted and shimmed and compiled into common.js)
@@ -23,6 +24,7 @@ require('angular-cookies');
 require('angular-resource');
 require('angular-sanitize');
 require('angular-animate');
+require('restangular');
 require('angular-ui-router');
 require('angular-bootstrap');
 require('angular-ui-utils');
@@ -42,6 +44,7 @@ var app = angular.module('App', [
     'ngResource',
     'ngSanitize',
     'ngAnimate',
+    'restangular',
     'ui.router',
     'ui.bootstrap',
     'ui.utils',
