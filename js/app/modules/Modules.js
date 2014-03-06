@@ -4,7 +4,7 @@
  * Modules
  */
 angular.module('App.Modules', [
-    require('./UserState').name
+    require('./UserSystem').name
 ]);
 
 module.exports = angular.module('App.Modules');

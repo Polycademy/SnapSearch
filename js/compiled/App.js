@@ -55748,11 +55748,6 @@ require('../../components/angulartics/src/angulartics-ga.js');
  * Bootstrapping Angular Modules
  */
 var app = angular.module('App', [
-    require('./controllers/Controllers').name,
-    require('./directives/Directives').name,
-    require('./elements/Elements').name,
-    require('./filters/Filters').name,
-    require('./services/Services').name,
     'ngCookies',
     'ngResource',
     'ngSanitize',
@@ -55762,7 +55757,13 @@ var app = angular.module('App', [
     'ui.bootstrap',
     'ui.utils',
     'angulartics',
-    'angulartics.google.analytics'
+    'angulartics.google.analytics',
+    require('./modules/Modules').name,
+    require('./services/Services').name,
+    require('./filters/Filters').name,
+    require('./directives/Directives').name,
+    require('./elements/Elements').name,
+    require('./controllers/Controllers').name
 ]);
 
 /**
@@ -55784,7 +55785,7 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./..\\..\\components\\lodash\\dist\\lodash.compat.js":20,"./..\\..\\components\\restangular\\dist\\restangular.js":21,"./Router":23,"./Run":24,"./controllers/Controllers":26,"./directives/Directives":39,"./elements/Elements":43,"./filters/Filters":81,"./services/Services":83}],23:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./..\\..\\components\\lodash\\dist\\lodash.compat.js":20,"./..\\..\\components\\restangular\\dist\\restangular.js":21,"./Router":23,"./Run":24,"./controllers/Controllers":26,"./directives/Directives":39,"./elements/Elements":43,"./filters/Filters":81,"./modules/Modules":82,"./services/Services":90}],23:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -55880,7 +55881,8 @@ module.exports = [
     '$stateParams',
     '$anchorScroll',
     '$location',
-    function($rootScope, $cookies, $http, $state, $stateParams, $anchorScroll, $location){
+    'BaseUrlConst',
+    function($rootScope, $cookies, $http, $state, $stateParams, $anchorScroll, $location, BaseUrlConst){
 
         //XSRF INTEGRATION
         $rootScope.$watch(
@@ -55900,7 +55902,7 @@ module.exports = [
         $rootScope.settings = settings;
 
         //PROVIDING BASE URL
-        $rootScope.baseUrl = angular.element('base').attr('href');
+        $rootScope.baseUrl = BaseUrlConst;
 
         //hash scroll function, this can be replaced by a directive
         $rootScope.scroll = function (hash) {
@@ -55930,8 +55932,6 @@ module.exports = {
 },{}],26:[function(require,module,exports){
 'use strict';
 
-require("./..\\..\\..\\components\\angular\\angular.js");
-
 /**
  * Controllers
  */
@@ -55955,7 +55955,7 @@ angular.module('App.Controllers', [])
     .controller('PrivacyCtrl', require('./privacy/PrivacyCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./common/HeaderCtrl":27,"./control_panel/ControlPanelCtrl":30,"./documentation/DocumentationCtrl":31,"./home/CodeGroupCtrl":32,"./home/DemoCtrl":33,"./home/HomeCtrl":34,"./pricing/CostCalculatorCtrl":35,"./pricing/PricingCtrl":36,"./privacy/PrivacyCtrl":37,"./terms/TermsCtrl":38}],27:[function(require,module,exports){
+},{"./common/HeaderCtrl":27,"./control_panel/ControlPanelCtrl":30,"./documentation/DocumentationCtrl":31,"./home/CodeGroupCtrl":32,"./home/DemoCtrl":33,"./home/HomeCtrl":34,"./pricing/CostCalculatorCtrl":35,"./pricing/PricingCtrl":36,"./privacy/PrivacyCtrl":37,"./terms/TermsCtrl":38}],27:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -56182,7 +56182,7 @@ var settings = require('../../Settings');
  * 
  * @param {Object} $scope
  */
-module.exports = ['$scope', 'Calculate', function ($scope, Calculate) {
+module.exports = ['$scope', 'CalculateServ', function ($scope, CalculateServ) {
 
     var pricingPerUsage = settings.meta.price;
     var freeUsageCap = settings.meta.freeUsageCap;
@@ -56212,7 +56212,7 @@ module.exports = ['$scope', 'Calculate', function ($scope, Calculate) {
         }
 
         //round to 2 decimal points, nearest cent
-        price = Calculate.round(price, 2);
+        price = CalculateServ.round(price, 2);
 
         $scope.price = price;
 
@@ -56256,8 +56256,6 @@ module.exports = ['$scope', function ($scope) {
 },{}],39:[function(require,module,exports){
 'use strict';
 
-require("./..\\..\\..\\components\\angular\\angular.js");
-
 /**
  * Directives
  */
@@ -56267,7 +56265,7 @@ module.exports = angular.module('App.Directives')
     .directive('equaliseHeights', require('./equaliseHeights'))
     .directive('anchor', require('./anchor'))
     .directive('passwordMatch', require('./passwordMatch'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./anchor":40,"./equaliseHeights":41,"./passwordMatch":42}],40:[function(require,module,exports){
+},{"./anchor":40,"./equaliseHeights":41,"./passwordMatch":42}],40:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -56430,8 +56428,6 @@ module.exports = [function () {
 },{}],43:[function(require,module,exports){
 'use strict';
 
-require("./..\\..\\..\\components\\angular\\angular.js");
-
 /**
  * Elements
  *
@@ -56442,7 +56438,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./chatTab":44,"./syntaxHighlight":80}],44:[function(require,module,exports){
+},{"./chatTab":44,"./syntaxHighlight":80}],44:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -56478,7 +56474,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":86}],45:[function(require,module,exports){
+},{"fs":1,"insert-css":91}],45:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -60002,10 +59998,8 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":46,"fs":1,"insert-css":86}],81:[function(require,module,exports){
+},{"./lib/hljs/index":46,"fs":1,"insert-css":91}],81:[function(require,module,exports){
 'use strict';
-
-require("./..\\..\\..\\components\\angular\\angular.js");
 
 /**
  * Filters
@@ -60013,7 +60007,187 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{"./..\\..\\..\\components\\angular\\angular.js":9}],82:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
+'use strict';
+
+/**
+ * Modules
+ */
+angular.module('App.Modules', [
+    require('./UserSystem').name
+]);
+
+module.exports = angular.module('App.Modules');
+},{"./UserSystem":83}],83:[function(require,module,exports){
+'use strict';
+
+/**
+ * User System Module
+ */
+angular.module('UserSystemMod', [])
+    .provider('UserSystemServ', require('./UserSystemServ'))
+    .run(require('./UserSystemRun'));
+
+module.exports = angular.module('UserSystemMod');
+},{"./UserSystemRun":84,"./UserSystemServ":85}],84:[function(require,module,exports){
+'use strict';
+
+/**
+ * User System Run Block
+ */
+module.exports = ['UserSystemServ', function (UserSystemServ) {
+
+    //attempt to get the user's session upon startup, there are three outcomes:
+    //1. continues with the current session with a valid session cookie
+    //2. triggers autologin with an autologin cookie and returns a valid session cookie
+    //3. remains as an anonymous user
+    //in cases where there is valid session cookie authenticationProvided will be broadcasted
+    UserSystemServ.getSession();
+
+}];
+},{}],85:[function(require,module,exports){
+'use strict';
+
+/**
+ * User System Service Provider.
+ * Relies on Restangular.
+ */
+module.exports = function () {
+
+    var userData = {},
+        authGateway = '/',
+        accountsResource = 'accounts',
+        sessionResource = 'sessions';
+
+    this.setAuthGateway = function (path) {
+        authGateway = path;
+    };
+
+    this.setAccountsResource = function (resource) {
+        accountsResource = resource;
+    };
+
+    this.setSessionResource = function (resource) {
+        sessionResource = resource;
+    };
+
+    this.$get = [
+        '$rootScope',
+        '$location',
+        'Restangular',
+        function ($rootScope, $location, Restangular) {
+
+            //these functions will return a promise
+            var userApi = {
+                getUserData: function () {
+                    return userData;
+                },
+                setUserData: function (data) {
+                    userData = data;
+                },
+                mergeUserData: function (data) {
+                    angular.extend(userData, data);
+                },
+                getAccount: function (id) {
+                    return Restangular.one(accountsResource, id).get().then(function (response) {
+                        userData = response.content;
+                        $rootScope.$broadcast('accountProvided', userData);
+                    });
+                },
+                registerAccount: function (payload) {
+                    return Restangular.all(accountsResource).post(payload).then(function (response) {
+                        $rootScope.$broadcast('accountRegistered', payload);
+                    });
+                },
+                updateAccount: function (payload) {
+                    //we have to do the one of accounts
+                    return Restangular.all(accountsResource).one(userData.id).customPut(payload).then(function (response) {
+                        this.setUserData(payload);
+                        $rootScope.$broadcast('accountUpdated', payload);
+                    });
+                },
+                patchAccount: function (payload) {
+                    return Restangular.all(accountsResource).one(userData.id).patch(payload).then(function (response) {
+                        this.mergeUserData(payload);
+                        $rootScope.$broadcast('accountPatched', payload);
+                    })
+                },
+                deleteAccount: function () {
+                    return Restangular.all(accountsResource).one(userData.id).remove().then(function (response) {
+                        $rootScope.$broadcast('accountDestroyed', userData.id);
+                        userData = {};
+                    });
+                },
+                getSession: function () {
+                    return Restangular.one(sessionResource).get().then(function (response) {
+                        if (response.content !== 'anonymous') {
+                            $rootScope.$broadcast('sessionLogin', response.content);
+                        }
+                    });
+                },
+                loginSession: function (payload) {
+                    return Restangular.one(sessionResource).post(payload).then(function (response) {
+                        $rootScope.$broadcast('sessionLogin', response.content);
+                    });
+                },
+                logoutSession: function () {
+                    return Restangular.one(sessionResource).remove().then(function (response) {
+                        $rootScope.$broadcast('sessionLogout', userData.id);
+                        userData = {};
+                    });
+                }
+            };
+
+            $rootScope.$on('sessionLogin', function (event, args) {
+                userApi.getAccount(args);
+            });
+
+            $rootScope.$on('sessionLogout', function (event, args) {
+                
+            });
+
+            return userApi;
+
+        }
+    ];
+
+
+};
+},{}],86:[function(require,module,exports){
+'use strict';
+
+/**
+ * Authentication State Run Block
+ */
+module.exports = ['$rootScope', function ($rootScope) {
+
+    //initial parameters will be changed 
+    $rootScope.loggedIn = false;
+    $rootScope.loggedOut = true;
+
+    $rootScope.$on('authenticationProvided', function (event, args) {
+
+        $rootScope.loggedIn = true;
+        $rootScope.loggedOut = false;
+
+    });
+
+    $rootScope.$on('authenticationLogout', function (event, args) {
+
+        $rootScope.loggedIn = false;
+        $rootScope.loggedOut = true;
+
+    });
+
+}];
+},{}],87:[function(require,module,exports){
+'use strict';
+
+/**
+ * Base Url Constant
+ */
+module.exports = angular.element('base').attr('href');
+},{}],88:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60050,10 +60224,22 @@ module.exports = [function () {
     };
 
 }];
-},{}],83:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
-require("./..\\..\\..\\components\\angular\\angular.js");
+/**
+ * Restangular Config Block
+ */
+module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularProvider, BaseUrlConst) {
+
+    //trim the base url of slashes if they exist
+    BaseUrlConst = BaseUrlConst.replace(new RegExp('/' + '*$'), '');
+
+    RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
+
+}];
+},{}],90:[function(require,module,exports){
+'use strict';
 
 /**
  * Services
@@ -60061,77 +60247,15 @@ require("./..\\..\\..\\components\\angular\\angular.js");
 angular.module('App.Services', []);
 
 module.exports = angular.module('App.Services')
+    //Constants
+    .constant('BaseUrlConst', require('./BaseUrlConst'))
     //Configuration Services
-    .config(require('./config/RestangularConfig'))
+    .config(require('./RestangularConfig'))
     //Initialisation Services
-    .run(require('./run/AuthenticationState'))
+    .run(require('./AuthenticationStateRun'))
     //Service Objects
-    .service('Calculate', require('./Calculate'));
-},{"./..\\..\\..\\components\\angular\\angular.js":9,"./Calculate":82,"./config/RestangularConfig":84,"./run/AuthenticationState":85}],84:[function(require,module,exports){
-'use strict';
-
-/**
- * Restangular Config Block
- */
-module.exports = ['RestangularProvider', function (RestangularProvider) {
-
-    RestangularProvider.setBaseUrl('/api');
-
-    //restangular needs to unwrap our metadata
-    RestangularProvider.setResponseExtractor(function(response, operation, what, url) {
-
-        //this should only be done for requests to SnapSearch API
-        console.log(what);
-        console.log(url);
-
-        var newResponse;
-
-        if (operation === "getList") {
-
-            newResponse = response.content;
-            //this is not a status code! This is the status message
-            newResponse.status = response.status;
-
-        } else {
-
-            newResponse = response.data;
-
-        }
-
-        return newResponse;
-
-    });
-
-
-}];
-},{}],85:[function(require,module,exports){
-'use strict';
-
-/**
- * Authentication State Run Block
- */
-module.exports = ['$rootScope', function ($rootScope) {
-
-    //initial parameters will be changed 
-    $rootScope.loggedIn = false;
-    $rootScope.loggedOut = true;
-
-    $rootScope.$on('authenticationProvided', function (event, args) {
-
-        $rootScope.loggedIn = true;
-        $rootScope.loggedOut = false;
-
-    });
-
-    $rootScope.$on('authenticationLogout', function (event, args) {
-
-        $rootScope.loggedIn = false;
-        $rootScope.loggedOut = true;
-
-    });
-
-}];
-},{}],86:[function(require,module,exports){
+    .service('CalculateServ', require('./CalculateServ'));
+},{"./AuthenticationStateRun":86,"./BaseUrlConst":87,"./CalculateServ":88,"./RestangularConfig":89}],91:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {
