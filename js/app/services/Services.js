@@ -1,16 +1,16 @@
 'use strict';
 
-require('angular');
-
 /**
  * Services
  */
 angular.module('App.Services', []);
 
 module.exports = angular.module('App.Services')
+    //Constants
+    .constant('BaseUrlConst', require('./BaseUrlConst'))
     //Configuration Services
-    .config(require('./config/RestangularConfig'))
+    .config(require('./RestangularConfig'))
     //Initialisation Services
-    .run(require('./run/AuthenticationState'))
+    .run(require('./AuthenticationStateRun'))
     //Service Objects
-    .service('Calculate', require('./Calculate'));
+    .service('CalculateServ', require('./CalculateServ'));

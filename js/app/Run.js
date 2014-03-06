@@ -21,7 +21,8 @@ module.exports = [
     '$stateParams',
     '$anchorScroll',
     '$location',
-    function($rootScope, $cookies, $http, $state, $stateParams, $anchorScroll, $location){
+    'BaseUrlConst',
+    function($rootScope, $cookies, $http, $state, $stateParams, $anchorScroll, $location, BaseUrlConst){
 
         //XSRF INTEGRATION
         $rootScope.$watch(
@@ -41,7 +42,7 @@ module.exports = [
         $rootScope.settings = settings;
 
         //PROVIDING BASE URL
-        $rootScope.baseUrl = angular.element('base').attr('href');
+        $rootScope.baseUrl = BaseUrlConst;
 
         //hash scroll function, this can be replaced by a directive
         $rootScope.scroll = function (hash) {
