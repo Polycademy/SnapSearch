@@ -313,7 +313,7 @@ class Robot_model extends CI_Model{
 
 				//we don't want to follow redirects in this case
 				$request = $this->client->get($parameters['url'], [], [
-					'allow_redirects': false
+					'allow_redirects'	=> false
 				]);
 				//try to get a compressed response
 				$request->addHeader('Accept-Encoding', 'gzip, deflate, identity');
