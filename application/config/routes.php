@@ -29,6 +29,9 @@ Pigeon::map(function($r){
 		//USAGE HISTORY
 		$r->resources('usage');
 
+		//DEMO
+		$r->resource('demo');
+
 	});
 
 	//CLI ROUTING
