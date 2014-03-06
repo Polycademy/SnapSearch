@@ -35,11 +35,6 @@ require('../../components/angulartics/src/angulartics-ga.js');
  * Bootstrapping Angular Modules
  */
 var app = angular.module('App', [
-    require('./controllers/Controllers').name,
-    require('./directives/Directives').name,
-    require('./elements/Elements').name,
-    require('./filters/Filters').name,
-    require('./services/Services').name,
     'ngCookies',
     'ngResource',
     'ngSanitize',
@@ -49,7 +44,13 @@ var app = angular.module('App', [
     'ui.bootstrap',
     'ui.utils',
     'angulartics',
-    'angulartics.google.analytics'
+    'angulartics.google.analytics',
+    require('./modules/Modules').name,
+    require('./services/Services').name,
+    require('./filters/Filters').name,
+    require('./directives/Directives').name,
+    require('./elements/Elements').name,
+    require('./controllers/Controllers').name
 ]);
 
 /**
