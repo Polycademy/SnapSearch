@@ -53,26 +53,26 @@ class Migration_add_polyauth extends CI_Migration {
 				'apiLeftOverCharge'		=> 0,
 				'chargeInterval'		=> 'P30D',
 			],
-			[
-				'id'					=> '2',
-				'ipAddress'				=> inet_pton('127.0.0.1'),
-				'username'				=> 'demo',
-				'password'				=> '$2y$10$H3ZtHFOwi2tU2fWYPujK/eS2y3X8enxG9f6Sr51GLgXnHJiMccJhG', //demo
-				'passwordChange'		=> '0',
-				'email'					=> 'demo@polycademy.com',
-				'createdOn'				=> date('Y-m-d H:i:s'),
-				'lastLogin'				=> date('Y-m-d H:i:s'),
-				'active'				=> '1',
-				//demo key is a2XEBCF6H5Tm9aYiwYRtdz7EirJDKbKHXl7LzA21boJVkxXD3E
-				'sharedKey'				=> 'g5U/xe/cLZOpdsTKNayP+Gfkx5gwf1jXyCxbOiSOd12OtiKwgeuqU1qhVbgp9El/cS9U3zmUW70c4702uKVXuw==',
-				'apiLimit'				=> 1000,
-				'apiFreeLimit'			=> 1000,
-				'apiUsage'				=> 0,
-				'apiRequests'			=> 0,
-				'apiLeftOverUsage'		=> 0,
-				'apiLeftOverCharge'		=> 0,
-				'chargeInterval'		=> 'P30D',
-			]
+			// [
+			// 	'id'					=> '2',
+			// 	'ipAddress'				=> inet_pton('127.0.0.1'),
+			// 	'username'				=> 'demo',
+			// 	'password'				=> '$2y$10$H3ZtHFOwi2tU2fWYPujK/eS2y3X8enxG9f6Sr51GLgXnHJiMccJhG', //demo
+			// 	'passwordChange'		=> '0',
+			// 	'email'					=> 'demo@polycademy.com',
+			// 	'createdOn'				=> date('Y-m-d H:i:s'),
+			// 	'lastLogin'				=> date('Y-m-d H:i:s'),
+			// 	'active'				=> '1',
+			// 	//demo key is a2XEBCF6H5Tm9aYiwYRtdz7EirJDKbKHXl7LzA21boJVkxXD3E
+			// 	'sharedKey'				=> 'g5U/xe/cLZOpdsTKNayP+Gfkx5gwf1jXyCxbOiSOd12OtiKwgeuqU1qhVbgp9El/cS9U3zmUW70c4702uKVXuw==',
+			// 	'apiLimit'				=> 1000,
+			// 	'apiFreeLimit'			=> 1000,
+			// 	'apiUsage'				=> 0,
+			// 	'apiRequests'			=> 0,
+			// 	'apiLeftOverUsage'		=> 0,
+			// 	'apiLeftOverCharge'		=> 0,
+			// 	'chargeInterval'		=> 'P30D',
+			// ]
 		];
 
 		//add chargeDate to each user
