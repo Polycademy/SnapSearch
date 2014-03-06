@@ -7,7 +7,7 @@ var settings = require('../../Settings');
  * 
  * @param {Object} $scope
  */
-module.exports = ['$scope', 'Calculate', function ($scope, Calculate) {
+module.exports = ['$scope', 'CalculateServ', function ($scope, CalculateServ) {
 
     var pricingPerUsage = settings.meta.price;
     var freeUsageCap = settings.meta.freeUsageCap;
@@ -37,7 +37,7 @@ module.exports = ['$scope', 'Calculate', function ($scope, Calculate) {
         }
 
         //round to 2 decimal points, nearest cent
-        price = Calculate.round(price, 2);
+        price = CalculateServ.round(price, 2);
 
         $scope.price = price;
 
