@@ -17,6 +17,7 @@ module.exports = [function () {
     return {
         restrict: 'A',
         require: 'ngModel',
+        scope: false,
         link: function (scope, element, attributes, controller) {
 
             //watch the "matched against" model value, and set its passwordMatch validity conditional upon being identical to current model value
@@ -28,7 +29,9 @@ module.exports = [function () {
             //push a parsing pipe to the current model value, and set its passwordMatch validity conditional upon being identical to matched against model value
             //this executes when the current model value changes
             controller.$parsers.push(function (value) {
-                controller.$setValidity('passwordMatch', value === scope.$eval(attributes.passwordMatch));
+                var isValid = (value === scope.$eval(attributes.passwordMatch));
+                controller.$setValidity('passwordMatch', isValid);
+                return isValid ? value : undefined;
             });
 
         }
