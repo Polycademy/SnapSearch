@@ -48,41 +48,49 @@ module.exports = function () {
                 getAccount: function (id) {
                     return accounts.one(id).get().then(function (response) {
                         $rootScope.$broadcast('accountProvided.UserSystem', response.content);
+                        return response;
                     });
                 },
                 registerAccount: function (payload) {
                     return accounts.post(payload).then(function (response) {
                         $rootScope.$broadcast('accountRegistered.UserSystem', payload);
+                        return response;
                     });
                 },
                 updateAccount: function (payload) {
                     return accounts.one(userData.id).customPUT(payload).then(function (response) {
                         $rootScope.$broadcast('accountUpdated.UserSystem', payload);
+                        return response;
                     });
                 },
                 patchAccount: function (payload) {
                     return accounts.one(userData.id).patch(payload).then(function (response) {
                         $rootScope.$broadcast('accountPatched.UserSystem', payload);
+                        return response;
                     });
                 },
                 deleteAccount: function () {
                     return accounts.one(userData.id).remove().then(function (response) {
                         $rootScope.$broadcast('accountDestroyed.UserSystem', userData.id);
+                        return response;
                     });
                 },
                 getSession: function () {
                     return sessions.customGET().then(function (response) {
                         $rootScope.$broadcast('sessionProvided.UserSystem', response.content);
+                        return response;
                     });
                 },
                 loginSession: function (payload) {
                     return sessions.post(payload).then(function (response) {
                         $rootScope.$broadcast('sessionLogin.UserSystem', response.content);
+                        return response;
                     });
                 },
                 logoutSession: function () {
                     return sessions.customDELETE().then(function (response) {
                         $rootScope.$broadcast('sessionLogout.UserSystem', userData.id);
+                        return response;
                     });
                 }
             };
