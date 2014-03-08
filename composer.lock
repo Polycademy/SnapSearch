@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "f61a085c8f7dd509c540264cf6e908e0",
+    "hash": "e53b00a5fc836661773e9f843f83a24d",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -816,16 +816,16 @@
         },
         {
             "name": "polycademy/polyauth",
-            "version": "0.0.9",
+            "version": "0.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Polycademy/PolyAuth.git",
-                "reference": "d2687067157a59e6fa38a0c75e9829141fcd85bc"
+                "reference": "b0809d3fc745f838757aebf7a68d8dc3f452a629"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/d2687067157a59e6fa38a0c75e9829141fcd85bc",
-                "reference": "d2687067157a59e6fa38a0c75e9829141fcd85bc",
+                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/b0809d3fc745f838757aebf7a68d8dc3f452a629",
+                "reference": "b0809d3fc745f838757aebf7a68d8dc3f452a629",
                 "shasum": ""
             },
             "require": {
@@ -878,7 +878,7 @@
                 "sessions",
                 "user accounts"
             ],
-            "time": "2014-01-22 09:16:49"
+            "time": "2014-03-08 14:18:17"
         },
         {
             "name": "psliwa/php-pdf",
@@ -1170,17 +1170,17 @@
         },
         {
             "name": "zendframework/zend-cache",
-            "version": "2.2.5",
+            "version": "2.2.6",
             "target-dir": "Zend/Cache",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/Component_ZendCache.git",
-                "reference": "49e5c3a59c4acb3e3e0a5b251f31b274889b1f97"
+                "reference": "560355160f06cdc3ef549a7eef843af3bead7e39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendCache/zipball/49e5c3a59c4acb3e3e0a5b251f31b274889b1f97",
-                "reference": "49e5c3a59c4acb3e3e0a5b251f31b274889b1f97",
+                "url": "https://api.github.com/repos/zendframework/Component_ZendCache/zipball/560355160f06cdc3ef549a7eef843af3bead7e39",
+                "reference": "560355160f06cdc3ef549a7eef843af3bead7e39",
                 "shasum": ""
             },
             "require": {
@@ -1221,21 +1221,21 @@
                 "cache",
                 "zf2"
             ],
-            "time": "2013-10-26 10:00:05"
+            "time": "2014-03-03 23:00:17"
         },
         {
             "name": "zendframework/zend-eventmanager",
-            "version": "2.2.5",
+            "version": "2.2.6",
             "target-dir": "Zend/EventManager",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/Component_ZendEventManager.git",
-                "reference": "f325feef4e1a19b873936e5b116980fbe88dd176"
+                "reference": "89368704bb37303fba64c3ddd6bce0506aa7187c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendEventManager/zipball/f325feef4e1a19b873936e5b116980fbe88dd176",
-                "reference": "f325feef4e1a19b873936e5b116980fbe88dd176",
+                "url": "https://api.github.com/repos/zendframework/Component_ZendEventManager/zipball/89368704bb37303fba64c3ddd6bce0506aa7187c",
+                "reference": "89368704bb37303fba64c3ddd6bce0506aa7187c",
                 "shasum": ""
             },
             "require": {
@@ -1262,21 +1262,21 @@
                 "eventmanager",
                 "zf2"
             ],
-            "time": "2013-06-12 19:45:10"
+            "time": "2014-01-04 13:00:14"
         },
         {
             "name": "zendframework/zend-memory",
-            "version": "2.2.5",
+            "version": "2.2.6",
             "target-dir": "Zend/Memory",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/Component_ZendMemory.git",
-                "reference": "84404b02a3f7f8de168bdc9fd9d17ab69fad5a51"
+                "reference": "a8dde00b0ad6a444edd55f0946e3e827c5914895"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendMemory/zipball/84404b02a3f7f8de168bdc9fd9d17ab69fad5a51",
-                "reference": "84404b02a3f7f8de168bdc9fd9d17ab69fad5a51",
+                "url": "https://api.github.com/repos/zendframework/Component_ZendMemory/zipball/a8dde00b0ad6a444edd55f0946e3e827c5914895",
+                "reference": "a8dde00b0ad6a444edd55f0946e3e827c5914895",
                 "shasum": ""
             },
             "require": {
@@ -1305,21 +1305,21 @@
                 "memory",
                 "zf2"
             ],
-            "time": "2013-10-16 23:00:05"
+            "time": "2014-01-02 18:00:22"
         },
         {
             "name": "zendframework/zend-servicemanager",
-            "version": "2.2.5",
+            "version": "2.2.6",
             "target-dir": "Zend/ServiceManager",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/Component_ZendServiceManager.git",
-                "reference": "064bb1d0441529aded2f213a10002cc4523f328c"
+                "reference": "de182a20dfdcf978c49570514103c7477ef16e4f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendServiceManager/zipball/064bb1d0441529aded2f213a10002cc4523f328c",
-                "reference": "064bb1d0441529aded2f213a10002cc4523f328c",
+                "url": "https://api.github.com/repos/zendframework/Component_ZendServiceManager/zipball/de182a20dfdcf978c49570514103c7477ef16e4f",
+                "reference": "de182a20dfdcf978c49570514103c7477ef16e4f",
                 "shasum": ""
             },
             "require": {
@@ -1348,21 +1348,21 @@
                 "servicemanager",
                 "zf2"
             ],
-            "time": "2013-10-23 20:00:05"
+            "time": "2014-03-03 21:00:04"
         },
         {
             "name": "zendframework/zend-stdlib",
-            "version": "2.2.5",
+            "version": "2.2.6",
             "target-dir": "Zend/Stdlib",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/Component_ZendStdlib.git",
-                "reference": "f440ecfc828d61d620662a03987c8287e1e4801e"
+                "reference": "e646729f2274f4552b6a92e38d8e458efe08ebc5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendStdlib/zipball/f440ecfc828d61d620662a03987c8287e1e4801e",
-                "reference": "f440ecfc828d61d620662a03987c8287e1e4801e",
+                "url": "https://api.github.com/repos/zendframework/Component_ZendStdlib/zipball/e646729f2274f4552b6a92e38d8e458efe08ebc5",
+                "reference": "e646729f2274f4552b6a92e38d8e458efe08ebc5",
                 "shasum": ""
             },
             "require": {
@@ -1392,7 +1392,7 @@
                 "stdlib",
                 "zf2"
             ],
-            "time": "2013-10-20 06:00:20"
+            "time": "2014-01-04 13:00:28"
         },
         {
             "name": "zendframework/zendpdf",

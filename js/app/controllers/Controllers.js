@@ -5,6 +5,7 @@
  */
 angular.module('App.Controllers', [])
     //common
+    .controller('AppCtrl', require('./common/AppCtrl'))
     .controller('HeaderCtrl', require('./common/HeaderCtrl'))
     //home
     .controller('HomeCtrl', require('./home/HomeCtrl'))

@@ -6,7 +6,8 @@
  */
 module.exports = function () {
 
-    var userData = {},
+    var userState = false,
+        userData = {},
         accountsResource = 'accounts',
         sessionResource = 'sessions';
 
@@ -27,11 +28,12 @@ module.exports = function () {
             //these functions will return a promise
             var userApi = {
                 getUserState: function () {
-                    if (Object.keys(userData).length === 0) {
-                        return false;
-                    } else {
-                        return true;
-                    }
+                    return userState;
+                    // if (Object.keys(userData).length === 0) {
+                    //     return false;
+                    // } else {
+                    //     return true;
+                    // }
                 },
                 getUserData: function () {
                     return userData;
@@ -96,6 +98,7 @@ module.exports = function () {
              * Upon the account being provided, the user data is set to the response content.
              */
             $rootScope.$on('accountProvided.UserSystem', function (event, content) {
+                userState = true;
                 userApi.setUserData(content);
             });
 
@@ -128,6 +131,7 @@ module.exports = function () {
              * Upon the account being destroyed, attempt to logout.
              */
             $rootScope.$on('accountDestroyed.UserSystem', function (event, id) {
+                userState = false;
                 userApi.logoutSession();
             });
 
@@ -136,6 +140,7 @@ module.exports = function () {
              */
             $rootScope.$on('sessionProvided.UserSystem', function (event, id) {
                 if (id !== 'anonymous') {
+                    userState = true;
                     $rootScope.$broadcast('sessionLogin.UserSystem', id);
                 }
             });
@@ -144,6 +149,7 @@ module.exports = function () {
              * Upon session login, get the account.
              */
             $rootScope.$on('sessionLogin.UserSystem', function (event, id) {
+                userState = true;
                 userApi.getAccount(id);
             });
 
@@ -151,6 +157,7 @@ module.exports = function () {
              * Upon session logout, clear the userData.
              */
             $rootScope.$on('sessionLogout.UserSystem', function (event, args) {
+                userState = false;
                 userApi.setUserData({});
             });
 

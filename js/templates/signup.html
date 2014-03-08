@@ -46,9 +46,11 @@
                     name="password" 
                     ng-model="user.password" 
                     required 
+                    ng-minlength="6" 
                     ng-maxlength="100" 
                 />
                 <span class="help-block" ng-show="signupForm.password.$error.required">Required</span>
+                <span class="help-block" ng-show="signupForm.password.$error.minlength">Password is too short</span>
                 <span class="help-block" ng-show="signupForm.password.$error.maxlength">Password is too long</span>
             </div>
         </div>
@@ -67,10 +69,12 @@
                     name="passwordConfirm" 
                     ng-model="user.passwordConfirm" 
                     required 
+                    ng-minlength="6" 
                     ng-maxlength="100" 
                     password-match="user.password" 
                 />
                 <span class="help-block" ng-show="signupForm.passwordConfirm.$error.required">Required</span>
+                <span class="help-block" ng-show="signupForm.passwordConfirm.$error.minlength">Password Confirm is too short</span>
                 <span class="help-block" ng-show="signupForm.passwordConfirm.$error.maxlength">Password Confirm is too long</span>
                 <span class="help-block" ng-show="signupForm.passwordConfirm.$error.passwordMatch">Password Confirm doesn't match Password.</span>
             </div>

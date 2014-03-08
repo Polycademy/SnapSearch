@@ -13,5 +13,6 @@ module.exports = angular.module('App.Services')
     .config(require('./UserSystemConfig'))
     //Initialisation Services
     .run(require('./AuthenticationStateRun'))
+    // .run(require('./RestangularXSRF')) // doesn't yet work, need cookies in response interception
     //Service Objects
     .service('CalculateServ', require('./CalculateServ'));

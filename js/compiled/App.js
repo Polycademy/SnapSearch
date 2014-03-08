@@ -55785,7 +55785,7 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./..\\..\\components\\lodash\\dist\\lodash.compat.js":20,"./..\\..\\components\\restangular\\dist\\restangular.js":21,"./Router":23,"./Run":24,"./controllers/Controllers":26,"./directives/Directives":39,"./elements/Elements":43,"./filters/Filters":81,"./modules/Modules":82,"./services/Services":90}],23:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":10,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\es5-shim\\es5-shim.js":13,"./..\\..\\components\\es6-shim\\es6-shim.js":14,"./..\\..\\components\\jquery\\dist\\jquery.js":18,"./..\\..\\components\\json3\\lib\\json3.min.js":19,"./..\\..\\components\\lodash\\dist\\lodash.compat.js":20,"./..\\..\\components\\restangular\\dist\\restangular.js":21,"./Router":23,"./Run":24,"./controllers/Controllers":26,"./directives/Directives":40,"./elements/Elements":44,"./filters/Filters":82,"./modules/Modules":83,"./services/Services":91}],23:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -55808,7 +55808,7 @@ module.exports = [
                 'home',
                 {
                     url: '/',
-                    template: "<div class=\"introduction panel panel_lego panel_transition_white_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"page-header\">\r\n                        <h1>SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>\r\n                        <h3>Make your sites crawlable with SnapSearch!</h3>\r\n                        <button class=\"call-to-action btn btn-primary\" type=\"button\">\r\n                            <h4 class=\"call-to-action-text\">Get Started for Free<br /><small>No Credit Card Required</small></h4>\r\n                        </button>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"code-group clearfix\" ng-controller=\"CodeGroupCtrl\">\r\n                        <ul class=\"nav nav-tabs\">\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'php'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('php')\">PHP</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'ruby'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('ruby')\">Ruby</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'node.js'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('node.js')\">Node.js</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'python'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('python')\">Python</button>\r\n                            </li>\r\n                        </ul>\r\n                        <div class=\"tab-content clearfix\" ng-switch=\"activeCode\">\r\n                            <div class=\"tab-panel\" ng-switch-when=\"php\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">composer require snapsearch/snapsearch-client-php:1.0.0</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"php\">//add content here, it needs to be encoded</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>                                </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"ruby\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">gem install snapsearch-client-ruby</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"ruby\">#add content here, it needs to be encoded</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>\r\n                            </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"node.js\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">npm install snapsearch-client-node:1.0.0</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"javascript\">//add content here, it needs to be encoded</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>\r\n                            </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"python\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">pip install snapsearch-client-python</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"python\">#comment</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"demo panel panel_white panel_transition_white_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Try our Demo</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <form class=\"demo-form\" ng-controller=\"DemoCtrl\" name=\"demoForm\">\r\n                <div \r\n                    class=\"form-group\" \r\n                    ng-class=\"{\r\n                        'has-error': demoForm.url.$invalid && demoForm.url.$dirty\r\n                    }\"\r\n                >\r\n                    <div class=\"input-group input-group-lg\">\r\n                        <input \r\n                            class=\"form-control\" \r\n                            type=\"url\" \r\n                            name=\"url\" \r\n                            ng-model=\"demo.url\" \r\n                            required \r\n                            placeholder=\"http://your-site.com/\" \r\n                        />\r\n                        <span class=\"input-group-btn\">\r\n                            <button \r\n                                class=\"btn btn-primary\" \r\n                                type=\"submit\" \r\n                                ng-disabled=\"demoForm.$invalid\" \r\n                                ng-click=\"submit(demo)\" \r\n                            >\r\n                                Scrape\r\n                            </button>\r\n                        </span>\r\n                    </div>\r\n                </div>\r\n                <div class=\"demo-output\" ng-switch=\"requestingDemoService\">\r\n                    <p class=\"demo-explanation\" ng-switch-when=\"never\">Try this on a single page application like https://snapsearch.io/. You'll see the difference between how \"javascriptless\" search engine robots view your application without SnapSearch, and how they view your application with SnapSearch.</p>\r\n                    <img class=\"demo-loading\" ng-switch-when=\"started\" src=\"assets/img/loading.gif\" />\r\n                    <div class=\"demo-response row\" ng-switch-when=\"finished\">\r\n                        <div class=\"col-sm-6\">\r\n                            <h4 class=\"demo-response-title\">Source Code without SnapSearch</h4>\r\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>\r\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withoutSnapSearch.length}}</span>\r\n                        </div>\r\n                        <div class=\"col-sm-6\">\r\n                            <h4 class=\"demo-response-title\">Source Code with SnapSearch</h4>\r\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withSnapSearch}}</code></pre>\r\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withSnapSearch.length}}</span>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"problem-solution panel panel_lego panel_transition_yellow_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Why use SnapSearch?</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <h3 class=\"problem-title\">The Problem</h3>\r\n            <div class=\"problem row\">\r\n                <div class=\"col-md-6\">\r\n                    <img src=\"assets/img/user_coding.png\" />\r\n                    <div class=\"problem-explanation\">\r\n                        <p>You’ve coded up a javascript enhanced or single page application using the latest HTML5 technologies. Using a modern browser, you can see all the asynchronous or animated content appear.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <img src=\"assets/img/spider_reading.png\" />\r\n                    <div class=\"problem-explanation\">\r\n                        <p>Search engines however see nothing. This is because search engine robots are simple HTTP clients that cannot execute advanced javascript. They do not execute AJAX, and thus cannot load asynchronous resources, nor can they activate javascript events that make your application dynamic and user friendly.</p>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <h3 class=\"solution-title\">Our Solution</h3>\r\n            <div class=\"solution row\">\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/globe.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">Client initiates an HTTP Request. This client can be search engine robot or a social network crawler such as Facebook or Twitter.</p>\r\n                        <p class=\"response-pipe\">The client will now receive the true full representation of your site’s content even though it cannot execute javascript.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/application.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">Your application using our supplied middleware detects whether the client cannot execute javascript. The middleware then initiates a snapshot request to SnapSearch. The request contains the client request URL, authentication credentials and custom API parameters.</p>\r\n                        <p class=\"response-pipe\">Once the response is received, it outputs your page’s status code, HTML content and any HTTP response headers.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/cloud_service.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">SnapSearch receives the request and commands our load balanced browser workers to scrape your site based on the client request URL while executing your javascript. Your content will be cached for future requests.</p>\r\n                        <p class=\"response-pipe\">A response is constructed containing the resulting status code, HTML content, headers and optionally a screenshot of your resource. This is returned to your application’s middleware.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/cache.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">A cache of the content is securely and safely stored on Amazon S3. All cached content are distinguished by a parameter checksum, so the same URL with different API parameters will be stored independently.</p>\r\n                        <p class=\"response-pipe\">If a resource has been cached before, SnapSearch will return the cached content. All cached content have adjustable cache lifetime.</p>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"features panel panel_yellow panel_transition_white_yellow\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Features</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\" equalise-heights=\".features .feature-object\">\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">On Demand</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/snapsearch_bolt.png\" />\r\n                    <p class=\"feature-explanation\">Snapshots are created on the fly as you request it from the API. Resources are cached for a default time of 24 hrs.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Real Browser Workers</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/firefox.png\" />\r\n                    <p class=\"feature-explanation\">Our scrapers are powered by nightly versions of Mozilla Firefox. We’re able to run cutting edge HTML5 techniques. Our scrapers evolve as the web evolves.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Google Approved</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/google.png\" />\r\n                    <p class=\"feature-explanation\">SnapSearch complies with the AJAX Crawling Specification by Google. SnapSearch responds with the same content as a normal user would see, so you’re not in violation of cloaking rules.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Powerful Middleware</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/middleware.png\" />\r\n                    <p class=\"feature-explanation\">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect 196 robots. They can be configured to support custom clients.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Flexibility</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/flexibility.png\" />\r\n                    <p class=\"feature-explanation\">The API supports image snapshots, soft 404s, following redirects, custom headers and status code, cache time settings, width and height of the scraper (useful for infinite scrolling), and custom javascript callbacks that are evaled on the page.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Pay for What You Use</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/tiger_face.png\" />\r\n                    <p class=\"feature-explanation\">You only pay for each usage of the API that initiates a fresh snapshot. There is no minimum monthly fee. Requests hitting the cache is free, and storage of the cache is free.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Load Balanced</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/load_balanced.png\" />\r\n                    <p class=\"feature-explanation\">SnapSearch was built as a fault-tolerant load balanced service. We can handle small and big sites. Scrapers are horizontally scaled according to the number of users.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Analytics</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/analytics.png\" />\r\n                    <p class=\"feature-explanation\">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"framework-support panel panel_white panel_transition_white_yellow\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">We’re 100% framework agnostic!</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"framework-logos row\">\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/sails_logo.png\" />\r\n                    <a href=\"http://sailsjs.org/\">Sails.js</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/angular_logo.png\" />\r\n                    <a href=\"http://angularjs.org/\">AngularJS</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/js_logo.png\" />\r\n                    <a href=\"http://http://www.html5rocks.com/\">HTML5 Javascript</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/jquery_logo.png\" />\r\n                    <a href=\"http://jquery.com/\">jQuery</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/backbone_logo.png\" />\r\n                    <a href=\"http://backbonejs.org/\">Backbone</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/ember_logo.png\" />\r\n                    <a href=\"http://emberjs.com/\">ember</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/knockout_logo.png\" />\r\n                    <a href=\"http://knockoutjs.com/\">Knockout</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/meteor_logo.png\" />\r\n                    <a href=\"https://www.meteor.com/\">Meteor</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"introduction panel panel_lego panel_transition_white_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"page-header\">\r\n                        <h1>SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>\r\n                        <h3>Make your sites crawlable with SnapSearch!</h3>\r\n                        <button class=\"call-to-action btn btn-primary\" type=\"button\" ng-click=\"modal.signUp()\">\r\n                            <h4 class=\"call-to-action-text\">Get Started for Free<br /><small>No Credit Card Required</small></h4>\r\n                        </button>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"code-group clearfix\" ng-controller=\"CodeGroupCtrl\">\r\n                        <ul class=\"nav nav-tabs\">\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'php'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('php')\">PHP</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'ruby'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('ruby')\">Ruby</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'node.js'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('node.js')\">Node.js</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'python'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('python')\">Python</button>\r\n                            </li>\r\n                        </ul>\r\n                        <div class=\"tab-content clearfix\" ng-switch=\"activeCode\">\r\n                            <div class=\"tab-panel\" ng-switch-when=\"php\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">composer require snapsearch/snapsearch-client-php:1.0.0</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"php\">//add content here, it needs to be encoded</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>                                </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"ruby\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">gem install snapsearch-client-ruby</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"ruby\">#add content here, it needs to be encoded</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>\r\n                            </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"node.js\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">npm install snapsearch-client-node:1.0.0</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"javascript\">//add content here, it needs to be encoded</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>\r\n                            </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"python\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">pip install snapsearch-client-python</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"python\">#comment</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"demo panel panel_white panel_transition_white_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Try our Demo</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <form class=\"demo-form\" ng-controller=\"DemoCtrl\" name=\"demoForm\">\r\n                <div \r\n                    class=\"form-group\" \r\n                    ng-class=\"{\r\n                        'has-error': demoForm.url.$invalid && demoForm.url.$dirty\r\n                    }\"\r\n                >\r\n                    <div class=\"input-group input-group-lg\">\r\n                        <input \r\n                            class=\"form-control\" \r\n                            type=\"url\" \r\n                            name=\"url\" \r\n                            ng-model=\"demo.url\" \r\n                            required \r\n                            placeholder=\"http://your-site.com/\" \r\n                        />\r\n                        <span class=\"input-group-btn\">\r\n                            <button \r\n                                class=\"btn btn-primary\" \r\n                                type=\"submit\" \r\n                                ng-disabled=\"demoForm.$invalid\" \r\n                                ng-click=\"submit(demo)\" \r\n                            >\r\n                                Scrape\r\n                            </button>\r\n                        </span>\r\n                    </div>\r\n                </div>\r\n                <div class=\"demo-output\" ng-switch=\"requestingDemoService\">\r\n                    <p class=\"demo-explanation\" ng-switch-when=\"never\">Try this on a single page application like https://snapsearch.io/. You'll see the difference between how \"javascriptless\" search engine robots view your application without SnapSearch, and how they view your application with SnapSearch.</p>\r\n                    <img class=\"demo-loading\" ng-switch-when=\"started\" src=\"assets/img/loading.gif\" />\r\n                    <div class=\"demo-response row\" ng-switch-when=\"finished\">\r\n                        <div class=\"col-sm-6\">\r\n                            <h4 class=\"demo-response-title\">Source Code without SnapSearch</h4>\r\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>\r\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withoutSnapSearch.length}}</span>\r\n                        </div>\r\n                        <div class=\"col-sm-6\">\r\n                            <h4 class=\"demo-response-title\">Source Code with SnapSearch</h4>\r\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withSnapSearch}}</code></pre>\r\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withSnapSearch.length}}</span>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"problem-solution panel panel_lego panel_transition_yellow_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Why use SnapSearch?</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <h3 class=\"problem-title\">The Problem</h3>\r\n            <div class=\"problem row\">\r\n                <div class=\"col-md-6\">\r\n                    <img src=\"assets/img/user_coding.png\" />\r\n                    <div class=\"problem-explanation\">\r\n                        <p>You’ve coded up a javascript enhanced or single page application using the latest HTML5 technologies. Using a modern browser, you can see all the asynchronous or animated content appear.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <img src=\"assets/img/spider_reading.png\" />\r\n                    <div class=\"problem-explanation\">\r\n                        <p>Search engines however see nothing. This is because search engine robots are simple HTTP clients that cannot execute advanced javascript. They do not execute AJAX, and thus cannot load asynchronous resources, nor can they activate javascript events that make your application dynamic and user friendly.</p>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <h3 class=\"solution-title\">Our Solution</h3>\r\n            <div class=\"solution row\">\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/globe.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">Client initiates an HTTP Request. This client can be search engine robot or a social network crawler such as Facebook or Twitter.</p>\r\n                        <p class=\"response-pipe\">The client will now receive the true full representation of your site’s content even though it cannot execute javascript.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/application.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">Your application using our supplied middleware detects whether the client cannot execute javascript. The middleware then initiates a snapshot request to SnapSearch. The request contains the client request URL, authentication credentials and custom API parameters.</p>\r\n                        <p class=\"response-pipe\">Once the response is received, it outputs your page’s status code, HTML content and any HTTP response headers.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/cloud_service.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">SnapSearch receives the request and commands our load balanced browser workers to scrape your site based on the client request URL while executing your javascript. Your content will be cached for future requests.</p>\r\n                        <p class=\"response-pipe\">A response is constructed containing the resulting status code, HTML content, headers and optionally a screenshot of your resource. This is returned to your application’s middleware.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/cache.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">A cache of the content is securely and safely stored on Amazon S3. All cached content are distinguished by a parameter checksum, so the same URL with different API parameters will be stored independently.</p>\r\n                        <p class=\"response-pipe\">If a resource has been cached before, SnapSearch will return the cached content. All cached content have adjustable cache lifetime.</p>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"features panel panel_yellow panel_transition_white_yellow\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Features</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\" equalise-heights=\".features .feature-object\">\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">On Demand</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/snapsearch_bolt.png\" />\r\n                    <p class=\"feature-explanation\">Snapshots are created on the fly as you request it from the API. Resources are cached for a default time of 24 hrs.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Real Browser Workers</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/firefox.png\" />\r\n                    <p class=\"feature-explanation\">Our scrapers are powered by nightly versions of Mozilla Firefox. We’re able to run cutting edge HTML5 techniques. Our scrapers evolve as the web evolves.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Google Approved</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/google.png\" />\r\n                    <p class=\"feature-explanation\">SnapSearch complies with the AJAX Crawling Specification by Google. SnapSearch responds with the same content as a normal user would see, so you’re not in violation of cloaking rules.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Powerful Middleware</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/middleware.png\" />\r\n                    <p class=\"feature-explanation\">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect 196 robots. They can be configured to support custom clients.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Flexibility</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/flexibility.png\" />\r\n                    <p class=\"feature-explanation\">The API supports image snapshots, soft 404s, following redirects, custom headers and status code, cache time settings, width and height of the scraper (useful for infinite scrolling), and custom javascript callbacks that are evaled on the page.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Pay for What You Use</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/tiger_face.png\" />\r\n                    <p class=\"feature-explanation\">You only pay for each usage of the API that initiates a fresh snapshot. There is no minimum monthly fee. Requests hitting the cache is free, and storage of the cache is free.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Load Balanced</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/load_balanced.png\" />\r\n                    <p class=\"feature-explanation\">SnapSearch was built as a fault-tolerant load balanced service. We can handle small and big sites. Scrapers are horizontally scaled according to the number of users.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Analytics</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/analytics.png\" />\r\n                    <p class=\"feature-explanation\">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"framework-support panel panel_white panel_transition_white_yellow\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">We’re 100% framework agnostic!</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"framework-logos row\">\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/sails_logo.png\" />\r\n                    <a href=\"http://sailsjs.org/\">Sails.js</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/angular_logo.png\" />\r\n                    <a href=\"http://angularjs.org/\">AngularJS</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/js_logo.png\" />\r\n                    <a href=\"http://http://www.html5rocks.com/\">HTML5 Javascript</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/jquery_logo.png\" />\r\n                    <a href=\"http://jquery.com/\">jQuery</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/backbone_logo.png\" />\r\n                    <a href=\"http://backbonejs.org/\">Backbone</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/ember_logo.png\" />\r\n                    <a href=\"http://emberjs.com/\">ember</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/knockout_logo.png\" />\r\n                    <a href=\"http://knockoutjs.com/\">Knockout</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/meteor_logo.png\" />\r\n                    <a href=\"https://www.meteor.com/\">Meteor</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>",
                     controller: 'HomeCtrl'
                 }
             )
@@ -55832,7 +55832,7 @@ module.exports = [
                 'controlPanel',
                 {
                     url: '/control_panel',
-                    template: "",
+                    template: "<div class=\"control-panel panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Control Panel</h2>\n        </div>\n        <div class=\"panel-body\" ng-show=\"loggedIn\">\n        </div>\n        <div class=\"panel-body\" ng-show=\"loggedOut\">\n            <p>You must be logged in to view this page!</p>\n        </div>\n    </div>\n</div>",
                     controller: 'ControlPanelCtrl'
                 }
             )
@@ -55883,17 +55883,7 @@ module.exports = [
     '$location',
     'BaseUrlConst',
     function($rootScope, $cookies, $http, $state, $stateParams, $anchorScroll, $location, BaseUrlConst){
-
-        //XSRF INTEGRATION
-        $rootScope.$watch(
-            function(){
-                return $cookies[serverVars.csrfCookieName];
-            },
-            function(){
-                $http.defaults.headers.common['X-XSRF-TOKEN'] = $cookies[serverVars.csrfCookieName];
-            }
-        );
-
+        
         //PROVIDING STATE ON ROOTSCOPE
         $rootScope.$state = $state;
         $rootScope.$stateParams = $stateParams;
@@ -55937,6 +55927,7 @@ module.exports = {
  */
 angular.module('App.Controllers', [])
     //common
+    .controller('AppCtrl', require('./common/AppCtrl'))
     .controller('HeaderCtrl', require('./common/HeaderCtrl'))
     //home
     .controller('HomeCtrl', require('./home/HomeCtrl'))
@@ -55955,17 +55946,21 @@ angular.module('App.Controllers', [])
     .controller('PrivacyCtrl', require('./privacy/PrivacyCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./common/HeaderCtrl":27,"./control_panel/ControlPanelCtrl":30,"./documentation/DocumentationCtrl":31,"./home/CodeGroupCtrl":32,"./home/DemoCtrl":33,"./home/HomeCtrl":34,"./pricing/CostCalculatorCtrl":35,"./pricing/PricingCtrl":36,"./privacy/PrivacyCtrl":37,"./terms/TermsCtrl":38}],27:[function(require,module,exports){
+},{"./common/AppCtrl":27,"./common/HeaderCtrl":28,"./control_panel/ControlPanelCtrl":31,"./documentation/DocumentationCtrl":32,"./home/CodeGroupCtrl":33,"./home/DemoCtrl":34,"./home/HomeCtrl":35,"./pricing/CostCalculatorCtrl":36,"./pricing/PricingCtrl":37,"./privacy/PrivacyCtrl":38,"./terms/TermsCtrl":39}],27:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
 
 /**
- * Header Controller
+ * App Controller
  * 
  * @param {Object} $scope
+ * @param {Object} $modal
  */
-module.exports = ['$scope', '$modal', function ($scope, $modal) {
+module.exports = ['$scope', '$modal', '$state', 'UserSystemServ', function ($scope, $modal, $state, UserSystemServ) {
+
+    $scope.modal = {};
+    $scope.auth = {};
 
     /**
      * In the future, these 2 functions opening up the signup and login modal could be replaced with "modal" states that transition to and from the parent state which would whichever state that the person activated the modal box.
@@ -55974,62 +55969,58 @@ module.exports = ['$scope', '$modal', function ($scope, $modal) {
      * Also look into multiple inheritance of states.
      */
 
-    $scope.openSignUpModal = function () {
+    $scope.modal.signUp = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\r\n    <h3>Sign Up</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"signupForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\"\r\n            ng-class=\"{\r\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPasswordConfirm\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"passwordConfirm\" \r\n                    ng-model=\"user.passwordConfirm\" \r\n                    required \r\n                    ng-maxlength=\"100\" \r\n                    password-match=\"user.password\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password.</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\r\n            <div class=\"col-sm-4\">\r\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\r\n                <span class=\"help-block\">Optional Promo Code</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-error\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>", 
+            template: "<div class=\"modal-header\">\r\n    <h3>Sign Up</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"signupForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\"\r\n            ng-class=\"{\r\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.minlength\">Password is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPasswordConfirm\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"passwordConfirm\" \r\n                    ng-model=\"user.passwordConfirm\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                    password-match=\"user.password\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password.</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\r\n            <div class=\"col-sm-4\">\r\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\r\n                <span class=\"help-block\">Optional Promo Code</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-error\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>", 
             controller: require('./SignUpCtrl'),
             windowClass: 'signup-modal form-modal'
         }).result.then(function () {
-
-            console.log('logged in!');
-
-            //successfully signed in, should autologin
-
-        }, function () {
-
-            console.log('cancelled');
-
-            //fail modal
-
+            $state.go('controlPanel');
         });
 
     };
 
-    $scope.openLogInModal = function () {
+    $scope.modal.logIn = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\r\n    <h3>Log In</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"loginForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': loginForm.email.$invalid && loginForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"loginFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"loginFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\"\r\n            ng-class=\"{\r\n                'has-error': loginForm.password.$invalid && loginForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"loginFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"loginFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"user.password\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <div class=\"col-sm-offset-2 col-sm-10\">\r\n                <div class=\"checkbox\">\r\n                    <label>\r\n                        <input type=\"checkbox\" name=\"autologin\" ng-model=\"user.autologin\"> Remember Me\r\n                    </label>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-error\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"login(user)\" ng-disabled=\"loginForm.$invalid\">Log In</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>",
+            template: "<div class=\"modal-header\">\r\n    <h3>Log In</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"loginForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': loginForm.email.$invalid && loginForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"loginFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"loginFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\"\r\n            ng-class=\"{\r\n                'has-error': loginForm.password.$invalid && loginForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"loginFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"loginFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.minlength\">Password is too short</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <div class=\"col-sm-offset-2 col-sm-10\">\r\n                <div class=\"checkbox\">\r\n                    <label>\r\n                        <input type=\"checkbox\" name=\"autologin\" ng-model=\"user.autologin\"> Remember Me\r\n                    </label>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"login(user)\" ng-disabled=\"loginForm.$invalid\">Log In</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>",
             controller: require('./LogInCtrl'),
             windowClass: 'login-modal form-modal'
         }).result.then(function () {
-
-            //successfully logged in
-
-        }, function () {
-
-            //closed the modal
-
+            $state.go('controlPanel');
         });
 
     };
 
-    $scope.logout = function () {
+    $scope.auth.logOut = function () {
 
-        //just log the person out
+        UserSystemServ.logoutSession().then(function () {
+            $state.go('home');
+        });
 
     };
 
 }];
-},{"./LogInCtrl":28,"./SignUpCtrl":29,"fs":1}],28:[function(require,module,exports){
+},{"./LogInCtrl":29,"./SignUpCtrl":30,"fs":1}],28:[function(require,module,exports){
+'use strict';
+
+/**
+ * Header Controller
+ * 
+ * @param {Object} $scope
+ */
+module.exports = ['$scope', function ($scope) {
+
+}];
+},{}],29:[function(require,module,exports){
 'use strict';
 
 /**
  * Login Modal Controller
  */
-module.exports = ['$scope', '$modalInstance', 'Restangular', function ($scope, $modalInstance, Restangular) {
+module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', function ($scope, $modalInstance, $timeout, UserSystemServ) {
 
-    //default user object containing the email and password
     $scope.user = {};
 
     $scope.formErrors = false;
@@ -56037,47 +56028,30 @@ module.exports = ['$scope', '$modalInstance', 'Restangular', function ($scope, $
 
     $scope.login = function (user) {
 
-        //user.email
-        //user.password
-        //
-        //then call $modalInstance.close('logged_in');
+        UserSystemServ.loginSession(user).then(function () {
+
+            $scope.formErrors = false;
+            $scope.formSuccess = 'Successfully logged in.';
+            $timeout(function () {
+                $modalInstance.close();
+            }, 1500);
+
+        }, function (response) {
+
+            $scope.formSuccess = false;
+            if (response.status === 400 || response.status === 401) {
+                $scope.formErrors = response.data.content;
+            } else {
+                $scope.formErrors = ['System error, try again or contact us.'];
+            }
+
+        });
 
     };
 
     $scope.cancel = function () {
 
-        $modalInstance.dismiss('cancel');
-
-    };
-
-}];
-},{}],29:[function(require,module,exports){
-'use strict';
-
-/**
- * Sign Up Modal Controller
- */
-module.exports = ['$scope', '$modalInstance', 'UserSystem', function ($scope, $modalInstance, UserSystem) {
-
-    //default user object containing the email and password
-    $scope.user = {};
-
-    $scope.formErrors = false;
-    $scope.formSuccess = false;
-
-    $scope.signup = function (user) {
-
-        //user.username
-        //user.email
-        //user.password
-        //
-        //then call $modalInstance.close('logged_in');
-
-    };
-
-    $scope.cancel = function () {
-
-        $modalInstance.dismiss('cancel');
+        $modalInstance.dismiss();
 
     };
 
@@ -56086,15 +56060,95 @@ module.exports = ['$scope', '$modalInstance', 'UserSystem', function ($scope, $m
 'use strict';
 
 /**
+ * Sign Up Modal Controller
+ */
+module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', function ($scope, $modalInstance, $timeout, UserSystemServ) {
+
+    $scope.user = {};
+
+    $scope.formErrors = false;
+    $scope.formSuccess = false;
+
+    $scope.signup = function (user) {
+
+        UserSystemServ.registerAccount(user).then(function (response) {
+
+            $scope.formErrors = false;
+            $scope.formSuccess = 'Successfully registered. Automatically logging in.';
+            $timeout(function () {
+                $modalInstance.close();
+            }, 1500);
+
+        }, function (response) {
+
+            $scope.formSuccess = false;
+            if (response.status === 400) {
+                $scope.formErrors = response.data.content;
+            } else {
+                $scope.formErrors = ['System error, try again or contact us.'];
+            }
+
+        });
+
+    };
+
+    $scope.cancel = function () {
+
+        $modalInstance.dismiss();
+
+    };
+
+}];
+},{}],31:[function(require,module,exports){
+'use strict';
+
+/**
  * Control Panel Controller
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', function ($scope) {
+module.exports = ['$scope', 'UserSystemServ', function ($scope, UserSystemServ) {
+
+    /*
+    Ok in order to correctly assess whether someone is logged in or not.
+    it needs to be resolved via the routes. Or in the resolve function.
+    This will call whether you're logged in or not, and therefore deliberate what happens afterwards.
+    However it must not run on each route, only on the first request.
+
+    Something like this:
+
+    getSession, if valid session, then to the page, if invalid session, redirect or just go to the page, but only do this if this is the first time it's been loaded, because otherwise the data would be cached!
+    So the decision on what to do if invalid session should be in the resolve parameter of the routing.
+
+    Furthermore this means the App.js run should not be doing this. But instead the service exposes the getSession.
+
+    You could also do it all in each controller...
+
+    Controllers could be inherited. We can try prototypical inheritance for the resolves too. This could allow overwriting the parent when necessary. So normally just call getSession(), otherwise call getSession().then..etc
+     */
+
+    $scope.$watch(function () {
+
+        return UserSystemServ.getUserData();
+
+    }, function (userData) {
+
+        if (Object.keys(userData).length > 0) {
+
+            var id = userData.id;
+
+            console.log('logged in, begin processing data!');
+
+            //use the id to load the data
+
+        }
+
+
+    }, true);
 
 
 }];
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -56105,7 +56159,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 /**
@@ -56123,7 +56177,7 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -56161,7 +56215,7 @@ module.exports = ['$scope', function ($scope) {
     };
 
 }];
-},{"../../Settings":25}],34:[function(require,module,exports){
+},{"../../Settings":25}],35:[function(require,module,exports){
 'use strict';
 
 /**
@@ -56172,7 +56226,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -56219,7 +56273,7 @@ module.exports = ['$scope', 'CalculateServ', function ($scope, CalculateServ) {
     });
 
 }];
-},{"../../Settings":25}],36:[function(require,module,exports){
+},{"../../Settings":25}],37:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -56235,7 +56289,7 @@ module.exports = ['$scope', function ($scope) {
     $scope.freeUsageCap = settings.meta.freeUsageCap;
 
 }];
-},{"../../Settings":25}],37:[function(require,module,exports){
+},{"../../Settings":25}],38:[function(require,module,exports){
 'use strict';
 
 /**
@@ -56244,7 +56298,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /**
@@ -56253,7 +56307,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 /**
@@ -56265,7 +56319,7 @@ module.exports = angular.module('App.Directives')
     .directive('equaliseHeights', require('./equaliseHeights'))
     .directive('anchor', require('./anchor'))
     .directive('passwordMatch', require('./passwordMatch'));
-},{"./anchor":40,"./equaliseHeights":41,"./passwordMatch":42}],40:[function(require,module,exports){
+},{"./anchor":41,"./equaliseHeights":42,"./passwordMatch":43}],41:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -56345,7 +56399,7 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
         };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],41:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],42:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -56387,7 +56441,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],42:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":17}],43:[function(require,module,exports){
 'use strict';
 
 /**
@@ -56407,6 +56461,7 @@ module.exports = [function () {
     return {
         restrict: 'A',
         require: 'ngModel',
+        scope: false,
         link: function (scope, element, attributes, controller) {
 
             //watch the "matched against" model value, and set its passwordMatch validity conditional upon being identical to current model value
@@ -56418,14 +56473,16 @@ module.exports = [function () {
             //push a parsing pipe to the current model value, and set its passwordMatch validity conditional upon being identical to matched against model value
             //this executes when the current model value changes
             controller.$parsers.push(function (value) {
-                controller.$setValidity('passwordMatch', value === scope.$eval(attributes.passwordMatch));
+                var isValid = (value === scope.$eval(attributes.passwordMatch));
+                controller.$setValidity('passwordMatch', isValid);
+                return isValid ? value : undefined;
             });
 
         }
     };
 
 }];
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 /**
@@ -56438,7 +56495,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./chatTab":44,"./syntaxHighlight":80}],44:[function(require,module,exports){
+},{"./chatTab":45,"./syntaxHighlight":81}],45:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -56474,7 +56531,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":92}],45:[function(require,module,exports){
+},{"fs":1,"insert-css":93}],46:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -57165,7 +57222,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -57202,7 +57259,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":45,"./languages/apache.js":47,"./languages/bash.js":48,"./languages/clojure.js":49,"./languages/coffeescript.js":50,"./languages/cpp.js":51,"./languages/cs.js":52,"./languages/css.js":53,"./languages/diff.js":54,"./languages/erlang.js":55,"./languages/go.js":56,"./languages/haml.js":57,"./languages/haskell.js":58,"./languages/http.js":59,"./languages/ini.js":60,"./languages/java.js":61,"./languages/javascript.js":62,"./languages/json.js":63,"./languages/lisp.js":64,"./languages/lua.js":65,"./languages/makefile.js":66,"./languages/markdown.js":67,"./languages/nginx.js":68,"./languages/objectivec.js":69,"./languages/perl.js":70,"./languages/php.js":71,"./languages/python.js":72,"./languages/r.js":73,"./languages/ruby.js":74,"./languages/rust.js":75,"./languages/scala.js":76,"./languages/scss.js":77,"./languages/sql.js":78,"./languages/xml.js":79}],47:[function(require,module,exports){
+},{"./highlight":46,"./languages/apache.js":48,"./languages/bash.js":49,"./languages/clojure.js":50,"./languages/coffeescript.js":51,"./languages/cpp.js":52,"./languages/cs.js":53,"./languages/css.js":54,"./languages/diff.js":55,"./languages/erlang.js":56,"./languages/go.js":57,"./languages/haml.js":58,"./languages/haskell.js":59,"./languages/http.js":60,"./languages/ini.js":61,"./languages/java.js":62,"./languages/javascript.js":63,"./languages/json.js":64,"./languages/lisp.js":65,"./languages/lua.js":66,"./languages/makefile.js":67,"./languages/markdown.js":68,"./languages/nginx.js":69,"./languages/objectivec.js":70,"./languages/perl.js":71,"./languages/php.js":72,"./languages/python.js":73,"./languages/r.js":74,"./languages/ruby.js":75,"./languages/rust.js":76,"./languages/scala.js":77,"./languages/scss.js":78,"./languages/sql.js":79,"./languages/xml.js":80}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -57248,7 +57305,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -57311,7 +57368,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -57409,7 +57466,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -57540,7 +57597,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -57604,7 +57661,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -57677,7 +57734,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -57781,7 +57838,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -57821,7 +57878,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -57976,7 +58033,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -58015,7 +58072,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -58137,7 +58194,7 @@ function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -58263,7 +58320,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -58297,7 +58354,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -58327,7 +58384,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -58382,7 +58439,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -58454,7 +58511,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -58492,7 +58549,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -58568,7 +58625,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -58625,7 +58682,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -58670,7 +58727,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -58772,7 +58829,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -58853,7 +58910,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -58938,7 +58995,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -59087,7 +59144,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -59196,7 +59253,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -59280,7 +59337,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -59350,7 +59407,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -59509,7 +59566,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -59558,7 +59615,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -59617,7 +59674,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -59734,7 +59791,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -59837,7 +59894,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -59941,7 +59998,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],80:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -59998,7 +60055,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":46,"fs":1,"insert-css":92}],81:[function(require,module,exports){
+},{"./lib/hljs/index":47,"fs":1,"insert-css":93}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60007,7 +60064,7 @@ module.exports = ['$sce', function($sce){
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60018,7 +60075,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":83}],83:[function(require,module,exports){
+},{"./UserSystem":84}],84:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60029,7 +60086,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":84,"./UserSystemServ":85}],84:[function(require,module,exports){
+},{"./UserSystemRun":85,"./UserSystemServ":86}],85:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60045,7 +60102,7 @@ module.exports = ['UserSystemServ', function (UserSystemServ) {
     UserSystemServ.getSession();
 
 }];
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60054,7 +60111,8 @@ module.exports = ['UserSystemServ', function (UserSystemServ) {
  */
 module.exports = function () {
 
-    var userData = {},
+    var userState = false,
+        userData = {},
         accountsResource = 'accounts',
         sessionResource = 'sessions';
 
@@ -60072,17 +60130,15 @@ module.exports = function () {
         'Restangular',
         function ($rootScope, $location, Restangular) {
 
-            var accounts = Restangular.all(accountsResource),
-                sessions = Restangular.all(sessionResource);
-
             //these functions will return a promise
             var userApi = {
                 getUserState: function () {
-                    if (Object.keys(userData).length === 0) {
-                        return false;
-                    } else {
-                        return true;
-                    }
+                    return userState;
+                    // if (Object.keys(userData).length === 0) {
+                    //     return false;
+                    // } else {
+                    //     return true;
+                    // }
                 },
                 getUserData: function () {
                     return userData;
@@ -60094,43 +60150,51 @@ module.exports = function () {
                     angular.extend(userData, data);
                 },
                 getAccount: function (id) {
-                    return accounts.one(id).get().then(function (response) {
+                    return Restangular.all(accountsResource).get(id).then(function (response) {
                         $rootScope.$broadcast('accountProvided.UserSystem', response.content);
+                        return response;
                     });
                 },
                 registerAccount: function (payload) {
-                    return accounts.post(payload).then(function (response) {
+                    return Restangular.all(accountsResource).post(payload).then(function (response) {
                         $rootScope.$broadcast('accountRegistered.UserSystem', payload);
+                        return response;
                     });
                 },
                 updateAccount: function (payload) {
-                    return accounts.one(userData.id).customPUT(payload).then(function (response) {
+                    return Restangular.one(accountsResource, userData.id).customPUT(payload).then(function (response) {
                         $rootScope.$broadcast('accountUpdated.UserSystem', payload);
+                        return response;
                     });
                 },
                 patchAccount: function (payload) {
-                    return accounts.one(userData.id).patch(payload).then(function (response) {
+                    return Restangular.one(accountsResource, userData.id).patch(payload).then(function (response) {
                         $rootScope.$broadcast('accountPatched.UserSystem', payload);
+                        return response;
                     });
                 },
                 deleteAccount: function () {
-                    return accounts.one(userData.id).remove().then(function (response) {
+                    return Restangular.one(accountsResource, userData.id).remove().then(function (response) {
                         $rootScope.$broadcast('accountDestroyed.UserSystem', userData.id);
+                        return response;
                     });
                 },
                 getSession: function () {
-                    return sessions.customGET().then(function (response) {
+                    return Restangular.all(sessionResource).customGET().then(function (response) {
                         $rootScope.$broadcast('sessionProvided.UserSystem', response.content);
+                        return response;
                     });
                 },
                 loginSession: function (payload) {
-                    return sessions.post(payload).then(function (response) {
+                    return Restangular.all(sessionResource).post(payload).then(function (response) {
                         $rootScope.$broadcast('sessionLogin.UserSystem', response.content);
+                        return response;
                     });
                 },
                 logoutSession: function () {
-                    return sessions.customDELETE().then(function (response) {
+                    return Restangular.all(sessionResource).customDELETE().then(function (response) {
                         $rootScope.$broadcast('sessionLogout.UserSystem', userData.id);
+                        return response;
                     });
                 }
             };
@@ -60139,14 +60203,15 @@ module.exports = function () {
              * Upon the account being provided, the user data is set to the response content.
              */
             $rootScope.$on('accountProvided.UserSystem', function (event, content) {
-                userAPI.setUserData(content);
+                userState = true;
+                userApi.setUserData(content);
             });
 
             /**
              * Upon the account being registered, attempt to login given the registration payload's username, email or password.
              */
             $rootScope.$on('accountRegistered.UserSystem', function (event, payload) {
-                userAPI.loginSession({
+                userApi.loginSession({
                     'username': payload.username,
                     'email': payload.email,
                     'password': payload.password
@@ -60157,21 +60222,22 @@ module.exports = function () {
              * Upon the account being updated, replace the user data with the payload.
              */
             $rootScope.$on('accountUpdated.UserSystem', function (event, payload) {
-                userAPI.setUserData(payload);
+                userApi.setUserData(payload);
             });
 
             /**
              * Upon the account being patched, merge the user data with the payload.
              */
             $rootScope.$on('accountPatched.UserSystem', function (event, payload) {
-                userAPI.mergeUserData(payload);
+                userApi.mergeUserData(payload);
             });
 
             /**
              * Upon the account being destroyed, attempt to logout.
              */
             $rootScope.$on('accountDestroyed.UserSystem', function (event, id) {
-                userAPI.logoutSession();
+                userState = false;
+                userApi.logoutSession();
             });
 
             /**
@@ -60179,6 +60245,7 @@ module.exports = function () {
              */
             $rootScope.$on('sessionProvided.UserSystem', function (event, id) {
                 if (id !== 'anonymous') {
+                    userState = true;
                     $rootScope.$broadcast('sessionLogin.UserSystem', id);
                 }
             });
@@ -60187,6 +60254,7 @@ module.exports = function () {
              * Upon session login, get the account.
              */
             $rootScope.$on('sessionLogin.UserSystem', function (event, id) {
+                userState = true;
                 userApi.getAccount(id);
             });
 
@@ -60194,7 +60262,8 @@ module.exports = function () {
              * Upon session logout, clear the userData.
              */
             $rootScope.$on('sessionLogout.UserSystem', function (event, args) {
-                userAPI.setUserData({});
+                userState = false;
+                userApi.setUserData({});
             });
 
             return userApi;
@@ -60203,7 +60272,7 @@ module.exports = function () {
     ];
 
 };
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60226,14 +60295,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60270,7 +60339,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60284,7 +60353,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60300,9 +60369,10 @@ module.exports = angular.module('App.Services')
     .config(require('./UserSystemConfig'))
     //Initialisation Services
     .run(require('./AuthenticationStateRun'))
+    // .run(require('./RestangularXSRF')) // doesn't yet work, need cookies in response interception
     //Service Objects
     .service('CalculateServ', require('./CalculateServ'));
-},{"./AuthenticationStateRun":86,"./BaseUrlConst":87,"./CalculateServ":88,"./RestangularConfig":89,"./UserSystemConfig":91}],91:[function(require,module,exports){
+},{"./AuthenticationStateRun":87,"./BaseUrlConst":88,"./CalculateServ":89,"./RestangularConfig":90,"./UserSystemConfig":92}],92:[function(require,module,exports){
 'use strict';
 
 /**
@@ -60314,7 +60384,7 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
-},{}],92:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {

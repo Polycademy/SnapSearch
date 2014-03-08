@@ -25,8 +25,6 @@ class Accounts_model extends CI_Model{
 			'username',
 			'email',
 			'password',
-			'passwordConfirm',
-			'tac',
 			'apiLimit',
 			'apiFreeLimit',
 			'chargeInterval',
@@ -50,16 +48,6 @@ class Accounts_model extends CI_Model{
 				'field'	=> 'password',
 				'label'	=> 'Password',
 				'rules'	=> 'required|max_length[100]'
-			),
-			array(
-				'field'	=> 'passwordConfirm',
-				'label'	=> 'Password Confirm',
-				'rules'	=> 'required|matches[password]|max_length[100]'
-			),
-			array(
-				'field'	=> 'tac',
-				'label'	=> 'Terms and Conditions',
-				'rules'	=> 'required|boolean_style'
 			),
 			array(
 				'field'	=> 'apiLimit',
@@ -97,19 +85,6 @@ class Accounts_model extends CI_Model{
 			$validation_errors['password'] = 'Password is necessary.';
 		}
 
-		if(!isset($data['passwordConfirm'])){
-			$validation_errors['passwordConfirm'] = 'Password Confirm is necessary.';
-		}
-
-		if(isset($data['tac'])){
-			$data['tac'] = filter_var($data['tac'], FILTER_VALIDATE_BOOLEAN);
-			if(!$data['tac']){
-				$validation_errors['tac'] = 'Accepting the Terms and Conditions is necessary.';
-			}
-		}else{
-			$validation_errors['tac'] = 'Terms and conditions is necessary.';
-		}
-
 		if(!isset($data['apiLimit'])){
 			$validation_errors['apiLimit'] = 'API Limit is necessary.';
 		}
@@ -134,9 +109,6 @@ class Accounts_model extends CI_Model{
 			return false;
 
 		}
-
-		unset($data['tac']);
-		unset($data['passwordConfirm']);
 
 		$data['createdOn'] = date('Y-m-d H:i:s');
 
@@ -225,7 +197,6 @@ class Accounts_model extends CI_Model{
 			'username',
 			'email',
 			'password',
-			'passwordConfirm',
 			'apiLimit',
 			'apiFreeLimit',
 			'apiUsage',
@@ -253,11 +224,6 @@ class Accounts_model extends CI_Model{
 				'field'	=> 'password',
 				'label'	=> 'Password',
 				'rules'	=> ''
-			),
-			array(
-				'field'	=> 'passwordConfirm',
-				'label'	=> 'Password Confirm',
-				'rules'	=> 'matches[password]'
 			),
 			array(
 				'field'	=> 'apiLimit', //theoretically apiLimit should not be below apiFreeLimit (here or in the database), but it could happen and we would need to compensate for that in the biller code
@@ -341,8 +307,6 @@ class Accounts_model extends CI_Model{
 		if(empty($data['password'])){
 			unset($data['password']);
 		}
-
-		unset($data['passwordConfirm']);
 
 		try{
 
@@ -443,7 +407,6 @@ class Accounts_model extends CI_Model{
 			'userId',
 			'forgottenCode',
 			'newPassword',
-			'newPasswordConfirm',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -464,11 +427,6 @@ class Accounts_model extends CI_Model{
 				'label'	=> 'New Password',
 				'rules'	=> 'required'
 			),
-			array(
-				'field'	=> 'newPasswordConfirm',
-				'label'	=> 'New Password Confirm',
-				'rules'	=> 'required|matches[newPassword]'
-			),
 		));
 
 		$validation_errors = [];
@@ -483,10 +441,6 @@ class Accounts_model extends CI_Model{
 
 		if(!isset($data['newPassword'])){
 			$validation_errors['newPassword'] = 'New Password is necessary.';
-		}
-
-		if(!isset($data['newPasswordConfirm'])){
-			$validation_errors['newPasswordConfirm'] = 'New Password Confirm is necessary.';
 		}
 
 		if($this->validator->run() ==  false){

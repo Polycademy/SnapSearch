@@ -23,17 +23,7 @@ module.exports = [
     '$location',
     'BaseUrlConst',
     function($rootScope, $cookies, $http, $state, $stateParams, $anchorScroll, $location, BaseUrlConst){
-
-        //XSRF INTEGRATION
-        $rootScope.$watch(
-            function(){
-                return $cookies[serverVars.csrfCookieName];
-            },
-            function(){
-                $http.defaults.headers.common['X-XSRF-TOKEN'] = $cookies[serverVars.csrfCookieName];
-            }
-        );
-
+        
         //PROVIDING STATE ON ROOTSCOPE
         $rootScope.$state = $state;
         $rootScope.$stateParams = $stateParams;

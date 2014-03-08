@@ -1,5 +1,7 @@
 <?php
 
+use PolyAuth\Exceptions\ValidationExceptions\LoginValidationException;
+
 /**
  * Session Controller should be used for Cookie based Sessions
  */
