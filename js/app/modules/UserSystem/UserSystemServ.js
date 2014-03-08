@@ -91,14 +91,14 @@ module.exports = function () {
              * Upon the account being provided, the user data is set to the response content.
              */
             $rootScope.$on('accountProvided.UserSystem', function (event, content) {
-                userAPI.setUserData(content);
+                userApi.setUserData(content);
             });
 
             /**
              * Upon the account being registered, attempt to login given the registration payload's username, email or password.
              */
             $rootScope.$on('accountRegistered.UserSystem', function (event, payload) {
-                userAPI.loginSession({
+                userApi.loginSession({
                     'username': payload.username,
                     'email': payload.email,
                     'password': payload.password
@@ -109,21 +109,21 @@ module.exports = function () {
              * Upon the account being updated, replace the user data with the payload.
              */
             $rootScope.$on('accountUpdated.UserSystem', function (event, payload) {
-                userAPI.setUserData(payload);
+                userApi.setUserData(payload);
             });
 
             /**
              * Upon the account being patched, merge the user data with the payload.
              */
             $rootScope.$on('accountPatched.UserSystem', function (event, payload) {
-                userAPI.mergeUserData(payload);
+                userApi.mergeUserData(payload);
             });
 
             /**
              * Upon the account being destroyed, attempt to logout.
              */
             $rootScope.$on('accountDestroyed.UserSystem', function (event, id) {
-                userAPI.logoutSession();
+                userApi.logoutSession();
             });
 
             /**
@@ -146,7 +146,7 @@ module.exports = function () {
              * Upon session logout, clear the userData.
              */
             $rootScope.$on('sessionLogout.UserSystem', function (event, args) {
-                userAPI.setUserData({});
+                userApi.setUserData({});
             });
 
             return userApi;
