@@ -24,9 +24,6 @@ module.exports = function () {
         'Restangular',
         function ($rootScope, $location, Restangular) {
 
-            var accounts = Restangular.all(accountsResource),
-                sessions = Restangular.all(sessionResource);
-
             //these functions will return a promise
             var userApi = {
                 getUserState: function () {
@@ -46,49 +43,49 @@ module.exports = function () {
                     angular.extend(userData, data);
                 },
                 getAccount: function (id) {
-                    return accounts.one(id).get().then(function (response) {
+                    return Restangular.all(accountsResource).get(id).then(function (response) {
                         $rootScope.$broadcast('accountProvided.UserSystem', response.content);
                         return response;
                     });
                 },
                 registerAccount: function (payload) {
-                    return accounts.post(payload).then(function (response) {
+                    return Restangular.all(accountsResource).post(payload).then(function (response) {
                         $rootScope.$broadcast('accountRegistered.UserSystem', payload);
                         return response;
                     });
                 },
                 updateAccount: function (payload) {
-                    return accounts.one(userData.id).customPUT(payload).then(function (response) {
+                    return Restangular.one(accountsResource, userData.id).customPUT(payload).then(function (response) {
                         $rootScope.$broadcast('accountUpdated.UserSystem', payload);
                         return response;
                     });
                 },
                 patchAccount: function (payload) {
-                    return accounts.one(userData.id).patch(payload).then(function (response) {
+                    return Restangular.one(accountsResource, userData.id).patch(payload).then(function (response) {
                         $rootScope.$broadcast('accountPatched.UserSystem', payload);
                         return response;
                     });
                 },
                 deleteAccount: function () {
-                    return accounts.one(userData.id).remove().then(function (response) {
+                    return Restangular.one(accountsResource, userData.id).remove().then(function (response) {
                         $rootScope.$broadcast('accountDestroyed.UserSystem', userData.id);
                         return response;
                     });
                 },
                 getSession: function () {
-                    return sessions.customGET().then(function (response) {
+                    return Restangular.all(sessionResource).customGET().then(function (response) {
                         $rootScope.$broadcast('sessionProvided.UserSystem', response.content);
                         return response;
                     });
                 },
                 loginSession: function (payload) {
-                    return sessions.post(payload).then(function (response) {
+                    return Restangular.all(sessionResource).post(payload).then(function (response) {
                         $rootScope.$broadcast('sessionLogin.UserSystem', response.content);
                         return response;
                     });
                 },
                 logoutSession: function () {
-                    return sessions.customDELETE().then(function (response) {
+                    return Restangular.all(sessionResource).customDELETE().then(function (response) {
                         $rootScope.$broadcast('sessionLogout.UserSystem', userData.id);
                         return response;
                     });
