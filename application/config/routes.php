@@ -18,7 +18,7 @@ Pigeon::map(function($r){
 		$r->post('accounts/confirm_forgotten_password', 'accounts/confirm_forgotten_password');
 
 		//SESSIONS
-		$r->resource('sessions');
+		$r->resource('session');
 
 		//BILLING
 		$r->resources('billing');

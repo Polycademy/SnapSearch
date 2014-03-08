@@ -7,13 +7,8 @@
 module.exports = function () {
 
     var userData = {},
-        authGateway = '/',
         accountsResource = 'accounts',
         sessionResource = 'sessions';
-
-    this.setAuthGateway = function (path) {
-        authGateway = path;
-    };
 
     this.setAccountsResource = function (resource) {
         accountsResource = resource;
@@ -29,8 +24,18 @@ module.exports = function () {
         'Restangular',
         function ($rootScope, $location, Restangular) {
 
+            var accounts = Restangular.all(accountsResource),
+                sessions = Restangular.all(sessionResource);
+
             //these functions will return a promise
             var userApi = {
+                getUserState: function () {
+                    if (Object.keys(userData).length === 0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                },
                 getUserData: function () {
                     return userData;
                 },
@@ -41,67 +46,112 @@ module.exports = function () {
                     angular.extend(userData, data);
                 },
                 getAccount: function (id) {
-                    return Restangular.one(accountsResource, id).get().then(function (response) {
-                        userData = response.content;
-                        $rootScope.$broadcast('accountProvided', userData);
+                    return accounts.one(id).get().then(function (response) {
+                        $rootScope.$broadcast('accountProvided.UserSystem', response.content);
                     });
                 },
                 registerAccount: function (payload) {
-                    return Restangular.all(accountsResource).post(payload).then(function (response) {
-                        $rootScope.$broadcast('accountRegistered', payload);
+                    return accounts.post(payload).then(function (response) {
+                        $rootScope.$broadcast('accountRegistered.UserSystem', payload);
                     });
                 },
                 updateAccount: function (payload) {
-                    //we have to do the one of accounts
-                    return Restangular.all(accountsResource).one(userData.id).customPut(payload).then(function (response) {
-                        this.setUserData(payload);
-                        $rootScope.$broadcast('accountUpdated', payload);
+                    return accounts.one(userData.id).customPUT(payload).then(function (response) {
+                        $rootScope.$broadcast('accountUpdated.UserSystem', payload);
                     });
                 },
                 patchAccount: function (payload) {
-                    return Restangular.all(accountsResource).one(userData.id).patch(payload).then(function (response) {
-                        this.mergeUserData(payload);
-                        $rootScope.$broadcast('accountPatched', payload);
-                    })
+                    return accounts.one(userData.id).patch(payload).then(function (response) {
+                        $rootScope.$broadcast('accountPatched.UserSystem', payload);
+                    });
                 },
                 deleteAccount: function () {
-                    return Restangular.all(accountsResource).one(userData.id).remove().then(function (response) {
-                        $rootScope.$broadcast('accountDestroyed', userData.id);
-                        userData = {};
+                    return accounts.one(userData.id).remove().then(function (response) {
+                        $rootScope.$broadcast('accountDestroyed.UserSystem', userData.id);
                     });
                 },
                 getSession: function () {
-                    return Restangular.one(sessionResource).get().then(function (response) {
-                        if (response.content !== 'anonymous') {
-                            $rootScope.$broadcast('sessionLogin', response.content);
-                        }
+                    return sessions.customGET().then(function (response) {
+                        $rootScope.$broadcast('sessionProvided.UserSystem', response.content);
                     });
                 },
                 loginSession: function (payload) {
-                    return Restangular.one(sessionResource).post(payload).then(function (response) {
-                        $rootScope.$broadcast('sessionLogin', response.content);
+                    return sessions.post(payload).then(function (response) {
+                        $rootScope.$broadcast('sessionLogin.UserSystem', response.content);
                     });
                 },
                 logoutSession: function () {
-                    return Restangular.one(sessionResource).remove().then(function (response) {
-                        $rootScope.$broadcast('sessionLogout', userData.id);
-                        userData = {};
+                    return sessions.customDELETE().then(function (response) {
+                        $rootScope.$broadcast('sessionLogout.UserSystem', userData.id);
                     });
                 }
             };
 
-            $rootScope.$on('sessionLogin', function (event, args) {
-                userApi.getAccount(args);
+            /**
+             * Upon the account being provided, the user data is set to the response content.
+             */
+            $rootScope.$on('accountProvided.UserSystem', function (event, content) {
+                userAPI.setUserData(content);
             });
 
-            $rootScope.$on('sessionLogout', function (event, args) {
-                
+            /**
+             * Upon the account being registered, attempt to login given the registration payload's username, email or password.
+             */
+            $rootScope.$on('accountRegistered.UserSystem', function (event, payload) {
+                userAPI.loginSession({
+                    'username': payload.username,
+                    'email': payload.email,
+                    'password': payload.password
+                });
+            });
+
+            /**
+             * Upon the account being updated, replace the user data with the payload.
+             */
+            $rootScope.$on('accountUpdated.UserSystem', function (event, payload) {
+                userAPI.setUserData(payload);
+            });
+
+            /**
+             * Upon the account being patched, merge the user data with the payload.
+             */
+            $rootScope.$on('accountPatched.UserSystem', function (event, payload) {
+                userAPI.mergeUserData(payload);
+            });
+
+            /**
+             * Upon the account being destroyed, attempt to logout.
+             */
+            $rootScope.$on('accountDestroyed.UserSystem', function (event, id) {
+                userAPI.logoutSession();
+            });
+
+            /**
+             * Upon the session being provided, check if the session is registered. If registered broadcast a sessionLogin event.
+             */
+            $rootScope.$on('sessionProvided.UserSystem', function (event, id) {
+                if (id !== 'anonymous') {
+                    $rootScope.$broadcast('sessionLogin.UserSystem', id);
+                }
+            });
+
+            /**
+             * Upon session login, get the account.
+             */
+            $rootScope.$on('sessionLogin.UserSystem', function (event, id) {
+                userApi.getAccount(id);
+            });
+
+            /**
+             * Upon session logout, clear the userData.
+             */
+            $rootScope.$on('sessionLogout.UserSystem', function (event, args) {
+                userAPI.setUserData({});
             });
 
             return userApi;
 
         }
     ];
-
 
 };

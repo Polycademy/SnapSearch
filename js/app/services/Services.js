@@ -10,6 +10,7 @@ module.exports = angular.module('App.Services')
     .constant('BaseUrlConst', require('./BaseUrlConst'))
     //Configuration Services
     .config(require('./RestangularConfig'))
+    .config(require('./UserSystemConfig'))
     //Initialisation Services
     .run(require('./AuthenticationStateRun'))
     //Service Objects

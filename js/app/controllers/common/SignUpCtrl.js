@@ -3,7 +3,7 @@
 /**
  * Sign Up Modal Controller
  */
-module.exports = ['$scope', '$modalInstance', 'Restangular', function ($scope, $modalInstance, Restangular) {
+module.exports = ['$scope', '$modalInstance', 'UserSystem', function ($scope, $modalInstance, UserSystem) {
 
     //default user object containing the email and password
     $scope.user = {};

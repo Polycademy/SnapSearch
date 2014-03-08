@@ -9,7 +9,7 @@ module.exports = ['UserSystemServ', function (UserSystemServ) {
     //1. continues with the current session with a valid session cookie
     //2. triggers autologin with an autologin cookie and returns a valid session cookie
     //3. remains as an anonymous user
-    //in cases where there is valid session cookie authenticationProvided will be broadcasted
+    //in cases where there is valid session cookie these events sessionProvided -> sessionLogin -> accountProvided will be broadcasted
     UserSystemServ.getSession();
 
 }];

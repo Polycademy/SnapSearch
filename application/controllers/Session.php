@@ -3,7 +3,7 @@
 /**
  * Session Controller should be used for Cookie based Sessions
  */
-class Sessions extends CI_Controller{
+class Session extends CI_Controller{
 
 	protected $authenticator;
 	protected $auth_response;

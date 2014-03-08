@@ -3,23 +3,19 @@
 /**
  * Authentication State Run Block
  */
-module.exports = ['$rootScope', function ($rootScope) {
+module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSystemServ) {
 
-    //initial parameters will be changed 
     $rootScope.loggedIn = false;
     $rootScope.loggedOut = true;
 
-    $rootScope.$on('authenticationProvided', function (event, args) {
+    $rootScope.$watch(function () {
 
-        $rootScope.loggedIn = true;
-        $rootScope.loggedOut = false;
+        return UserSystemServ.getUserState();
+    
+    }, function (state) {
 
-    });
-
-    $rootScope.$on('authenticationLogout', function (event, args) {
-
-        $rootScope.loggedIn = false;
-        $rootScope.loggedOut = true;
+        $rootScope.loggedIn = state;
+        $rootScope.loggedOut = !state;
 
     });
 
