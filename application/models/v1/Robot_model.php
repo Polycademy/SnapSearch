@@ -319,16 +319,17 @@ class Robot_model extends CI_Model{
 			try{
 
 				//we don't want to follow redirects in this case
-				$request = $this->client->get($parameters['url'], [], [
-					'allow_redirects'	=> false
+				$request = $this->client->get($parameters['url'], [
+                    'Accept-Encoding'   => 'gzip, deflate, identity',
+				], [
+					'allow_redirects'	=> false,
+                    'exceptions'        => false
 				]);
-				//try to get a compressed response
-				$request->addHeader('Accept-Encoding', 'gzip, deflate, identity');
 
 				$response = $request->send();
 
 				//shim the headers as [['name' => 'Header Name', 'value' => 'Header Value']]
-				$response_array = [];
+				$response_array['headers'] = [];
 				foreach($response->getHeaders() as $header_key => $header_value){
 					$response_array['headers'][] = [
 						'name'	=> $header_key,
@@ -341,14 +342,6 @@ class Robot_model extends CI_Model{
 
 				//replace the response string, it'll be json encoded!
 				$response_string = json_encode($response_array);
-
-			}catch(BadResponseException $e){
-
-				$this->errors = array(
-					'system_error'	=> 'Robot service is a bit broken. Try again later.',
-				);
-				if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
-				return false;
 
 			}catch(CurlException $e){
 
