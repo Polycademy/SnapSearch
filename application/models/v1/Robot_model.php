@@ -216,6 +216,13 @@ class Robot_model extends CI_Model{
 
 		}
 
+		//default navigate parameter of false, meaning we don't follow redirects
+		if(isset($parameters['navigate'])){
+			$parameters['navigate'] = filter_var($parameters['navigate'], FILTER_VALIDATE_BOOLEAN);
+		}else{
+			$parameters['navigate'] = false;
+		}
+
 		//default cache parameters of true and 24 hours
 		if(isset($parameters['cache'])){
 			$parameters['cache'] = filter_var($parameters['cache'], FILTER_VALIDATE_BOOLEAN);
