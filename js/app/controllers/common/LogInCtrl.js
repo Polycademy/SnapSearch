@@ -7,14 +7,13 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', func
 
     $scope.user = {};
 
-    $scope.formErrors = false;
-    $scope.formSuccess = false;
-
     $scope.login = function (user) {
+
+        $scope.formErrors = false;
+        $scope.formSuccess = false;
 
         UserSystemServ.loginSession(user).then(function () {
 
-            $scope.formErrors = false;
             $scope.formSuccess = 'Successfully logged in.';
             $timeout(function () {
                 $modalInstance.close();
@@ -22,7 +21,6 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', func
 
         }, function (response) {
 
-            $scope.formSuccess = false;
             if (response.status === 400 || response.status === 401) {
                 $scope.formErrors = response.data.content;
             } else {
