@@ -6397,9 +6397,6 @@ header.navbar .navbar-nav > li button {
 /* ==========================================================================
    Footer Module
    ========================================================================== */
-/* ==========================================================================
-   Variables Module
-   ========================================================================== */
 footer.panel_yellow .panel-body {
   color: #ffffff;
 }
@@ -6590,6 +6587,9 @@ footer .attributions strong {
  */
 /* ==========================================================================
    Panels Module
+   ========================================================================== */
+/* ==========================================================================
+   Variables Module
    ========================================================================== */
 .panel {
   padding-top: 24px;
@@ -6912,7 +6912,7 @@ footer .attributions strong {
   max-width: 100%;
 }
 .features .feature-object .feature-explanation {
-  font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "fira_sans_otlight", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   margin: 0;
 }
@@ -7005,7 +7005,7 @@ footer .attributions strong {
   font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .pricing-box .usage-price-explanation p {
-  font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "fira_sans_otlight", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
 }
 .cost-estimator {
