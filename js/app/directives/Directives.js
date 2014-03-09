@@ -9,4 +9,4 @@ module.exports = angular.module('App.Directives')
     .directive('equaliseHeights', require('./equaliseHeights'))
     .directive('anchor', require('./anchor'))
     .directive('passwordMatch', require('./passwordMatch'))
-    .directive('ensureWidth', require('./ensureWidth'));
+    .directive('affix', require('./affix'));

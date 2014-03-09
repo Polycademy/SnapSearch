@@ -82892,7 +82892,7 @@ module.exports = [
                 'controlPanel',
                 {
                     url: '/control_panel',
-                    template: "<div class=\"control-panel panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-body row\" ng-show=\"loggedIn\">\n            <div class=\"col-md-2\">\n                <nav class=\"btn-group-vertical control-panel-nav\" ensure-width data-spy=\"affix\" data-offset-top=\"214\" data-offset-bottom=\"910\">\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".crawling\">Crawling</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".cache\">Cache</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".payments\">Payments</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".billing\">Billing</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".account\">Account</a>\n                </nav>\n            </div>\n            <div class=\"col-md-10\">\n                <div class=\"control-box\">\n                    <div ui-view></div>\n                </div>\n            </div>\n        </div>\n        <div class=\"panel-body\" ng-show=\"loggedOut\">\n            <p>You must be logged in to view this page!</p>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"control-panel panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-body row\" ng-show=\"loggedIn\">\n            <div class=\"col-md-2\">\n                <nav class=\"btn-group-vertical control-panel-nav\" affix affix-top=\"214\" affix-bottom=\"910\">\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".crawling\">Crawling</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".cache\">Cache</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".payments\">Payments</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".billing\">Billing</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".account\">Account</a>\n                </nav>\n            </div>\n            <div class=\"col-md-10\">\n                <div class=\"control-box\">\n                    <div ui-view></div>\n                </div>\n            </div>\n        </div>\n        <div class=\"panel-body\" ng-show=\"loggedOut\">\n            <p>You must be logged in to view this page!</p>\n        </div>\n    </div>\n</div>",
                     controller: 'ControlPanelCtrl'
                 }
             )
@@ -82900,7 +82900,7 @@ module.exports = [
                 'controlPanel.crawling', //default controlPanel childstate
                 {
                     url: '/crawling',
-                    template: "<div class=\"crawling\">\n    <h2>Crawling Statistics</h2>\n    <em>API Key: {{userAccount.apiKey}}</em>\n    <div class=\"telemetry-block overview\">\n        <h3>Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from 01/10/2013 to 01/11/2013</em>\n        <div class=\"row overview-requests-usages\">\n            <div class=\"col-sm-4\">\n                <p>2034</p>\n                <p>Requests Received</p>\n            </div>\n            <div class=\"col-sm-4\">\n                <p>2034</p>\n                <p>Usages Used</p>\n            </div>\n            <div class=\"col-sm-4\">\n                <p>580</p>\n                <p>Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" style=\"width: 45%\"></div>\n        </div>\n        <em>Usage Bar</em>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Monthly Usage Cap</h3>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>History</h3>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Domain Distinction</h3>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Log</h3>\n    </div>\n</div>",
+                    template: "<div class=\"crawling\">\n    <h2>Crawling Statistics</h2>\n    <em>API Key: {{userAccount.apiKey}}</em>\n    <div class=\"telemetry-block overview\">\n        <h3>Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from 01/10/2013 to 01/11/2013</em>\n        <div class=\"row overview-requests-usages\">\n            <div class=\"col-sm-4\">\n                <p>2034</p>\n                <p>Requests Received</p>\n            </div>\n            <div class=\"col-sm-4\">\n                <p>2034</p>\n                <p>Usages Used</p>\n            </div>\n            <div class=\"col-sm-4\">\n                <p>580</p>\n                <p>Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" style=\"width: 45%\"></div>\n        </div>\n        <em>Usage Bar</em>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Monthly Usage Cap</h3>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>History</h3>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Domain Distinction</h3>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Log</h3>\n        <p>fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfhfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfhfgdfshgfh fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghjfgdfshgfh fghfgh fgh fgh fh gfh fgh dgfhfgdhgfdjgdhj ghjhgjghj</p>\n    </div>\n</div>",
                     controller: 'ControlCrawlingCtrl'
                 }
             )
@@ -83482,8 +83482,94 @@ module.exports = angular.module('App.Directives')
     .directive('equaliseHeights', require('./equaliseHeights'))
     .directive('anchor', require('./anchor'))
     .directive('passwordMatch', require('./passwordMatch'))
-    .directive('ensureWidth', require('./ensureWidth'));
-},{"./anchor":49,"./ensureWidth":50,"./equaliseHeights":51,"./passwordMatch":52}],49:[function(require,module,exports){
+    .directive('affix', require('./affix'));
+},{"./affix":49,"./anchor":50,"./equaliseHeights":51,"./passwordMatch":52}],49:[function(require,module,exports){
+'use strict';
+
+var _ = require("./..\\..\\..\\components\\lodash\\dist\\lodash.compat.js");
+
+/**
+ * Affix Directive
+ *
+ * Requires Lodash, jQuery
+ * Does not work on IE8 or lower.
+ */
+module.exports = ['$window', '$document', function ($window, $document) {
+
+    return {
+        link: function (scope, element, attributes) {
+
+                var win = angular.element($window),
+                    doc  = angular.element($document),
+                    affixed;
+
+                var affixPosition = function () {
+
+                    //default parameters of 0, it will always be fixed if 0
+                    var offsetTop = scope.$eval(attributes.affixTop) || 0,
+                        offsetBottom = scope.$eval(attributes.affixBottom) || 0,
+                        affix;
+
+                    //if the window scroll position is less or equal (above) the offsetTop, then set "affix-top"
+                    //if the element offsetTop + element height is greater or equal (below) the document height - offsetBottom, then set "affix-bottom"
+                    if (win.prop('pageYOffset') <= offsetTop) {
+                        affix = 'affix-top';
+                    } else if ((win.prop('pageYOffset') + element.outerHeight()) < (doc.height() - offsetBottom)) {
+                        affix = 'affix';
+                    } else if ((win.prop('pageYOffset') + element.outerHeight()) >= (doc.height() - offsetBottom)) {
+                        affix = 'affix-bottom';
+                    }
+
+                    //if the same value, don't bother changing classes, because nothing changed
+                    if(affixed === affix) return;
+                    affixed = affix;
+
+                    //reset the css classes and add either affix or affix-top or affix-bottom
+                    element.removeClass('affix affix-top affix-bottom').addClass(affix);
+
+                    //if affix was bottom, then pin it to where it currently is
+                    if (affix === 'affix-bottom') {
+                        element.offset({ top: doc.height() - offsetBottom - element.outerHeight() });
+                    } else {
+                        element.css('top', '');
+                    }
+
+                };
+
+                var ensureWidth = function () {
+                    element.css('width', element.parent().width());
+                };
+
+                var throttledAffix = _.throttle(affixPosition, 50);
+
+                var throttledWidth = _.throttle(ensureWidth, 100);
+
+                var resizeHandler = function () {
+                    throttledAffix();
+                    throttledWidth();
+                };
+
+                //when scrolling, we only have to figure out whether its affix, affix-top or affix-bottom
+                win.bind('scroll', throttledAffix);
+
+                //when resizing, we need to ensure the width and check the affix in case elements above pushed down this affixed element
+                win.bind('resize', resizeHandler);
+
+                //run both at initialisation
+                affixPosition();
+                ensureWidth();
+
+                //unbind external event handlers on destruction
+                scope.$on('$destroy', function () {
+                    win.unbind('scroll', throttledAffix);
+                    win.unbind('resize', resizeHandler);
+                });
+
+        }
+    };
+
+}];
+},{"./..\\..\\..\\components\\lodash\\dist\\lodash.compat.js":22}],50:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -83563,31 +83649,7 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
         };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":19}],50:[function(require,module,exports){
-'use strict';
-
-var _ = require("./..\\..\\..\\components\\lodash\\dist\\lodash.compat.js");
-
-module.exports = ['$window', function ($window) {
-
-    return {
-        link: function (scope, element, attributes) {
-
-            var ensureWidth = function () {
-                element.css('width', element.parent().width());
-            };
-
-            var throttledWidth = _.throttle(ensureWidth, 100);
-
-            angular.element($window).bind('resize', throttledWidth);
-
-            ensureWidth();
-
-        }
-    };
-
-}];
-},{"./..\\..\\..\\components\\lodash\\dist\\lodash.compat.js":22}],51:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":19}],51:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
