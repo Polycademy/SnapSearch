@@ -6397,6 +6397,9 @@ header.navbar .navbar-nav > li button {
 /* ==========================================================================
    Footer Module
    ========================================================================== */
+/* ==========================================================================
+   Variables Module
+   ========================================================================== */
 footer.panel_yellow .panel-body {
   color: #ffffff;
 }
@@ -6587,9 +6590,6 @@ footer .attributions strong {
  */
 /* ==========================================================================
    Panels Module
-   ========================================================================== */
-/* ==========================================================================
-   Variables Module
    ========================================================================== */
 .panel {
   padding-top: 24px;
@@ -7067,6 +7067,44 @@ footer .attributions strong {
   font-family: "fira_sans_otbold_italic", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 16px;
   font-style: normal;
+}
+/**
+ * Control Panel Page
+ */
+/* ==========================================================================
+   Control Panel Module
+   ========================================================================== */
+.control-panel .control-panel-nav {
+  width: 100%;
+}
+.control-panel .control-panel-nav .btn {
+  width: 90%;
+  font-size: 20px;
+  font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding: 16px 20px;
+  background-color: #ffffff;
+  color: #222222;
+  border-top: 1px solid #dadada;
+  border-bottom: 1px solid #dadada;
+  border-radius: 10px;
+}
+.control-panel .control-panel-nav .btn:hover {
+  background-color: #f4ac2e;
+}
+.control-panel .control-panel-nav .btn:first-child:not(:last-child) {
+  border-top-right-radius: 10px;
+}
+.control-panel .control-panel-nav .btn:last-child:not(:first-child) {
+  border-bottom-left-radius: 10px;
+}
+.control-panel .control-panel-nav .btn.active {
+  width: 100%;
+  background-color: #0a98e9;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  color: #ffffff;
+  border-top: none;
+  border-bottom: none;
 }
 /**
  * Modals
