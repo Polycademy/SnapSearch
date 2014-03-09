@@ -53,20 +53,6 @@ class Demo extends CI_Controller {
             //demo cache will be saved as administrator, usages are not tracked
             $user_id = 1;
 
-            //send query to robot
-            $robot_query = $this->Robot_model->read_site($user_id, [
-                'url'   => $url
-            ]);
-
-            $robot_result = false;
-            $robot_errors = false;
-            if($robot_query){
-                $robot_result = $query;
-            }else{
-                $robot_errors = $this->Robot_model->get_errors();
-            }
-
-
             $curl_result = false;
             $curl_errors = false;
             try{
@@ -84,11 +70,25 @@ class Demo extends CI_Controller {
                 ];
             }
 
-            if($robot_result AND $curl_result){
+            //send query to robot
+            $robot_query = $this->Robot_model->read_site($user_id, [
+                'url'   => $url
+            ]);
+
+            $robot_result = false;
+            $robot_errors = false;
+            if($robot_query){
+                //only get the html
+                $robot_result = $query['html'];
+            }else{
+                $robot_errors = $this->Robot_model->get_errors();
+            }
+
+            if($curl_result AND $robot_result){
 
                 $content = [
-                    'withSnapSearch'    => $robot_result,
                     'withoutSnapSearch' => $curl_result,
+                    'withSnapSearch'    => $robot_result,
                 ];
                 $code = 'success';
 
@@ -99,12 +99,12 @@ class Demo extends CI_Controller {
                 //even though there are 2 error states here, basically it's a system error if the demo didn't work
                 $code = 'system_error';
 
-                if(is_array($robot_errors)){
-                    $content['robotErrors'] = current($robot_errors);
-                }
-
                 if(is_array($curl_errors)){
                     $content['curlErrors'] = current($curl_errors);
+                }
+
+                if(is_array($robot_errors)){
+                    $content['robotErrors'] = current($robot_errors);
                 }
 
             }

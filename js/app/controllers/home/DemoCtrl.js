@@ -1,16 +1,11 @@
 'use strict';
 
-var settings = require('../../Settings');
-
 /**
  * Demo Controller
  * 
  * @param {Object} $scope
  */
 module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
-
-    var demoUsername = settings.apiKeys.demo.user;
-    var demoPassword = settings.apiKeys.demo.pass;
 
     /**
      * State to indicate requesting status.
@@ -30,8 +25,8 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
 
         Restangular.all('demo').customGET('', {url: demo.url}).then(function (response) {
 
-            console.log(response);
             $scope.formSuccess = true;
+            $scope.demoServiceResponse = response.content;
 
         }, function (response) {
 
@@ -52,15 +47,6 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
             $scope.requestingDemoService = 'finished';
 
         });
-
-        //demo.url
-
-
-        //send request to the back end service
-        //when the response comes back set $scope.requestingDemoService = 'finished';
-        //set the content to $scope.demoServiceResponse = response.content;
-        //set $scope.demoServiceResponseWithoutSnapSearch - with robots
-        //set $scope.demoServiceResponseWithSnapSearch - standard curl
 
     };
 

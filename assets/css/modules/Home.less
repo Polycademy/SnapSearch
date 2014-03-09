@@ -75,9 +75,9 @@
         margin-top: 40px;
         margin-bottom: 50px;
         #Centering.blockCenter();
-        max-width: 890px;
+        max-width: 1000px;
         @media (min-width: @snapsearch-md-breakpoint) {
-            width: 80%;
+            width: 95%;
         }
     }
     .demo-output {
@@ -85,12 +85,18 @@
             margin-top: 46px;
             text-align: center;
             #Fonts.family("fira_sans_otregular");
+            font-size: 18px;
         }
         .demo-loading {
             #Centering.blockCenter();
         }
         .demo-response {
-            //need to style these 2
+            margin-top: 30px;
+            .demo-response-code {
+                margin-top: 30px;
+                max-height: 300px;
+                overflow-y: auto;
+            }
         }
     }
 }

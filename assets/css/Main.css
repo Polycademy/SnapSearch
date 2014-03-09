@@ -6317,9 +6317,6 @@ input {
 /* ==========================================================================
    Header Module
    ========================================================================== */
-/* ==========================================================================
-   Variables Module
-   ========================================================================== */
 header.navbar {
   padding-top: 20px;
   padding-bottom: 14px;
@@ -6399,6 +6396,9 @@ header.navbar .navbar-nav > li button {
 }
 /* ==========================================================================
    Footer Module
+   ========================================================================== */
+/* ==========================================================================
+   Variables Module
    ========================================================================== */
 footer.panel_yellow .panel-body {
   color: #ffffff;
@@ -6764,23 +6764,32 @@ footer .attributions strong {
   margin-left: auto;
   display: block;
   float: none;
-  max-width: 890px;
+  max-width: 1000px;
 }
 @media (min-width: 992px) {
   .demo .demo-form {
-    width: 80%;
+    width: 95%;
   }
 }
 .demo .demo-output .demo-explanation {
   margin-top: 46px;
   text-align: center;
   font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 18px;
 }
 .demo .demo-output .demo-loading {
   margin-right: auto;
   margin-left: auto;
   display: block;
   float: none;
+}
+.demo .demo-output .demo-response {
+  margin-top: 30px;
+}
+.demo .demo-output .demo-response .demo-response-code {
+  margin-top: 30px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 .problem-solution h3 {
   font-family: "fira_sans_otlight", "Helvetica Neue", Helvetica, Arial, sans-serif;
