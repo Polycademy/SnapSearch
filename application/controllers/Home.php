@@ -2,6 +2,7 @@
 
 class Home extends CI_Controller{
 
+	protected $authenticator;
 	protected $auth_response;
 	
 	public function __construct(){

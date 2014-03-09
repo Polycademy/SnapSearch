@@ -3,7 +3,23 @@
         <div class="panel-heading">
             <h2 class="panel-title">Control Panel</h2>
         </div>
-        <div class="panel-body" ng-show="loggedIn">
+        <div class="panel-body row" ng-show="loggedIn">
+            <div class="col-md-2">
+                <nav class="btn-group-lg btn-group-vertical">
+                    <ul>
+                        <li><a ui-sref=".crawling">Crawling</a></li>
+                        <li><a ui-sref=".cache">Cache</a></li>
+                        <li><a ui-sref=".payments">Payments</a></li>
+                        <li><a ui-sref=".billing">Billing</a></li>
+                        <li><a ui-sref=".account">Account</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-md-10">
+                <div class="control-box">
+                    <div ui-view></div>
+                </div>
+            </div>
         </div>
         <div class="panel-body" ng-show="loggedOut">
             <p>You must be logged in to view this page!</p>

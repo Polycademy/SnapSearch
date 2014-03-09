@@ -23,6 +23,8 @@ module.exports = ['$scope', 'UserSystemServ', function ($scope, UserSystemServ) 
     You could also do it all in each controller...
 
     Controllers could be inherited. We can try prototypical inheritance for the resolves too. This could allow overwriting the parent when necessary. So normally just call getSession(), otherwise call getSession().then..etc
+
+    Or you have a layout state. The master state has a particular resolve that could work it out!
      */
 
     $scope.$watch(function () {
@@ -34,10 +36,6 @@ module.exports = ['$scope', 'UserSystemServ', function ($scope, UserSystemServ) 
         if (Object.keys(userData).length > 0) {
 
             var id = userData.id;
-
-            console.log('logged in, begin processing data!');
-
-            //use the id to load the data
 
         }
 

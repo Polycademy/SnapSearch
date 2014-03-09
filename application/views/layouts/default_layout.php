@@ -63,14 +63,14 @@
                 </div>
                 <nav class="collapse navbar-collapse" id="header-navbar">
                     <ul class="nav navbar-nav">
-                        <li ng-class="{'active': $state.includes('home')}"><a ng-href="home">HOME</a></li>
-                        <li ng-class="{'active': $state.includes('documentation')}"><a ng-href="documentation">DOCUMENTATION</a></li>
-                        <li ng-class="{'active': $state.includes('pricing')}"><a ng-href="pricing">PRICING</a></li>
+                        <li ng-class="{'active': $state.includes('home')}"><a ui-sref="home">HOME</a></li>
+                        <li ng-class="{'active': $state.includes('documentation')}"><a ui-sref="documentation">DOCUMENTATION</a></li>
+                        <li ng-class="{'active': $state.includes('pricing')}"><a ui-sref="pricing">PRICING</a></li>
                         <li><a ng-click="scroll('about')">ABOUT</a></li>
                         <li><a ng-href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">BLOG</a></li>
                         <li ng-show="loggedOut"><button class="btn navbar-btn" type="button" ng-click="modal.signUp()">SIGN UP</button></li>
                         <li ng-show="loggedOut"><button class="btn navbar-btn" type="button" ng-click="modal.logIn()">LOG IN</button></li>
-                        <li ng-show="loggedIn" ng-class="{'active': $state.includes('controlPanel')}"><a ng-href="control_panel">CONTROL PANEL</a></li>
+                        <li ng-show="loggedIn" ng-class="{'active': $state.includes('controlPanel')}"><a ui-sref="controlPanel">CONTROL PANEL</a></li>
                         <li ng-show="loggedIn"><button class="btn navbar-btn" type="button" ng-click="auth.logOut()">LOG OUT</button></li>
                     </ul>
                 </nav>

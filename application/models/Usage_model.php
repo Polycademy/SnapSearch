@@ -12,8 +12,6 @@ class Usage_model extends CI_Model{
 
 		parent::__construct();
 
-		$this->load->model('Accounts_model');
-
 		$this->load->library('form_validation', false, 'validator');
 
 	}

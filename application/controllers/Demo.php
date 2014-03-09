@@ -7,6 +7,8 @@ class Demo extends CI_Controller {
 
     protected $request;
     protected $authenticator;
+    protected $auth_response;
+    protected $user;
     protected $client;
 
     public function __construct(){

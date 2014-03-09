@@ -17,7 +17,7 @@ global._ = require('lodash');
  * http://facebook.github.io/react/ and http://stackoverflow.com/a/21244706/582917 (and using requestAnimationFrame http://stackoverflow.com/a/21395442/582917) http://www.youtube.com/watch?v=x7cQ3mrcKaY#t=749
  * React is faster!
  */
-global.jQuery = require('jquery');
+global.jQuery = require('jquery'); //jquery is a commonjs module, so we need to globalise it for other libraries
 require('bootstrap');
 require('angular');
 require('angular-cookies');
@@ -30,6 +30,9 @@ require('angular-bootstrap');
 require('angular-ui-utils');
 require('angulartics');
 require('../../components/angulartics/src/angulartics-ga.js');
+require('d3');
+require('nvd3');
+require('angularjs-nvd3-directives');
 
 /**
  * Bootstrapping Angular Modules
@@ -45,6 +48,7 @@ var app = angular.module('App', [
     'ui.utils',
     'angulartics',
     'angulartics.google.analytics',
+    'nvd3ChartDirectives',
     require('./modules/Modules').name,
     require('./services/Services').name,
     require('./filters/Filters').name,

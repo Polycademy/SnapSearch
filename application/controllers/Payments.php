@@ -5,6 +5,10 @@
  */
 class Payments extends CI_Controller{
 
+	protected $authenticator;
+	protected $auth_response;
+	protected $user;
+
 	public function __construct(){
 
 		parent::__construct();
