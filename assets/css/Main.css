@@ -6317,6 +6317,9 @@ input {
 /* ==========================================================================
    Header Module
    ========================================================================== */
+/* ==========================================================================
+   Variables Module
+   ========================================================================== */
 header.navbar {
   padding-top: 20px;
   padding-bottom: 14px;
@@ -6396,9 +6399,6 @@ header.navbar .navbar-nav > li button {
 }
 /* ==========================================================================
    Footer Module
-   ========================================================================== */
-/* ==========================================================================
-   Variables Module
    ========================================================================== */
 footer.panel_yellow .panel-body {
   color: #ffffff;
@@ -7075,13 +7075,14 @@ footer .attributions strong {
    Control Panel Module
    ========================================================================== */
 .control-panel .control-panel-nav {
-  width: 100%;
+  display: block;
 }
 .control-panel .control-panel-nav .btn {
+  display: block;
   width: 90%;
   font-size: 20px;
   font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  padding: 16px 20px;
+  padding: 16px 0;
   background-color: #ffffff;
   color: #222222;
   border-top: 1px solid #dadada;
@@ -7105,6 +7106,19 @@ footer .attributions strong {
   color: #ffffff;
   border-top: none;
   border-bottom: none;
+}
+.control-panel .control-panel-nav.affix {
+  position: fixed;
+  top: 30px;
+}
+.control-panel .control-panel-nav.affix-bottom {
+  position: relative;
+}
+.control-panel .control-box {
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 6px solid #4a5155;
+  color: #2c3134;
 }
 /**
  * Modals

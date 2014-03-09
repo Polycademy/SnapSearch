@@ -82840,7 +82840,7 @@ angular.element(document).ready(function(){
 
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":11,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angularjs-nvd3-directives\\dist\\angularjs-nvd3-directives.js":10,"./..\\..\\components\\angulartics\\src\\angulartics.js":12,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":13,"./..\\..\\components\\d3\\d3.js":14,"./..\\..\\components\\es5-shim\\es5-shim.js":15,"./..\\..\\components\\es6-shim\\es6-shim.js":16,"./..\\..\\components\\jquery\\dist\\jquery.js":20,"./..\\..\\components\\json3\\lib\\json3.min.js":21,"./..\\..\\components\\lodash\\dist\\lodash.compat.js":22,"./..\\..\\components\\nvd3\\nv.d3.js":23,"./..\\..\\components\\restangular\\dist\\restangular.js":24,"./Router":26,"./Run":27,"./controllers/Controllers":29,"./directives/Directives":48,"./elements/Elements":52,"./filters/Filters":90,"./modules/Modules":91,"./services/Services":99}],26:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":11,"./..\\..\\components\\angular-animate\\angular-animate.js":2,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":3,"./..\\..\\components\\angular-cookies\\angular-cookies.js":4,"./..\\..\\components\\angular-resource\\angular-resource.js":5,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":6,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":7,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":8,"./..\\..\\components\\angular\\angular.js":9,"./..\\..\\components\\angularjs-nvd3-directives\\dist\\angularjs-nvd3-directives.js":10,"./..\\..\\components\\angulartics\\src\\angulartics.js":12,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":13,"./..\\..\\components\\d3\\d3.js":14,"./..\\..\\components\\es5-shim\\es5-shim.js":15,"./..\\..\\components\\es6-shim\\es6-shim.js":16,"./..\\..\\components\\jquery\\dist\\jquery.js":20,"./..\\..\\components\\json3\\lib\\json3.min.js":21,"./..\\..\\components\\lodash\\dist\\lodash.compat.js":22,"./..\\..\\components\\nvd3\\nv.d3.js":23,"./..\\..\\components\\restangular\\dist\\restangular.js":24,"./Router":26,"./Run":27,"./controllers/Controllers":29,"./directives/Directives":48,"./elements/Elements":53,"./filters/Filters":91,"./modules/Modules":92,"./services/Services":100}],26:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -82892,7 +82892,7 @@ module.exports = [
                 'controlPanel',
                 {
                     url: '/control_panel',
-                    template: "<div class=\"control-panel panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Control Panel</h2>\n        </div>\n        <div class=\"panel-body row\" ng-show=\"loggedIn\">\n            <div class=\"col-md-2\">\n                <nav class=\"btn-group-vertical control-panel-nav\">\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".crawling\">Crawling</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".cache\">Cache</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".payments\">Payments</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".billing\">Billing</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".account\">Account</a>\n                </nav>\n            </div>\n            <div class=\"col-md-10\">\n                <div class=\"control-box\">\n                    <div ui-view></div>\n                </div>\n            </div>\n        </div>\n        <div class=\"panel-body\" ng-show=\"loggedOut\">\n            <p>You must be logged in to view this page!</p>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"control-panel panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-body row\" ng-show=\"loggedIn\">\n            <div class=\"col-md-2\">\n                <nav class=\"btn-group-vertical control-panel-nav\" ensure-width data-spy=\"affix\" data-offset-top=\"214\" data-offset-bottom=\"910\">\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".crawling\">Crawling</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".cache\">Cache</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".payments\">Payments</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".billing\">Billing</a>\n                    <a class=\"btn\" ui-sref-active=\"active\" ui-sref=\".account\">Account</a>\n                </nav>\n            </div>\n            <div class=\"col-md-10\">\n                <div class=\"control-box\">\n                    <div ui-view></div>\n                </div>\n            </div>\n        </div>\n        <div class=\"panel-body\" ng-show=\"loggedOut\">\n            <p>You must be logged in to view this page!</p>\n        </div>\n    </div>\n</div>",
                     controller: 'ControlPanelCtrl'
                 }
             )
@@ -82900,7 +82900,7 @@ module.exports = [
                 'controlPanel.crawling', //default controlPanel childstate
                 {
                     url: '/crawling',
-                    template: "<p>I'm in the crawling state!</p>",
+                    template: "<div class=\"crawling\">\n    <h2>Crawling Statistics</h2>\n    <em>API Key: {{userAccount.apiKey}}</em>\n    <div class=\"telemetry-block overview\">\n        <h3>Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from 01/10/2013 to 01/11/2013</em>\n        <div class=\"row overview-requests-usages\">\n            <div class=\"col-sm-4\">\n                <p>2034</p>\n                <p>Requests Received</p>\n            </div>\n            <div class=\"col-sm-4\">\n                <p>2034</p>\n                <p>Usages Used</p>\n            </div>\n            <div class=\"col-sm-4\">\n                <p>580</p>\n                <p>Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" style=\"width: 45%\"></div>\n        </div>\n        <em>Usage Bar</em>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Monthly Usage Cap</h3>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>History</h3>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Domain Distinction</h3>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Log</h3>\n    </div>\n</div>",
                     controller: 'ControlCrawlingCtrl'
                 }
             )
@@ -83481,8 +83481,9 @@ angular.module('App.Directives', []);
 module.exports = angular.module('App.Directives')
     .directive('equaliseHeights', require('./equaliseHeights'))
     .directive('anchor', require('./anchor'))
-    .directive('passwordMatch', require('./passwordMatch'));
-},{"./anchor":49,"./equaliseHeights":50,"./passwordMatch":51}],49:[function(require,module,exports){
+    .directive('passwordMatch', require('./passwordMatch'))
+    .directive('ensureWidth', require('./ensureWidth'));
+},{"./anchor":49,"./ensureWidth":50,"./equaliseHeights":51,"./passwordMatch":52}],49:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -83565,6 +83566,30 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
 },{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":19}],50:[function(require,module,exports){
 'use strict';
 
+var _ = require("./..\\..\\..\\components\\lodash\\dist\\lodash.compat.js");
+
+module.exports = ['$window', function ($window) {
+
+    return {
+        link: function (scope, element, attributes) {
+
+            var ensureWidth = function () {
+                element.css('width', element.parent().width());
+            };
+
+            var throttledWidth = _.throttle(ensureWidth, 100);
+
+            angular.element($window).bind('resize', throttledWidth);
+
+            ensureWidth();
+
+        }
+    };
+
+}];
+},{"./..\\..\\..\\components\\lodash\\dist\\lodash.compat.js":22}],51:[function(require,module,exports){
+'use strict';
+
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
 
 /**
@@ -83604,7 +83629,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":19}],51:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":19}],52:[function(require,module,exports){
 'use strict';
 
 /**
@@ -83645,7 +83670,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 'use strict';
 
 /**
@@ -83658,7 +83683,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./chatTab":53,"./syntaxHighlight":89}],53:[function(require,module,exports){
+},{"./chatTab":54,"./syntaxHighlight":90}],54:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -83694,7 +83719,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":101}],54:[function(require,module,exports){
+},{"fs":1,"insert-css":102}],55:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -84385,7 +84410,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -84422,7 +84447,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":54,"./languages/apache.js":56,"./languages/bash.js":57,"./languages/clojure.js":58,"./languages/coffeescript.js":59,"./languages/cpp.js":60,"./languages/cs.js":61,"./languages/css.js":62,"./languages/diff.js":63,"./languages/erlang.js":64,"./languages/go.js":65,"./languages/haml.js":66,"./languages/haskell.js":67,"./languages/http.js":68,"./languages/ini.js":69,"./languages/java.js":70,"./languages/javascript.js":71,"./languages/json.js":72,"./languages/lisp.js":73,"./languages/lua.js":74,"./languages/makefile.js":75,"./languages/markdown.js":76,"./languages/nginx.js":77,"./languages/objectivec.js":78,"./languages/perl.js":79,"./languages/php.js":80,"./languages/python.js":81,"./languages/r.js":82,"./languages/ruby.js":83,"./languages/rust.js":84,"./languages/scala.js":85,"./languages/scss.js":86,"./languages/sql.js":87,"./languages/xml.js":88}],56:[function(require,module,exports){
+},{"./highlight":55,"./languages/apache.js":57,"./languages/bash.js":58,"./languages/clojure.js":59,"./languages/coffeescript.js":60,"./languages/cpp.js":61,"./languages/cs.js":62,"./languages/css.js":63,"./languages/diff.js":64,"./languages/erlang.js":65,"./languages/go.js":66,"./languages/haml.js":67,"./languages/haskell.js":68,"./languages/http.js":69,"./languages/ini.js":70,"./languages/java.js":71,"./languages/javascript.js":72,"./languages/json.js":73,"./languages/lisp.js":74,"./languages/lua.js":75,"./languages/makefile.js":76,"./languages/markdown.js":77,"./languages/nginx.js":78,"./languages/objectivec.js":79,"./languages/perl.js":80,"./languages/php.js":81,"./languages/python.js":82,"./languages/r.js":83,"./languages/ruby.js":84,"./languages/rust.js":85,"./languages/scala.js":86,"./languages/scss.js":87,"./languages/sql.js":88,"./languages/xml.js":89}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -84468,7 +84493,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -84531,7 +84556,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -84629,7 +84654,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -84760,7 +84785,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -84824,7 +84849,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -84897,7 +84922,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -85001,7 +85026,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -85041,7 +85066,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -85196,7 +85221,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -85235,7 +85260,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -85357,7 +85382,7 @@ function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -85483,7 +85508,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -85517,7 +85542,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -85547,7 +85572,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -85602,7 +85627,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -85674,7 +85699,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -85712,7 +85737,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -85788,7 +85813,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -85845,7 +85870,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -85890,7 +85915,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -85992,7 +86017,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -86073,7 +86098,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -86158,7 +86183,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -86307,7 +86332,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],80:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -86416,7 +86441,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -86500,7 +86525,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -86570,7 +86595,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],83:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -86729,7 +86754,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -86778,7 +86803,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -86837,7 +86862,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -86954,7 +86979,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -87057,7 +87082,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -87161,7 +87186,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -87218,7 +87243,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":55,"fs":1,"insert-css":101}],90:[function(require,module,exports){
+},{"./lib/hljs/index":56,"fs":1,"insert-css":102}],91:[function(require,module,exports){
 'use strict';
 
 /**
@@ -87227,7 +87252,7 @@ module.exports = ['$sce', function($sce){
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 'use strict';
 
 /**
@@ -87238,7 +87263,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":92}],92:[function(require,module,exports){
+},{"./UserSystem":93}],93:[function(require,module,exports){
 'use strict';
 
 /**
@@ -87249,7 +87274,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":93,"./UserSystemServ":94}],93:[function(require,module,exports){
+},{"./UserSystemRun":94,"./UserSystemServ":95}],94:[function(require,module,exports){
 'use strict';
 
 /**
@@ -87265,7 +87290,7 @@ module.exports = ['UserSystemServ', function (UserSystemServ) {
     UserSystemServ.getSession();
 
 }];
-},{}],94:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 'use strict';
 
 /**
@@ -87435,7 +87460,7 @@ module.exports = function () {
     ];
 
 };
-},{}],95:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 'use strict';
 
 /**
@@ -87458,14 +87483,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],96:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],97:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 'use strict';
 
 /**
@@ -87502,7 +87527,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],98:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 'use strict';
 
 /**
@@ -87516,7 +87541,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],99:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 'use strict';
 
 /**
@@ -87535,7 +87560,7 @@ module.exports = angular.module('App.Services')
     // .run(require('./RestangularXSRF')) // doesn't yet work, need cookies in response interception
     //Service Objects
     .service('CalculateServ', require('./CalculateServ'));
-},{"./AuthenticationStateRun":95,"./BaseUrlConst":96,"./CalculateServ":97,"./RestangularConfig":98,"./UserSystemConfig":100}],100:[function(require,module,exports){
+},{"./AuthenticationStateRun":96,"./BaseUrlConst":97,"./CalculateServ":98,"./RestangularConfig":99,"./UserSystemConfig":101}],101:[function(require,module,exports){
 'use strict';
 
 /**
@@ -87547,7 +87572,7 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
-},{}],101:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {

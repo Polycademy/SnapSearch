@@ -8,12 +8,13 @@
 
 .control-panel {
     .control-panel-nav {
-        width: 100%;
+        display: block;
         .btn {
+            display: block;
             width: 90%;
             font-size: 20px;
             #Fonts.family("fira_sans_otmedium");
-            padding: 16px 20px;
+            padding: 16px 0;
             background-color: @snapsearch-white;
             color: @snapsearch-text-black;
             border-top: 1px solid @snapsearch-grey;
@@ -38,5 +39,18 @@
             border-top: none;
             border-bottom: none;
         }
+    }
+    .control-panel-nav.affix {
+        position: fixed;
+        top: 30px;
+    }
+    .control-panel-nav.affix-bottom {
+        position: relative;
+    }
+    .control-box {
+        background-color: @snapsearch-white;
+        border-radius: 10px;
+        border: 6px solid lighten(@snapsearch-dark, 10%);
+        color: @snapsearch-text-dark;
     }
 }
