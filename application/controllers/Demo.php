@@ -41,8 +41,8 @@ class Demo extends CI_Controller {
 
         if(!isset($parameters['url'])){
 
-            $this->auth_response->setStatusCode(429);
-            $content = 'No URL query parameter.';
+            $this->auth_response->setStatusCode(400);
+            $content['url'] = 'No URL query parameter.';
             $code = 'validation_error';
 
         }else{
@@ -50,7 +50,7 @@ class Demo extends CI_Controller {
             //we only care about the url
             $url = $parameters['url'];
 
-            //demo usages will be saved as administrator
+            //demo cache will be saved as administrator, usages are not tracked
             $user_id = 1;
 
             //send query to robot
@@ -93,6 +93,8 @@ class Demo extends CI_Controller {
                 $code = 'success';
 
             }else{
+
+                $this->auth_response->setStatusCode(500);
 
                 //even though there are 2 error states here, basically it's a system error if the demo didn't work
                 $code = 'system_error';

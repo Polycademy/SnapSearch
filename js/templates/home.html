@@ -108,10 +108,16 @@
                         </span>
                     </div>
                 </div>
+                <div class="form-errors" ng-show="formErrors">
+                    <em class="text-warning">Oops! Please fix up these errors:</em>
+                    <ul class="form-errors-list">
+                        <li class="form-errors-list-item alert alert-warning" ng-repeat="error in formErrors">{{error}}</li>
+                    </ul>
+                </div>
                 <div class="demo-output" ng-switch="requestingDemoService">
                     <p class="demo-explanation" ng-switch-when="never">Try this on a single page application like https://snapsearch.io/. You'll see the difference between how "javascriptless" search engine robots view your application without SnapSearch, and how they view your application with SnapSearch.</p>
                     <img class="demo-loading" ng-switch-when="started" src="assets/img/loading.gif" />
-                    <div class="demo-response row" ng-switch-when="finished">
+                    <div class="demo-response row" ng-switch-when="finished" ng-show="formSuccess">
                         <div class="col-sm-6">
                             <h4 class="demo-response-title">Source Code without SnapSearch</h4>
                             <pre class="demo-response-code"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>
