@@ -44,6 +44,7 @@
         </script>
 
         <!-- Here we go! Weee! -->
+        <script src="js/compiled/Common.js"></script>
         <script src="js/compiled/App.js" async></script>
 
     </head>

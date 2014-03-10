@@ -8,8 +8,15 @@ module.exports = ['$anchorScroll', '$location', function ($anchorScroll, $locati
     return {
         link:  function (scope, element, attributes) {
 
-            $location.hash(attributes.scroll);
-            $anchorScroll();
+            var scroll = function () {
+                $location.hash(attributes.scroll);
+                $anchorScroll();
+                scope.$apply();
+            };
+
+            element.on('click', scroll);
+
+            //we don't need to manually destroy as angular should handle direct element binding
 
         }
     };
