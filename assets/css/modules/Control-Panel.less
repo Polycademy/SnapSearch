@@ -47,10 +47,85 @@
     .control-panel-nav.affix-bottom {
         position: relative;
     }
-    .control-box {
-        background-color: @snapsearch-white;
-        border-radius: 10px;
-        border: 6px solid lighten(@snapsearch-dark, 10%);
-        color: @snapsearch-text-dark;
+}
+
+.control-box {
+    background-color: @snapsearch-white;
+    border-radius: 10px;
+    border: 6px solid lighten(@snapsearch-dark, 10%);
+    color: @snapsearch-text-dark;
+    padding: 20px 60px;
+    .control-title {
+        text-align: center;
+        #Fonts.family("fira_sans_otbold");
+        font-size: 36px;
+        margin-bottom: 38px;
+    }
+    .api-key {
+        text-align: center;
+        #Fonts.family("fira_sans_otitalic");
+        font-size: 16px;
+        display: block;
+        font-style: normal;
+    }
+    .telemetry-block {
+        margin: 36px auto;
+        .telemetry-title {
+            #Fonts.family("fira_sans_otmedium");
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .telemetry-emphasis {
+            #Fonts.family("fira_sans_otitalic");
+            font-style: normal;
+            font-size: 16px;
+            text-align: center;
+            display: block;
+        }
+    }
+}
+
+.crawling {
+    .overview-requests-usages-tally {
+        margin-top: 20px;
+        margin-bottom: 30px;
+        .tally-col:first-child:not(:last-child) {
+            .tally-block {
+                border-top-left-radius: 10px;
+                border-bottom-left-radius: 10px
+            }
+        }
+        .tally-col:last-child:not(:first-child) {
+            .tally-block {
+                border-top-right-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+        }
+        .tally-block {
+            height: 100px;
+            position: relative;
+            .tally-number {
+                font-size: 36px;
+                #Fonts.family("fira_sans_otmedium");
+                color: @snapsearch-white;
+                text-align: center;
+                #Centering.transformCenter(100%);
+            }
+        }
+        .tally-block.tally_block_request {
+            background-color: @snapsearch-blue;
+        }
+        .tally-block.tally_block_usage {
+            background-color: @snapsearch-yellow;
+        }
+        .tally-block.tally_block_available {
+            background-color: @snapsearch-dark;
+        }
+        .tally-description {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+            #Fonts.family("fira_sans_otregular");
+        }
     }
 }

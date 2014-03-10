@@ -5,42 +5,27 @@
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', 'UserSystemServ', function ($scope, UserSystemServ) {
+module.exports = ['$scope', 'UserSystemServ', 'MomentServ', 'CalculateServ', function ($scope, UserSystemServ, MomentServ, CalculateServ) {
 
-    /*
-    Ok in order to correctly assess whether someone is logged in or not.
-    it needs to be resolved via the routes. Or in the resolve function.
-    This will call whether you're logged in or not, and therefore deliberate what happens afterwards.
-    However it must not run on each route, only on the first request.
+    $scope.$watch(UserSystemServ.getUserData, function (value) {
 
-    Something like this:
+        console.log(Object.keys(value).length);
 
-    getSession, if valid session, then to the page, if invalid session, redirect or just go to the page, but only do this if this is the first time it's been loaded, because otherwise the data would be cached!
-    So the decision on what to do if invalid session should be in the resolve parameter of the routing.
+        if (Object.keys(value).length > 0) {
 
-    Furthermore this means the App.js run should not be doing this. But instead the service exposes the getSession.
+            console.log(value);
 
-    You could also do it all in each controller...
+            //chargeCycle will wrap the dates as moment objects
+            $scope.chargeCycle = {
+                beginning: MomentServ(value.chargeDate, 'YYYY-MM-DD HH:mm:ss').subtract(MomentServ.duration.fromIsoduration(value.chargeInterval)),
+                ending: MomentServ(value.chargeDate, 'YYYY-MM-DD HH:mm:ss')
+            };
 
-    Controllers could be inherited. We can try prototypical inheritance for the resolves too. This could allow overwriting the parent when necessary. So normally just call getSession(), otherwise call getSession().then..etc
-
-    Or you have a layout state. The master state has a particular resolve that could work it out!
-     */
-
-    $scope.$watch(function () {
-
-        return UserSystemServ.getUserData();
-
-    }, function (userData) {
-
-        if (Object.keys(userData).length > 0) {
-
-            var id = userData.id;
+            $scope.userAccount = value;
+            $scope.userAccount.apiUsagePercentage = CalculateServ.round((value.apiUsage / value.apiLimit) * 100, '2');
 
         }
 
-
     }, true);
-
 
 }];

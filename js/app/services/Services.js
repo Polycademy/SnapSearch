@@ -15,4 +15,5 @@ module.exports = angular.module('App.Services')
     .run(require('./AuthenticationStateRun'))
     // .run(require('./RestangularXSRF')) // doesn't yet work, need cookies in response interception
     //Service Objects
-    .service('CalculateServ', require('./CalculateServ'));
+    .service('CalculateServ', require('./CalculateServ'))
+    .factory('MomentServ', require('./MomentServ'));
