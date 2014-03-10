@@ -1,7 +1,5 @@
 'use strict';
 
-var _ = require('lodash');
-
 /**
  * Affix Directive
  *
