@@ -10,4 +10,6 @@ module.exports = angular.module('App.Directives')
     .directive('anchor', require('./anchor'))
     .directive('scroll', require('./scroll'))
     .directive('passwordMatch', require('./passwordMatch'))
-    .directive('affix', require('./affix'));
+    .directive('affix', require('./affix'))
+    .directive('minValid', require('./minValid'))
+    .directive('maxValid', require('./maxValid'));

@@ -33,6 +33,8 @@ class Billing extends CI_Controller{
 		$user_id = $this->input->get('user', true);
 		$active = $this->input->get('active', true);
 		$active = ($active) ? $active : null;
+		$valid = $this->input->get('valid', true);
+		$valid = ($valid) ? $valid : null;
 
 		$authorized = false;
 
@@ -72,7 +74,7 @@ class Billing extends CI_Controller{
 
 		if($authorized){
 
-			$query = $this->Billing_model->read_all($user_id, $active);
+			$query = $this->Billing_model->read_all($user_id, $active, $valid);
 
 			if($query){
 

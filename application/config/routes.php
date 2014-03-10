@@ -14,6 +14,7 @@ Pigeon::map(function($r){
 
 		//ACCOUNTS
 		$r->resources('accounts');
+		$r->patch('accounts/([a-zA-Z0-9\-_]+)', 'accounts#update');
 		$r->get('accounts/forgotten_password/(:any)', 'accounts/forgotten_password/$1');
 		$r->post('accounts/confirm_forgotten_password', 'accounts/confirm_forgotten_password');
 
@@ -22,6 +23,7 @@ Pigeon::map(function($r){
 
 		//BILLING
 		$r->resources('billing');
+		$r->patch('billing/([a-zA-Z0-9\-_]+)', 'billing#update');
 
 		//PAYMENTS HISTORY
 		$r->resources('payments');

@@ -35,23 +35,41 @@
     <div class="telemetry-block">
         <h3 class="telemetry-title">Monthly Usage Cap</h3>
         <form class="api-limit-modifier form-horizontal" name="apiLimitModifierForm">
+            <div class="form-errors" ng-show="formErrors">
+                <em class="text-warning">Oops! Please fix up these errors:</em>
+                <ul class="form-errors-list">
+                    <li class="form-errors-list-item alert alert-warning" ng-repeat="error in formErrors">{{error}}</li>
+                </ul>
+            </div>
+            <div class="form-success alert alert-success" ng-show="formSuccess">
+                {{formSuccess}}
+            </div>
             <dl>
                 <dt>
                     <label class="control-label" for="apiLimitModifierFormQuantity">Enter Usage Cap:</label>
                 </dt>
-                <dd class="input-group">
+                <dd 
+                    class="input-group" 
+                    ng-class="{
+                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty
+                    }" 
+                >
                     <input 
                         id="apiLimitModifierFormQuantity"
                         class="form-control" 
                         type="number" 
                         name="quantity" 
                         ng-model="apiLimitModifier.quantity" 
+                        ng-disabled = "!hasBillingDetails" 
+                        min-valid="{{userAccount.apiFreeLimit}}" 
                         maxlength="10" 
+                        required 
                     />
                     <span class="input-group-btn">
                         <button 
                             class="btn btn-primary" 
                             type="submit" 
+                            ng-disabled="apiLimitModifierForm.$invalid || !hasBillingDetails" 
                             ng-click="changeLimit(apiLimitModifier)" 
                         >
                             Change Cap

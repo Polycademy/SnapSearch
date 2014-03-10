@@ -7,7 +7,7 @@ var settings = require('../../Settings');
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', function ($scope, UserSystemServ, CalculateServ) {
+module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', 'Restangular', function ($scope, UserSystemServ, CalculateServ, Restangular) {
 
     var pricePerUsage = settings.meta.price;
 
@@ -19,21 +19,24 @@ module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', function ($scope,
 
         if (userAccount) {
 
+            //setting up apiLimitModifier object
             $scope.apiLimitModifier = {};
 
-            //default quantity
+            //default quantity is the current api limit
             $scope.apiLimitModifier.quantity = userAccount.apiLimit;
 
-            $scope.changeLimit = function (apiLimitModifier) {
+            //check if the user has billing details
+            Restangular.all('billing').customGET('', {
+                user: userAccount.id, 
+                active: true, 
+                valid: true
+            }).then(function () {
+                $scope.hasBillingDetails = true;
+            }, function () {
+                $scope.hasBillingDetails = false;
+            });
 
-                //prevent it going below freeUsageCap
-                //equal or higher
-                //prevent change if 
-
-                console.log(apiLimitModifier);
-
-            };
-
+            //calculate the price
             $scope.$watch(function (scope) {
 
                 return scope.apiLimitModifier.quantity;
@@ -65,6 +68,30 @@ module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', function ($scope,
                 $scope.price = price;
 
             });
+
+            //change the limit
+            $scope.changeLimit = function (apiLimitModifier) {
+
+                $scope.formErrors = false;
+                $scope.formSuccess = false;
+
+                UserSystemServ.patchAccount({
+                    apiLimit: apiLimitModifier.quantity
+                }).then(function (response) {
+
+                    $scope.formSuccess = 'Successfully updated API Usage Cap!';
+
+                }, function (response) {
+
+                    if (typeof response.data.content == 'string') {
+                        $scope.formErrors = [response.data.content];
+                    } else {
+                        $scope.formErrors = response.data.content;
+                    }
+
+                });
+
+            };
 
         }
 

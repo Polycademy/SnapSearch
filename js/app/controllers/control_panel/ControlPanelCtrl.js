@@ -9,8 +9,6 @@ module.exports = ['$scope', 'UserSystemServ', 'MomentServ', 'CalculateServ', fun
 
     $scope.$watch(UserSystemServ.getUserData, function (value) {
 
-        console.log(Object.keys(value).length);
-
         if (Object.keys(value).length > 0) {
 
             var userAccount = angular.copy(value);

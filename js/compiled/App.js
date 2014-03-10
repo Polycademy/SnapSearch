@@ -3336,7 +3336,7 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":37,"./filters/Filters":75,"./modules/Modules":76,"./services/Services":85}],7:[function(require,module,exports){
+},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":39,"./filters/Filters":77,"./modules/Modules":78,"./services/Services":87}],7:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3396,7 +3396,7 @@ module.exports = [
                 'controlPanel.crawling', //default controlPanel childstate
                 {
                     url: '/crawling',
-                    template: "<div class=\"crawling\">\r\n    <h2 class=\"control-title\">Crawling Statistics</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block overview\">\r\n        <h3 class=\"telemetry-title\">Overview</h3>\r\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\r\n        <div class=\"row overview-requests-usages-tally no-gutter\">\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_request\">\r\n                    <span class=\"tally-bg\">R</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Requests Received</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_usage\">\r\n                    <span class=\"tally-bg\">U</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Used</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_available\">\r\n                    <span class=\"tally-bg\">A</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Available</p>\r\n            </div>\r\n        </div>\r\n        <div class=\"progress progress-striped active usage-bar\">\r\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\r\n        </div>\r\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\r\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\r\n            <dl>\r\n                <dt>\r\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\r\n                </dt>\r\n                <dd class=\"input-group\">\r\n                    <input \r\n                        id=\"apiLimitModifierFormQuantity\"\r\n                        class=\"form-control\" \r\n                        type=\"number\" \r\n                        name=\"quantity\" \r\n                        ng-model=\"apiLimitModifier.quantity\" \r\n                        maxlength=\"10\" \r\n                    />\r\n                    <span class=\"input-group-btn\">\r\n                        <button \r\n                            class=\"btn btn-primary\" \r\n                            type=\"submit\" \r\n                            ng-click=\"changeLimit(apiLimitModifier)\" \r\n                        >\r\n                            Change Cap\r\n                        </button>\r\n                    </span>\r\n                </dd>\r\n                <dt>Free Usage Cap:</dt>\r\n                <dd>{{userAccount.apiFreeLimit}}</dd>\r\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\r\n                <dd>${{price}} AUD</dd>\r\n            </dl>\r\n        </form>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">History</h3>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Log</h3>\r\n        <table>\r\n            <thead>\r\n                <th>Date</th>\r\n                <th>Url</th>\r\n                <th>Request Parameters</th>\r\n                <th>Response Time</th>\r\n                <th>Domain</th>\r\n            </thead>\r\n            <tbody>\r\n                <tr ng-repeat=\"record in requestLog\">\r\n                    <td>{{record.date}}</td>\r\n                    <td>{{record.url}}</td>\r\n                    <td>{{record.requestParameters}}</td>\r\n                    <td>{{record.responseTime}}</td>\r\n                    <td>{{record.domain}}</td>\r\n                </tr>\r\n            </tbody>\r\n        </table>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"crawling\">\r\n    <h2 class=\"control-title\">Crawling Statistics</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block overview\">\r\n        <h3 class=\"telemetry-title\">Overview</h3>\r\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\r\n        <div class=\"row overview-requests-usages-tally no-gutter\">\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_request\">\r\n                    <span class=\"tally-bg\">R</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Requests Received</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_usage\">\r\n                    <span class=\"tally-bg\">U</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Used</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_available\">\r\n                    <span class=\"tally-bg\">A</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Available</p>\r\n            </div>\r\n        </div>\r\n        <div class=\"progress progress-striped active usage-bar\">\r\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\r\n        </div>\r\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\r\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\r\n            <div class=\"form-errors\" ng-show=\"formErrors\">\r\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n                <ul class=\"form-errors-list\">\r\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n                </ul>\r\n            </div>\r\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n                {{formSuccess}}\r\n            </div>\r\n            <dl>\r\n                <dt>\r\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\r\n                </dt>\r\n                <dd \r\n                    class=\"input-group\" \r\n                    ng-class=\"{\r\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\r\n                    }\" \r\n                >\r\n                    <input \r\n                        id=\"apiLimitModifierFormQuantity\"\r\n                        class=\"form-control\" \r\n                        type=\"number\" \r\n                        name=\"quantity\" \r\n                        ng-model=\"apiLimitModifier.quantity\" \r\n                        ng-disabled = \"!hasBillingDetails\" \r\n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \r\n                        maxlength=\"10\" \r\n                        required \r\n                    />\r\n                    <span class=\"input-group-btn\">\r\n                        <button \r\n                            class=\"btn btn-primary\" \r\n                            type=\"submit\" \r\n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \r\n                            ng-click=\"changeLimit(apiLimitModifier)\" \r\n                        >\r\n                            Change Cap\r\n                        </button>\r\n                    </span>\r\n                </dd>\r\n                <dt>Free Usage Cap:</dt>\r\n                <dd>{{userAccount.apiFreeLimit}}</dd>\r\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\r\n                <dd>${{price}} AUD</dd>\r\n            </dl>\r\n        </form>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">History</h3>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Log</h3>\r\n        <table>\r\n            <thead>\r\n                <th>Date</th>\r\n                <th>Url</th>\r\n                <th>Request Parameters</th>\r\n                <th>Response Time</th>\r\n                <th>Domain</th>\r\n            </thead>\r\n            <tbody>\r\n                <tr ng-repeat=\"record in requestLog\">\r\n                    <td>{{record.date}}</td>\r\n                    <td>{{record.url}}</td>\r\n                    <td>{{record.requestParameters}}</td>\r\n                    <td>{{record.responseTime}}</td>\r\n                    <td>{{record.domain}}</td>\r\n                </tr>\r\n            </tbody>\r\n        </table>\r\n    </div>\r\n</div>",
                     controller: 'ControlCrawlingCtrl'
                 }
             )
@@ -3560,7 +3560,7 @@ module.exports = ['$scope', '$modal', '$state', 'UserSystemServ', function ($sco
     $scope.modal.signUp = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\r\n    <h3>Sign Up</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"signupForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\"\r\n            ng-class=\"{\r\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.minlength\">Password is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPasswordConfirm\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"passwordConfirm\" \r\n                    ng-model=\"user.passwordConfirm\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                    password-match=\"user.password\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password.</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\r\n            <div class=\"col-sm-4\">\r\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\r\n                <span class=\"help-block\">Optional Promo Code</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>", 
+            template: "<div class=\"modal-header\">\r\n    <h3>Sign Up</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form name=\"signupForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\"\r\n            ng-class=\"{\r\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.minlength\">Password is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPasswordConfirm\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"passwordConfirm\" \r\n                    ng-model=\"user.passwordConfirm\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                    password-match=\"user.password\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password.</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\r\n            <div class=\"col-sm-4\">\r\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\r\n                <span class=\"help-block\">Optional Promo Code</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>", 
             controller: require('./SignUpModalCtrl'),
             windowClass: 'signup-modal form-modal'
         }).result.then(function () {
@@ -3783,7 +3783,7 @@ var settings = require('../../Settings');
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', function ($scope, UserSystemServ, CalculateServ) {
+module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', 'Restangular', function ($scope, UserSystemServ, CalculateServ, Restangular) {
 
     var pricePerUsage = settings.meta.price;
 
@@ -3795,21 +3795,24 @@ module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', function ($scope,
 
         if (userAccount) {
 
+            //setting up apiLimitModifier object
             $scope.apiLimitModifier = {};
 
-            //default quantity
+            //default quantity is the current api limit
             $scope.apiLimitModifier.quantity = userAccount.apiLimit;
 
-            $scope.changeLimit = function (apiLimitModifier) {
+            //check if the user has billing details
+            Restangular.all('billing').customGET('', {
+                user: userAccount.id, 
+                active: true, 
+                valid: true
+            }).then(function () {
+                $scope.hasBillingDetails = true;
+            }, function () {
+                $scope.hasBillingDetails = false;
+            });
 
-                //prevent it going below freeUsageCap
-                //equal or higher
-                //prevent change if 
-
-                console.log(apiLimitModifier);
-
-            };
-
+            //calculate the price
             $scope.$watch(function (scope) {
 
                 return scope.apiLimitModifier.quantity;
@@ -3842,6 +3845,30 @@ module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', function ($scope,
 
             });
 
+            //change the limit
+            $scope.changeLimit = function (apiLimitModifier) {
+
+                $scope.formErrors = false;
+                $scope.formSuccess = false;
+
+                UserSystemServ.patchAccount({
+                    apiLimit: apiLimitModifier.quantity
+                }).then(function (response) {
+
+                    $scope.formSuccess = 'Successfully updated API Usage Cap!';
+
+                }, function (response) {
+
+                    if (typeof response.data.content == 'string') {
+                        $scope.formErrors = [response.data.content];
+                    } else {
+                        $scope.formErrors = response.data.content;
+                    }
+
+                });
+
+            };
+
         }
 
     });
@@ -3860,8 +3887,6 @@ module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', function ($scope,
 module.exports = ['$scope', 'UserSystemServ', 'MomentServ', 'CalculateServ', function ($scope, UserSystemServ, MomentServ, CalculateServ) {
 
     $scope.$watch(UserSystemServ.getUserData, function (value) {
-
-        console.log(Object.keys(value).length);
 
         if (Object.keys(value).length > 0) {
 
@@ -4082,8 +4107,10 @@ module.exports = angular.module('App.Directives')
     .directive('anchor', require('./anchor'))
     .directive('scroll', require('./scroll'))
     .directive('passwordMatch', require('./passwordMatch'))
-    .directive('affix', require('./affix'));
-},{"./affix":32,"./anchor":33,"./equaliseHeights":34,"./passwordMatch":35,"./scroll":36}],32:[function(require,module,exports){
+    .directive('affix', require('./affix'))
+    .directive('minValid', require('./minValid'))
+    .directive('maxValid', require('./maxValid'));
+},{"./affix":32,"./anchor":33,"./equaliseHeights":34,"./maxValid":35,"./minValid":36,"./passwordMatch":37,"./scroll":38}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4292,6 +4319,86 @@ module.exports = [function () {
 },{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],35:[function(require,module,exports){
 'use strict';
 
+module.exports = [function () {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, elem, attr, ctrl) {
+
+            var isEmpty = function (value) {
+                return angular.isUndefined(value) || value === '' || value === null || value !== value;
+            };
+
+            scope.$watch(attr.maxValid, function(){
+                ctrl.$setViewValue(ctrl.$viewValue);
+            });
+
+            var maxValidator = function(value) {
+
+                var max = scope.$eval(attr.maxValid) || Infinity;
+                if (!isEmpty(value) && value > max) {
+
+                    ctrl.$setValidity('maxValid', false);
+                    return undefined;
+
+                } else {
+
+                    ctrl.$setValidity('maxValid', true);
+                    return value;
+
+                }
+
+            };
+
+            ctrl.$parsers.push(maxValidator);
+            ctrl.$formatters.push(maxValidator);
+
+        }
+    };
+}];
+},{}],36:[function(require,module,exports){
+'use strict';
+
+module.exports = [function () {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, elem, attr, ctrl) {
+
+            var isEmpty = function (value) {
+                return angular.isUndefined(value) || value === '' || value === null || value !== value;
+            };
+
+            scope.$watch(attr.minValid, function(){
+                ctrl.$setViewValue(ctrl.$viewValue);
+            });
+
+            var minValidator = function(value) {
+
+                var min = scope.$eval(attr.minValid) || 0;
+                if (!isEmpty(value) && value < min) {
+
+                    ctrl.$setValidity('minValid', false);
+                    return undefined;
+
+                } else {
+
+                    ctrl.$setValidity('minValid', true);
+                    return value;
+
+                }
+
+            };
+
+            ctrl.$parsers.push(minValidator);
+            ctrl.$formatters.push(minValidator);
+
+        }
+    };
+}];
+},{}],37:[function(require,module,exports){
+'use strict';
+
 /**
  * Password Match
  *
@@ -4330,7 +4437,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4355,7 +4462,7 @@ module.exports = ['$anchorScroll', '$location', function ($anchorScroll, $locati
     };
 
 }];
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4368,7 +4475,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./chatTab":38,"./syntaxHighlight":74}],38:[function(require,module,exports){
+},{"./chatTab":40,"./syntaxHighlight":76}],40:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -4404,7 +4511,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":87}],39:[function(require,module,exports){
+},{"fs":1,"insert-css":89}],41:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -5095,7 +5202,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -5132,7 +5239,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":39,"./languages/apache.js":41,"./languages/bash.js":42,"./languages/clojure.js":43,"./languages/coffeescript.js":44,"./languages/cpp.js":45,"./languages/cs.js":46,"./languages/css.js":47,"./languages/diff.js":48,"./languages/erlang.js":49,"./languages/go.js":50,"./languages/haml.js":51,"./languages/haskell.js":52,"./languages/http.js":53,"./languages/ini.js":54,"./languages/java.js":55,"./languages/javascript.js":56,"./languages/json.js":57,"./languages/lisp.js":58,"./languages/lua.js":59,"./languages/makefile.js":60,"./languages/markdown.js":61,"./languages/nginx.js":62,"./languages/objectivec.js":63,"./languages/perl.js":64,"./languages/php.js":65,"./languages/python.js":66,"./languages/r.js":67,"./languages/ruby.js":68,"./languages/rust.js":69,"./languages/scala.js":70,"./languages/scss.js":71,"./languages/sql.js":72,"./languages/xml.js":73}],41:[function(require,module,exports){
+},{"./highlight":41,"./languages/apache.js":43,"./languages/bash.js":44,"./languages/clojure.js":45,"./languages/coffeescript.js":46,"./languages/cpp.js":47,"./languages/cs.js":48,"./languages/css.js":49,"./languages/diff.js":50,"./languages/erlang.js":51,"./languages/go.js":52,"./languages/haml.js":53,"./languages/haskell.js":54,"./languages/http.js":55,"./languages/ini.js":56,"./languages/java.js":57,"./languages/javascript.js":58,"./languages/json.js":59,"./languages/lisp.js":60,"./languages/lua.js":61,"./languages/makefile.js":62,"./languages/markdown.js":63,"./languages/nginx.js":64,"./languages/objectivec.js":65,"./languages/perl.js":66,"./languages/php.js":67,"./languages/python.js":68,"./languages/r.js":69,"./languages/ruby.js":70,"./languages/rust.js":71,"./languages/scala.js":72,"./languages/scss.js":73,"./languages/sql.js":74,"./languages/xml.js":75}],43:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -5178,7 +5285,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -5241,7 +5348,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -5339,7 +5446,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -5470,7 +5577,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -5534,7 +5641,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -5607,7 +5714,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -5711,7 +5818,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -5751,7 +5858,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -5906,7 +6013,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -5945,7 +6052,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -6067,7 +6174,7 @@ function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -6193,7 +6300,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -6227,7 +6334,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -6257,7 +6364,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -6312,7 +6419,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -6384,7 +6491,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -6422,7 +6529,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -6498,7 +6605,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -6555,7 +6662,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -6600,7 +6707,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -6702,7 +6809,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -6783,7 +6890,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -6868,7 +6975,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -7017,7 +7124,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -7126,7 +7233,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -7210,7 +7317,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -7280,7 +7387,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -7439,7 +7546,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -7488,7 +7595,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -7547,7 +7654,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -7664,7 +7771,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -7767,7 +7874,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -7871,7 +7978,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -7928,7 +8035,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":40,"fs":1,"insert-css":87}],75:[function(require,module,exports){
+},{"./lib/hljs/index":42,"fs":1,"insert-css":89}],77:[function(require,module,exports){
 'use strict';
 
 /**
@@ -7937,7 +8044,7 @@ module.exports = ['$sce', function($sce){
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{}],76:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 'use strict';
 
 /**
@@ -7948,7 +8055,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":77}],77:[function(require,module,exports){
+},{"./UserSystem":79}],79:[function(require,module,exports){
 'use strict';
 
 /**
@@ -7959,7 +8066,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":78,"./UserSystemServ":79}],78:[function(require,module,exports){
+},{"./UserSystemRun":80,"./UserSystemServ":81}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -7975,7 +8082,7 @@ module.exports = ['UserSystemServ', function (UserSystemServ) {
     UserSystemServ.getSession();
 
 }];
-},{}],79:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8145,7 +8252,7 @@ module.exports = function () {
     ];
 
 };
-},{}],80:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8168,14 +8275,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],81:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],82:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8212,7 +8319,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],83:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 
 var moment = require("./..\\..\\..\\components\\moment\\moment.js");
@@ -8256,7 +8363,7 @@ module.exports = [function () {
     return moment;
 
 }];
-},{"./..\\..\\..\\components\\moment\\moment.js":5}],84:[function(require,module,exports){
+},{"./..\\..\\..\\components\\moment\\moment.js":5}],86:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8270,7 +8377,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],85:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8290,7 +8397,7 @@ module.exports = angular.module('App.Services')
     //Service Objects
     .service('CalculateServ', require('./CalculateServ'))
     .factory('MomentServ', require('./MomentServ'));
-},{"./AuthenticationStateRun":80,"./BaseUrlConst":81,"./CalculateServ":82,"./MomentServ":83,"./RestangularConfig":84,"./UserSystemConfig":86}],86:[function(require,module,exports){
+},{"./AuthenticationStateRun":82,"./BaseUrlConst":83,"./CalculateServ":84,"./MomentServ":85,"./RestangularConfig":86,"./UserSystemConfig":88}],88:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8302,7 +8409,7 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
-},{}],87:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {
