@@ -7,18 +7,21 @@
         <div class="row overview-requests-usages-tally no-gutter">
             <div class="col-sm-4 tally-col">
                 <div class="tally-block tally_block_request">
+                    <span class="tally-bg">R</span>
                     <p class="tally-number">{{userAccount.apiRequests}}</p>
                 </div>
                 <p class="tally-description">Requests Received</p>
             </div>
             <div class="col-sm-4 tally-col">
                 <div class="tally-block tally_block_usage">
+                    <span class="tally-bg">U</span>
                     <p class="tally-number">{{userAccount.apiUsage}}</p>
                 </div>
                 <p class="tally-description">Usages Used</p>
             </div>
             <div class="col-sm-4 tally-col">
                 <div class="tally-block tally_block_available">
+                    <span class="tally-bg">A</span>
                     <p class="tally-number">{{userAccount.apiLimit - userAccount.apiUsage}}</p>
                 </div>
                 <p class="tally-description">Usages Available</p>
@@ -31,6 +34,22 @@
     </div>
     <div class="telemetry-block">
         <h3 class="telemetry-title">Monthly Usage Cap</h3>
+        <form class="api-limit-modifier" name="apiLimitModifierForm">
+            <h4>Usages per Month</h4>
+            <div class="form-group">
+                <input 
+                    class="form-control input-lg" 
+                    type="number" 
+                    name="quantity" 
+                    ng-model="cost.quantity" 
+                    placeholder="1000" 
+                    maxlength="5" 
+                />
+                <span class="help-block">Try a number above the free usage cap.</span>
+            </div>
+            <h4>Cost per Month <small>(discounting Free Usage Cap)</small></h4>
+            <p class="calculated-price-per-month">${{price}} AUD per Month</p>
+        </form>
     </div>
     <div class="telemetry-block">
         <h3 class="telemetry-title">History</h3>
