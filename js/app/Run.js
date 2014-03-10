@@ -34,11 +34,11 @@ module.exports = [
         //PROVIDING BASE URL
         $rootScope.baseUrl = BaseUrlConst;
 
-        //hash scroll function, this can be replaced by a directive
-        $rootScope.scroll = function (hash) {
-            $location.hash(hash);
-            $anchorScroll();
-        };
+        // //hash scroll function, this can be replaced by a directive
+        // $rootScope.scroll = function (hash) {
+        //     $location.hash(hash);
+        //     $anchorScroll();
+        // };
 
     }
 ];

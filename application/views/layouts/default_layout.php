@@ -66,7 +66,7 @@
                         <li ng-class="{'active': $state.includes('home')}"><a ui-sref="home">HOME</a></li>
                         <li ng-class="{'active': $state.includes('documentation')}"><a ui-sref="documentation">DOCUMENTATION</a></li>
                         <li ng-class="{'active': $state.includes('pricing')}"><a ui-sref="pricing">PRICING</a></li>
-                        <li><a ng-click="scroll('about')">ABOUT</a></li>
+                        <li><a scroll="about">ABOUT</a></li>
                         <li><a ng-href="http://polycademy.com/blog" title="SnapSearch's blog is at Polycademy">BLOG</a></li>
                         <li ng-show="loggedOut"><button class="btn navbar-btn" type="button" ng-click="modal.signUp()">SIGN UP</button></li>
                         <li ng-show="loggedOut"><button class="btn navbar-btn" type="button" ng-click="modal.logIn()">LOG IN</button></li>
