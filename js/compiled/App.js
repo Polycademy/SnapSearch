@@ -3396,7 +3396,7 @@ module.exports = [
                 'controlPanel.crawling', //default controlPanel childstate
                 {
                     url: '/crawling',
-                    template: "<div class=\"crawling\">\r\n    <h2 class=\"control-title\">Crawling Statistics</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block overview\">\r\n        <h3 class=\"telemetry-title\">Overview</h3>\r\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\r\n        <div class=\"row overview-requests-usages-tally no-gutter\">\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_request\">\r\n                    <span class=\"tally-bg\">R</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Requests Received</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_usage\">\r\n                    <span class=\"tally-bg\">U</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Used</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_available\">\r\n                    <span class=\"tally-bg\">A</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Available</p>\r\n            </div>\r\n        </div>\r\n        <div class=\"progress progress-striped active usage-bar\">\r\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\r\n        </div>\r\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\r\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\r\n            <div class=\"form-errors\" ng-show=\"formErrors\">\r\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n                <ul class=\"form-errors-list\">\r\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n                </ul>\r\n            </div>\r\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n                {{formSuccess}}\r\n            </div>\r\n            <dl>\r\n                <dt>\r\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\r\n                </dt>\r\n                <dd \r\n                    class=\"input-group\" \r\n                    ng-class=\"{\r\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\r\n                    }\" \r\n                >\r\n                    <input \r\n                        id=\"apiLimitModifierFormQuantity\"\r\n                        class=\"form-control\" \r\n                        type=\"number\" \r\n                        name=\"quantity\" \r\n                        ng-model=\"apiLimitModifier.quantity\" \r\n                        ng-disabled = \"!hasBillingDetails\" \r\n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \r\n                        maxlength=\"10\" \r\n                        required \r\n                    />\r\n                    <span class=\"input-group-btn\">\r\n                        <button \r\n                            class=\"btn btn-primary\" \r\n                            type=\"submit\" \r\n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \r\n                            ng-click=\"changeLimit(apiLimitModifier)\" \r\n                        >\r\n                            Change Cap\r\n                        </button>\r\n                    </span>\r\n                </dd>\r\n                <dt>Free Usage Cap:</dt>\r\n                <dd>{{userAccount.apiFreeLimit}}</dd>\r\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\r\n                <dd>${{price}} AUD</dd>\r\n            </dl>\r\n        </form>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">History</h3>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Log</h3>\r\n        <table>\r\n            <thead>\r\n                <th>Date</th>\r\n                <th>Url</th>\r\n                <th>Request Parameters</th>\r\n                <th>Response Time</th>\r\n                <th>Domain</th>\r\n            </thead>\r\n            <tbody>\r\n                <tr ng-repeat=\"record in requestLog\">\r\n                    <td>{{record.date}}</td>\r\n                    <td>{{record.url}}</td>\r\n                    <td>{{record.requestParameters}}</td>\r\n                    <td>{{record.responseTime}}</td>\r\n                    <td>{{record.domain}}</td>\r\n                </tr>\r\n            </tbody>\r\n        </table>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"crawling\">\r\n    <h2 class=\"control-title\">Crawling Statistics</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block overview\">\r\n        <h3 class=\"telemetry-title\">Overview</h3>\r\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\r\n        <div class=\"row overview-requests-usages-tally no-gutter\">\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_request\">\r\n                    <span class=\"tally-bg\">R</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Requests Received</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_usage\">\r\n                    <span class=\"tally-bg\">U</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Used</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_available\">\r\n                    <span class=\"tally-bg\">A</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Available</p>\r\n            </div>\r\n        </div>\r\n        <div class=\"progress progress-striped active usage-bar\">\r\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\r\n        </div>\r\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\r\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\r\n            <div class=\"form-errors\" ng-show=\"formErrors\">\r\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n                <ul class=\"form-errors-list\">\r\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n                </ul>\r\n            </div>\r\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n                {{formSuccess}}\r\n            </div>\r\n            <dl>\r\n                <dt>\r\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\r\n                </dt>\r\n                <dd \r\n                    class=\"input-group\" \r\n                    ng-class=\"{\r\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\r\n                    }\" \r\n                >\r\n                    <input \r\n                        id=\"apiLimitModifierFormQuantity\"\r\n                        class=\"form-control\" \r\n                        type=\"number\" \r\n                        name=\"quantity\" \r\n                        ng-model=\"apiLimitModifier.quantity\" \r\n                        ng-disabled = \"!hasBillingDetails\" \r\n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \r\n                        maxlength=\"10\" \r\n                        required \r\n                    />\r\n                    <span class=\"input-group-btn\">\r\n                        <button \r\n                            class=\"btn btn-primary\" \r\n                            type=\"submit\" \r\n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \r\n                            ng-click=\"changeLimit(apiLimitModifier)\" \r\n                        >\r\n                            Change Cap\r\n                        </button>\r\n                    </span>\r\n                </dd>\r\n                <dt>Free Usage Cap:</dt>\r\n                <dd>{{userAccount.apiFreeLimit}}</dd>\r\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\r\n                <dd>${{price}} AUD</dd>\r\n            </dl>\r\n        </form>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\r\n        <div class=\"history-buttons button-group\">\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardUsageHistory()\">Backward</button>\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardUsageHistory()\">Forward</button>\r\n        </div>\r\n        <div \r\n            id=\"usageHistoryChart\" \r\n            class=\"history-chart\" \r\n            nvd3-line-chart \r\n            data=\"usageHistoryData\" \r\n            showXAxis=\"true\" \r\n            showYAxis=\"true\" \r\n            tooltips=\"true\" \r\n            interactive=\"true\" \r\n            showLegend=\"true\" \r\n            showControls=\"true\" \r\n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \r\n            noData=\"No API history yet!\" \r\n        ></div>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Log</h3>\r\n        <table>\r\n            <thead>\r\n                <th>Date</th>\r\n                <th>Url</th>\r\n                <th>Request Parameters</th>\r\n                <th>Response Time</th>\r\n                <th>Domain</th>\r\n            </thead>\r\n            <tbody>\r\n                <tr ng-repeat=\"record in requestLog\">\r\n                    <td>{{record.date}}</td>\r\n                    <td>{{record.url}}</td>\r\n                    <td>{{record.requestParameters}}</td>\r\n                    <td>{{record.responseTime}}</td>\r\n                    <td>{{record.domain}}</td>\r\n                </tr>\r\n            </tbody>\r\n        </table>\r\n    </div>\r\n</div>",
                     controller: 'ControlCrawlingCtrl'
                 }
             )
@@ -3783,7 +3783,13 @@ var settings = require('../../Settings');
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', 'Restangular', function ($scope, UserSystemServ, CalculateServ, Restangular) {
+module.exports = [
+    '$scope', 
+    'UserSystemServ', 
+    'CalculateServ', 
+    'Restangular', 
+    'MomentServ', 
+    function ($scope, UserSystemServ, CalculateServ, Restangular, MomentServ) {
 
     var pricePerUsage = settings.meta.price;
 
@@ -3826,12 +3832,8 @@ module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', 'Restangular', fu
                 //coerce to integer
                 quantity = parseInt(quantity);
 
-                console.log(quantity);
-
                 //calculate the price while subtracting from free usage limit
                 var price = pricePerUsage * (quantity - userAccount.apiFreeLimit);
-
-                console.log(price);
 
                 //if the price is negative, reset to zero
                 if (price < 0) {
@@ -3869,6 +3871,85 @@ module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', 'Restangular', fu
 
             };
 
+            var usageHistoryOffset = 0;
+            var usageHistoryLimit = 6;
+
+            var getHistory = function () {
+
+                Restangular.all('usage').customGET('', {
+                    user: userAccount.id,
+                    offset: usageHistoryOffset,
+                    limit: usageHistoryLimit
+                }).then(function (response) {
+
+                    var dates = [];
+                    var usage = [];
+                    var requests = [];
+                    response.content.forEach(function (value, index) {
+                        var date = MomentServ(value.date, 'YYYY-MM-DD HH:mm:ss');
+                        dates.push(date);
+                        usage.push([date, value.usage]);
+                        requests.push([date, value.requests]);
+                    });
+                    var oldestDate = dates.reduce(function (prevDate, curDate) {
+                        return curDate.unix() < prevDate.unix() ? curDate : prevDate;
+                    });
+                    var latestDate = dates.reduce(function (prevDate, curDate) {
+                        return curDate.unix() > prevDate.unix() ? curDate : prevDate;
+                    });
+
+                    $scope.usageHistoryData = [
+                        {
+                            key: "Usage Cap",
+                            values: [
+                                [oldestDate, userAccount.apiLimit],
+                                [latestDate, userAccount.apiLimit]
+                            ]
+                        },
+                        {
+                            key: "Usages",
+                            values: usage
+                        },
+                        {
+                            key: "Requests",
+                            values: requests
+                        }
+                    ];
+                    
+                }, function () {
+
+                    $scope.usageHistoryData = [];
+
+                });
+
+            };
+
+            $scope.xAxisDateFormatFunction = function(){
+                //xValue is milliseconds, as it seems that Moment.js automatically turns itself into milliseconds
+                return function(xValue){
+                    return d3.time.format('%Y-%m-%d')(new Date(xValue));
+                }
+            };
+
+            getHistory();
+
+            $scope.forwardUsageHistory = function () {
+
+                usageHistoryOffset = usageHistoryOffset - usageHistoryLimit;
+                if (usageHistoryOffset < 0) {
+                    usageHistoryOffset = 0;
+                }
+                getHistory();
+
+            };
+
+            $scope.backwardUsageHistory = function () {
+
+                usageHistoryOffset = usageHistoryOffset + usageHistoryLimit;
+                getHistory();
+
+            };
+
         }
 
     });
@@ -3892,7 +3973,7 @@ module.exports = ['$scope', 'UserSystemServ', 'MomentServ', 'CalculateServ', fun
 
             var userAccount = angular.copy(value);
 
-            console.log(userAccount);
+            // console.log(userAccount);
 
             $scope.userAccount = userAccount;
             $scope.userAccount.apiUsagePercentage = CalculateServ.round((value.apiUsage / value.apiLimit) * 100, '2');

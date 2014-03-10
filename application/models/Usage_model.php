@@ -109,6 +109,7 @@ class Usage_model extends CI_Model{
 					'userId'	=> $row->userId,
 					'date'		=> $row->date,
 					'usage'		=> $row->usage,
+					'requests'	=> $row->requests,
 				);
 
 			}

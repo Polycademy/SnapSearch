@@ -7,7 +7,13 @@ var settings = require('../../Settings');
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', 'Restangular', function ($scope, UserSystemServ, CalculateServ, Restangular) {
+module.exports = [
+    '$scope', 
+    'UserSystemServ', 
+    'CalculateServ', 
+    'Restangular', 
+    'MomentServ', 
+    function ($scope, UserSystemServ, CalculateServ, Restangular, MomentServ) {
 
     var pricePerUsage = settings.meta.price;
 
@@ -50,12 +56,8 @@ module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', 'Restangular', fu
                 //coerce to integer
                 quantity = parseInt(quantity);
 
-                console.log(quantity);
-
                 //calculate the price while subtracting from free usage limit
                 var price = pricePerUsage * (quantity - userAccount.apiFreeLimit);
-
-                console.log(price);
 
                 //if the price is negative, reset to zero
                 if (price < 0) {
@@ -90,6 +92,85 @@ module.exports = ['$scope', 'UserSystemServ', 'CalculateServ', 'Restangular', fu
                     }
 
                 });
+
+            };
+
+            var usageHistoryOffset = 0;
+            var usageHistoryLimit = 6;
+
+            var getHistory = function () {
+
+                Restangular.all('usage').customGET('', {
+                    user: userAccount.id,
+                    offset: usageHistoryOffset,
+                    limit: usageHistoryLimit
+                }).then(function (response) {
+
+                    var dates = [];
+                    var usage = [];
+                    var requests = [];
+                    response.content.forEach(function (value, index) {
+                        var date = MomentServ(value.date, 'YYYY-MM-DD HH:mm:ss');
+                        dates.push(date);
+                        usage.push([date, value.usage]);
+                        requests.push([date, value.requests]);
+                    });
+                    var oldestDate = dates.reduce(function (prevDate, curDate) {
+                        return curDate.unix() < prevDate.unix() ? curDate : prevDate;
+                    });
+                    var latestDate = dates.reduce(function (prevDate, curDate) {
+                        return curDate.unix() > prevDate.unix() ? curDate : prevDate;
+                    });
+
+                    $scope.usageHistoryData = [
+                        {
+                            key: "Usage Cap",
+                            values: [
+                                [oldestDate, userAccount.apiLimit],
+                                [latestDate, userAccount.apiLimit]
+                            ]
+                        },
+                        {
+                            key: "Usages",
+                            values: usage
+                        },
+                        {
+                            key: "Requests",
+                            values: requests
+                        }
+                    ];
+                    
+                }, function () {
+
+                    $scope.usageHistoryData = [];
+
+                });
+
+            };
+
+            $scope.xAxisDateFormatFunction = function(){
+                //xValue is milliseconds, as it seems that Moment.js automatically turns itself into milliseconds
+                return function(xValue){
+                    return d3.time.format('%Y-%m-%d')(new Date(xValue));
+                }
+            };
+
+            getHistory();
+
+            $scope.forwardUsageHistory = function () {
+
+                usageHistoryOffset = usageHistoryOffset - usageHistoryLimit;
+                if (usageHistoryOffset < 0) {
+                    usageHistoryOffset = 0;
+                }
+                getHistory();
+
+            };
+
+            $scope.backwardUsageHistory = function () {
+
+                usageHistoryOffset = usageHistoryOffset + usageHistoryLimit;
+                getHistory();
 
             };
 

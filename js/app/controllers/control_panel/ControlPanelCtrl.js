@@ -13,7 +13,7 @@ module.exports = ['$scope', 'UserSystemServ', 'MomentServ', 'CalculateServ', fun
 
             var userAccount = angular.copy(value);
 
-            console.log(userAccount);
+            // console.log(userAccount);
 
             $scope.userAccount = userAccount;
             $scope.userAccount.apiUsagePercentage = CalculateServ.round((value.apiUsage / value.apiLimit) * 100, '2');

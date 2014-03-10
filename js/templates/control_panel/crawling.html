@@ -84,7 +84,25 @@
         </form>
     </div>
     <div class="telemetry-block">
-        <h3 class="telemetry-title">History</h3>
+        <h3 class="telemetry-title">API Requests & Usage History</h3>
+        <div class="history-buttons button-group">
+            <button class="btn btn-primary" type="button" ng-click="backwardUsageHistory()">Backward</button>
+            <button class="btn btn-primary" type="button" ng-click="forwardUsageHistory()">Forward</button>
+        </div>
+        <div 
+            id="usageHistoryChart" 
+            class="history-chart" 
+            nvd3-line-chart 
+            data="usageHistoryData" 
+            showXAxis="true" 
+            showYAxis="true" 
+            tooltips="true" 
+            interactive="true" 
+            showLegend="true" 
+            showControls="true" 
+            xAxisTickFormat="xAxisDateFormatFunction()" 
+            noData="No API history yet!" 
+        ></div>
     </div>
     <div class="telemetry-block">
         <h3 class="telemetry-title">Domain Distinction</h3>
