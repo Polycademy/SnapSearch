@@ -1,0 +1,77 @@
+<div class="cache">
+    <h2>Cache Statistics</h2>
+    <em>API Key: {{userAccount.apiKey}}</em>
+    <div class="telemetry-block overview">
+        <h3>Overview</h3>
+        <div class="row overview-cache">
+            <div class="col-sm-6">
+                <p>2040</p>
+                <p>Pages Cached</p>
+            </div>
+            <div class="col-sm-6">
+                <p>48 KB</p>
+                <p>Storage Used</p>
+            </div>
+        </div>
+    </div>
+    <div class="telemetry-block">
+        <h3>Domain Distinction</h3>
+    </div>
+    <div class="telemetry-block">
+        <h3>Cached Snapshots</h3>
+        <form class="cache-form" name="cacheForm">
+            <div 
+                class="form-group" 
+                ng-class="{
+                    'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty
+                }"
+            >
+                <div class="input-group">
+                    <input 
+                        class="form-control" 
+                        type="url" 
+                        name="url" 
+                        ng-model="cache.url" 
+                        required 
+                        placeholder="http://your-site.com/" 
+                    />
+                    <span class="input-group-btn">
+                        <button 
+                            class="btn btn-primary" 
+                            type="submit" 
+                            ng-disabled="cacheForm.$invalid" 
+                            ng-click="submit(cache)" 
+                        >
+                            Prime Cache
+                        </button>
+                    </span>
+                    <span class="help-block">Priming a snapshot will use up one usage.</span>
+                </div>
+            </div>
+            <div class="form-errors" ng-show="formErrors">
+                <em class="text-warning">Oops! Please fix up these errors:</em>
+                <ul class="form-errors-list">
+                    <li class="form-errors-list-item alert alert-warning" ng-repeat="error in formErrors">{{error}}</li>
+                </ul>
+            </div>
+            <div class="form-success alert alert-success" ng-show="formSuccess">
+                {{formSuccess}}
+            </div>
+        </form>
+        <table>
+            <thead>
+                <th>id</th>
+                <th>snapshot (this would be a link)</th>
+                <th>date</th>
+                <th>expires</th>
+                <th>refresh</th>
+                <th>delete</th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="record in snapshots">
+                    
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

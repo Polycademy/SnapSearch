@@ -1,0 +1,65 @@
+<div class="account">
+    <h2>Account Details</h2>
+    <em>API Key: {{userAccount.apiKey}}</em>
+    <button ng-click="regenerateApiKey()">Regenerate API Key</button>
+    <form class="form-horizontal" name="accountForm">
+        <div 
+            class="form-group" 
+            ng-class="{
+                'has-error': accountForm.username.$invalid && accountForm.username.$dirty
+            }"
+        >
+            <label class="control-label col-sm-2" for="accountFormUsername">Username:</label>
+            <div class="col-sm-10">
+                <input id="accountFormUsername" class="form-control" type="text" name="username" ng-model="account.username" required ng-minlength="2" ng-maxlength="100" />
+                <span class="help-block" ng-show="accountForm.username.$error.required">Required</span>
+            </div>
+        </div>
+        <div 
+            class="form-group" 
+            ng-class="{
+                'has-error': accountForm.email.$invalid && accountForm.email.$dirty
+            }"
+        >
+            <label class="control-label col-sm-2" for="accountFormEmail">Email:</label>
+            <div class="col-sm-10">
+                <input id="accountFormEmail" class="form-control" type="email" name="email" ng-model="account.email" required ng-minlength="2" ng-maxlength="100" />
+                <span class="help-block" ng-show="accountForm.email.$error.required">Required</span>
+            </div>
+        </div>
+        <div 
+            class="form-group" 
+            ng-class="{
+                'has-error': accountForm.password.$invalid && accountForm.password.$dirty
+            }"
+        >
+            <label class="control-label col-sm-2" for="accountFormPassword">Password:</label>
+            <div class="col-sm-10">
+                <input id="accountFormPassword" class="form-control" type="password" name="password" ng-model="account.password" required ng-minlength="2" ng-maxlength="100" />
+                <span class="help-block" ng-show="accountForm.password.$error.required">Required</span>
+            </div>
+        </div>
+        <div 
+            class="form-group" 
+            ng-class="{
+                'has-error': accountForm.passwordConfirm.$invalid && accountForm.passwordConfirm.$dirty
+            }"
+        >
+            <label class="control-label col-sm-2" for="accountFormPasswordConfirm">Password Confirm:</label>
+            <div class="col-sm-10">
+                <input id="accountFormPasswordConfirm" class="form-control" type="passwordConfirm" name="passwordConfirm" ng-model="account.passwordConfirm" required ng-minlength="2" ng-maxlength="100" password-match="account.password" />
+                <span class="help-block" ng-show="accountForm.passwordConfirm.$error.required">Required</span>
+            </div>
+        </div>
+        <div class="form-errors" ng-show="formErrors">
+            <em class="text-warning">Oops! Please fix up these errors:</em>
+            <ul class="form-errors-list">
+                <li class="form-errors-list-item alert alert-warning" ng-repeat="error in formErrors">{{error}}</li>
+            </ul>
+        </div>
+        <div class="form-success alert alert-success" ng-show="formSuccess">
+            {{formSuccess}}
+        </div>
+        <button class="btn btn-primary" ng-click="updateAccount(account)" ng-disabled="accountForm.$invalid">Update</button>
+    </form>
+</div>

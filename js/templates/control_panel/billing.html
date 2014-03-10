@@ -1,0 +1,25 @@
+<div class="billing">
+    <h2>Billing Information</h2>
+    <em>API Key: {{userAccount.apiKey}}</em>
+    <div class="telemetry-block">
+        <button ng-click="createCard">Add a Card</button>
+        <table>
+            <thead>
+                <th>id</th>
+                <th>card number hint</th>
+                <th>active</th>
+                <th>update</th>
+                <th>delete</th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="record in cards">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><button>Update Card</button></td>
+                    <td><button>Delete Card</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -23,8 +23,8 @@ module.exports = ['$scope', '$modal', '$state', 'UserSystemServ', function ($sco
     $scope.modal.signUp = function () {
 
         $modal.open({
-            template: fs.readFileSync(__dirname + '/../../../templates/signup.html', 'utf8'), 
-            controller: require('./SignUpCtrl'),
+            template: fs.readFileSync(__dirname + '/../../../templates/signup_modal.html', 'utf8'), 
+            controller: require('./SignUpModalCtrl'),
             windowClass: 'signup-modal form-modal'
         }).result.then(function () {
             $state.go('controlPanel');
@@ -35,8 +35,8 @@ module.exports = ['$scope', '$modal', '$state', 'UserSystemServ', function ($sco
     $scope.modal.logIn = function () {
 
         $modal.open({
-            template: fs.readFileSync(__dirname + '/../../../templates/login.html', 'utf8'),
-            controller: require('./LogInCtrl'),
+            template: fs.readFileSync(__dirname + '/../../../templates/login_modal.html', 'utf8'),
+            controller: require('./LogInModalCtrl'),
             windowClass: 'login-modal form-modal'
         }).result.then(function () {
             $state.go('controlPanel');

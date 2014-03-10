@@ -1,0 +1,40 @@
+<div class="payments">
+    <h2>Payment History</h2>
+    <em>API Key: {{userAccount.apiKey}}</em>
+    <div class="telemetry-block overview">
+        <h3>Overview</h3>
+        <div class="row overview-payments">
+            <div class="col-sm-6">
+                <p>2040</p>
+                <p>Usages Used</p>
+            </div>
+            <div class="col-sm-6">
+                <p>$20.00 AUD</p>
+                <p>Bill this Month</p>
+            </div>
+        </div>
+    </div>
+    <div class="telemetry-block">
+        <table ng-show="paymentHistory">
+            <thead>
+                <th>id</th>
+                <th>date</th>
+                <th>usage rate (including left over usage from previous cycles)</th>
+                <th>amount</th>
+                <th>currency</th>
+                <th>invoice</th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="record in paymentHistory">
+                    <td>{{record.id}}</td>
+                    <td>{{record.date}}</td>
+                    <td>{{record.usageRate}}</td>
+                    <td>{{record.amount}}</td>
+                    <td>{{record.currency}}</td>
+                    <td><a href="#">{{record.invoice}}</a></td>
+                </tr>
+            </tbody>
+        </table>
+        <p ng-show="!paymentHistory">No payment history.</p>
+    </div>
+</div>
