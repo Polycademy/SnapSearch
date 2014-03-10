@@ -30,25 +30,39 @@
         <div class="progress progress-striped active usage-bar">
             <div class="progress-bar" ng-style="{ width: userAccount.apiUsagePercentage + '%' }"></div>
         </div>
-        <p class="telemetry-emphasis">Used up {{userAccount.apiUsagePercentage}}% of API limit this cycle.</p>
+        <p class="telemetry-emphasis">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>
     </div>
     <div class="telemetry-block">
         <h3 class="telemetry-title">Monthly Usage Cap</h3>
-        <form class="api-limit-modifier" name="apiLimitModifierForm">
-            <h4>Usages per Month</h4>
-            <div class="form-group">
-                <input 
-                    class="form-control input-lg" 
-                    type="number" 
-                    name="quantity" 
-                    ng-model="cost.quantity" 
-                    placeholder="1000" 
-                    maxlength="5" 
-                />
-                <span class="help-block">Try a number above the free usage cap.</span>
-            </div>
-            <h4>Cost per Month <small>(discounting Free Usage Cap)</small></h4>
-            <p class="calculated-price-per-month">${{price}} AUD per Month</p>
+        <form class="api-limit-modifier form-horizontal" name="apiLimitModifierForm">
+            <dl>
+                <dt>
+                    <label class="control-label" for="apiLimitModifierFormQuantity">Enter Usage Cap:</label>
+                </dt>
+                <dd class="input-group">
+                    <input 
+                        id="apiLimitModifierFormQuantity"
+                        class="form-control" 
+                        type="number" 
+                        name="quantity" 
+                        ng-model="apiLimitModifier.quantity" 
+                        maxlength="10" 
+                    />
+                    <span class="input-group-btn">
+                        <button 
+                            class="btn btn-primary" 
+                            type="submit" 
+                            ng-click="changeLimit(apiLimitModifier)" 
+                        >
+                            Change Cap
+                        </button>
+                    </span>
+                </dd>
+                <dt>Free Usage Cap:</dt>
+                <dd>{{userAccount.apiFreeLimit}}</dd>
+                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>
+                <dd>${{price}} AUD</dd>
+            </dl>
         </form>
     </div>
     <div class="telemetry-block">

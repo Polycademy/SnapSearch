@@ -13,16 +13,18 @@ module.exports = ['$scope', 'UserSystemServ', 'MomentServ', 'CalculateServ', fun
 
         if (Object.keys(value).length > 0) {
 
-            console.log(value);
+            var userAccount = angular.copy(value);
+
+            console.log(userAccount);
+
+            $scope.userAccount = userAccount;
+            $scope.userAccount.apiUsagePercentage = CalculateServ.round((value.apiUsage / value.apiLimit) * 100, '2');
 
             //chargeCycle will wrap the dates as moment objects
             $scope.chargeCycle = {
                 beginning: MomentServ(value.chargeDate, 'YYYY-MM-DD HH:mm:ss').subtract(MomentServ.duration.fromIsoduration(value.chargeInterval)),
                 ending: MomentServ(value.chargeDate, 'YYYY-MM-DD HH:mm:ss')
             };
-
-            $scope.userAccount = value;
-            $scope.userAccount.apiUsagePercentage = CalculateServ.round((value.apiUsage / value.apiLimit) * 100, '2');
 
         }
 
