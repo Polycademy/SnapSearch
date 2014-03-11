@@ -41,10 +41,10 @@ cd $PROJECT_DIR
 # Bower and Grunt-Cli will be required however
 # Their STDIN is redirected to /dev/null, this is because it can affect the STDIN of this bash script
 echo "Installing dependencies from Composer, NPM and Bower"
-composer install --dev </dev/null
-npm install </dev/null
+composer install --no-dev </dev/null
+npm install --production </dev/null
 # this has an issue it might request for confirmation (make sure to resolve bower beforehand)
-bower install --allow-root </dev/null
+bower install --production --allow-root </dev/null
 
 # Optimising Composer
 composer dump-autoload --optimize </dev/null
