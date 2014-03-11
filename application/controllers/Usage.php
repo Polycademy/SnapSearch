@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * This will need to change to per day basis.
+ * The cron will need to create per day records.
+ * The cron will also need to check against the log to figure out how to setup the per day records.
+ */
 class Usage extends CI_Controller{
 
 	protected $authenticator;

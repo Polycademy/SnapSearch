@@ -139,7 +139,7 @@ module.exports = [
                             values: requests
                         }
                     ];
-                    
+
                 }, function () {
 
                     $scope.usageHistoryData = [];
