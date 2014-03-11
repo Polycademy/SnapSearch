@@ -31,6 +31,9 @@ Pigeon::map(function($r){
 		//USAGE HISTORY
 		$r->resources('usage');
 
+		//LOG HISTORY
+		$r->resources('log');
+
 		//CACHE HISTORY
 		$r->resources('cache');
 

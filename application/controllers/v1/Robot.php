@@ -13,6 +13,7 @@ class Robot extends CI_Controller{
 
 		$this->load->model('v1/Robot_model');
 		$this->load->model('Accounts_model');
+		$this->load->model('Log_model');
 
 		$ioc = $this->config->item('ioc');
 
@@ -58,7 +59,9 @@ class Robot extends CI_Controller{
 
 			$user_id = $this->user['id'];
 
+			$start_time = microtime(true);
 			$query = $this->Robot_model->read_site($user_id, $parameters);
+			$end_time = microtime(true);
 
 			if($query){
 				
@@ -67,6 +70,8 @@ class Robot extends CI_Controller{
 				if(isset($query['cache']) AND $query['cache'] === false){
 					$this->update_api_usage();
 				}
+
+				$this->update_log($parameters, $query, $end_time - $start_time);
 
 				$content = $query; //assign query
 				$code = 'success'; //assign code
@@ -144,6 +149,24 @@ class Robot extends CI_Controller{
 
 		$this->Accounts_model->update($this->user['id'], [
 			'apiUsage'	=> $api_usage,
+		]);
+
+	}
+
+	protected function update_log($parameters, $query, $response_time){
+
+		if(isset($query['cache']) AND $query['cache'] === false){
+			$type = 'uncached';
+		}else{
+			$type = 'cached';
+		}
+
+		$this->Log_model->create([
+            'userId'		=> $this->user['id'],
+            'date'			=> date('Y-m-d H:i:s', $query['date']),
+            'type'			=> $type,
+            'url'			=> $parameters['url'],
+            'responseTime'	=> $response_time,
 		]);
 
 	}
