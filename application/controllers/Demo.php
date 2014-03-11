@@ -81,7 +81,7 @@ class Demo extends CI_Controller {
             $robot_errors = false;
             if($robot_query){
                 //only get the html
-                $robot_result = $query['html'];
+                $robot_result = $robot_query['html'];
             }else{
                 $robot_errors = $this->Robot_model->get_errors();
             }
