@@ -125,6 +125,17 @@ class Accounts_model extends CI_Model{
 		$charge_date = $charge_date->format('Y-m-d H:i:s');
 		$data['chargeDate'] = $charge_date;
 
+		//if the code is a verified code, then set a new apiLimit and apiFreeLimit
+		if(isset($data['code'])){
+			$verified_code = $this->verify_codes($data['code']);
+			if($verified_code){
+				$data['apiLimit'] = $verified_code;
+				$data['apiFreeLimit'] = $verified_code;
+			}
+		}
+
+		unset($data['code']);
+
 		try{
 
 			$user = $this->accounts_manager->register($data);
@@ -503,6 +514,20 @@ class Accounts_model extends CI_Model{
 	public function get_errors(){
 
 		return $this->errors;
+
+	}
+
+	protected function verify_codes($code){
+
+		$data = file_get_contents(__DIR__ . '/../../codes.json');
+		$data = json_decode($data, true);
+		$codes = (isset($data['codes'])) ? $data['codes'] : array();
+
+		if(in_array($code, array_keys($codes))){
+			return $codes[$code];
+		}else{
+			return false;
+		}
 
 	}
 
