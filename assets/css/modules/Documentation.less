@@ -1,0 +1,57 @@
+/* ==========================================================================
+   Documentation Module
+   ========================================================================== */
+
+@import "Variables";
+@import (reference) "../mixins/Centering";
+@import (reference) "../mixins/Fonts";
+
+.documentation {
+    .documentation-nav {
+        display: block;
+        .btn {
+            display: block;
+            width: 90%;
+            font-size: 20px;
+            #Fonts.family("fira_sans_otmedium");
+            padding: 16px 0;
+            background-color: @snapsearch-white;
+            color: @snapsearch-text-black;
+            border-top: 1px solid @snapsearch-grey;
+            border-bottom: 1px solid @snapsearch-grey;
+            border-radius: 10px;
+            &:hover {
+                background-color: @snapsearch-yellow;
+            }
+        }
+        .btn:first-child:not(:last-child) {
+            border-top-right-radius: 10px;
+        }
+        .btn:last-child:not(:first-child) {
+            border-bottom-left-radius: 10px;
+        }
+    }
+    .documentation-nav.affix {
+        position: fixed;
+        top: 30px;
+    }
+    .documentation-nav.affix-bottom {
+        position: relative;
+    }
+}
+
+.documentation-box {
+    background-color: @snapsearch-white;
+    border-radius: 10px;
+    border: 6px solid lighten(@snapsearch-dark, 10%);
+    color: @snapsearch-text-dark;
+    padding: 20px 60px;
+    .documentation-information {
+        margin: 20px auto;
+        .documentation-title {
+            #Fonts.family("fira_sans_otmedium");
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+    }
+}

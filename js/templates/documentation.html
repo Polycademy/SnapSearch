@@ -5,10 +5,10 @@
         </div>
         <div class="panel-body row">
             <div class="col-md-2">
-                <nav class="btn-group-vertical control-panel-nav" affix affix-top="214" affix-bottom="910">
+                <nav class="btn-group-vertical documentation-nav" affix affix-top="214" affix-bottom="910">
                     <a class="btn" scroll="introduction">Introduction</a>
                     <a class="btn" scroll="apiUsage">API Usage</a>
-                    <a class="btn" scroll="requestParameters">Request Parameters</a>
+                    <a class="btn" scroll="parameters">Parameters</a>
                     <a class="btn" scroll="middleware">Middleware</a>
                     <a class="btn" scroll="notes">Notes</a>
                 </nav>
@@ -16,19 +16,35 @@
             <div class="col-md-10">
                 <div class="documentation-box">
                     <div class="documentation-information">
-                        <h3 anchor="introduction">Introduction</h3>
+                        <h3 class="documentation-title" anchor="introduction">Introduction</h3>
+                        <p>Snapsearch is a search engine optimisation (SEO) and robot proxy for complex front-end javascript & AJAX enabled (potentially realtime) HTML5 web applications.</p>
+                        <p>Search engines like Google's crawler and dumb HTTP clients such as Facebook's image extraction robot cannot execute complex javascript applications. Complex javascript applications include websites that utilise AngularJS, EmberJS, KnockoutJS, Dojo, Backbone.js, Ext.js, jQuery, JavascriptMVC, Meteor, SailsJS, Derby, RequireJS and much more. Basically any website that utilises javascript in order to bring in content and resources asynchronously after the page has been loaded, or utilises javascript to manipulate the page's content while the user is viewing them such as animation.</p>
+                        <p>Snapsearch intercepts any requests made by search engines or robots and sends its own javascript enabled robot to extract your page's content and creates a cached snapshot. This snapshot is then passed through your own web application back to the search engine, robot or browser.</p>
+                        <p>Snapsearch's robot is an automated load balanced Firefox browser. This Firefox browser is kept up to date with the release, beta, alpha and nightly versions (beta, alpha and nightly is still under implementation), so we'll always be able to serve the latest in HTML5 technology. Our load balancer ensures your requests won't be hampered by other user's requests.</p>
                     </div>
                     <div class="documentation-information">
-                        <h3 anchor="apiUsage">API Usage</h3>
+                        <h3 class="documentation-title" anchor="apiUsage">API Usage</h3>
+                        <p>Make sure to register an account on SnapSearch before utilising these libraries. You will need your email and key to access SnapSearch's robot over SSL encrypted HTTP Basic Authorization.</p>
+                        <p>SnapSearch can be easily integrated into your solution stack via our client middleware libraries. These client libraries first automatically detect if an HTTP request comes from a search engine or robot. If it is indeed a search engine, it sends an HTTP POST request to <code>https://snapsearch.io/api/v1/robot</code> passing in parameters configuring how SnapSearch's robot should extract your content. SnapSearch will then send a HTTP GET request to the same URL and return the HTTP response (status code, headers and content) as a JSON response to the library. The client library then returns that data back to your application. You will have to select which data to present to the search engine. It is recommended to return the status code and content but not all of the headers, due to potential header mismatch with content encoding. However if you have specific headers that are important, then first test if it works with a simple HTTP client before deploying it.</p>
+                        <p>All of the middleware libraries are ran on the application level requiring a server side programming language.</p>
+                        <p>For specific usage and installation instructions navigate to specific middleware.</p>
                     </div>
                     <div class="documentation-information">
-                        <h3 anchor="requestParameters">Request Parameters</h3>
+                        <h3 class="documentation-title" anchor="parameters">Request Parameters</h3>
+                        <p>Our Robot endpoint <span>/api/v1/robot</span> accepts these parameters in POST or GET format:</p>
+                        <ul>
+                            
+                        </ul>
+                        <p>Here is an example response:</p>
+                        <ul>
+                            
+                        </ul>
                     </div>
                     <div class="documentation-information">
-                        <h3 anchor="middleware">Middleware</h3>
+                        <h3 class="documentation-title" anchor="middleware">Middleware</h3>
                     </div>
                     <div class="documentation-information">
-                        <h3 anchor="notes">Notes</h3>
+                        <h3 class="documentation-title" anchor="notes">Notes</h3>
                     </div>
                 </div>
             </div>
