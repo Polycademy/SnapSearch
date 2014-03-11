@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e53b00a5fc836661773e9f843f83a24d",
+    "hash": "98e182685e046c64692e73daa82c1db4",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1005,6 +1005,69 @@
                 "xslt"
             ],
             "time": "2013-05-24 02:50:10"
+        },
+        {
+            "name": "snapsearch/snapsearch-client-php",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SnapSearch/SnapSearch-Client-PHP.git",
+                "reference": "c8bfc2145cbcb829721676e74ed4063347810968"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SnapSearch/SnapSearch-Client-PHP/zipball/c8bfc2145cbcb829721676e74ed4063347810968",
+                "reference": "c8bfc2145cbcb829721676e74ed4063347810968",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.3.3",
+                "symfony/http-foundation": "~2.1"
+            },
+            "require-dev": {
+                "codeception/codeception": "1.8.3",
+                "stack/builder": "~1.0",
+                "stack/callable-http-kernel": "~1.0@dev",
+                "symfony/http-kernel": "~2.1"
+            },
+            "suggest": {
+                "stack/builder": "Required for elegant middleware construction. Version ~1.0",
+                "symfony/http-kernel": "Required for Stack PHP integration. Version ~2.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "SnapSearchClientPHP": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roger Qiu",
+                    "email": "roger.qiu@polycademy.com",
+                    "homepage": "http://polycademy.com",
+                    "role": "Founder and Developer"
+                }
+            ],
+            "description": "PHP HTTP Client Middleware Libraries for SnapSearch. Search engine optimisation for single page applications.",
+            "homepage": "https://github.com/SnapSearch/SnapSearch-Client-PHP",
+            "keywords": [
+                "ajax",
+                "angular",
+                "backbone",
+                "dojo",
+                "ember",
+                "extjs",
+                "javascript",
+                "knockout",
+                "search engine optimisation",
+                "seo"
+            ],
+            "time": "2014-03-07 23:05:02"
         },
         {
             "name": "symfony/event-dispatcher",
