@@ -46,7 +46,7 @@ module.exports = ['$sce', function($sce){
                 var highlightedCode = hljs.highlight(scope.syntaxLanguage, code, true);
 
                 //bind to the scope as trusted HTML
-                scope.highlightedCode = $sce.trustAsHtml(highlightedCode.value);
+                scope.highlightedCode = $sce.trustAsHtml(highlightedCode.value.replace(/\n/g,'<br />'));
 
             });
 

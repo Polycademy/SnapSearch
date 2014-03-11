@@ -30,9 +30,34 @@
                         <div class="tab-content clearfix" ng-switch="activeCode">
                             <div class="tab-panel" ng-switch-when="php">
                                 <p>Installation:</p>
-                                <syntax syntax-language="bash">composer require snapsearch/snapsearch-client-php:1.0.0</syntax>
+                                <syntax syntax-language="bash">composer require snapsearch/snapsearch-client-php:1.1.0</syntax>
                                 <p>Usage:</p>
-                                <syntax class="code-usage" syntax-language="php">//add content here, it needs to be encoded</syntax>
+                                <syntax class="code-usage" syntax-language="php">$client = new SnapSearchClientPHPClient('email', 'key');
+$detector = new SnapSearchClientPHPDetector;
+$interceptor = new SnapSearchClientPHPInterceptor(
+    $client, 
+    $detector
+);
+
+$response = $this-&gt;interceptor-&gt;intercept();
+
+if($response){
+
+    header(' ', true, $response['status']);
+
+    foreach($response['headers'] as $header){
+        if($header['name'] == 'Location'){
+            header($header['name'] . ': ' . $header['value']);
+        }
+    }
+
+    echo $response['html'];
+
+}else{
+
+    //continue with normal operations...
+
+}</syntax>
                                 <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-PHP" target="_blank">
                                     <img src="assets/img/github_mark.png" />
                                     Fork me on Github
@@ -41,7 +66,17 @@
                                 <p>Installation:</p>
                                 <syntax syntax-language="bash">gem install snapsearch-client-ruby</syntax>
                                 <p>Usage:</p>
-                                <syntax class="code-usage" syntax-language="ruby">#add content here, it needs to be encoded</syntax>
+                                <syntax class="code-usage" syntax-language="ruby">require 'rack/snap_search'
+
+use Rack::SnapSearch do |config|
+    
+    # Required: The email to authenticate with.
+    config.email = 'user@example.com'
+    
+    # Required: The key to authenticate with.
+    config.key = 'API_KEY_HERE'
+    
+end</syntax>
                                 <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-Ruby" target="_blank">
                                     <img src="assets/img/github_mark.png" />
                                     Fork me on Github
@@ -49,9 +84,25 @@
                             </div>
                             <div class="tab-panel" ng-switch-when="node.js">
                                 <p>Installation:</p>
-                                <syntax syntax-language="bash">npm install snapsearch-client-node:1.0.0</syntax>
+                                <syntax syntax-language="bash">npm install snapsearch-client-node</syntax>
                                 <p>Usage:</p>
-                                <syntax class="code-usage" syntax-language="javascript">//add content here, it needs to be encoded</syntax>
+                                <syntax class="code-usage" syntax-language="javascript">var app = express();
+var client = new SnapSearch.Client();
+var detector = new SnapSearch.Detector();
+var interceptor = new SnapSearch.Interceptor(client, detector);
+
+app.use(function (req, res, next) {
+
+    interceptor.intercept(req, function (data) {
+        if (data) {
+            console.log(data);
+            res.send('Was a robot and SnapChat Intercepted it Correctly');
+        } else {
+            next();
+        }
+    });
+
+});</syntax>
                                 <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-Node" target="_blank">
                                     <img src="assets/img/github_mark.png" />
                                     Fork me on Github
@@ -61,7 +112,7 @@
                                 <p>Installation:</p>
                                 <syntax syntax-language="bash">pip install snapsearch-client-python</syntax>
                                 <p>Usage:</p>
-                                <syntax class="code-usage" syntax-language="python">#comment</syntax>
+                                <syntax class="code-usage" syntax-language="python">#coming soon!</syntax>
                                 <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-Python" target="_blank">
                                     <img src="assets/img/github_mark.png" />
                                     Fork me on Github
