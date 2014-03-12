@@ -59,9 +59,9 @@ class Robot extends CI_Controller{
 
 			$user_id = $this->user['id'];
 
-			$start_time = microtime(true);
+			$start_time = (integer) round(microtime(true));
 			$query = $this->Robot_model->read_site($user_id, $parameters);
-			$end_time = microtime(true);
+			$end_time = (integer) round(microtime(true));
 
 			if($query){
 				
@@ -153,6 +153,13 @@ class Robot extends CI_Controller{
 
 	}
 
+	/**
+	 * Updates the log table
+	 * 
+	 * @param  array   $parameters    Request parameters
+	 * @param  array   $query         Query result from Robot_model
+	 * @param  integer $response_time Time in seconds
+	 */
 	protected function update_log($parameters, $query, $response_time){
 
 		if(isset($query['cache']) AND $query['cache'] === false){
