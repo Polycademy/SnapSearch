@@ -122,7 +122,92 @@ class Log_model extends CI_Model{
         }else{
 
             $this->errors = array(
-                'error' => 'No log to be found.'
+                'error' => 'No logs to be found.'
+            );
+            
+            return false;
+
+        }
+
+    }
+
+    /**
+     * Reads all logs by cut off date, then grouped by unique days.
+     * This will show all the successful requests to the Robot API.
+     * There will be cached and uncached requests, but it can be specified
+     * by the type parameter. The type parameter can be 'cached' or 'uncached'
+     * Useful for time series data!
+     * 
+     * @return array
+     */
+    public function read_by_date_group_by_day($cut_off_date, $type = null){
+
+        $this->validator->set_data([
+            'cutOffDate'    => $cut_off_date,
+            'type'          => $type
+        ]);
+
+        $this->validator->set_rules(array(
+            array(
+                'field' => 'cutOffDate',
+                'label' => 'Cut off Date',
+                'rules' => 'required|valid_date',
+            ),
+            array(
+                'field' => 'type',
+                'label' => 'Type',
+                'rules' => 'alpha_numeric',
+            )
+        ));
+
+        $validation_errors = [];
+
+        if($this->validator->run() ==  false){
+            $validation_errors = array_merge($validation_errors, $this->validator->error_array());
+        }
+
+        $this->validator->reset_validation();
+
+        if(!empty($validation_errors)){
+
+            $this->errors = array(
+                'validation_error'  => $validation_errors
+            );
+            return false;
+
+        }
+
+        $cut_off_date = new DateTime($cut_off_date);
+
+        //SELECT FROM_UNIXTIME(ROUND(AVG(UNIX_TIMESTAMP(date)))) as date, COUNT(id) as quantity FROM log WHERE date > $cut_off_date GROUP BY DATE(date) ORDER BY date desc
+        $this->db->select('FROM_UNIXTIME(ROUND(AVG(UNIX_TIMESTAMP(date)))) as date, COUNT(id) as quantity', false);
+        $this->db->from('log');
+        $this->db->where('date >', $cut_off_date->format('Y-m-d H:i:s'));
+        if(!is_null($type)){
+            $this->db->where('type', $type);
+        }
+        $this->db->group_by('DATE(date)');
+        $this->db->order_by('date', 'DESC');
+
+        $query = $this->db->get();
+
+        if($query->num_rows() > 0){
+
+            foreach($query->result() as $row){
+
+                $data[] = array(
+                    'date'      => $row->date,
+                    'quantity'  => $row->quantity,
+                );
+
+            }
+
+            return $data;
+
+        }else{
+
+            $this->errors = array(
+                'error' => 'No logs to be found.'
             );
             
             return false;
