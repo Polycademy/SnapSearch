@@ -63,6 +63,8 @@ Pigeon::map(function($r){
 		//Monthly Billing
 		//php index.php cli cron monthly_tracking
 		$r->route('cron/monthly_tracking', 'cron#monthly_tracking');
+
+		$r->route('cron/test', 'cron#test');
 		
 	});
 	

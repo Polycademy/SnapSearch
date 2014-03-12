@@ -47,6 +47,16 @@ class Cron extends CI_Controller{
 
 	}
 
+	public function test(){
+		
+		$this->load->model('Log_model');
+
+		$results = $this->Log_model->read_by_date_group_by_day('2014-03-11 00:00:00');
+
+		var_dump($results);
+
+	}
+
 	/**
 	 * This function will be ran from the Cron service. Make sure this is done well and no bugs!
 	 */
