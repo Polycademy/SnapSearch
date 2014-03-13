@@ -19,8 +19,6 @@ secrets/*
 *.log
 *.pid
 slimerjs/*
-snapshots/*
-!snapshots/.gitkeep
 
 #################
 ## Eclipse
