@@ -74,7 +74,8 @@ class Demo extends CI_Controller {
 
             //send query to robot
             $robot_query = $this->Robot_model->read_site($user_id, [
-                'url'   => $url
+                'url'       => $url,
+                'cachetime' => '72'
             ]);
 
             $robot_result = false;
