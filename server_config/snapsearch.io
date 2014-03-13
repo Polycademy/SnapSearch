@@ -65,11 +65,15 @@ server {
   include conf.d/cache-busting.conf;
   include conf.d/x-ua-compatible.conf;
   include conf.d/protect-system-files.conf;
-  include conf.d/cache-file-descriptors.conf;
   include conf.d/cross-domain-fonts.conf;
   include conf.d/cross-domain-ajax.conf;
   # Uncomment this to prevent mobile network providers from modifying your site 
   # include conf.d/no-transform.conf;
+
+  #Only load cache file descriptors in production
+  if ($server_name !~ "^dev\..+") {
+    include conf.d/cache-file-descriptors.conf;
+  }
 
   # Force ssl
   # if ($ssl_protocol = "") {
