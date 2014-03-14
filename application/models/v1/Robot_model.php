@@ -275,7 +275,6 @@ class Robot_model extends CI_Model{
 
 			//decode the returned json into an array
 			$response = $request->send();
-			$response_string = $response->getBody(true);
 			$response_array = $response->json();
 
 			//this is not a cached response
@@ -340,9 +339,6 @@ class Robot_model extends CI_Model{
 				//shim the body
 				$response_array['html'] = $response->getBody(true);
 
-				//replace the response string, it'll be json encoded!
-				$response_string = json_encode($response_array);
-
 			}catch(CurlException $e){
 
 				$this->errors = array(
@@ -354,9 +350,21 @@ class Robot_model extends CI_Model{
 			}
 
 		}
+
+		//recalculating the content-length headers if they exist
+		//this is because the content-length that came from the server could be different from the final resolve true length due to asynchronous content
+		if(isset($response_array['headers'])){
+			foreach($response_array['headers'] as $key => $header){
+				if(strtolower($header['name']) == 'content-length'){
+					$response_array['headers'][$key]['value'] = mb_strlen($response_array['html'], 'utf8');
+				}
+			}
+		}
 		
 		//only cache the result if the cache option was true, subsequent requests would never request for cached data that had their cache parameter as false, because matching checksums would require the request's parameters to also have cache being false, which would prevent us from requesting from the cache
 		if($parameters['cache']){
+
+			$response_string = json_encode($response_array);
 
 			if($existing_cache_id){
 				$this->update_cache($existing_cache_id, $existing_cache_name, $response_string);
