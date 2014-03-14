@@ -93,8 +93,9 @@ echo "Copying Supervisor startup script to /etc/init"
 sudo cp startup_scripts/supervisord.conf /etc/init/supervisord.conf
 echo "Confirming robot script path in the Supervisor startup script"
 sudo perl -pi -e "s/chdir .*/chdir $ESCAPED_ROBOT_PATH/g" /etc/init/supervisord.conf
-echo "Starting Supervisord"
-sudo service supervisord restart
+echo "Restarting Supervisord"
+sudo service supervisord start
+sudo supervisorctl -c ./robot_scripts/supervisord.conf reload
 
 # Setting up NGINX server configuration
 echo "Setting up NGINX configuration"
@@ -109,7 +110,6 @@ sudo cp secrets/snapsearch.io.pem /etc/nginx/ssl/snapsearch.io.pem
 sudo cp secrets/snapsearch.io.key /etc/nginx/ssl/snapsearch.io.key
 sudo cp secrets/dev.snapsearch.io.crt /etc/nginx/ssl/dev.snapsearch.io.crt
 sudo cp secrets/dev.snapsearch.io.key /etc/nginx/ssl/dev.snapsearch.io.key
-
 sudo service nginx restart
 
 # Changing owner to www-data
