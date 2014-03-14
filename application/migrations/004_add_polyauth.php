@@ -75,6 +75,17 @@ class Migration_add_polyauth extends CI_Migration {
 			// ]
 		];
 
+		//default user to roles
+		$default_users_to_roles = array(
+			[
+				'admin',
+				'member',
+			],
+			// [
+			// 	'member',
+			// ]
+		);
+
 		//add chargeDate to each user
 		foreach($default_users as $key => $user){
 			//30 days is more accurate than 1 month
@@ -99,17 +110,6 @@ class Migration_add_polyauth extends CI_Migration {
 		$default_role_permissions = array(
 			'admin'		=> array(),
 			'member'	=> array(),
-		);
-
-		//default user to roles
-		$default_users_to_roles = array(
-			[
-				'admin',
-				'member',
-			],
-			[
-				'member',
-			]
 		);
 
 		//time to insert the default permission and role data
