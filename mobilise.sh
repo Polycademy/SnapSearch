@@ -97,48 +97,40 @@ if [[ $DATABASE_MIGRATION =~ ^[Y]$ ]]; then
 	php index.php cli migrate latest
 fi
 
-# Setup hosts redirection for snapsearch.io and www.snapsearch.io
-# No longer useful since in production you don't do this, and in development, the VM lets the host machine determine the server name.
-# read -p "$(tput bold)$(tput setaf 2)Setup /etc/hosts redirection for snapsearch.io? [Y/n]: $(tput sgr0)" -n 1 -r HOST_REDIRECTION
-# echo
-# if [[ $HOST_REDIRECTION =~ ^[Y]$ ]]; then
-# 	# This will not overwrite the previous clone
-# 	git clone https://github.com/Polycademy/add-etc-hosts startup_scripts/add-etc-hosts
-# 	echo "Backing up /etc/hosts to startup_scripts/add-etc-hosts/hosts.backup in case of screwup!"
-# 	cp /etc/hosts startup_scripts/add-etc-hosts/hosts.backup
-# 	echo "Adding snapsearch.io and www.snapsearch.io to /etc/hosts"
-# 	sudo startup_scripts/add-etc-hosts/add-etc-hosts snapsearch.io
-# 	sudo startup_scripts/add-etc-hosts/add-etc-hosts www.snapsearch.io
-# fi
-
 # Setting up supervisor upstart script to run this project's robots
 echo "Setting up Supervisor Upstart Script"
 ROBOT_PATH="`pwd`/robot_scripts"
 ESCAPED_ROBOT_PATH="${ROBOT_PATH//\//\\/}"
-perl -pi -e "s/chdir .*/chdir $ESCAPED_ROBOT_PATH/g" startup_scripts/supervisord.conf
-echo "Moving Supervisor startup script to /etc/init"
+echo "Copying Supervisor startup script to /etc/init"
 sudo cp startup_scripts/supervisord.conf /etc/init/supervisord.conf
-echo "Starting Supervisord"
-sudo service supervisord restart
+echo "Confirming robot script path in the Supervisor startup script"
+sudo perl -pi -e "s/chdir .*/chdir $ESCAPED_ROBOT_PATH/g" /etc/init/supervisord.conf
+echo "Restarting Supervisord"
+sudo service supervisord start
+sudo supervisorctl -c ./robot_scripts/supervisord.conf reload
 
 # Setting up NGINX server configuration
 echo "Setting up NGINX configuration"
 ESCAPED_PROJECT_DIR="${PROJECT_DIR//\//\\/}"
-perl -pi -e "s/root .*/root $ESCAPED_PROJECT_DIR;/g" server_config/snapsearch.io
-echo "Establishing a symlink from snapsearch.io to NGINX sites-enabled"
-sudo ln -sf `pwd`/server_config/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
-echo "Establishing a symlink from SSL certificate and key to NGINX ssl directory"
-mkdir -p /etc/nginx/ssl
-sudo ln -sf `pwd`/secrets/snapsearch.io.pem /etc/nginx/ssl/snapsearch.io.pem
-sudo ln -sf `pwd`/secrets/snapsearch.io.key /etc/nginx/ssl/snapsearch.io.key
-sudo service nginx restart
+echo "Copying snapsearch.io site config to NGINX sites-enabled"
+sudo cp server_config/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
+echo "Confirming root path in snapsearch.io site config"
+sudo perl -pi -e "s/root .*/root $ESCAPED_PROJECT_DIR;/g" /etc/nginx/sites-enabled/snapsearch.io
+echo "Copying SSL certificate and key to NGINX ssl directory"
+sudo mkdir -p /etc/nginx/ssl
+sudo cp secrets/snapsearch.io.pem /etc/nginx/ssl/snapsearch.io.pem
+sudo cp secrets/snapsearch.io.key /etc/nginx/ssl/snapsearch.io.key
+sudo cp secrets/dev.snapsearch.io.crt /etc/nginx/ssl/dev.snapsearch.io.crt
+sudo cp secrets/dev.snapsearch.io.key /etc/nginx/ssl/dev.snapsearch.io.key
+sudo service nginx reload
 
-# Setting up Cron Billing
+# Setting up Cron Tasks
 echo "Setting up SnapSearch billing as a crontab"
 ESCAPED_PROJECT_DIR="${PROJECT_DIR//\//\\/}"
-perl -pi -e "s/PROJECT_DIR/$ESCAPED_PROJECT_DIR/g" startup_scripts/snapsearch
 echo "Copying startup_scripts/snapsearch to /etc/cron.d/snapsearch"
 sudo cp `pwd`/startup_scripts/snapsearch /etc/cron.d/snapsearch
+echo "Confirming project directory in cron scripts"
+perl -pi -e "s/PROJECT_DIR/$ESCAPED_PROJECT_DIR/g" /etc/cron.d/snapsearch
 sudo service cron restart
 
 # Changing owner to www-data
