@@ -11,7 +11,7 @@
     "angular-resource": "~1.2.14",
     "angular-sanitize": "~1.2.14",
     "angular-animate": "~1.2.14",
-    "angular-ui-router": "https://github.com/CMCDragonkai/ui-router.git",
+    "angular-ui-router": "~0.2.10",
     "angular-bootstrap": "~0.10.0",
     "angulartics": "~0.8.7",
     "es6-shim": "~0.9.3",

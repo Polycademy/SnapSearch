@@ -6719,7 +6719,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 },{}],6:[function(require,module,exports){
 /**
  * State-based routing for AngularJS
- * @version v0.2.8-dev-2014-03-10
+ * @version v0.2.10
  * @link http://angular-ui.github.com/
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -9159,7 +9159,6 @@ function $ViewProvider() {
          * @eventOf ui.router.state.$view
          * @eventType broadcast on root scope
          * @description
-         * **Known Bug:** This doesn't appear to be working (v0.2.8).
          *
          * Fired once the view **begins loading**, *before* the DOM is rendered.
          *
