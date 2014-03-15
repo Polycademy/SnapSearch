@@ -4009,7 +4009,18 @@ module.exports = [
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', 'UserSystemServ', 'MomentServ', 'CalculateServ', function ($scope, UserSystemServ, MomentServ, CalculateServ) {
+module.exports = ['$scope', '$interval', 'UserSystemServ', 'MomentServ', 'CalculateServ', function ($scope, $interval, UserSystemServ, MomentServ, CalculateServ) {
+
+    var refreshingUserAccount = $interval(function () {
+        var userData = UserSystemServ.getUserData();
+        if (Object.keys(userData).length > 0){
+            UserSystemServ.getAccount(userData.id);
+        }
+    }, 10000);
+
+    $scope.$on('$destroy', function () {
+        $interval.cancel(refreshingUserAccount);
+    });
 
     $scope.$watch(UserSystemServ.getUserData, function (value) {
 
