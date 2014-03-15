@@ -3336,7 +3336,7 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":39,"./filters/Filters":77,"./modules/Modules":78,"./services/Services":87}],7:[function(require,module,exports){
+},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":39,"./filters/Filters":77,"./modules/Modules":78,"./services/Services":88}],7:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -4009,9 +4009,9 @@ module.exports = [
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', '$interval', 'UserSystemServ', 'MomentServ', 'CalculateServ', function ($scope, $interval, UserSystemServ, MomentServ, CalculateServ) {
+module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'CalculateServ', function ($scope, BusyLoopServ, UserSystemServ, MomentServ, CalculateServ) {
 
-    var refreshingUserAccount = $interval(function () {
+    var cancelBusyLoop = BusyLoopServ(function () {
         var userData = UserSystemServ.getUserData();
         if (Object.keys(userData).length > 0){
             UserSystemServ.getAccount(userData.id);
@@ -4019,7 +4019,7 @@ module.exports = ['$scope', '$interval', 'UserSystemServ', 'MomentServ', 'Calcul
     }, 10000);
 
     $scope.$on('$destroy', function () {
-        $interval.cancel(refreshingUserAccount);
+        cancelBusyLoop();
     });
 
     $scope.$watch(UserSystemServ.getUserData, function (value) {
@@ -4647,7 +4647,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":89}],41:[function(require,module,exports){
+},{"fs":1,"insert-css":90}],41:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -8171,7 +8171,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":42,"fs":1,"insert-css":89}],77:[function(require,module,exports){
+},{"./lib/hljs/index":42,"fs":1,"insert-css":90}],77:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8421,6 +8421,38 @@ module.exports = angular.element('base').attr('href');
 },{}],84:[function(require,module,exports){
 'use strict';
 
+module.exports = ['$timeout', function ($timeout) {
+
+    return function (callback, delay, invokeApply) {
+
+        //default delay is 0
+        delay = delay || 0;
+        //default invokeApply is true
+        invokeApply = typeof invokeApply !== 'undefined' ? invokeApply : true;
+
+        var timer;
+
+        var loop = function () {
+            //replace the timer promise
+            timer = $timeout(function () {
+                callback();
+                loop();
+            }, delay, invokeApply);
+        };
+
+        loop();
+
+        return function () {
+            loop = angular.noop;
+            $timeout.cancel(timer);
+        };
+
+    };
+
+}];
+},{}],85:[function(require,module,exports){
+'use strict';
+
 /**
  * Calculate Service
  */
@@ -8455,7 +8487,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 var moment = require("./..\\..\\..\\components\\moment\\moment.js");
@@ -8499,7 +8531,7 @@ module.exports = [function () {
     return moment;
 
 }];
-},{"./..\\..\\..\\components\\moment\\moment.js":5}],86:[function(require,module,exports){
+},{"./..\\..\\..\\components\\moment\\moment.js":5}],87:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8513,7 +8545,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8532,8 +8564,9 @@ module.exports = angular.module('App.Services')
     // .run(require('./RestangularXSRF')) // doesn't yet work, need cookies in response interception
     //Service Objects
     .service('CalculateServ', require('./CalculateServ'))
-    .factory('MomentServ', require('./MomentServ'));
-},{"./AuthenticationStateRun":82,"./BaseUrlConst":83,"./CalculateServ":84,"./MomentServ":85,"./RestangularConfig":86,"./UserSystemConfig":88}],88:[function(require,module,exports){
+    .factory('MomentServ', require('./MomentServ'))
+    .factory('BusyLoopServ', require('./BusyLoopServ'));
+},{"./AuthenticationStateRun":82,"./BaseUrlConst":83,"./BusyLoopServ":84,"./CalculateServ":85,"./MomentServ":86,"./RestangularConfig":87,"./UserSystemConfig":89}],89:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8545,7 +8578,7 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {

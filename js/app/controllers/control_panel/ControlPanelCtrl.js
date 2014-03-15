@@ -5,9 +5,9 @@
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', '$interval', 'UserSystemServ', 'MomentServ', 'CalculateServ', function ($scope, $interval, UserSystemServ, MomentServ, CalculateServ) {
+module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'CalculateServ', function ($scope, BusyLoopServ, UserSystemServ, MomentServ, CalculateServ) {
 
-    var refreshingUserAccount = $interval(function () {
+    var cancelBusyLoop = BusyLoopServ(function () {
         var userData = UserSystemServ.getUserData();
         if (Object.keys(userData).length > 0){
             UserSystemServ.getAccount(userData.id);
@@ -15,7 +15,7 @@ module.exports = ['$scope', '$interval', 'UserSystemServ', 'MomentServ', 'Calcul
     }, 10000);
 
     $scope.$on('$destroy', function () {
-        $interval.cancel(refreshingUserAccount);
+        cancelBusyLoop();
     });
 
     $scope.$watch(UserSystemServ.getUserData, function (value) {
