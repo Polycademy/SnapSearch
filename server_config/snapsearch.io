@@ -86,6 +86,7 @@ server {
   include conf.d/cache-file-descriptors.conf;
   include conf.d/cross-domain-fonts.conf;
   include conf.d/cross-domain-ajax.conf;
+  include conf.d/buffers.conf;
 
   # Removes the initial index or index.php
   # Changes example.com/index.php to example.com/
@@ -171,6 +172,7 @@ server {
   # include conf.d/cache-file-descriptors.conf;
   include conf.d/cross-domain-fonts.conf;
   include conf.d/cross-domain-ajax.conf;
+  include conf.d/buffers.conf;
 
   # Removes the initial index or index.php
   # Changes example.com/index.php to example.com/
