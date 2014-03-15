@@ -29,6 +29,9 @@ class Log extends CI_Controller{
         $user_id = $this->input->get('user', true);
         $offset = $this->input->get('offset', true);
         $limit = $this->input->get('limit', true);
+        $date = $this->input->get('date', true);
+        $type = $this->input->get('type', true);
+        $transform = $this->input->get('transform', true);
 
         $authorized = false;
 
@@ -68,10 +71,100 @@ class Log extends CI_Controller{
 
         if($authorized){
 
-            if(empty($limit)) $limit = 100;
-            if(empty($offset)) $offset = 0;
+            if($transform == 'by_date'){
 
-            $query = $this->Log_model->read_all($offset, $limit, $user_id);
+                if(!$date){
+                    $date = new DateTime;
+                    $date->sub(new DateInterval('P30D'));
+                    $date = $date->format('Y-m-d H:i:s');
+                }
+
+                $query = $this->Log_model->read_by_date_group_by_day($user_id, $date, $type);
+
+            }else{
+
+                if(empty($limit)) $limit = 100;
+                if(empty($offset)) $offset = 0;
+
+                $query = $this->Log_model->read_all($offset, $limit, $user_id);
+
+            }
+
+            if($query){
+
+                $content = $query;
+                $code = 'success';
+
+            }else{
+
+                $this->auth_response->setStatusCode(404);
+                $content = current($this->Log_model->get_errors());
+                $code = key($this->Log_model->get_errors());
+
+            }
+
+        }
+
+        $this->auth_response->sendHeaders();
+        
+        $output = array(
+            'content'   => $content,
+            'code'      => $code,
+        );
+        
+        Template::compose(false, $output, 'json');
+
+    }
+
+    public function logs_by_date(){
+
+
+
+        $authorized = false;
+
+        if(!$user_id){
+
+            if($this->user->authorized(['roles' => 'admin'])){
+
+                $authorized = true;
+
+            }else{
+
+                $this->auth_response->setStatusCode(401);
+                $content = 'Not authorized to view this information.';
+                $code = 'error';
+
+            }
+
+        }else{
+
+            if($this->user->authorized([
+                'roles' => 'admin'
+            ], [
+                'users' => $user_id
+            ])){
+                
+                $authorized = true;
+
+            }else{
+
+                $this->auth_response->setStatusCode(401);
+                $content = 'Not authorized to view this information.';
+                $code = 'error';
+
+            }
+
+        }
+
+        if($authorized){
+
+            if(!$date){
+                $date = new DateTime;
+                $date->sub(new DateInterval('P30D'));
+                $date = $date->format('Y-m-d H:i:s');
+            }
+
+            $query = $this->Log_model->read_by_date_group_by_day($user_id, $date, $type);
 
             if($query){
 

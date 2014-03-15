@@ -9,26 +9,27 @@ var settings = require('../../Settings');
  */
 module.exports = [
     '$scope', 
+    '$q',
     'UserSystemServ', 
     'CalculateServ', 
     'Restangular', 
     'MomentServ', 
-    function ($scope, UserSystemServ, CalculateServ, Restangular, MomentServ) {
+    function ($scope, $q, UserSystemServ, CalculateServ, Restangular, MomentServ) {
 
-    var pricePerUsage = settings.meta.price;
+        var checkUserAccount = function () {
 
-    $scope.$watch(function () {
+            return $scope.userAccount || false;
+        
+        };
 
-        return $scope.userAccount || false;
+        /**
+         * Handle API Limit Modifier Form
+         */
+        var handleApiLimitModifierForm = function (userAccount) {
 
-    }, function (userAccount) {
-
-        if (userAccount) {
-
-            //setting up apiLimitModifier object
             $scope.apiLimitModifier = {};
 
-            //default quantity is the current api limit
+            //default api limit quantity is the current api limit
             $scope.apiLimitModifier.quantity = userAccount.apiLimit;
 
             //check if the user has billing details
@@ -57,7 +58,7 @@ module.exports = [
                 quantity = parseInt(quantity);
 
                 //calculate the price while subtracting from free usage limit
-                var price = pricePerUsage * (quantity - userAccount.apiFreeLimit);
+                var price = settings.meta.price * (quantity - userAccount.apiFreeLimit);
 
                 //if the price is negative, reset to zero
                 if (price < 0) {
@@ -95,29 +96,57 @@ module.exports = [
 
             };
 
-            var usageHistoryOffset = 0;
-            var usageHistoryLimit = 6;
+        };
+
+        /**
+         * Get Request & Usage History Stats
+         */
+        var getHistoryStats = function (userAccount) {
+
+            var logHistoryDate = MomentServ().subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
 
             var getHistory = function () {
 
-                Restangular.all('usage').customGET('', {
-                    user: userAccount.id,
-                    offset: usageHistoryOffset,
-                    limit: usageHistoryLimit
-                }).then(function (response) {
+                var cutOffDate = logHistoryDate.format('YYYY-MM-DD HH:mm:ss');
+                var dates = [];
+                var requests = [];
+                var usage = [];
 
-                    var dates = [];
-                    var usage = [];
-                    var requests = [];
-                    response.content.forEach(function (value, index) {
+                var cachedLog = Restangular.all('log').customGET('', {
+                    user: userAccount.id,
+                    date: cutOffDate,
+                    type: 'cached',
+                    transform: 'by_date'
+                });
+
+                var uncachedLog = Restangular.all('log').customGET('', {
+                    user: userAccount.id,
+                    date: cutOffDate,
+                    type: 'uncached',
+                    transform: 'by_date'
+                });
+
+                $q.all([
+                    cachedLog,
+                    uncachedLog
+                ]).then(function (responses) {
+
+                    responses[0].content.forEach(function (value, index) {
                         var date = MomentServ(value.date, 'YYYY-MM-DD HH:mm:ss');
                         dates.push(date);
-                        usage.push([date, value.usage]);
-                        requests.push([date, value.requests]);
+                        requests.push([date, value.quantity]);
                     });
+
+                    responses[1].content.forEach(function (value, index) {
+                        var date = MomentServ(value.date, 'YYYY-MM-DD HH:mm:ss');
+                        dates.push(date);
+                        usage.push([date, value.quantity]);
+                    });
+
                     var oldestDate = dates.reduce(function (prevDate, curDate) {
                         return curDate.unix() < prevDate.unix() ? curDate : prevDate;
                     });
+
                     var latestDate = dates.reduce(function (prevDate, curDate) {
                         return curDate.unix() > prevDate.unix() ? curDate : prevDate;
                     });
@@ -140,7 +169,7 @@ module.exports = [
                         }
                     ];
 
-                }, function () {
+                }, function (response) {
 
                     $scope.usageHistoryData = [];
 
@@ -148,8 +177,10 @@ module.exports = [
 
             };
 
+            //sets up the date formatting on the x axis
             $scope.xAxisDateFormatFunction = function(){
-                //xValue is milliseconds, as it seems that Moment.js automatically turns itself into milliseconds
+                //xValue is a Moment.js wrapped date objects
+                //it's evaluated in milliseconds, but d3 needs it in a JS date object
                 return function(xValue){
                     return d3.time.format('%Y-%m-%d')(new Date(xValue));
                 }
@@ -157,27 +188,40 @@ module.exports = [
 
             getHistory();
 
-            $scope.forwardUsageHistory = function () {
+            $scope.forwardHistory = function () {
 
-                usageHistoryOffset = usageHistoryOffset - usageHistoryLimit;
-                if (usageHistoryOffset < 0) {
-                    usageHistoryOffset = 0;
-                }
+                logHistoryDate = logHistoryDate.add(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
                 getHistory();
 
             };
 
-            $scope.backwardUsageHistory = function () {
+            $scope.backwardHistory = function () {
 
-                usageHistoryOffset = usageHistoryOffset + usageHistoryLimit;
+                logHistoryDate = logHistoryDate.subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
                 getHistory();
 
             };
+
+        };
+
+        var initialise = function (userAccount) {
+
+            handleApiLimitModifierForm(userAccount);
+            getHistoryStats(userAccount);
+
+        };
+
+        //run every time the controller is reinstantiated
+        if (checkUserAccount()) {
+            
+            initialise(checkUserAccount());
+        
+        } else {
+
+            $scope.$watch(checkUserAccount, function (userAccount) {
+                initialise(userAccount);
+            });
 
         }
-
-    });
-
-
 
 }];

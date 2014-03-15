@@ -140,16 +140,22 @@ class Log_model extends CI_Model{
      * 
      * @return array
      */
-    public function read_by_date_group_by_day($cut_off_date, $type = null){
+    public function read_by_date_group_by_day($user_id, $cut_off_date, $type = null){
 
         $this->validator->set_data([
-            'cutOffDate'    => $cut_off_date,
+            'user'          => $user_id,
+            'date'          => $cut_off_date,
             'type'          => $type
         ]);
 
         $this->validator->set_rules(array(
             array(
-                'field' => 'cutOffDate',
+                'field' => 'user',
+                'label' => 'User ID',
+                'rules' => 'required|integer',
+            ),
+            array(
+                'field' => 'date',
                 'label' => 'Cut off Date',
                 'rules' => 'required|valid_date',
             ),
@@ -183,7 +189,8 @@ class Log_model extends CI_Model{
         $this->db->select('FROM_UNIXTIME(ROUND(AVG(UNIX_TIMESTAMP(date)))) as date, COUNT(id) as quantity', false);
         $this->db->from('log');
         $this->db->where('date >', $cut_off_date->format('Y-m-d H:i:s'));
-        if(!is_null($type)){
+        $this->db->where('userId', $user_id);
+        if($type){
             $this->db->where('type', $type);
         }
         $this->db->group_by('DATE(date)');
