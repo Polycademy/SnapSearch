@@ -2,6 +2,12 @@
     "name": "snapsearch/snapsearch",
     "description": "SnapSearch is SEO for Javascript Applications.",
     "license": "proprietary",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/CMCDragonkai/Stash.git"
+        }
+    ],
     "require":{
 		"pimple/pimple": "1.0.2",
 		"polycademy/citemplating": "1.0.7",
@@ -9,11 +15,12 @@
 		"symfony/http-foundation": "~2.1",
 		"guzzle/guzzle": "3.7.4",
 		"knplabs/gaufrette": "0.1.6",
-        "polycademy/polyauth": "0.0.10",
+        "polycademy/polyauth": "0.0.11",
 		"psliwa/php-pdf": "1.2.2",
 		"phpmailer/phpmailer": "5.2.7",
 		"aws/aws-sdk-php": "2.5.1",
-        "snapsearch/snapsearch-client-php": "1.1.0"
+        "snapsearch/snapsearch-client-php": "1.1.0",
+        "tedivm/stash": "dev-patch-1 as 0.11.5"
 	},
 	"require-dev":{
 		"firephp/firephp-core": "0.4.0"
