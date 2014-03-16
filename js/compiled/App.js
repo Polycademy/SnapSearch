@@ -3396,7 +3396,7 @@ module.exports = [
                 'controlPanel.crawling', //default controlPanel childstate
                 {
                     url: '/crawling',
-                    template: "<div class=\"crawling\">\r\n    <h2 class=\"control-title\">Crawling Statistics</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block overview\">\r\n        <h3 class=\"telemetry-title\">Overview</h3>\r\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\r\n        <div class=\"row overview-requests-usages-tally no-gutter\">\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_request\">\r\n                    <span class=\"tally-bg\">R</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Requests Received</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_usage\">\r\n                    <span class=\"tally-bg\">U</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Used</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_available\">\r\n                    <span class=\"tally-bg\">A</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Available</p>\r\n            </div>\r\n        </div>\r\n        <div class=\"progress progress-striped active usage-bar\">\r\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\r\n        </div>\r\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\r\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\r\n            <div class=\"form-errors\" ng-show=\"formErrors\">\r\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n                <ul class=\"form-errors-list\">\r\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n                </ul>\r\n            </div>\r\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n                {{formSuccess}}\r\n            </div>\r\n            <dl>\r\n                <dt>\r\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\r\n                </dt>\r\n                <dd \r\n                    class=\"input-group\" \r\n                    ng-class=\"{\r\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\r\n                    }\" \r\n                >\r\n                    <input \r\n                        id=\"apiLimitModifierFormQuantity\"\r\n                        class=\"form-control\" \r\n                        type=\"number\" \r\n                        name=\"quantity\" \r\n                        ng-model=\"apiLimitModifier.quantity\" \r\n                        ng-disabled = \"!hasBillingDetails\" \r\n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \r\n                        maxlength=\"10\" \r\n                        required \r\n                    />\r\n                    <span class=\"input-group-btn\">\r\n                        <button \r\n                            class=\"btn btn-primary\" \r\n                            type=\"submit\" \r\n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \r\n                            ng-click=\"changeLimit(apiLimitModifier)\" \r\n                        >\r\n                            Change Cap\r\n                        </button>\r\n                    </span>\r\n                </dd>\r\n                <dt>Free Usage Cap:</dt>\r\n                <dd>{{userAccount.apiFreeLimit}}</dd>\r\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\r\n                <dd>${{price}} AUD</dd>\r\n            </dl>\r\n        </form>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\r\n        <div class=\"history-buttons button-group\">\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardHistory()\">Backward</button>\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardHistory()\">Forward</button>\r\n        </div>\r\n        <div \r\n            id=\"usageHistoryChart\" \r\n            class=\"history-chart\" \r\n            nvd3-line-chart \r\n            data=\"usageHistoryData\" \r\n            showXAxis=\"true\" \r\n            showYAxis=\"true\" \r\n            tooltips=\"true\" \r\n            interactive=\"true\" \r\n            showLegend=\"true\" \r\n            showControls=\"true\" \r\n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \r\n            noData=\"No API history yet!\" \r\n        ></div>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\r\n        <p>Coming Soon!</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Log</h3>\r\n        <p>Coming Soon!</p>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"crawling\">\r\n    <h2 class=\"control-title\">Crawling Statistics</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block overview\">\r\n        <h3 class=\"telemetry-title\">Overview</h3>\r\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\r\n        <div class=\"row overview-requests-usages-tally no-gutter\">\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_request\">\r\n                    <span class=\"tally-bg\">R</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Requests Received</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_usage\">\r\n                    <span class=\"tally-bg\">U</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Used</p>\r\n            </div>\r\n            <div class=\"col-sm-4 tally-col\">\r\n                <div class=\"tally-block tally_block_available\">\r\n                    <span class=\"tally-bg\">A</span>\r\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\r\n                </div>\r\n                <p class=\"tally-description\">Usages Available</p>\r\n            </div>\r\n        </div>\r\n        <div class=\"progress progress-striped active usage-bar\">\r\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\r\n        </div>\r\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\r\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\r\n            <div class=\"form-errors\" ng-show=\"formErrors\">\r\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n                <ul class=\"form-errors-list\">\r\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n                </ul>\r\n            </div>\r\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n                {{formSuccess}}\r\n            </div>\r\n            <dl>\r\n                <dt>\r\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\r\n                </dt>\r\n                <dd \r\n                    class=\"input-group\" \r\n                    ng-class=\"{\r\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\r\n                    }\" \r\n                >\r\n                    <input \r\n                        id=\"apiLimitModifierFormQuantity\"\r\n                        class=\"form-control\" \r\n                        type=\"number\" \r\n                        name=\"quantity\" \r\n                        ng-model=\"apiLimitModifier.quantity\" \r\n                        ng-disabled = \"!hasBillingDetails\" \r\n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \r\n                        maxlength=\"10\" \r\n                        required \r\n                    />\r\n                    <span class=\"input-group-btn\">\r\n                        <button \r\n                            class=\"btn btn-primary\" \r\n                            type=\"submit\" \r\n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \r\n                            ng-click=\"changeLimit(apiLimitModifier)\" \r\n                        >\r\n                            Change Cap\r\n                        </button>\r\n                    </span>\r\n                </dd>\r\n                <dt>Free Usage Cap:</dt>\r\n                <dd>{{userAccount.apiFreeLimit}}</dd>\r\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\r\n                <dd>${{price}} AUD</dd>\r\n            </dl>\r\n        </form>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\r\n        <div class=\"history-buttons button-group\">\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\r\n        </div>\r\n        <div \r\n            id=\"usageHistoryChart\" \r\n            class=\"history-chart\" \r\n            nvd3-line-chart \r\n            data=\"usageHistoryData\" \r\n            showXAxis=\"true\" \r\n            showYAxis=\"true\" \r\n            tooltips=\"true\" \r\n            interactive=\"true\" \r\n            showLegend=\"true\" \r\n            showControls=\"true\" \r\n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \r\n            noData=\"No API history yet!\" \r\n        ></div>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\r\n        <p>Coming Soon!</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3 class=\"telemetry-title\">Log</h3>\r\n        <p>Coming Soon!</p>\r\n    </div>\r\n</div>",
                     controller: 'ControlCrawlingCtrl'
                 }
             )
@@ -3877,13 +3877,13 @@ module.exports = [
         /**
          * Get Request & Usage History Stats
          */
-        var getHistoryStats = function (userAccount) {
+        var getGraphStats = function (userAccount) {
 
-            var logHistoryDate = MomentServ().subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
+            var logGraphDate = MomentServ().subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
 
-            var getHistory = function () {
+            var getGraph = function () {
 
-                var cutOffDate = logHistoryDate.format('YYYY-MM-DD HH:mm:ss');
+                var cutOffDate = logGraphDate.format('YYYY-MM-DD HH:mm:ss');
                 var dates = [];
                 var requests = [];
                 var usage = [];
@@ -3962,28 +3962,40 @@ module.exports = [
                 }
             };
 
-            getHistory();
+            getGraph();
 
-            $scope.forwardHistory = function () {
+            $scope.forwardGraph = function () {
 
-                logHistoryDate = logHistoryDate.add(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
-                getHistory();
+                logGraphDate = logGraphDate.add(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
+                getGraph();
+
+            };
+
+            $scope.backwardGraph = function () {
+
+                logGraphDate = logGraphDate.subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
+                getGraph();
 
             };
 
-            $scope.backwardHistory = function () {
+        };
 
-                logHistoryDate = logHistoryDate.subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
-                getHistory();
+        var getHistoryStats = function (userAccount) {
 
-            };
+            //get the full log up to a date...?
+            //log_model will need to support date offsets instead of offset/limit
+            //domain distinction actually needs to grab it off the server?
+            //probably better to execute it from the server, there could be a lot of data
+
+            //finally for the log table we'll need to extract the entire data
 
         };
 
         var initialise = function (userAccount) {
 
             handleApiLimitModifierForm(userAccount);
-            getHistoryStats(userAccount);
+            getGraphStats(userAccount);
+            getHistoryStats();
 
         };
 
@@ -4016,7 +4028,7 @@ module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'Cal
         if (Object.keys(userData).length > 0){
             UserSystemServ.getAccount(userData.id);
         }
-    }, 10000);
+    }, 20000);
 
     $scope.$on('$destroy', function () {
         cancelBusyLoop();
