@@ -101,13 +101,13 @@ module.exports = [
         /**
          * Get Request & Usage History Stats
          */
-        var getHistoryStats = function (userAccount) {
+        var getGraphStats = function (userAccount) {
 
-            var logHistoryDate = MomentServ().subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
+            var logGraphDate = MomentServ().subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
 
-            var getHistory = function () {
+            var getGraph = function () {
 
-                var cutOffDate = logHistoryDate.format('YYYY-MM-DD HH:mm:ss');
+                var cutOffDate = logGraphDate.format('YYYY-MM-DD HH:mm:ss');
                 var dates = [];
                 var requests = [];
                 var usage = [];
@@ -186,28 +186,40 @@ module.exports = [
                 }
             };
 
-            getHistory();
+            getGraph();
 
-            $scope.forwardHistory = function () {
+            $scope.forwardGraph = function () {
 
-                logHistoryDate = logHistoryDate.add(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
-                getHistory();
+                logGraphDate = logGraphDate.add(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
+                getGraph();
+
+            };
+
+            $scope.backwardGraph = function () {
+
+                logGraphDate = logGraphDate.subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
+                getGraph();
 
             };
 
-            $scope.backwardHistory = function () {
+        };
 
-                logHistoryDate = logHistoryDate.subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
-                getHistory();
+        var getHistoryStats = function (userAccount) {
 
-            };
+            //get the full log up to a date...?
+            //log_model will need to support date offsets instead of offset/limit
+            //domain distinction actually needs to grab it off the server?
+            //probably better to execute it from the server, there could be a lot of data
+
+            //finally for the log table we'll need to extract the entire data
 
         };
 
         var initialise = function (userAccount) {
 
             handleApiLimitModifierForm(userAccount);
-            getHistoryStats(userAccount);
+            getGraphStats(userAccount);
+            getHistoryStats();
 
         };
 
