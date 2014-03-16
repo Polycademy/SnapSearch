@@ -223,6 +223,89 @@ class Log_model extends CI_Model{
 
     }
 
+    public function read_by_domain($user_id, $cut_off_date, $type){
+
+        $this->validator->set_data([
+            'user'          => $user_id,
+            'date'          => $cut_off_date,
+            'type'          => $type
+        ]);
+
+        $this->validator->set_rules(array(
+            array(
+                'field' => 'user',
+                'label' => 'User ID',
+                'rules' => 'required|integer',
+            ),
+            array(
+                'field' => 'date',
+                'label' => 'Cut off Date',
+                'rules' => 'required|valid_date',
+            ),
+            array(
+                'field' => 'type',
+                'label' => 'Type',
+                'rules' => 'alpha_numeric',
+            )
+        ));
+
+        $validation_errors = [];
+
+        if($this->validator->run() ==  false){
+            $validation_errors = array_merge($validation_errors, $this->validator->error_array());
+        }
+
+        $this->validator->reset_validation();
+
+        if(!empty($validation_errors)){
+
+            $this->errors = array(
+                'validation_error'  => $validation_errors
+            );
+            return false;
+
+        }
+
+        $cut_off_date = new DateTime($cut_off_date);
+
+        $this->db->select('*');
+        $this->db->from('log');
+        $this->db->where('date >', $cut_off_date->format('Y-m-d H:i:s'));
+        $this->db->where('userId', $user_id);
+        if($type){
+            $this->db->where('type', $type);
+        }
+        $this->db->order_by('date', 'DESC');
+
+        //WE NEED SOME WAY OF DIFFERENTIATING BASED ON DOMAINS.
+
+        $query = $this->db->get();
+
+        if($query->num_rows() > 0){
+
+            foreach($query->result() as $row){
+
+                $data[] = array(
+                    'date'      => $row->date,
+                    'quantity'  => $row->quantity,
+                );
+
+            }
+
+            return $data;
+
+        }else{
+
+            $this->errors = array(
+                'error' => 'No logs to be found.'
+            );
+            
+            return false;
+
+        }
+
+    }
+
     public function get_errors(){
 
         return $this->errors;

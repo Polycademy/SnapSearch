@@ -81,6 +81,15 @@ class Log extends CI_Controller{
 
                 $query = $this->Log_model->read_by_date_group_by_day($user_id, $date, $type);
 
+            }elseif($transform == 'by_domain'){
+
+                if(!$date){
+                    $date = new DateTime;
+                    $date->sub(new DateInterval('P1Y'));
+                    $date = $date->format('Y-m-d H:i:s');
+                }
+                $query = $this->Log_model->read_by_domain($user_id, $date, $type);
+
             }else{
 
                 if(empty($limit)) $limit = 100;
