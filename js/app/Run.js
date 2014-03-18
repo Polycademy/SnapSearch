@@ -10,8 +10,6 @@ var settings = require('./Settings');
  * @param {Object}   $http
  * @param {Object}   $state 
  * @param {Object}   $stateParams
- * @param {Function} $anchorScroll
- * @param {Object}   $location
  */
 module.exports = [
     '$rootScope',
@@ -19,10 +17,8 @@ module.exports = [
     '$http',
     '$state',
     '$stateParams',
-    '$anchorScroll',
-    '$location',
     'BaseUrlConst',
-    function($rootScope, $cookies, $http, $state, $stateParams, $anchorScroll, $location, BaseUrlConst){
+    function($rootScope, $cookies, $http, $state, $stateParams, BaseUrlConst){
         
         //PROVIDING STATE ON ROOTSCOPE
         $rootScope.$state = $state;

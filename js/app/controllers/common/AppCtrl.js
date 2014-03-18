@@ -8,7 +8,12 @@ var fs = require('fs');
  * @param {Object} $scope
  * @param {Object} $modal
  */
-module.exports = ['$scope', '$modal', '$state', 'UserSystemServ', function ($scope, $modal, $state, UserSystemServ) {
+module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ', function ($scope, $modal, $state, BusyLoopServ, UserSystemServ) {
+
+    //no need to cancel this, it will check if the session is active every 20 seconds
+    BusyLoopServ(function () {
+        UserSystemServ.getSession();
+    }, 20000);
 
     $scope.modal = {};
     $scope.auth = {};

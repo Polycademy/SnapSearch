@@ -8,11 +8,11 @@
 module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'CalculateServ', function ($scope, BusyLoopServ, UserSystemServ, MomentServ, CalculateServ) {
 
     var cancelBusyLoop = BusyLoopServ(function () {
-        var userData = UserSystemServ.getUserData();
-        if (Object.keys(userData).length > 0){
+        if (UserSystemServ.getUserState()){
+            var userData = UserSystemServ.getUserData();
             UserSystemServ.getAccount(userData.id);
         }
-    }, 20000);
+    }, 45000);
 
     $scope.$on('$destroy', function () {
         cancelBusyLoop();

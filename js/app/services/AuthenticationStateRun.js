@@ -17,6 +17,6 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
         $rootScope.loggedIn = state;
         $rootScope.loggedOut = !state;
 
-    });
+    }, true);
 
 }];

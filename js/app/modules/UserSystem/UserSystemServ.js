@@ -29,11 +29,6 @@ module.exports = function () {
             var userApi = {
                 getUserState: function () {
                     return userState;
-                    // if (Object.keys(userData).length === 0) {
-                    //     return false;
-                    // } else {
-                    //     return true;
-                    // }
                 },
                 getUserData: function () {
                     return userData;
@@ -98,7 +93,6 @@ module.exports = function () {
              * Upon the account being provided, the user data is set to the response content.
              */
             $rootScope.$on('accountProvided.UserSystem', function (event, content) {
-                userState = true;
                 userApi.setUserData(content);
             });
 
@@ -141,7 +135,8 @@ module.exports = function () {
             $rootScope.$on('sessionProvided.UserSystem', function (event, id) {
                 if (id !== 'anonymous') {
                     userState = true;
-                    $rootScope.$broadcast('sessionLogin.UserSystem', id);
+                }else{
+                    userState = false;
                 }
             });
 
