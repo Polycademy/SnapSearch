@@ -5,26 +5,17 @@
 # This file should appear as /www/snapsearch/mobilise.sh
 # Only run this after the server has already been configured, so it should have all the necessary generic web server stuff
 
-# Ask for sudo
-if [[ $UID != 0 ]]; then
-    echo "Please run this script with sudo:"
-    echo "sudo $0 $*"
-    exit 1
-fi
-
 # Checking for necessary global components
 hash git 2>/dev/null || { echo >&2 "git needs to be installed, so aborting"; exit 1; }
 hash curl 2>/dev/null || { echo >&2 "curl needs to be installed, so aborting"; exit 1; }
 hash perl 2>/dev/null || { echo >&2 "perl needs to be installed, so aborting"; exit 1; }
 hash nginx 2>/dev/null || { echo >&2 "nginx needs to be installed, so aborting"; exit 1; }
 hash php 2>/dev/null || { echo >&2 "php-cli (php) needs to be installed, so aborting"; exit 1; }
-hash php5-fpm 2>/dev/null || { echo >&2 "php-fpm needs to be installed, so aborting"; exit 1; }
 hash python 2>/dev/null || { echo >&2 "python needs to be installed, so aborting"; exit 1; }
 hash mysql 2>/dev/null || { echo >&2 "mysql needs to be installed, so aborting"; exit 1; }
 hash composer 2>/dev/null || { echo >&2 "composer needs to be installed, so aborting"; exit 1; }
 hash npm 2>/dev/null || { echo >&2 "npm needs to be installed, so aborting"; exit 1; }
 hash bower 2>/dev/null || { echo >&2 "bower needs to be installed, so aborting"; exit 1; }
-hash grunt 2>/dev/null || { echo >&2 "grunt-cli (grunt) needs to be installed, so aborting"; exit 1; }
 
 # Find the project's directory from this file
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -95,7 +86,7 @@ echo "Confirming robot script path in the Supervisor startup script"
 sudo perl -pi -e "s/chdir .*/chdir $ESCAPED_ROBOT_PATH/g" /etc/init/supervisord.conf
 echo "Restarting Supervisord"
 sudo service supervisord start
-sudo supervisorctl -c ./robot_scripts/supervisord.conf reload
+supervisorctl -c ./robot_scripts/supervisord.conf reload
 
 # Setting up NGINX server configuration
 echo "Setting up NGINX configuration"
@@ -113,13 +104,13 @@ sudo cp secrets/dev.snapsearch.io.key /etc/nginx/ssl/dev.snapsearch.io.key
 sudo service nginx restart
 
 # Changing owner to www-data
-echo "Changing owner of downloaded files to www-data"
-chown -R www-data:www-data $PROJECT_DIR
+# echo "Changing owner of downloaded files to www-data"
+# chown -R www-data:www-data $PROJECT_DIR
 
 # Synchronising clock time
 echo "Synchronising clock time to prevent synchronisation problems with external services such as Amazon"
-ntpdate ntp.ubuntu.com
-echo "ntpdate ntp.ubuntu.com" > /etc/cron.daily/ntpdate
-chmod 755 /etc/cron.daily/ntpdate
+sudo ntpdate ntp.ubuntu.com
+echo 'ntpdate ntp.ubuntu.com' | sudo tee /etc/cron.daily/ntpdate
+sudo chmod 755 /etc/cron.daily/ntpdate
 
 echo "All done!"
