@@ -2,7 +2,8 @@
 
 $config['polyauth'] = array(
 	//SESSION SETTINGS
-	'session_namespace'		=> 'snapsearch',
+	'session_namespace'			=> 'snapsearch',
+	'session_gc_probability'	=> '0.1',
 	//EMAIL SETTINGS
 	'email'					=> true,
 	'email_smtp'			=> true,
