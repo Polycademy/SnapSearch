@@ -106,8 +106,7 @@ sudo cp startup_scripts/supervisord.conf /etc/init/supervisord.conf
 echo "Confirming robot script path in the Supervisor startup script"
 sudo perl -pi -e "s/chdir .*/chdir $ESCAPED_ROBOT_PATH/g" /etc/init/supervisord.conf
 echo "Restarting Supervisord"
-sudo service supervisord start
-sudo supervisorctl -c ./robot_scripts/supervisord.conf reload
+sudo service supervisord restart
 
 # Setting up NGINX server configuration
 echo "Setting up NGINX configuration"
