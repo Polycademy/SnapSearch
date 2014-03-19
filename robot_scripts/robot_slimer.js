@@ -19,7 +19,8 @@ var redirectingStatusCodes = [
     '305',
     '306',
     '307',
-    '308'
+    '308',
+    'null' //shim for null status https://github.com/laurentj/slimerjs/issues/167
 ];
 
 //this needs to be placed in a module
@@ -537,7 +538,9 @@ var processTask = function(task){
                 output.status = resource.status;
                 output.headers = resource.headers;
 
-                if(redirectingStatusCodes.indexOf(resource.status.toString()) !== -1){
+                //cast to to a string first
+                var status = resource.status + '';
+                if(redirectingStatusCodes.indexOf(status) !== -1){
                     console.log('Robot is starting header redirection');
                     isRedirecting = true;
                 }

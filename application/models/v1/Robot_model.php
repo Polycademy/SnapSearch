@@ -331,8 +331,8 @@ class Robot_model extends CI_Model{
 				$response_array['headers'] = [];
 				foreach($response->getHeaders() as $header_key => $header_value){
 					$response_array['headers'][] = [
-						'name'	=> $header_key,
-						'value'	=> $header_value,
+						'name'	=> (string) $header_key,
+						'value'	=> (string) $header_value,
 					];
 				}
 
@@ -544,6 +544,11 @@ class Robot_model extends CI_Model{
 	}
 
 	protected function is_redirect($status){
+
+		//shim for null status https://github.com/laurentj/slimerjs/issues/167
+		if(is_null($status)){
+			return true;
+		}
 
 		return in_array((string) $status, [
 			'301',
