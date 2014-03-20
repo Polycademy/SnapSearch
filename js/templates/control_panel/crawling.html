@@ -85,7 +85,8 @@
     </div>
     <div class="telemetry-block">
         <h3 class="telemetry-title">API Requests & Usage History</h3>
-        <div class="history-buttons button-group">
+        <em class="telemetry-emphasis">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>
+        <div class="history-buttons telemetry-buttons button-group">
             <button class="btn btn-primary" type="button" ng-click="backwardGraph()">Backward</button>
             <button class="btn btn-primary" type="button" ng-click="forwardGraph()">Forward</button>
         </div>
@@ -106,7 +107,45 @@
     </div>
     <div class="telemetry-block">
         <h3 class="telemetry-title">Domain Distinction</h3>
-        <p>Coming Soon!</p>
+        <em class="telemetry-emphasis">This Cycle - from <strong>{{domainDistinctionDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{domainDistinctionDate.ending.format('YYYY/MM/DD')}}</strong></em>
+        <div class="domain-buttons telemetry-buttons button-group">
+            <button class="btn btn-primary" type="button" ng-click="backwardDomains()">Backward</button>
+            <button class="btn btn-primary" type="button" ng-click="forwardDomains()">Forward</button>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <p class="text-center">Requests</p>
+                <div 
+                    id="domainDistinctionChartRequests" 
+                    class="domain-chart" 
+                    nvd3-pie-chart 
+                    data="domainDistinctionDataRequests" 
+                    x="xPieFunction()" 
+                    y="yPieFunction()" 
+                    showLabels="true" 
+                    labelType="key" 
+                    tooltips="true" 
+                    tooltipcontent="domainDistinctionRequestsToolTip()" 
+                    noData="No domain data yet!" 
+                ></div>
+            </div>
+            <div class="col-md-6">
+                <p class="text-center">Usages</p>
+                <div 
+                    id="domainDistinctionChartUsages" 
+                    class="domain-chart" 
+                    nvd3-pie-chart 
+                    data="domainDistinctionDataUsages" 
+                    x="xPieFunction()" 
+                    y="yPieFunction()" 
+                    showLabels="true" 
+                    labelType="key" 
+                    tooltips="true" 
+                    tooltipcontent="domainDistinctionUsagesToolTip()" 
+                    noData="No domain data yet!" 
+                ></div>
+            </div>
+        </div>
     </div>
     <div class="telemetry-block">
         <h3 class="telemetry-title">Log</h3>

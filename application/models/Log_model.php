@@ -2,6 +2,7 @@
 
 class Log_model extends CI_Model{
 
+    protected $purl;
     protected $errors;
 
     public function __construct(){
@@ -9,6 +10,8 @@ class Log_model extends CI_Model{
         parent::__construct();
 
         $this->load->library('form_validation', false, 'validator');
+
+        $this->purl = new \Purl\Url;
 
     }
 
@@ -268,31 +271,44 @@ class Log_model extends CI_Model{
 
         $cut_off_date = new DateTime($cut_off_date);
 
-        $this->db->select('*');
+        $this->db->select('url');
         $this->db->from('log');
         $this->db->where('date >', $cut_off_date->format('Y-m-d H:i:s'));
         $this->db->where('userId', $user_id);
         if($type){
             $this->db->where('type', $type);
         }
-        $this->db->order_by('date', 'DESC');
-
-        //WE NEED SOME WAY OF DIFFERENTIATING BASED ON DOMAINS.
 
         $query = $this->db->get();
 
         if($query->num_rows() > 0){
 
+            $domain_count = [];
+
             foreach($query->result() as $row){
 
-                $data[] = array(
-                    'date'      => $row->date,
-                    'quantity'  => $row->quantity,
-                );
+                $this->purl->setUrl($row->url);
+
+                $subdomain = $this->purl->subdomain;
+                $domain = $this->purl->registerableDomain;
+
+                if($subdomain){
+                    $domain_id = $subdomain . '.' . $domain;
+                }else{
+                    $domain_id = $domain;
+                }
+
+                //if it already exists, increment the count
+                //if not then setup the count
+                if(isset($domain_count[$domain_id])){
+                    $domain_count[$domain_id]++;
+                }else{
+                    $domain_count[$domain_id] = 1;
+                }
 
             }
 
-            return $data;
+            return $domain_count;
 
         }else{
 

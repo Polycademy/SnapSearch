@@ -3310,7 +3310,7 @@ module.exports = [
                 'controlPanel.crawling', //default controlPanel childstate
                 {
                     url: '/crawling',
-                    template: "<div class=\"crawling\">\n    <h2 class=\"control-title\">Crawling Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block overview\">\n        <h3 class=\"telemetry-title\">Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"row overview-requests-usages-tally no-gutter\">\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_request\">\n                    <span class=\"tally-bg\">R</span>\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\n                </div>\n                <p class=\"tally-description\">Requests Received</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_usage\">\n                    <span class=\"tally-bg\">U</span>\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Used</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_available\">\n                    <span class=\"tally-bg\">A</span>\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\n        </div>\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <dl>\n                <dt>\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\n                </dt>\n                <dd \n                    class=\"input-group\" \n                    ng-class=\"{\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\n                    }\" \n                >\n                    <input \n                        id=\"apiLimitModifierFormQuantity\"\n                        class=\"form-control\" \n                        type=\"number\" \n                        name=\"quantity\" \n                        ng-model=\"apiLimitModifier.quantity\" \n                        ng-disabled = \"!hasBillingDetails\" \n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \n                        maxlength=\"10\" \n                        required \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \n                            ng-click=\"changeLimit(apiLimitModifier)\" \n                        >\n                            Change Cap\n                        </button>\n                    </span>\n                </dd>\n                <dt>Free Usage Cap:</dt>\n                <dd>{{userAccount.apiFreeLimit}}</dd>\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\n                <dd>${{price}} AUD</dd>\n            </dl>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\n        <div class=\"history-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\n        </div>\n        <div \n            id=\"usageHistoryChart\" \n            class=\"history-chart\" \n            nvd3-line-chart \n            data=\"usageHistoryData\" \n            showXAxis=\"true\" \n            showYAxis=\"true\" \n            tooltips=\"true\" \n            interactive=\"true\" \n            showLegend=\"true\" \n            showControls=\"true\" \n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \n            noData=\"No API history yet!\" \n        ></div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\n        <p>Coming Soon!</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Log</h3>\n        <p>Coming Soon!</p>\n    </div>\n</div>",
+                    template: "<div class=\"crawling\">\n    <h2 class=\"control-title\">Crawling Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block overview\">\n        <h3 class=\"telemetry-title\">Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"row overview-requests-usages-tally no-gutter\">\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_request\">\n                    <span class=\"tally-bg\">R</span>\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\n                </div>\n                <p class=\"tally-description\">Requests Received</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_usage\">\n                    <span class=\"tally-bg\">U</span>\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Used</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_available\">\n                    <span class=\"tally-bg\">A</span>\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\n        </div>\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <dl>\n                <dt>\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\n                </dt>\n                <dd \n                    class=\"input-group\" \n                    ng-class=\"{\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\n                    }\" \n                >\n                    <input \n                        id=\"apiLimitModifierFormQuantity\"\n                        class=\"form-control\" \n                        type=\"number\" \n                        name=\"quantity\" \n                        ng-model=\"apiLimitModifier.quantity\" \n                        ng-disabled = \"!hasBillingDetails\" \n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \n                        maxlength=\"10\" \n                        required \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \n                            ng-click=\"changeLimit(apiLimitModifier)\" \n                        >\n                            Change Cap\n                        </button>\n                    </span>\n                </dd>\n                <dt>Free Usage Cap:</dt>\n                <dd>{{userAccount.apiFreeLimit}}</dd>\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\n                <dd>${{price}} AUD</dd>\n            </dl>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"history-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\n        </div>\n        <div \n            id=\"usageHistoryChart\" \n            class=\"history-chart\" \n            nvd3-line-chart \n            data=\"usageHistoryData\" \n            showXAxis=\"true\" \n            showYAxis=\"true\" \n            tooltips=\"true\" \n            interactive=\"true\" \n            showLegend=\"true\" \n            showControls=\"true\" \n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \n            noData=\"No API history yet!\" \n        ></div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{domainDistinctionDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{domainDistinctionDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"domain-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardDomains()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardDomains()\">Forward</button>\n        </div>\n        <div class=\"row\">\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">Requests</p>\n                <div \n                    id=\"domainDistinctionChartRequests\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataRequests\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionRequestsToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">Usages</p>\n                <div \n                    id=\"domainDistinctionChartUsages\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataUsages\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionUsagesToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n        </div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Log</h3>\n        <p>Coming Soon!</p>\n    </div>\n</div>",
                     controller: 'ControlCrawlingCtrl'
                 }
             )
@@ -3707,12 +3707,6 @@ module.exports = [
     'MomentServ', 
     function ($scope, $q, UserSystemServ, CalculateServ, Restangular, MomentServ) {
 
-        var checkUserAccount = function () {
-
-            return $scope.userAccount || false;
-        
-        };
-
         /**
          * Handle API Limit Modifier Form
          */
@@ -3790,18 +3784,81 @@ module.exports = [
         };
 
         /**
+         * Formats the X axis on the date graph
+         */
+        $scope.xAxisDateFormatFunction = function(){
+            //xValue is a Moment.js wrapped date objects
+            //it's evaluated in milliseconds, but d3 needs it in a JS date object
+            return function(xValue){
+                return d3.time.format('%Y-%m-%d')(new Date(xValue));
+            }
+        };
+
+        /**
+         * Extracts the key value for the pie graph
+         */
+        $scope.xPieFunction = function(){
+            return function(d) {
+                return d.key;
+            };
+        };
+        
+        /**
+         * Extract the quantity value for the pie graph
+         */
+        $scope.yPieFunction = function () {
+            return function(d){
+                return d.quantity;
+            };
+        };
+
+
+        var totalDomainDistinctionRequestsQuantity;
+        var totalDomainDistinctionUsagesQuantity;
+
+        /**
+         * Creates the tool tip content structure for domain distinction requests graph
+         */
+        $scope.domainDistinctionRequestsToolTip = function () {
+            return function (key, quantity, node, chart) {
+                return "<h3>" + key +"</h3>" + "<p>" + quantity + " Requests - " + 
+                    Math.round(
+                        (quantity / totalDomainDistinctionRequestsQuantity) * 100
+                    ) + 
+                "%</p>";
+            };
+        };
+
+        /**
+         * Creates the tool tip content structure for domain distinction usages graph
+         */
+        $scope.domainDistinctionUsagesToolTip = function () {
+            return function (key, quantity, node, chart) {
+                return "<h3>" + key +"</h3>" + "<p>" + quantity + " Usages - " + 
+                    Math.round(
+                        (quantity / totalDomainDistinctionUsagesQuantity) * 100
+                    ) + 
+                "%</p>";
+            };
+        };
+
+        /**
          * Get Request & Usage History Stats
          */
         var getGraphStats = function (userAccount) {
 
-            var logGraphDate = MomentServ().subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
+            //currently the ending will always the current date, and the graph will simple contain more data as we go backwards in time
+            $scope.logGraphDate = {
+                beginning: MomentServ().subtract(MomentServ.duration(userAccount.chargeInterval)),
+                ending: MomentServ()
+            };
 
             var getGraph = function () {
 
-                var cutOffDate = logGraphDate.format('YYYY-MM-DD HH:mm:ss');
+                var cutOffDate = $scope.logGraphDate.beginning.format('YYYY-MM-DD HH:mm:ss');
                 var dates = [];
                 var requests = [];
-                var usage = [];
+                var usages = [];
 
                 var cachedLog = Restangular.all('log').customGET('', {
                     user: userAccount.id,
@@ -3831,7 +3888,7 @@ module.exports = [
                     responses[1].content.forEach(function (value, index) {
                         var date = MomentServ(value.date, 'YYYY-MM-DD HH:mm:ss');
                         dates.push(date);
-                        usage.push([date, value.quantity]);
+                        usages.push([date, value.quantity]);
                     });
 
                     var oldestDate = dates.reduce(function (prevDate, curDate) {
@@ -3851,12 +3908,12 @@ module.exports = [
                             ]
                         },
                         {
-                            key: "Usages",
-                            values: usage
-                        },
-                        {
                             key: "Requests",
                             values: requests
+                        },
+                        {
+                            key: "Usages",
+                            values: usages
                         }
                     ];
 
@@ -3868,39 +3925,110 @@ module.exports = [
 
             };
 
-            //sets up the date formatting on the x axis
-            $scope.xAxisDateFormatFunction = function(){
-                //xValue is a Moment.js wrapped date objects
-                //it's evaluated in milliseconds, but d3 needs it in a JS date object
-                return function(xValue){
-                    return d3.time.format('%Y-%m-%d')(new Date(xValue));
-                }
-            };
-
-            getGraph();
-
             $scope.forwardGraph = function () {
 
-                logGraphDate = logGraphDate.add(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
+                $scope.logGraphDate.beginning = $scope.logGraphDate.beginning.add(
+                    MomentServ.duration(userAccount.chargeInterval)
+                );
                 getGraph();
 
             };
 
             $scope.backwardGraph = function () {
 
-                logGraphDate = logGraphDate.subtract(MomentServ.duration.fromIsoduration(userAccount.chargeInterval));
+                $scope.logGraphDate.beginning = $scope.logGraphDate.beginning.subtract(
+                    MomentServ.duration(userAccount.chargeInterval)
+                );
                 getGraph();
 
             };
+
+            getGraph();
 
         };
 
         var getHistoryStats = function (userAccount) {
 
-            //get the full log up to a date...?
-            //log_model will need to support date offsets instead of offset/limit
-            //domain distinction actually needs to grab it off the server?
-            //probably better to execute it from the server, there could be a lot of data
+            var domainDistinctionDuration = 'P1Y';
+
+            //right now we're only utilising the beginning
+            $scope.domainDistinctionDate = {
+                beginning: MomentServ().subtract(MomentServ.duration(domainDistinctionDuration)),
+                ending: MomentServ()
+            };
+
+            var getDomainDistinction = function () {
+
+                var cutOffDate = $scope.domainDistinctionDate.beginning.format('YYYY-MM-DD HH:mm:ss');
+
+                $scope.domainDistinctionDataRequests = [];
+                Restangular.all('log').customGET('', {
+                    user: userAccount.id,
+                    date: cutOffDate,
+                    transform: 'by_domain'
+                }).then(function (response) {
+
+                    totalDomainDistinctionRequestsQuantity = 0;
+
+                    //iterate through the domain: quantity
+                    var data = [];
+                    angular.forEach(response.content, function (value, key) {
+                        totalDomainDistinctionRequestsQuantity = totalDomainDistinctionRequestsQuantity + value;
+                        data.push({
+                            key: key,
+                            quantity: value
+                        });
+                    });
+
+                    $scope.domainDistinctionDataRequests = data;
+
+                });
+
+                $scope.domainDistinctionDataUsages = [];
+                Restangular.all('log').customGET('', {
+                    user: userAccount.id,
+                    date: cutOffDate,
+                    type: 'uncached',
+                    transform: 'by_domain'
+                }).then(function (response) {
+
+                    totalDomainDistinctionUsagesQuantity = 0;
+
+                    //iterate through the domain: quantity
+                    var data = [];
+                    angular.forEach(response.content, function (value, key) {
+                        totalDomainDistinctionUsagesQuantity = totalDomainDistinctionUsagesQuantity + value;
+                        data.push({
+                            key: key,
+                            quantity: value
+                        });
+                    });
+
+                    $scope.domainDistinctionDataUsages = data;
+
+                });
+
+            };
+
+            $scope.forwardDomains = function () {
+
+                $scope.domainDistinctionDate.beginning = $scope.domainDistinctionDate.beginning.add(
+                    MomentServ.duration(domainDistinctionDuration)
+                );
+                getDomainDistinction();
+
+            };
+
+            $scope.backwardDomains = function () {
+
+                $scope.domainDistinctionDate.beginning = $scope.domainDistinctionDate.beginning.subtract(
+                    MomentServ.duration(domainDistinctionDuration)
+                );
+                getDomainDistinction();
+
+            };
+
+            getDomainDistinction();
 
             //finally for the log table we'll need to extract the entire data
 
@@ -3910,19 +4038,26 @@ module.exports = [
 
             handleApiLimitModifierForm(userAccount);
             getGraphStats(userAccount);
-            getHistoryStats();
+            getHistoryStats(userAccount);
 
         };
 
         //run every time the controller is reinstantiated
-        if (checkUserAccount()) {
+        if (UserSystemServ.getUserState()) {
             
-            initialise(checkUserAccount());
+            initialise(UserSystemServ.getUserData());
         
         } else {
 
-            $scope.$watch(checkUserAccount, function (userAccount) {
-                initialise(userAccount);
+            $scope.$watch(UserSystemServ.getUserData, function (newUserAccount, oldUserAccount) {
+
+                //only if they are different, do we poll for new crawling data
+                if (!angular.equals(newUserAccount, oldUserAccount)) {
+                    if (Object.keys(newUserAccount).length > 0) {
+                        initialise(newUserAccount);
+                    }
+                }
+
             });
 
         }
@@ -3955,14 +4090,12 @@ module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'Cal
 
             var userAccount = angular.copy(value);
 
-            // console.log(userAccount);
-
             $scope.userAccount = userAccount;
             $scope.userAccount.apiUsagePercentage = CalculateServ.round((value.apiUsage / value.apiLimit) * 100, '2');
 
             //chargeCycle will wrap the dates as moment objects
             $scope.chargeCycle = {
-                beginning: MomentServ(value.chargeDate, 'YYYY-MM-DD HH:mm:ss').subtract(MomentServ.duration.fromIsoduration(value.chargeInterval)),
+                beginning: MomentServ(value.chargeDate, 'YYYY-MM-DD HH:mm:ss').subtract(MomentServ.duration(value.chargeInterval)),
                 ending: MomentServ(value.chargeDate, 'YYYY-MM-DD HH:mm:ss')
             };
 
