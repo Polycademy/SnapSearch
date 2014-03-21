@@ -149,7 +149,12 @@ class Cron extends CI_Controller{
 					'chargeDate'		=> $next_charge_date->format('Y-m-d H:i:s'),
 				]);
 
-				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} {$user['email']} Usage: $usage Charge: $charge\n";
+				//$usage and $total_usage were used for calculations, but these are the real values for the logging
+				$real_current_requests = $user['apiRequests'];
+				$real_current_usage = $user['apiUsage'];
+				$real_total_usage = $user['apiUsage'] + $user['apiLeftOverUsage'];
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} {$user['email']} Current Requests: $real_current_requests Current Usage: $real_current_usage Total Usage: $real_total_usage Charge: $charge\n";
 
 				if($charge){
 
