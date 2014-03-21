@@ -122,8 +122,8 @@ module.exports = [
         };
 
 
-        var totalDomainDistinctionRequestsQuantity;
-        var totalDomainDistinctionUsagesQuantity;
+        $scope.totalDomainDistinctionRequestsQuantity = 0;
+        $scope.totalDomainDistinctionUsagesQuantity = 0;
 
         /**
          * Creates the tool tip content structure for domain distinction requests graph
@@ -132,7 +132,7 @@ module.exports = [
             return function (key, quantity, node, chart) {
                 return "<h3>" + key +"</h3>" + "<p>" + quantity + " Requests - " + 
                     Math.round(
-                        (quantity / totalDomainDistinctionRequestsQuantity) * 100
+                        (quantity / $scope.totalDomainDistinctionRequestsQuantity) * 100
                     ) + 
                 "%</p>";
             };
@@ -145,7 +145,7 @@ module.exports = [
             return function (key, quantity, node, chart) {
                 return "<h3>" + key +"</h3>" + "<p>" + quantity + " Usages - " + 
                     Math.round(
-                        (quantity / totalDomainDistinctionUsagesQuantity) * 100
+                        (quantity / $scope.totalDomainDistinctionUsagesQuantity) * 100
                     ) + 
                 "%</p>";
             };
@@ -277,12 +277,12 @@ module.exports = [
                     transform: 'by_domain'
                 }).then(function (response) {
 
-                    totalDomainDistinctionRequestsQuantity = 0;
+                    $scope.totalDomainDistinctionRequestsQuantity = 0;
 
                     //iterate through the domain: quantity
                     var data = [];
                     angular.forEach(response.content, function (value, key) {
-                        totalDomainDistinctionRequestsQuantity = totalDomainDistinctionRequestsQuantity + value;
+                        $scope.totalDomainDistinctionRequestsQuantity = $scope.totalDomainDistinctionRequestsQuantity + value;
                         data.push({
                             key: key,
                             quantity: value
@@ -301,12 +301,12 @@ module.exports = [
                     transform: 'by_domain'
                 }).then(function (response) {
 
-                    totalDomainDistinctionUsagesQuantity = 0;
+                    $scope.totalDomainDistinctionUsagesQuantity = 0;
 
                     //iterate through the domain: quantity
                     var data = [];
                     angular.forEach(response.content, function (value, key) {
-                        totalDomainDistinctionUsagesQuantity = totalDomainDistinctionUsagesQuantity + value;
+                        $scope.totalDomainDistinctionUsagesQuantity = $scope.totalDomainDistinctionUsagesQuantity + value;
                         data.push({
                             key: key,
                             quantity: value
@@ -339,7 +339,46 @@ module.exports = [
 
             getDomainDistinction();
 
-            //finally for the log table we'll need to extract the entire data
+        };
+
+        var getLogStats = function (userAccount) {
+
+            var limit = 10;
+            var offset = 0;
+
+            var getLogs = function () {
+
+                Restangular.all('log').customGET('', {
+                    user: userAccount.id,
+                    limit: limit,
+                    offset: offset
+                }).then(function (response) {
+
+                    $scope.logs = response.content;
+
+                }, function (response) {
+
+                    $scope.logs = false;
+
+                });
+
+            };
+
+            $scope.forwardLogs = function () {
+
+                offset = offset - limit;
+                getLogs();
+
+            };
+
+            $scope.backwardLogs = function () {
+
+                offset = offset + limit;
+                getLogs();
+
+            };
+
+            getLogs();
 
         };
 
@@ -348,11 +387,12 @@ module.exports = [
             handleApiLimitModifierForm(userAccount);
             getGraphStats(userAccount);
             getHistoryStats(userAccount);
+            getLogStats(userAccount);
 
         };
 
         //run every time the controller is reinstantiated
-        if (UserSystemServ.getUserState()) {
+        if (UserSystemServ.getUserState() && Object.keys(UserSystemServ.getUserData()).length > 0) {
             
             initialise(UserSystemServ.getUserData());
         

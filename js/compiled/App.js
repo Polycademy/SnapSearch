@@ -3310,7 +3310,7 @@ module.exports = [
                 'controlPanel.crawling', //default controlPanel childstate
                 {
                     url: '/crawling',
-                    template: "<div class=\"crawling\">\n    <h2 class=\"control-title\">Crawling Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block overview\">\n        <h3 class=\"telemetry-title\">Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"row overview-requests-usages-tally no-gutter\">\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_request\">\n                    <span class=\"tally-bg\">R</span>\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\n                </div>\n                <p class=\"tally-description\">Requests Received</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_usage\">\n                    <span class=\"tally-bg\">U</span>\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Used</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_available\">\n                    <span class=\"tally-bg\">A</span>\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\n        </div>\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <dl>\n                <dt>\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\n                </dt>\n                <dd \n                    class=\"input-group\" \n                    ng-class=\"{\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\n                    }\" \n                >\n                    <input \n                        id=\"apiLimitModifierFormQuantity\"\n                        class=\"form-control\" \n                        type=\"number\" \n                        name=\"quantity\" \n                        ng-model=\"apiLimitModifier.quantity\" \n                        ng-disabled = \"!hasBillingDetails\" \n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \n                        maxlength=\"10\" \n                        required \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \n                            ng-click=\"changeLimit(apiLimitModifier)\" \n                        >\n                            Change Cap\n                        </button>\n                    </span>\n                </dd>\n                <dt>Free Usage Cap:</dt>\n                <dd>{{userAccount.apiFreeLimit}}</dd>\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\n                <dd>${{price}} AUD</dd>\n            </dl>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"history-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\n        </div>\n        <div \n            id=\"usageHistoryChart\" \n            class=\"history-chart\" \n            nvd3-line-chart \n            data=\"usageHistoryData\" \n            showXAxis=\"true\" \n            showYAxis=\"true\" \n            tooltips=\"true\" \n            interactive=\"true\" \n            showLegend=\"true\" \n            showControls=\"true\" \n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \n            noData=\"No API history yet!\" \n        ></div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{domainDistinctionDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{domainDistinctionDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"domain-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardDomains()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardDomains()\">Forward</button>\n        </div>\n        <div class=\"row\">\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">Requests</p>\n                <div \n                    id=\"domainDistinctionChartRequests\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataRequests\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionRequestsToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">Usages</p>\n                <div \n                    id=\"domainDistinctionChartUsages\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataUsages\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionUsagesToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n        </div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Log</h3>\n        <p>Coming Soon!</p>\n    </div>\n</div>",
+                    template: "<div class=\"crawling\">\n    <h2 class=\"control-title\">Crawling Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block overview\">\n        <h3 class=\"telemetry-title\">Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"row overview-requests-usages-tally no-gutter\">\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_request\">\n                    <span class=\"tally-bg\">R</span>\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\n                </div>\n                <p class=\"tally-description\">Requests Received</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_usage\">\n                    <span class=\"tally-bg\">U</span>\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Used</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_available\">\n                    <span class=\"tally-bg\">A</span>\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\n        </div>\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <dl>\n                <dt>\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\n                </dt>\n                <dd \n                    class=\"input-group\" \n                    ng-class=\"{\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\n                    }\" \n                >\n                    <input \n                        id=\"apiLimitModifierFormQuantity\"\n                        class=\"form-control\" \n                        type=\"number\" \n                        name=\"quantity\" \n                        ng-model=\"apiLimitModifier.quantity\" \n                        ng-disabled = \"!hasBillingDetails\" \n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \n                        maxlength=\"10\" \n                        required \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \n                            ng-click=\"changeLimit(apiLimitModifier)\" \n                        >\n                            Change Cap\n                        </button>\n                    </span>\n                </dd>\n                <dt>Free Usage Cap:</dt>\n                <dd>{{userAccount.apiFreeLimit}}</dd>\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\n                <dd>${{price}} AUD</dd>\n            </dl>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"history-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\n        </div>\n        <div \n            id=\"usageHistoryChart\" \n            class=\"history-chart\" \n            nvd3-line-chart \n            data=\"usageHistoryData\" \n            showXAxis=\"true\" \n            showYAxis=\"true\" \n            tooltips=\"true\" \n            interactive=\"true\" \n            showLegend=\"true\" \n            showControls=\"true\" \n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \n            noData=\"No API history yet!\" \n        ></div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{domainDistinctionDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{domainDistinctionDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"domain-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardDomains()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardDomains()\">Forward</button>\n        </div>\n        <div class=\"row\">\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Requests - Total: {{totalDomainDistinctionRequestsQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartRequests\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataRequests\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionRequestsToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Usages - Total: {{totalDomainDistinctionUsagesQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartUsages\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataUsages\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionUsagesToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n        </div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Request & Usage Log</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"logs\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <tr>\n                        <th class=\"text-center\">#</th>\n                        <th class=\"text-center\">Date</th>\n                        <th class=\"text-center\">Type</th>\n                        <th class=\"text-center\">URL</th>\n                        <th class=\"text-center\">Response Time (s)</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"log in logs\">\n                        <td class=\"text-center\">{{log.id}}</td>\n                        <td class=\"text-center\">{{log.date}}</td>\n                        <td class=\"text-center\">{{log.type}}</td>\n                        <td class=\"text-center\">{{log.url}}</td>\n                        <td class=\"text-center\">{{log.responseTime}}</td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!logs\"><strong>No log data yet!</strong></p>\n    </div>\n</div>",
                     controller: 'ControlCrawlingCtrl'
                 }
             )
@@ -3813,8 +3813,8 @@ module.exports = [
         };
 
 
-        var totalDomainDistinctionRequestsQuantity;
-        var totalDomainDistinctionUsagesQuantity;
+        $scope.totalDomainDistinctionRequestsQuantity = 0;
+        $scope.totalDomainDistinctionUsagesQuantity = 0;
 
         /**
          * Creates the tool tip content structure for domain distinction requests graph
@@ -3823,7 +3823,7 @@ module.exports = [
             return function (key, quantity, node, chart) {
                 return "<h3>" + key +"</h3>" + "<p>" + quantity + " Requests - " + 
                     Math.round(
-                        (quantity / totalDomainDistinctionRequestsQuantity) * 100
+                        (quantity / $scope.totalDomainDistinctionRequestsQuantity) * 100
                     ) + 
                 "%</p>";
             };
@@ -3836,7 +3836,7 @@ module.exports = [
             return function (key, quantity, node, chart) {
                 return "<h3>" + key +"</h3>" + "<p>" + quantity + " Usages - " + 
                     Math.round(
-                        (quantity / totalDomainDistinctionUsagesQuantity) * 100
+                        (quantity / $scope.totalDomainDistinctionUsagesQuantity) * 100
                     ) + 
                 "%</p>";
             };
@@ -3968,12 +3968,12 @@ module.exports = [
                     transform: 'by_domain'
                 }).then(function (response) {
 
-                    totalDomainDistinctionRequestsQuantity = 0;
+                    $scope.totalDomainDistinctionRequestsQuantity = 0;
 
                     //iterate through the domain: quantity
                     var data = [];
                     angular.forEach(response.content, function (value, key) {
-                        totalDomainDistinctionRequestsQuantity = totalDomainDistinctionRequestsQuantity + value;
+                        $scope.totalDomainDistinctionRequestsQuantity = $scope.totalDomainDistinctionRequestsQuantity + value;
                         data.push({
                             key: key,
                             quantity: value
@@ -3992,12 +3992,12 @@ module.exports = [
                     transform: 'by_domain'
                 }).then(function (response) {
 
-                    totalDomainDistinctionUsagesQuantity = 0;
+                    $scope.totalDomainDistinctionUsagesQuantity = 0;
 
                     //iterate through the domain: quantity
                     var data = [];
                     angular.forEach(response.content, function (value, key) {
-                        totalDomainDistinctionUsagesQuantity = totalDomainDistinctionUsagesQuantity + value;
+                        $scope.totalDomainDistinctionUsagesQuantity = $scope.totalDomainDistinctionUsagesQuantity + value;
                         data.push({
                             key: key,
                             quantity: value
@@ -4030,7 +4030,46 @@ module.exports = [
 
             getDomainDistinction();
 
-            //finally for the log table we'll need to extract the entire data
+        };
+
+        var getLogStats = function (userAccount) {
+
+            var limit = 10;
+            var offset = 0;
+
+            var getLogs = function () {
+
+                Restangular.all('log').customGET('', {
+                    user: userAccount.id,
+                    limit: limit,
+                    offset: offset
+                }).then(function (response) {
+
+                    $scope.logs = response.content;
+
+                }, function (response) {
+
+                    $scope.logs = false;
+
+                });
+
+            };
+
+            $scope.forwardLogs = function () {
+
+                offset = offset - limit;
+                getLogs();
+
+            };
+
+            $scope.backwardLogs = function () {
+
+                offset = offset + limit;
+                getLogs();
+
+            };
+
+            getLogs();
 
         };
 
@@ -4039,11 +4078,12 @@ module.exports = [
             handleApiLimitModifierForm(userAccount);
             getGraphStats(userAccount);
             getHistoryStats(userAccount);
+            getLogStats(userAccount);
 
         };
 
         //run every time the controller is reinstantiated
-        if (UserSystemServ.getUserState()) {
+        if (UserSystemServ.getUserState() && Object.keys(UserSystemServ.getUserData()).length > 0) {
             
             initialise(UserSystemServ.getUserData());
         
@@ -4677,7 +4717,7 @@ module.exports = angular.module('App.Elements')
 var fs = require('fs');
 var insertCss = require('insert-css');
 var css = ".chatTab {\n    position: fixed;\n    right: 1%;\n    bottom: 0;\n    width: 180px;\n}\n\n.chatTab button {\n    color: #FFF;\n    margin: 0 auto;\n    display: block;\n    padding: 6px;\n    background: #428bca;\n    border-top-left-radius: 6px;\n    border-top-right-radius: 6px;\n    border-left: 1px solid #357ebd;\n    border-right: 1px solid #357ebd;\n    border-top: 1px solid #357ebd;\n    border-bottom: none;\n    width: 100%;\n}\n\n.chatTab button:hover {\n    background-color: #2D6CA2;\n    border-color: #2B669A;\n}\n\n.chatTab-content {\n    background: #FFF;\n    width: auto;\n    height: auto;\n    padding: 10px;\n    border-left: 1px solid #dcdcdc;\n    border-right: 1px solid #dcdcdc;\n}\n\n.chatTab-content.crushed {\n    width: 0;\n    height: 0;\n    display: none;\n}\n\n.chatTab-link {\n    display: block;\n    margin-bottom: 5px;\n    text-align: center;\n}";
-var chatTemplate = "<div class=\"chatTab\">\n    <button ng-click=\"openCloseChatTab()\">Chat with the Developers</button>\n    <div class=\"chatTab-content crushed\">\n        <a class=\"chatTab-link\" ng-href=\"{{chatUrl}}\" target=\"_blank\">Access WebChat</a>\n        <p>If we're not online, just leave a message or ping us as we will receive it on our mobile phones.</p>\n    </div>\n</div>";
+var chatTemplate = "<div class=\"chatTab\">\n    <button ng-click=\"openCloseChatTab()\">Chat with the Developers</button>\n    <div class=\"chatTab-content crushed\">\n        <a class=\"chatTab-link\" ng-href=\"{{chatUrl}}\" target=\"_blank\">Access WebChat</a>\n        <p>Leave a message if we're not online.</p>\n    </div>\n</div>";
 
 insertCss(css);
 

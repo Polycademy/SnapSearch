@@ -93,6 +93,14 @@ class Log_model extends CI_Model{
         $offset = ($offset) ? (int) $offset : 0;
         $limit = ($limit) ? (int) $limit : false;
 
+        if($offset < 0){
+            $offset = 0;
+        }
+
+        if($limit < 0) {
+            $limit = 0;
+        }
+
         $this->db->select('*');
         $this->db->from('log');
         $this->db->order_by('date', 'desc');
