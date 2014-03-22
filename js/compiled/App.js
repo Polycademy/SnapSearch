@@ -3250,7 +3250,7 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":39,"./filters/Filters":77,"./modules/Modules":78,"./services/Services":88}],7:[function(require,module,exports){
+},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":40,"./filters/Filters":78,"./modules/Modules":79,"./services/Services":89}],7:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3286,7 +3286,7 @@ module.exports = [
                 'documentation',
                 {
                     url: '/documentation',
-                    template: "<div class=\"documentation panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Documentation</h2>\n        </div>\n        <div class=\"panel-body row\">\n            <div class=\"col-md-2\">\n                <nav class=\"btn-group-vertical documentation-nav\" affix affix-top=\"214\" affix-bottom=\"910\">\n                    <a class=\"btn\" scroll=\"introduction\">Introduction</a>\n                    <a class=\"btn\" scroll=\"apiUsage\">API Usage</a>\n                    <a class=\"btn\" scroll=\"parameters\">Parameters</a>\n                    <a class=\"btn\" scroll=\"middleware\">Middleware</a>\n                    <a class=\"btn\" scroll=\"notes\">Notes</a>\n                </nav>\n            </div>\n            <div class=\"col-md-10\">\n                <div class=\"documentation-box\">\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"introduction\">Introduction</h3>\n                        <p>Snapsearch is a search engine optimisation (SEO) and robot proxy for complex front-end javascript & AJAX enabled (potentially realtime) HTML5 web applications.</p>\n                        <p>Search engines like Google's crawler and dumb HTTP clients such as Facebook's image extraction robot cannot execute complex javascript applications. Complex javascript applications include websites that utilise AngularJS, EmberJS, KnockoutJS, Dojo, Backbone.js, Ext.js, jQuery, JavascriptMVC, Meteor, SailsJS, Derby, RequireJS and much more. Basically any website that utilises javascript in order to bring in content and resources asynchronously after the page has been loaded, or utilises javascript to manipulate the page's content while the user is viewing them such as animation.</p>\n                        <p>Snapsearch intercepts any requests made by search engines or robots and sends its own javascript enabled robot to extract your page's content and creates a cached snapshot. This snapshot is then passed through your own web application back to the search engine, robot or browser.</p>\n                        <p>Snapsearch's robot is an automated load balanced Firefox browser. This Firefox browser is kept up to date with the release, beta, alpha and nightly versions (beta, alpha and nightly is still under implementation), so we'll always be able to serve the latest in HTML5 technology. Our load balancer ensures your requests won't be hampered by other user's requests.</p>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"apiUsage\">API Usage</h3>\n                        <p>Make sure to register an account on SnapSearch before utilising these libraries. You will need your email and key to access SnapSearch's robot over SSL encrypted HTTP Basic Authorization.</p>\n                        <p>SnapSearch can be easily integrated into your solution stack via our client middleware libraries. These client libraries first automatically detect if an HTTP request comes from a search engine or robot. If it is indeed a search engine, it sends an HTTP POST request to <code>https://snapsearch.io/api/v1/robot</code> passing in parameters configuring how SnapSearch's robot should extract your content. SnapSearch will then send a HTTP GET request to the same URL and return the HTTP response (status code, headers and content) as a JSON response to the library. The client library then returns that data back to your application. You will have to select which data to present to the search engine. It is recommended to return the status code and content but not all of the headers, due to potential header mismatch with content encoding. However if you have specific headers that are important, then first test if it works with a simple HTTP client before deploying it.</p>\n                        <p>Our cache is dependent on your request parameters. So new request parameters will create a new independent snapshot.</p>\n                        <p>All of the middleware libraries are ran on the application level requiring a server side programming language.</p>\n                        <p>For specific usage and installation instructions navigate to specific middleware.</p>\n                        <p>For sites using hash based url schemes please see our <a scroll=\"notes\">notes on Hashbang urls</a>.</p>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"parameters\">Request Parameters</h3>\n                        <p>Our HTTPS Robot endpoint <code>/api/v1/robot</code> requires HTTP basic auth with your email and key as username and password respectively, and it accepts these parameters in POST or GET format:</p>\n                        <dl>\n                            <dt>url</dt>\n                            <dd>\n                                Url to scrape. This is the only required parameter. Every other parameter can be left as default.\n                            </dd>\n                            <dt>useragent</dt>\n                            <dd>\n                                Custom user agent. Default: Mozilla/5.0 (OPERATING SYSTEM) Gecko/VERSION Firefox/VERSION SnapSearch\n                                <br /> \n                                Setting this user agent to something that does not include \"SnapSearch\" can cause an infinite interception loop.\n                            </dd>\n                            <dt>width</dt>\n                            <dd>\n                                Width of the Browser. Default: 1280px\n                                <br />\n                                Can be used if you have specific requirements regarding the dimensions of the browser.\n                            </dd>\n                            <dt>height</dt>\n                            <dd>\n                                Height of the Browser. Default: 1024px\n                                <br />\n                                Can be used if you have specific requirements regarding the dimensions of the browser.\n                            </dd>\n                            <dt>imgformat</dt>\n                            <dd>\n                                Image Format. Default: png\n                                <br />\n                                Is used in conjunction with <code>screenshot</code> parameter. Currently only supports png format. \n                            </dd>\n                            <dt>screenshot</dt>\n                            <dd>\n                                Take a screenshot or not. Default: false\n                                <br />\n                                The screenshot is returned as base 64 encoded image and the format is determined by the <code>imgformat</code> parameter.\n                            </dd>\n                            <dt>navigate</dt>\n                            <dd>\n                                Follow redirects or not. Default: false\n                                <br />\n                                In most cases you do not want to follow redirects. If you leave this false, it will return the status, headers and body of the page asking for a redirect. If you switch this to true, it will follow header, client side, javascript, and meta tag redirects.\n                            </dd>\n                            <dt>loadimages</dt>\n                            <dd>\n                                Load images or not. Default: false\n                                <br />\n                                Loading images is not required when doing content scraping, leaving this off results in faster scrapes. However if you are taking screenshots, then you should switch this to true.\n                            </dd>\n                            <dt>javascriptenabled</dt>\n                            <dd>\n                                Process javascript or not. Default: true\n                                <br />\n                                Can be used in circumstances where you don't want to process javascript.\n                            </dd>\n                            <dt>maxtimeout</dt>\n                            <dd>\n                                Maximum millisecond timeout for asynchronous requests. Default: 5000\n                                <br />\n                                This determines how long the browser will wait for asynchronous requests to finish. This means the browser will initiate the capture of the page contents either when all asynchronous requests finish, or at the maximum timeout. The number can be between 1000 to 15000 milliseconds. Longer times will result in potentially slower scrapes, but may capture more content if your site produces many slow asynchronous requests. If you set it too long, the client search engine robot may timeout. Play with this setting to the most optimal scraping speed.\n                            </dd>\n                            <dt>initialwait</dt>\n                            <dd>\n                                Initial millisecond wait before checking asynchronous requests. Default: 1000\n                                <br />\n                                This determines how long the browser will wait before it starts to check for when the asynchronous requests finish. The <code>maxtimeout</code> only begins onces the <code>initialwait</code> finishes. This is intended to allow delayed asynchronous requests or for pages which don't have asynchronous requests but have DOM mutations. The number has to be lower than <code>maxtimeout</code>.\n                            </dd>\n                            <dt>callback</dt>\n                            <dd>\n                                Javascript string to be evaled on the page. Default: false\n                                <br />\n                                This javascript string is evaled on the page after all asynchronous requests have finished but prior to the capture of the page contents. This allows you to do DOM mutations or capture specific content which will be returned as string independent of the page capture. You can assume this string is executed in the context of an anonymous function. So you can just write <code>return 'hello world';</code>. Returning string values is recommended, as other values may not be encoded. These returned values will be stored in the <code>callbackResult</code> property in the response.\n                            </dd>\n                            <dt>meta</dt>\n                            <dd>\n                                Scrape for custom meta tags or not. Default: true\n                                <br />\n                                You can use custom meta tags to change the status code or headers that is returned from the snapshot. This is intended for soft 404 techniques. It will look for meta tags such as <code>&lt;meta name=&quot;snapsearch-status&quot; content=&quot;404&quot; /&gt;</code> and <code>&lt;meta name=&quot;snapsearch-header&quot; content=&quot;Content-Type:text/html&quot; /&gt;</code>\n                            </dd>\n                            <dt>cache</dt>\n                            <dd>\n                                Allow caching of the snapshot or not. Default: true\n                                <br />\n                                This determines two things. The first is whether the snapshot can be acquired from the cache. The second is whether the snapshot can be cached. If this is left as true, snapshots can be returned from the cache if it exists in the cache or cached if it is a fresh snapshot. If this is switched to false, snapshots will always be fresh and the result will not be cached.\n                            </dd>\n                            <dt>cachetime</dt>\n                            <dd>\n                                Cache time in hours. Default: 24\n                                <br />\n                                You can change how long until the snapshots will expire. This number can be between 1 to 100 hours. Shorter cache time will result in more up to date snapshots, but it will use up more of your usage cap. Longer cache time will result in less up to date snapshots, but it will conserve your usage cap. This figure will depend on how often your pages change, what proportion of those pages are changing compared to the rest of the website.\n                            </dd>\n                            <dt>test</dt>\n                            <dd>\n                                Testing the API? Default: false\n                                <br />\n                                If you're in development mode or on localhost, set this to true, and it will only validate your request parameters, but not attempt to actually scrape anything.\n                            </dd>\n                        </dl>\n                        <p>Here is an example response:</p>\n                        <pre><code>[\n    'cache'             =&gt; true/false,\n    'callbackResult'    =&gt; '',\n    'date'              =&gt; 1390382314,\n    'headers'           =&gt; [\n        [\n            'name'  =&gt; 'Content-Type',\n            'value' =&gt; 'text/html'\n        ]\n    ],\n    'html'              =&gt; '&lt;html&gt;&lt;/html&gt;',\n    'message'           =&gt; 'Success/Failed/Validation Errors',\n    'pageErrors'        =&gt; [\n        [\n            'error'   =&gt; 'Error: document.querySelector(...) is null',\n            'trace'   =&gt; [\n                [\n                    'file'      =&gt; 'filename',\n                    'function'  =&gt; 'anonymous',\n                    'line'      =&gt; '41',\n                    'sourceURL' =&gt; 'urltofile'\n                ]\n            ]\n        ]\n    ],\n    'screensot'         =&gt; 'BASE64 ENCODED IMAGE CONTENT',\n    'status'            =&gt; 200\n]</code></pre>\n                        <p>We also record any javascript errors that occur on the page, these are stored in <code>pageErrors</code>, and it can be used for debugging custom <code>callback</code> parameters.</p>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"middleware\">Middleware</h3>\n                        <p>SnapSearch officially supports and provides PHP, Ruby, Node.js and Python middleware. All middleware are framework agnostic, and should be able to work within a middleware framework or without.</p>\n                        <ul>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\">PHP</a> - 1.1.0 (most stable)</li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\">Ruby</a> - 0.1.0 (almost there)</li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\">Node.js</a> - 0.0.2 (works but requires some improvements)</li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\">Python</a> - Still under development.</li>\n                        </ul>\n                        <p>All of the middleware are open source, and we welcome pull requests for patches or new middleware implementations. Check out our <a href=\"https://github.com/SnapSearch/\">Github organisation</a> for more.</p>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"notes\">Notes</h3>\n                        <h4>Hashbang Urls</h4>\n                        <p>Make sure you are using hash bang urls and not just hash urls. This fits with <a href=\"https://developers.google.com/webmasters/ajax-crawling/docs/specification\">Google's AJAX Crawling Scheme</a>. It makes it easier to identify what is a hash, and what is meant to be path. Remember hash fragments are never passed to the server. The middleware needs to know the full HTTP url or else it won't know where to scrape. This means you will need to rely on the search engine robots to convert hash bang urls to query fragment urls. <strong>This meta tag will need to be on every page: <code>&lt;meta name=&quot;fragment&quot; content=&quot;!&quot; /&gt;</code></strong>. If you are using HTML 5 push state urls, the meta tag is still a good practice as it allows search engines following the AJAX specification to know that your site is a single page application.</p>\n                        <h4>Dealing with non-HTML resources</h4>\n                        <p>You need to make sure that non-HTML resources are not intercepted by SnapSearch. Non-HTML resources refer to:</p>\n                        <ul>\n                            <li>Static files that are served through your application and not through an HTTP server such as NGINX or Apache.</li>\n                            <li>Downloads that served through an application level controller.</li>\n                            <li>Text data interchange formats that are not meant to be used for the end user's browser. For example: JSON, XML, RSS... etc.</li>\n                            <li>API resources that don't display the front end site, but are there for interaction between machines.</li>\n                            <li>Any connections that do not go through the HTTP protocol.</li>\n                        </ul>\n                        <p>You can prevent SnapSearch from intercepting these non-HTML resources by:</p>\n                        <ul>\n                            <li>Setup an array of whitelisted regular expression routes which will be matched against the request URL. SnapSearch will not intercept any routes that are not on the whitelist.</li>\n                            <li>Setup an array of blacklisted regular expression routes which will be matched against the request URL. SnapSearch will not intercept any routes that are on the blacklist.</li>\n                            <li>SnapSearch middleware can optionally check if the URL path has an invalid file extension. Some extensions are valid for HTML resources such as <code>.html</code>, but others such as <code>.js</code> are not. Our middleware has an option to switch on this detection and it will ignore requests that go invalid extensions. It is left off by default due to possible confusion.</li>\n                            <li>In MVC style applications, you may have a single controller which is responsible for displaying the front end code. If you execute our clients inside that particular controller, then you will not have any problems with non-HTML resources, since it can only intercept requests that go to the front end.</li>\n                        </ul>\n                        <h4>SSL issues</h4>\n                        <p>SnapSearch will not be able to capture from sites that have invalid SSL certificates (this means self-signed SSL certificates as well). Make sure your SSL is a valid certificate that will work in a normal browser before using SnapSearch.</p>\n                        <h4>Ensuring Analytics Works with Snapsearch</h4>\n                        <p>When Snapsearch visits your site, it will come with a UserAgent containing \"SnapSearch\". You can however configure this to your own liking. Use this user agent in order to filter out our requests when using web analytics.</p>\n                        <h4>Large content</h4>\n                        <p>SnapSearch middleware will timeout the request if the initial request to your site and its synchronous resources takes longer than 30 seconds.</p>\n                        <h4>Supporting JS disabled Browsers</h4>\n                        <p>It's not possible to detect if the HTTP client supports Javascript on the first page load. Therefore you have to know the user agents beforehand. A workaround involves the HTML Meta Refresh tag. You set an HTML meta refresh tag which will refresh the browser and point it to the same url but with query parameter indicating to the server that the client doesn't run javascript. This meta refresh tag can be then be cancelled using javascript. Another approach would be to use the Noscript tag and place the meta refresh tag there. None of these methods are guaranteed to work. but if you're interested check out: <a href=\"http://stackoverflow.com/q/3252743/582917\">http://stackoverflow.com/q/3252743/582917</a></p>\n                        <h4>Soft 404s</h4>\n                        <p>Soft 404s should be avoided. The final representation to the search engine should be exactly the same as normal user with a normal browser would see. However you can achieve this by using the special meta tags and switching <code>meta</code> request parameter to true.</p>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"documentation panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Documentation</h2>\n        </div>\n        <div class=\"panel-body row\">\n            <div class=\"col-md-2\">\n                <nav class=\"btn-group-vertical documentation-nav\" affix affix-top=\"214\" affix-bottom=\"910\">\n                    <a class=\"btn\" scroll=\"introduction\">Introduction</a>\n                    <a class=\"btn\" scroll=\"apiUsage\">API Usage</a>\n                    <a class=\"btn\" scroll=\"parameters\">Parameters</a>\n                    <a class=\"btn\" scroll=\"middleware\">Middleware</a>\n                    <a class=\"btn\" scroll=\"notes\">Notes</a>\n                </nav>\n            </div>\n            <div class=\"col-md-10\">\n                <div class=\"documentation-box\">\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"introduction\">Introduction</h3>\n                        <p>Snapsearch is a search engine optimisation (SEO) and robot proxy for complex front-end javascript & AJAX enabled (potentially realtime) HTML5 web applications.</p>\n                        <p>Search engines like Google's crawler and dumb HTTP clients such as Facebook's image extraction robot cannot execute complex javascript applications. Complex javascript applications include websites that utilise AngularJS, EmberJS, KnockoutJS, Dojo, Backbone.js, Ext.js, jQuery, JavascriptMVC, Meteor, SailsJS, Derby, RequireJS and much more. Basically any website that utilises javascript in order to bring in content and resources asynchronously after the page has been loaded, or utilises javascript to manipulate the page's content while the user is viewing them such as animation.</p>\n                        <p>Snapsearch intercepts any requests made by search engines or robots and sends its own javascript enabled robot to extract your page's content and creates a cached snapshot. This snapshot is then passed through your own web application back to the search engine, robot or browser.</p>\n                        <p>Snapsearch's robot is an automated load balanced Firefox browser. This Firefox browser is kept up to date with the release, beta, alpha and nightly versions (beta, alpha and nightly is still under implementation), so we'll always be able to serve the latest in HTML5 technology. Our load balancer ensures your requests won't be hampered by other user's requests.</p>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"apiUsage\">API Usage</h3>\n                        <p>Make sure to register an account on SnapSearch before utilising these libraries. You will need your email and key to access SnapSearch's robot over SSL encrypted HTTP Basic Authorization.</p>\n                        <p>SnapSearch can be easily integrated into your solution stack via our client middleware libraries. These client libraries first automatically detect if an HTTP request comes from a search engine or robot. If it is indeed a search engine, it sends an HTTP POST request to <code>https://snapsearch.io/api/v1/robot</code> passing in parameters configuring how SnapSearch's robot should extract your content. SnapSearch will then send a HTTP GET request to the same URL and return the HTTP response (status code, headers and content) as a JSON response to the library. The client library then returns that data back to your application. You will have to select which data to present to the search engine. It is recommended to return the status code and content but not all of the headers, due to potential header mismatch with content encoding. However if you have specific headers that are important, then first test if it works with a simple HTTP client before deploying it.</p>\n                        <p>Our cache is dependent on your request parameters. So new request parameters will create a new independent snapshot.</p>\n                        <p>All of the middleware libraries are ran on the application level requiring a server side programming language.</p>\n                        <p>For specific usage and installation instructions navigate to specific middleware.</p>\n                        <p>For sites using hash based url schemes please see our <a scroll=\"notes\">notes on Hashbang urls</a>.</p>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"parameters\">Request Parameters</h3>\n                        <p>Our HTTPS Robot endpoint <code>/api/v1/robot</code> requires HTTP basic auth with your email and key as username and password respectively, and it accepts these parameters in POST or GET format:</p>\n                        <dl>\n                            <dt>url</dt>\n                            <dd>\n                                Url to scrape. This is the only required parameter. Every other parameter can be left as default.\n                            </dd>\n                            <dt>useragent</dt>\n                            <dd>\n                                Custom user agent. Default: Mozilla/5.0 (OPERATING SYSTEM) Gecko/VERSION Firefox/VERSION SnapSearch\n                                <br /> \n                                Setting this user agent to something that does not include \"SnapSearch\" can cause an infinite interception loop.\n                            </dd>\n                            <dt>width</dt>\n                            <dd>\n                                Width of the Browser. Default: 1280px\n                                <br />\n                                Can be used if you have specific requirements regarding the dimensions of the browser.\n                            </dd>\n                            <dt>height</dt>\n                            <dd>\n                                Height of the Browser. Default: 1024px\n                                <br />\n                                Can be used if you have specific requirements regarding the dimensions of the browser.\n                            </dd>\n                            <dt>imgformat</dt>\n                            <dd>\n                                Image Format. Default: png\n                                <br />\n                                Is used in conjunction with <code>screenshot</code> parameter. Currently only supports png format. \n                            </dd>\n                            <dt>screenshot</dt>\n                            <dd>\n                                Take a screenshot or not. Default: false\n                                <br />\n                                The screenshot is returned as base 64 encoded image and the format is determined by the <code>imgformat</code> parameter.\n                            </dd>\n                            <dt>navigate</dt>\n                            <dd>\n                                Follow redirects or not. Default: false\n                                <br />\n                                In most cases you do not want to follow redirects. If you leave this false, it will return the status, headers and body of the page asking for a redirect. If you switch this to true, it will follow header, client side, javascript, and meta tag redirects.\n                            </dd>\n                            <dt>loadimages</dt>\n                            <dd>\n                                Load images or not. Default: false\n                                <br />\n                                Loading images is not required when doing content scraping, leaving this off results in faster scrapes. However if you are taking screenshots, then you should switch this to true.\n                            </dd>\n                            <dt>javascriptenabled</dt>\n                            <dd>\n                                Process javascript or not. Default: true\n                                <br />\n                                Can be used in circumstances where you don't want to process javascript.\n                            </dd>\n                            <dt>totaltimeout</dt>\n                            <dd>\n                                Maximum millisecond timeout for the entire request task. Default 30000\n                                <br />\n                                This determines how long before the entire request task is considered a failure. At which point the robot will cancel the task and return everything it has managed to scrape.\n                            </dd>\n                            <dt>maxtimeout</dt>\n                            <dd>\n                                Maximum millisecond timeout for asynchronous requests. Default: 5000\n                                <br />\n                                This determines how long the browser will wait for asynchronous requests to finish. This means the browser will initiate the capture of the page contents either when all asynchronous requests finish, or at the maximum timeout. The number can be between 1000 to 15000 milliseconds. Longer times will result in potentially slower scrapes, but may capture more content if your site produces many slow asynchronous requests. If you set it too long, the client search engine robot may timeout. Play with this setting to the most optimal scraping speed.\n                            </dd>\n                            <dt>initialwait</dt>\n                            <dd>\n                                Initial millisecond wait before checking asynchronous requests. Default: 1000\n                                <br />\n                                This determines how long the browser will wait before it starts to check for when the asynchronous requests finish. The <code>maxtimeout</code> only begins onces the <code>initialwait</code> finishes. This is intended to allow delayed asynchronous requests or for pages which don't have asynchronous requests but have DOM mutations. The number has to be lower than <code>maxtimeout</code>.\n                            </dd>\n                            <dt>callback</dt>\n                            <dd>\n                                Javascript string to be evaled on the page. Default: false\n                                <br />\n                                This javascript string is evaled on the page after all asynchronous requests have finished but prior to the capture of the page contents. This allows you to do DOM mutations or capture specific content which will be returned as string independent of the page capture. You can assume this string is executed in the context of an anonymous function. So you can just write <code>return 'hello world';</code>. Returning string values is recommended, as other values may not be encoded. These returned values will be stored in the <code>callbackResult</code> property in the response.\n                            </dd>\n                            <dt>meta</dt>\n                            <dd>\n                                Scrape for custom meta tags or not. Default: true\n                                <br />\n                                You can use custom meta tags to change the status code or headers that is returned from the snapshot. This is intended for soft 404 techniques. It will look for meta tags such as <code>&lt;meta name=&quot;snapsearch-status&quot; content=&quot;404&quot; /&gt;</code> and <code>&lt;meta name=&quot;snapsearch-header&quot; content=&quot;Content-Type:text/html&quot; /&gt;</code>\n                            </dd>\n                            <dt>cache</dt>\n                            <dd>\n                                Allow caching of the snapshot or not. Default: true\n                                <br />\n                                This determines two things. The first is whether the snapshot can be acquired from the cache. The second is whether the snapshot can be cached. If this is left as true, snapshots can be returned from the cache if it exists in the cache or cached if it is a fresh snapshot. If this is switched to false, snapshots will always be fresh and the result will not be cached.\n                            </dd>\n                            <dt>cachetime</dt>\n                            <dd>\n                                Cache time in hours. Default: 24\n                                <br />\n                                You can change how long until the snapshots will expire. This number can be between 1 to 100 hours. Shorter cache time will result in more up to date snapshots, but it will use up more of your usage cap. Longer cache time will result in less up to date snapshots, but it will conserve your usage cap. This figure will depend on how often your pages change, what proportion of those pages are changing compared to the rest of the website.\n                            </dd>\n                            <dt>test</dt>\n                            <dd>\n                                Testing the API? Default: false\n                                <br />\n                                If you're in development mode or on localhost, set this to true, and it will only validate your request parameters, but not attempt to actually scrape anything.\n                            </dd>\n                        </dl>\n                        <p>Here is an example response:</p>\n                        <pre><code>[\n    'cache'             =&gt; true/false,\n    'callbackResult'    =&gt; '',\n    'date'              =&gt; 1390382314,\n    'headers'           =&gt; [\n        [\n            'name'  =&gt; 'Content-Type',\n            'value' =&gt; 'text/html'\n        ]\n    ],\n    'html'              =&gt; '&lt;html&gt;&lt;/html&gt;',\n    'message'           =&gt; 'Success/Failed/Validation Errors',\n    'pageErrors'        =&gt; [\n        [\n            'error'   =&gt; 'Error: document.querySelector(...) is null',\n            'trace'   =&gt; [\n                [\n                    'file'      =&gt; 'filename',\n                    'function'  =&gt; 'anonymous',\n                    'line'      =&gt; '41',\n                    'sourceURL' =&gt; 'urltofile'\n                ]\n            ]\n        ]\n    ],\n    'screensot'         =&gt; 'BASE64 ENCODED IMAGE CONTENT',\n    'status'            =&gt; 200\n]</code></pre>\n                        <p>We also record any javascript errors that occur on the page, these are stored in <code>pageErrors</code>, and it can be used for debugging custom <code>callback</code> parameters.</p>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"middleware\">Middleware</h3>\n                        <p>SnapSearch officially supports and provides PHP, Ruby, Node.js and Python middleware. All middleware are framework agnostic, and should be able to work within a middleware framework or without.</p>\n                        <ul>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\">PHP</a> - 1.1.0 (most stable)</li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\">Ruby</a> - 0.1.0 (almost there)</li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\">Node.js</a> - 0.0.2 (works but requires some improvements)</li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\">Python</a> - Still under development.</li>\n                        </ul>\n                        <p>All of the middleware are open source, and we welcome pull requests for patches or new middleware implementations. Check out our <a href=\"https://github.com/SnapSearch/\">Github organisation</a> for more.</p>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"notes\">Notes</h3>\n                        <h4>Hashbang Urls</h4>\n                        <p>Make sure you are using hash bang urls and not just hash urls. This fits with <a href=\"https://developers.google.com/webmasters/ajax-crawling/docs/specification\">Google's AJAX Crawling Scheme</a>. It makes it easier to identify what is a hash, and what is meant to be path. Remember hash fragments are never passed to the server. The middleware needs to know the full HTTP url or else it won't know where to scrape. This means you will need to rely on the search engine robots to convert hash bang urls to query fragment urls. <strong>This meta tag will need to be on every page: <code>&lt;meta name=&quot;fragment&quot; content=&quot;!&quot; /&gt;</code></strong>. If you are using HTML 5 push state urls, the meta tag is still a good practice as it allows search engines following the AJAX specification to know that your site is a single page application.</p>\n                        <h4>Dealing with non-HTML resources</h4>\n                        <p>You need to make sure that non-HTML resources are not intercepted by SnapSearch. Non-HTML resources refer to:</p>\n                        <ul>\n                            <li>Static files that are served through your application and not through an HTTP server such as NGINX or Apache.</li>\n                            <li>Downloads that served through an application level controller.</li>\n                            <li>Text data interchange formats that are not meant to be used for the end user's browser. For example: JSON, XML, RSS... etc.</li>\n                            <li>API resources that don't display the front end site, but are there for interaction between machines.</li>\n                            <li>Any connections that do not go through the HTTP protocol.</li>\n                        </ul>\n                        <p>You can prevent SnapSearch from intercepting these non-HTML resources by:</p>\n                        <ul>\n                            <li>Setup an array of whitelisted regular expression routes which will be matched against the request URL. SnapSearch will not intercept any routes that are not on the whitelist.</li>\n                            <li>Setup an array of blacklisted regular expression routes which will be matched against the request URL. SnapSearch will not intercept any routes that are on the blacklist.</li>\n                            <li>SnapSearch middleware can optionally check if the URL path has an invalid file extension. Some extensions are valid for HTML resources such as <code>.html</code>, but others such as <code>.js</code> are not. Our middleware has an option to switch on this detection and it will ignore requests that go invalid extensions. It is left off by default due to possible confusion.</li>\n                            <li>In MVC style applications, you may have a single controller which is responsible for displaying the front end code. If you execute our clients inside that particular controller, then you will not have any problems with non-HTML resources, since it can only intercept requests that go to the front end.</li>\n                        </ul>\n                        <h4>SSL issues</h4>\n                        <p>SnapSearch will not be able to capture from sites that have invalid SSL certificates (this means self-signed SSL certificates as well). Make sure your SSL is a valid certificate that will work in a normal browser before using SnapSearch.</p>\n                        <h4>Ensuring Analytics Works with Snapsearch</h4>\n                        <p>When Snapsearch visits your site, it will come with a UserAgent containing \"SnapSearch\". You can however configure this to your own liking. Use this user agent in order to filter out our requests when using web analytics.</p>\n                        <h4>Large content</h4>\n                        <p>SnapSearch middleware will timeout the request if the initial request to your site and its synchronous resources takes longer than 30 seconds.</p>\n                        <h4>Supporting JS disabled Browsers</h4>\n                        <p>It's not possible to detect if the HTTP client supports Javascript on the first page load. Therefore you have to know the user agents beforehand. A workaround involves the HTML Meta Refresh tag. You set an HTML meta refresh tag which will refresh the browser and point it to the same url but with query parameter indicating to the server that the client doesn't run javascript. This meta refresh tag can be then be cancelled using javascript. Another approach would be to use the Noscript tag and place the meta refresh tag there. None of these methods are guaranteed to work. but if you're interested check out: <a href=\"http://stackoverflow.com/q/3252743/582917\">http://stackoverflow.com/q/3252743/582917</a></p>\n                        <h4>Soft 404s</h4>\n                        <p>Soft 404s should be avoided. The final representation to the search engine should be exactly the same as normal user with a normal browser would see. However you can achieve this by using the special meta tags and switching <code>meta</code> request parameter to true.</p>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
                     controller: 'DocumentationCtrl'
                 }
             )
@@ -3310,7 +3310,7 @@ module.exports = [
                 'controlPanel.crawling', //default controlPanel childstate
                 {
                     url: '/crawling',
-                    template: "<div class=\"crawling\">\n    <h2 class=\"control-title\">Crawling Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block overview\">\n        <h3 class=\"telemetry-title\">Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"row overview-requests-usages-tally no-gutter\">\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_request\">\n                    <span class=\"tally-bg\">R</span>\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\n                </div>\n                <p class=\"tally-description\">Requests Received</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_usage\">\n                    <span class=\"tally-bg\">U</span>\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Used</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_available\">\n                    <span class=\"tally-bg\">A</span>\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\n        </div>\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <dl>\n                <dt>\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\n                </dt>\n                <dd \n                    class=\"input-group\" \n                    ng-class=\"{\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\n                    }\" \n                >\n                    <input \n                        id=\"apiLimitModifierFormQuantity\"\n                        class=\"form-control\" \n                        type=\"number\" \n                        name=\"quantity\" \n                        ng-model=\"apiLimitModifier.quantity\" \n                        ng-disabled = \"!hasBillingDetails\" \n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \n                        maxlength=\"10\" \n                        required \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \n                            ng-click=\"changeLimit(apiLimitModifier)\" \n                        >\n                            Change Cap\n                        </button>\n                    </span>\n                </dd>\n                <dt>Free Usage Cap:</dt>\n                <dd>{{userAccount.apiFreeLimit}}</dd>\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\n                <dd>${{price}} AUD</dd>\n            </dl>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"history-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\n        </div>\n        <div \n            id=\"usageHistoryChart\" \n            class=\"history-chart\" \n            nvd3-line-chart \n            data=\"usageHistoryData\" \n            showXAxis=\"true\" \n            showYAxis=\"true\" \n            tooltips=\"true\" \n            interactive=\"true\" \n            showLegend=\"true\" \n            showControls=\"true\" \n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \n            noData=\"No API history yet!\" \n        ></div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{domainDistinctionDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{domainDistinctionDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"domain-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardDomains()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardDomains()\">Forward</button>\n        </div>\n        <div class=\"row\">\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Requests - Total: {{totalDomainDistinctionRequestsQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartRequests\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataRequests\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionRequestsToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Usages - Total: {{totalDomainDistinctionUsagesQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartUsages\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataUsages\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionUsagesToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n        </div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Request & Usage Log</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"logs\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <tr>\n                        <th class=\"text-center\">#</th>\n                        <th class=\"text-center\">Date</th>\n                        <th class=\"text-center\">Type</th>\n                        <th class=\"text-center\">URL</th>\n                        <th class=\"text-center\">Response Time (s)</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"log in logs\">\n                        <td class=\"text-center\">{{log.id}}</td>\n                        <td class=\"text-center\">{{log.date}}</td>\n                        <td class=\"text-center\">{{log.type}}</td>\n                        <td class=\"text-center\">{{log.url}}</td>\n                        <td class=\"text-center\">{{log.responseTime}}</td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!logs\"><strong>No log data yet!</strong></p>\n    </div>\n</div>",
+                    template: "<div class=\"crawling\">\n    <h2 class=\"control-title\">Crawling Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"row overview-requests-usages-tally no-gutter\">\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_request\">\n                    <span class=\"tally-bg\">R</span>\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\n                </div>\n                <p class=\"tally-description\">Requests Received</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_usage\">\n                    <span class=\"tally-bg\">U</span>\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Used</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_available\">\n                    <span class=\"tally-bg\">A</span>\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\n        </div>\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <dl>\n                <dt>\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\n                </dt>\n                <dd \n                    class=\"input-group\" \n                    ng-class=\"{\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\n                    }\" \n                >\n                    <input \n                        id=\"apiLimitModifierFormQuantity\"\n                        class=\"form-control\" \n                        type=\"number\" \n                        name=\"quantity\" \n                        ng-model=\"apiLimitModifier.quantity\" \n                        ng-disabled = \"!hasBillingDetails\" \n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \n                        maxlength=\"10\" \n                        required \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \n                            ng-click=\"changeLimit(apiLimitModifier)\" \n                        >\n                            Change Cap\n                        </button>\n                    </span>\n                </dd>\n                <dt>Free Usage Cap:</dt>\n                <dd>{{userAccount.apiFreeLimit}}</dd>\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\n                <dd>${{price}} AUD</dd>\n            </dl>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"history-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\n        </div>\n        <div \n            id=\"usageHistoryChart\" \n            class=\"history-chart\" \n            nvd3-line-chart \n            data=\"usageHistoryData\" \n            showXAxis=\"true\" \n            showYAxis=\"true\" \n            tooltips=\"true\" \n            interactive=\"true\" \n            showLegend=\"true\" \n            showControls=\"true\" \n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \n            noData=\"No API history yet!\" \n        ></div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{domainDistinctionDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{domainDistinctionDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"domain-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardDomains()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardDomains()\">Forward</button>\n        </div>\n        <div class=\"row\">\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Requests - Total: {{totalDomainDistinctionRequestsQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartRequests\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataRequests\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionRequestsToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Usages - Total: {{totalDomainDistinctionUsagesQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartUsages\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataUsages\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionUsagesToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n        </div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Request & Usage Log</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"logs\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <tr>\n                        <th class=\"text-center\">#</th>\n                        <th class=\"text-center\">Date</th>\n                        <th class=\"text-center\">Type</th>\n                        <th class=\"text-center\">URL</th>\n                        <th class=\"text-center\">Response Time (s)</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"log in logs\">\n                        <td class=\"text-center\">{{log.id}}</td>\n                        <td class=\"text-center\">{{log.date}}</td>\n                        <td class=\"text-center\">{{log.type}}</td>\n                        <td class=\"text-center\">{{log.url}}</td>\n                        <td class=\"text-center\">{{log.responseTime}}</td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!logs\"><strong>No log data yet!</strong></p>\n    </div>\n</div>",
                     controller: 'ControlCrawlingCtrl'
                 }
             )
@@ -3318,7 +3318,7 @@ module.exports = [
                 'controlPanel.cache',
                 {
                     url: '/cache',
-                    template: "<div class=\"cache\">\n    <h2 class=\"control-title\">Cache Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <p class=\"placeholder-text\">Coming Soon!</p>\n    <div ng-show=\"false\">\n        <div class=\"telemetry-block overview\">\n            <h3>Overview</h3>\n            <div class=\"row overview-cache\">\n                <div class=\"col-sm-6\">\n                    <p>2040</p>\n                    <p>Pages Cached</p>\n                </div>\n                <div class=\"col-sm-6\">\n                    <p>48 KB</p>\n                    <p>Storage Used</p>\n                </div>\n            </div>\n        </div>\n        <div class=\"telemetry-block\">\n            <h3>Domain Distinction</h3>\n        </div>\n        <div class=\"telemetry-block\">\n            <h3>Cached Snapshots</h3>\n            <form class=\"cache-form\" name=\"cacheForm\">\n                <div \n                    class=\"form-group\" \n                    ng-class=\"{\n                        'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty\n                    }\"\n                >\n                    <div class=\"input-group\">\n                        <input \n                            class=\"form-control\" \n                            type=\"url\" \n                            name=\"url\" \n                            ng-model=\"cache.url\" \n                            required \n                            placeholder=\"http://your-site.com/\" \n                        />\n                        <span class=\"input-group-btn\">\n                            <button \n                                class=\"btn btn-primary\" \n                                type=\"submit\" \n                                ng-disabled=\"cacheForm.$invalid\" \n                                ng-click=\"submit(cache)\" \n                            >\n                                Prime Cache\n                            </button>\n                        </span>\n                        <span class=\"help-block\">Priming a snapshot will use up one usage.</span>\n                    </div>\n                </div>\n                <div class=\"form-errors\" ng-show=\"formErrors\">\n                    <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                    <ul class=\"form-errors-list\">\n                        <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                    </ul>\n                </div>\n                <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                    {{formSuccess}}\n                </div>\n            </form>\n            <table>\n                <thead>\n                    <th>id</th>\n                    <th>snapshot (this would be a link)</th>\n                    <th>date</th>\n                    <th>expires</th>\n                    <th>refresh</th>\n                    <th>delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"record in snapshots\">\n                        \n                    </tr>\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"cache\">\n    <h2 class=\"control-title\">Cache Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Overview</h3>\n        <div class=\"tally-block tally_block_cache tally_block_single\">\n            <span class=\"tally-bg\">S</span>\n            <p class=\"tally-number\">{{snapshotCount}}</p>\n        </div>\n        <p class=\"tally-description\">Snapshots Cached</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cache Priming</h3>\n        <form class=\"cache-form form-horizontal\" name=\"cacheForm\">\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty\n                }\"\n            >\n                <div class=\"input-group input-group-lg\">\n                    <input \n                        class=\"form-control\" \n                        type=\"url\" \n                        name=\"url\" \n                        ng-model=\"cache.url\" \n                        required \n                        placeholder=\"http://your-site.com/\" \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"cacheForm.$invalid\" \n                            ng-click=\"primeCache(cache)\" \n                        >\n                            Prime\n                        </button>\n                    </span>\n                </div>\n                <span class=\"help-block text-center\">Priming a snapshot is counted as a usage.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.url.$error.url\">Invalid URL</span>\n            </div>\n            <div \n                class=\"form-group\"\n                ng-class=\"{\n                    'has-error': cacheForm.parameters.$invalid && cacheForm.parameters.$dirty\n                }\"\n            >\n                <label for=\"cacheFormParameters\">Request Parameters</label>\n                <textarea \n                    id=\"cacheFormParameters\" \n                    class=\"form-control\" \n                    name=\"parameters\"\n                    ng-model=\"cache.parameters\" \n                    placeholder='{ \"parameterKey\": \"parameterValue\" }' \n                    json-checker \n                ></textarea>\n                <span class=\"help-block text-center\">Setup custom <a href=\"documentation#parameters\" target=\"_blank\">request parameters</a>, it should be in JSON.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.parameters.$error.jsonChecker\">Invalid JSON</span>\n            </div>\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cached Snapshots</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"snapshots\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <th class=\"text-center\">#</th>\n                    <th class=\"text-center\">URL</th>\n                    <th class=\"text-center\">Date</th>\n                    <th class=\"text-center\">Snapshot</th>\n                    <th class=\"text-center\">Refresh</th>\n                    <th class=\"text-center\">Delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"snapshot in snapshots\">\n                        <td class=\"text-center\">{{snapshot.id}}</td>\n                        <td class=\"text-center\">{{snapshot.url}}</td>\n                        <td class=\"text-center\">{{snapshot.date}}</td>\n                        <td class=\"text-center\"><button>snapshot</button></td>\n                        <td class=\"text-center\"><button>refresh</button></td>\n                        <td class=\"text-center\"><button>delete</button></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!snapshots\"><strong>No snapshots yet!</strong></p>\n    </div>\n</div>",
                     controller: 'ControlCacheCtrl'
                 }
             )
@@ -3457,10 +3457,14 @@ var fs = require('fs');
  */
 module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ', function ($scope, $modal, $state, BusyLoopServ, UserSystemServ) {
 
-    //no need to cancel this, it will check if the session is active every 20 seconds
-    BusyLoopServ(function () {
+    //it will check if the session is active every 20 seconds
+    var cancelBusyLoop = BusyLoopServ(function () {
         UserSystemServ.getSession();
     }, 20000);
+
+    $scope.$on('$destroy', function () {
+        cancelBusyLoop();
+    });
 
     $scope.modal = {};
     $scope.auth = {};
@@ -3685,7 +3689,132 @@ module.exports = ['$scope', '$modal', function ($scope, $modal) {
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', function ($scope) {
+module.exports = ['$scope', 'UserSystemServ', 'Restangular', function ($scope, UserSystemServ, Restangular) {
+
+    var handleCacheForm = function (userAccount) {
+
+        $scope.primeCache = function (cache) {
+
+            $scope.formErrors = false;
+            $scope.formSuccess = false;
+
+            var parameters = {};
+            if (!_.isEmpty(cache.parameters)) {
+                parameters = JSON.parse(cache.parameters);
+            }
+            //if parameters is not an object or that it is an array, we discard and use an empty object
+            if (!angular.isObject(parameters) || angular.isArray(parameters)) {
+                parameters = {};
+            }
+            parameters.url = cache.url;
+
+            Restangular.all('v1/robot').post(parameters).then(function (response) {
+
+                $scope.formSuccess = 'Done!';
+
+                $scope.$apply();
+
+            }, function (response) {
+
+                if (response.status === 400) {
+                    $scope.formErrors = response.data.content;
+                } else if (response.status === 401 || response.status === 429) {
+                    $scope.formErrors = [response.data.content];
+                } else {
+                    $scope.formErrors = ['System error, try again or contact us.'];
+                }
+
+            });
+
+        };
+
+    };
+
+    var getCacheCount = function (userAccount) {
+
+        Restangular.all('cache').customGET('', {
+            user: userAccount.id,
+            transform: 'count'
+        }).then(function (response) {
+
+            $scope.snapshotCount = response.content;
+
+        }, function (response) {
+
+            $scope.snapshotCount = 0;
+
+        });
+
+    };
+
+    var getCacheList = function (userAccount) {
+
+        var offset = 0;
+        var limit = 40;
+
+        var getCache = function () {
+
+            Restangular.all('cache').customGET('', {
+                user: userAccount.id,
+                offset: offset,
+                limit: limit
+            }).then(function (response) {
+
+                $scope.snapshots = response.content;
+
+            }, function (response) {
+
+                $scope.snapshots = false;
+
+            });
+
+        };
+
+        $scope.forwardCache = function () {
+
+            offset = offset - limit;
+            getCache();
+
+        };
+
+        $scope.backwardCache = function () {
+
+            offset = offset + limit;
+            getCache();
+
+        };
+
+        getCache();
+
+    };
+
+    var initialise = function (userAccount) {
+
+        handleCacheForm(userAccount);
+        getCacheCount(userAccount);
+        getCacheList(userAccount);
+
+    };
+
+    //run every time the controller is reinstantiated
+    if (UserSystemServ.getUserState() && Object.keys(UserSystemServ.getUserData()).length > 0) {
+        
+        initialise(UserSystemServ.getUserData());
+    
+    } else {
+
+        $scope.$watch(UserSystemServ.getUserData, function (newUserAccount, oldUserAccount) {
+
+            //only if they are different, do we poll for new crawling data
+            if (!angular.equals(newUserAccount, oldUserAccount)) {
+                if (Object.keys(newUserAccount).length > 0) {
+                    initialise(newUserAccount);
+                }
+            }
+
+        });
+
+    }
 
 }];
 },{}],20:[function(require,module,exports){
@@ -4034,15 +4163,15 @@ module.exports = [
 
         var getLogStats = function (userAccount) {
 
-            var limit = 10;
             var offset = 0;
+            var limit = 10;
 
             var getLogs = function () {
 
                 Restangular.all('log').customGET('', {
                     user: userAccount.id,
-                    limit: limit,
-                    offset: offset
+                    offset: offset,
+                    limit: limit
                 }).then(function (response) {
 
                     $scope.logs = response.content;
@@ -4345,14 +4474,15 @@ module.exports = angular.module('App.Directives')
     .directive('passwordMatch', require('./passwordMatch'))
     .directive('affix', require('./affix'))
     .directive('minValid', require('./minValid'))
-    .directive('maxValid', require('./maxValid'));
-},{"./affix":32,"./anchor":33,"./equaliseHeights":34,"./maxValid":35,"./minValid":36,"./passwordMatch":37,"./scroll":38}],32:[function(require,module,exports){
+    .directive('maxValid', require('./maxValid'))
+    .directive('jsonChecker', require('./jsonChecker'));
+},{"./affix":32,"./anchor":33,"./equaliseHeights":34,"./jsonChecker":35,"./maxValid":36,"./minValid":37,"./passwordMatch":38,"./scroll":39}],32:[function(require,module,exports){
 'use strict';
 
 /**
  * Affix Directive
  *
- * Requires Lodash, jQuery
+ * Requires Lodash, jQuery, jQuery Element Resize Plugin
  * Does not work on IE8 or lower.
  */
 module.exports = ['$window', '$document', function ($window, $document) {
@@ -4360,71 +4490,76 @@ module.exports = ['$window', '$document', function ($window, $document) {
     return {
         link: function (scope, element, attributes) {
 
-                var win = angular.element($window),
-                    doc  = angular.element($document),
-                    affixed;
+            var win = angular.element($window), 
+                doc  = angular.element($document), 
+                parent = element.parent(), 
+                affixed;
 
-                var affixPosition = function () {
+            var affixPosition = function () {
 
-                    //default parameters of 0, it will always be fixed if 0
-                    var offsetTop = scope.$eval(attributes.affixTop) || 0,
-                        offsetBottom = scope.$eval(attributes.affixBottom) || 0,
-                        affix;
+                //default parameters of 0, it will always be fixed if 0
+                var offsetTop = scope.$eval(attributes.affixTop) || 0,
+                    offsetBottom = scope.$eval(attributes.affixBottom) || 0,
+                    affix;
 
-                    //if the window scroll position is less or equal (above) the offsetTop, then set "affix-top"
-                    //if the element offsetTop + element height is greater or equal (below) the document height - offsetBottom, then set "affix-bottom"
-                    if (win.prop('pageYOffset') <= offsetTop) {
-                        affix = 'affix-top';
-                    } else if ((win.prop('pageYOffset') + element.outerHeight()) < (doc.height() - offsetBottom)) {
-                        affix = 'affix';
-                    } else if ((win.prop('pageYOffset') + element.outerHeight()) >= (doc.height() - offsetBottom)) {
-                        affix = 'affix-bottom';
-                    }
+                //if the window scroll position is less or equal (above) the offsetTop, then set "affix-top"
+                //if the element offsetTop + element height is greater or equal (below) the document height - offsetBottom, then set "affix-bottom"
+                if (win.prop('pageYOffset') <= offsetTop) {
+                    affix = 'affix-top';
+                } else if ((win.prop('pageYOffset') + element.outerHeight()) < (doc.height() - offsetBottom)) {
+                    affix = 'affix';
+                } else if ((win.prop('pageYOffset') + element.outerHeight()) >= (doc.height() - offsetBottom)) {
+                    affix = 'affix-bottom';
+                }
 
-                    //if the same value, don't bother changing classes, because nothing changed
-                    if(affixed === affix) return;
-                    affixed = affix;
+                //if the same value, don't bother changing classes, because nothing changed
+                if(affixed === affix) return;
+                affixed = affix;
 
-                    //reset the css classes and add either affix or affix-top or affix-bottom
-                    element.removeClass('affix affix-top affix-bottom').addClass(affix);
+                //reset the css classes and add either affix or affix-top or affix-bottom
+                element.removeClass('affix affix-top affix-bottom').addClass(affix);
 
-                    //if affix was bottom, then pin it to where it currently is
-                    if (affix === 'affix-bottom') {
-                        element.offset({ top: doc.height() - offsetBottom - element.outerHeight() });
-                    } else {
-                        element.css('top', '');
-                    }
+                //if affix was bottom, then pin it to where it currently is
+                if (affix === 'affix-bottom') {
+                    element.offset({ top: doc.height() - offsetBottom - element.outerHeight() });
+                } else {
+                    element.css('top', '');
+                }
 
-                };
+            };
 
-                var ensureWidth = function () {
-                    element.css('width', element.parent().width());
-                };
+            var ensureWidth = function () {
+                element.css('width', parent.width());
+            };
 
-                var throttledAffix = _.throttle(affixPosition, 50);
+            var throttledAffix = _.throttle(affixPosition, 50);
 
-                var throttledWidth = _.throttle(ensureWidth, 100);
+            var throttledWidth = _.throttle(ensureWidth, 100);
 
-                var resizeHandler = function () {
-                    throttledAffix();
-                    throttledWidth();
-                };
+            var resizeHandler = function () {
+                throttledAffix();
+                throttledWidth();
+            };
 
-                //when scrolling, we only have to figure out whether its affix, affix-top or affix-bottom
-                win.bind('scroll', throttledAffix);
+            //when scrolling, we only have to figure out whether its affix, affix-top or affix-bottom
+            win.bind('scroll', throttledAffix);
 
-                //when resizing, we need to ensure the width and check the affix in case elements above pushed down this affixed element
-                win.bind('resize', resizeHandler);
+            //when resizing, we need to ensure the width and check the affix in case elements above pushed down this affixed element
+            win.bind('resize', resizeHandler);
 
-                //run both at initialisation
-                affixPosition();
-                ensureWidth();
+            //bind to the parent element's resize, this is only available due to jquery plugin
+            parent.resize(resizeHandler);
 
-                //unbind external event handlers on destruction
-                scope.$on('$destroy', function () {
-                    win.unbind('scroll', throttledAffix);
-                    win.unbind('resize', resizeHandler);
-                });
+            //run both at initialisation
+            affixPosition();
+            ensureWidth();
+            
+            //unbind external event handlers on destruction
+            scope.$on('$destroy', function () {
+                win.unbind('scroll', throttledAffix);
+                win.unbind('resize', resizeHandler);
+                parent.removeResize(resizeHandler);
+            });
 
         }
     };
@@ -4559,6 +4694,46 @@ module.exports = [function () {
     return {
         restrict: 'A',
         require: 'ngModel',
+        link: function(scope, element, attributes, controller) {
+
+            var isEmpty = function (value) {
+                return angular.isUndefined(value) || value === '' || value === null;
+            };
+
+            var jsonValidator = function (value) {
+
+                try {
+
+                    //only if it's not empty
+                    if (!isEmpty(value)) {
+                        JSON.parse(value);
+                    }
+                    //empty values are valid, since we don't want to make the form field red immediately
+                    controller.$setValidity('jsonChecker', true);
+                    return value;
+                
+                } catch (e) {
+
+                    controller.$setValidity('jsonChecker', false);
+                    return undefined;
+
+                }
+
+            };
+
+            controller.$parsers.push(jsonValidator);
+            controller.$formatters.push(jsonValidator);
+
+        }
+    };
+}];
+},{}],36:[function(require,module,exports){
+'use strict';
+
+module.exports = [function () {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
         link: function(scope, elem, attr, ctrl) {
 
             var isEmpty = function (value) {
@@ -4592,7 +4767,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -4632,7 +4807,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4673,7 +4848,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4698,7 +4873,7 @@ module.exports = ['$anchorScroll', '$location', function ($anchorScroll, $locati
     };
 
 }];
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4711,7 +4886,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./chatTab":40,"./syntaxHighlight":76}],40:[function(require,module,exports){
+},{"./chatTab":41,"./syntaxHighlight":77}],41:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -4747,7 +4922,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":90}],41:[function(require,module,exports){
+},{"fs":1,"insert-css":91}],42:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -5438,7 +5613,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -5475,7 +5650,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":41,"./languages/apache.js":43,"./languages/bash.js":44,"./languages/clojure.js":45,"./languages/coffeescript.js":46,"./languages/cpp.js":47,"./languages/cs.js":48,"./languages/css.js":49,"./languages/diff.js":50,"./languages/erlang.js":51,"./languages/go.js":52,"./languages/haml.js":53,"./languages/haskell.js":54,"./languages/http.js":55,"./languages/ini.js":56,"./languages/java.js":57,"./languages/javascript.js":58,"./languages/json.js":59,"./languages/lisp.js":60,"./languages/lua.js":61,"./languages/makefile.js":62,"./languages/markdown.js":63,"./languages/nginx.js":64,"./languages/objectivec.js":65,"./languages/perl.js":66,"./languages/php.js":67,"./languages/python.js":68,"./languages/r.js":69,"./languages/ruby.js":70,"./languages/rust.js":71,"./languages/scala.js":72,"./languages/scss.js":73,"./languages/sql.js":74,"./languages/xml.js":75}],43:[function(require,module,exports){
+},{"./highlight":42,"./languages/apache.js":44,"./languages/bash.js":45,"./languages/clojure.js":46,"./languages/coffeescript.js":47,"./languages/cpp.js":48,"./languages/cs.js":49,"./languages/css.js":50,"./languages/diff.js":51,"./languages/erlang.js":52,"./languages/go.js":53,"./languages/haml.js":54,"./languages/haskell.js":55,"./languages/http.js":56,"./languages/ini.js":57,"./languages/java.js":58,"./languages/javascript.js":59,"./languages/json.js":60,"./languages/lisp.js":61,"./languages/lua.js":62,"./languages/makefile.js":63,"./languages/markdown.js":64,"./languages/nginx.js":65,"./languages/objectivec.js":66,"./languages/perl.js":67,"./languages/php.js":68,"./languages/python.js":69,"./languages/r.js":70,"./languages/ruby.js":71,"./languages/rust.js":72,"./languages/scala.js":73,"./languages/scss.js":74,"./languages/sql.js":75,"./languages/xml.js":76}],44:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -5521,7 +5696,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -5584,7 +5759,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -5682,7 +5857,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -5813,7 +5988,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -5877,7 +6052,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -5950,7 +6125,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -6054,7 +6229,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -6094,7 +6269,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -6249,7 +6424,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -6288,7 +6463,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -6410,7 +6585,7 @@ function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -6536,7 +6711,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -6570,7 +6745,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -6600,7 +6775,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -6655,7 +6830,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -6727,7 +6902,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -6765,7 +6940,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -6841,7 +7016,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -6898,7 +7073,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -6943,7 +7118,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -7045,7 +7220,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -7126,7 +7301,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -7211,7 +7386,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -7360,7 +7535,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -7469,7 +7644,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -7553,7 +7728,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -7623,7 +7798,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -7782,7 +7957,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -7831,7 +8006,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -7890,7 +8065,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -8007,7 +8182,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -8110,7 +8285,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -8214,7 +8389,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -8271,7 +8446,7 @@ module.exports = ['$sce', function($sce){
     };
 
 }];
-},{"./lib/hljs/index":42,"fs":1,"insert-css":90}],77:[function(require,module,exports){
+},{"./lib/hljs/index":43,"fs":1,"insert-css":91}],78:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8280,7 +8455,7 @@ module.exports = ['$sce', function($sce){
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8291,7 +8466,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":79}],79:[function(require,module,exports){
+},{"./UserSystem":80}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8302,7 +8477,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":80,"./UserSystemServ":81}],80:[function(require,module,exports){
+},{"./UserSystemRun":81,"./UserSystemServ":82}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8322,7 +8497,7 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8487,7 +8662,7 @@ module.exports = function () {
     ];
 
 };
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8510,14 +8685,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     }, true);
 
 }];
-},{}],83:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 
 module.exports = ['$timeout', function ($timeout) {
@@ -8549,7 +8724,7 @@ module.exports = ['$timeout', function ($timeout) {
     };
 
 }];
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8586,7 +8761,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 var moment = require("./..\\..\\..\\components\\moment\\moment.js");
@@ -8596,7 +8771,7 @@ module.exports = [function () {
     return moment;
 
 }];
-},{"./..\\..\\..\\components\\moment\\moment.js":5}],87:[function(require,module,exports){
+},{"./..\\..\\..\\components\\moment\\moment.js":5}],88:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8610,7 +8785,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8631,7 +8806,7 @@ module.exports = angular.module('App.Services')
     .service('CalculateServ', require('./CalculateServ'))
     .factory('MomentServ', require('./MomentServ'))
     .factory('BusyLoopServ', require('./BusyLoopServ'));
-},{"./AuthenticationStateRun":82,"./BaseUrlConst":83,"./BusyLoopServ":84,"./CalculateServ":85,"./MomentServ":86,"./RestangularConfig":87,"./UserSystemConfig":89}],89:[function(require,module,exports){
+},{"./AuthenticationStateRun":83,"./BaseUrlConst":84,"./BusyLoopServ":85,"./CalculateServ":86,"./MomentServ":87,"./RestangularConfig":88,"./UserSystemConfig":90}],90:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8643,7 +8818,7 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {

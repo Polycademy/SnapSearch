@@ -10,10 +10,14 @@ var fs = require('fs');
  */
 module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ', function ($scope, $modal, $state, BusyLoopServ, UserSystemServ) {
 
-    //no need to cancel this, it will check if the session is active every 20 seconds
-    BusyLoopServ(function () {
+    //it will check if the session is active every 20 seconds
+    var cancelBusyLoop = BusyLoopServ(function () {
         UserSystemServ.getSession();
     }, 20000);
+
+    $scope.$on('$destroy', function () {
+        cancelBusyLoop();
+    });
 
     $scope.modal = {};
     $scope.auth = {};

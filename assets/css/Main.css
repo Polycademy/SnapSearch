@@ -6951,6 +6951,9 @@ input {
 /* ==========================================================================
    Header Module
    ========================================================================== */
+/* ==========================================================================
+   Variables Module
+   ========================================================================== */
 header.navbar {
   padding-top: 20px;
   padding-bottom: 14px;
@@ -7030,9 +7033,6 @@ header.navbar .navbar-nav > li button {
 }
 /* ==========================================================================
    Footer Module
-   ========================================================================== */
-/* ==========================================================================
-   Variables Module
    ========================================================================== */
 footer.panel_yellow .panel-body {
   color: #ffffff;
@@ -7310,9 +7310,13 @@ footer .attributions strong {
 /* ==========================================================================
    Forms Module
    ========================================================================== */
+.form-group {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 .form-errors {
   text-align: center;
-  margin: 0 auto;
+  margin: 20px auto;
 }
 .form-errors .form-errors-list {
   list-style: none;
@@ -7321,6 +7325,10 @@ footer .attributions strong {
 }
 .form-errors .form-errors-list .form-errors-list-item {
   margin-bottom: 2px;
+}
+.form-success {
+  margin: 20px auto;
+  text-align: center;
 }
 /**
  * Home Page
@@ -7788,23 +7796,11 @@ footer .attributions strong {
   text-align: center;
   display: block;
 }
-.crawling .overview-requests-usages-tally {
-  margin-top: 20px;
-  margin-bottom: 30px;
-}
-.crawling .overview-requests-usages-tally .tally-col:first-child:not(:last-child) .tally-block {
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-}
-.crawling .overview-requests-usages-tally .tally-col:last-child:not(:first-child) .tally-block {
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-.crawling .overview-requests-usages-tally .tally-block {
+.control-box .tally-block {
   height: 100px;
   position: relative;
 }
-.crawling .overview-requests-usages-tally .tally-block .tally-bg {
+.control-box .tally-block .tally-bg {
   bottom: 0;
   font-size: 120px;
   font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -7818,7 +7814,7 @@ footer .attributions strong {
   opacity: 0.2;
   color: #ffffff;
 }
-.crawling .overview-requests-usages-tally .tally-block .tally-number {
+.control-box .tally-block .tally-number {
   font-size: 36px;
   font-family: "fira_sans_otmedium", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #ffffff;
@@ -7832,20 +7828,40 @@ footer .attributions strong {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-.crawling .overview-requests-usages-tally .tally-block.tally_block_request {
+.control-box .tally-block.tally_block_single {
+  border-radius: 10px;
+  width: 260px;
+  margin: 20px auto;
+}
+.control-box .tally-block.tally_block_request {
   background-color: #0a98e9;
 }
-.crawling .overview-requests-usages-tally .tally-block.tally_block_usage {
+.control-box .tally-block.tally_block_usage {
   background-color: #f4ac2e;
 }
-.crawling .overview-requests-usages-tally .tally-block.tally_block_available {
+.control-box .tally-block.tally_block_available {
   background-color: #32373a;
 }
-.crawling .overview-requests-usages-tally .tally-description {
+.control-box .tally-block.tally_block_cache {
+  background-color: #0a98e9;
+}
+.control-box .tally-description {
   margin-top: 10px;
   text-align: center;
   font-size: 14px;
   font-family: "fira_sans_otregular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.crawling .overview-requests-usages-tally {
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+.crawling .overview-requests-usages-tally .tally-col:first-child:not(:last-child) .tally-block {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.crawling .overview-requests-usages-tally .tally-col:last-child:not(:first-child) .tally-block {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 .crawling .api-limit-modifier {
   overflow: auto;
@@ -7893,9 +7909,16 @@ footer .attributions strong {
   margin: 0 auto;
   height: 380px;
 }
-.placeholder-text {
-  text-align: center;
-  margin: 40px;
+.cache .cache-form {
+  margin: 42px auto;
+}
+.cache .cache-form .form-group {
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  float: none;
+  max-width: 600px;
+  margin-bottom: 0;
 }
 /**
  * Documentation Page

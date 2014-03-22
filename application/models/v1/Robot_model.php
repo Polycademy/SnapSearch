@@ -16,7 +16,6 @@ class Robot_model extends CI_Model{
 	protected $client;
 	protected $filesystem;
 	protected $errors;
-	protected $fallback;
 
 	public function __construct(){
 
@@ -276,19 +275,17 @@ class Robot_model extends CI_Model{
 			//decode the returned json into an array
 			$response = $request->send();
 			$response_array = $response->json();
-
+			
 			//this is not a cached response
 			$response_array['cache'] = false;
 
 		}catch(BadResponseException $e){
 
 			//a bad response exception can come from 400 or 500 errors, this should not happen
-			//if there was a cache, we can pass back the fallback as well
 			log_message('error', 'Snapsearch PHP application received a 400/500 from Robot\'s load balancer or robot itself.');
 			$this->errors = array(
 				'system_error'	=> 'Robot service is a bit broken. Try again later.',
 			);
-			if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
 			return false;
 
 		}catch(CurlException $e){
@@ -297,7 +294,6 @@ class Robot_model extends CI_Model{
 			$this->errors = array(
 				'system_error'	=> 'Curl failed. Try again later.'
 			);
-			if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
 			return false;
 
 		}
@@ -305,9 +301,10 @@ class Robot_model extends CI_Model{
 		if($response_array['message'] == 'Failed'){
 
 			$this->errors = array(
-				'error'	=> 'Robot could not open uri: ' . $parameters['url']
+				'validation_error'	=> [
+					'url'	=> 'Robot could not open url: ' . $parameters['url'],
+				],
 			);
-			if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
 			return false;
 
 		}
@@ -344,7 +341,6 @@ class Robot_model extends CI_Model{
 				$this->errors = array(
 					'system_error'	=> 'Curl failed. Try again later.'
 				);
-				if($existing_cache_id) $this->fallback = json_decode($cache['snapshotData'], true);
 				return false;
 
 			}
@@ -534,12 +530,6 @@ class Robot_model extends CI_Model{
 	public function get_errors(){
 
 		return $this->errors;
-
-	}
-
-	public function get_fallback(){
-
-		return $this->fallback;
 
 	}
 

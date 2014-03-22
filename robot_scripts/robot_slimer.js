@@ -62,7 +62,8 @@ var defaultConfig = {
     navigate: false, // allow redirection of the page or not, if this is false, and there is a redirection, screenshots are not available
     loadimages: false, 
     javascriptenabled: true, 
-    maxtimeout: 5000, 
+    totaltimeout: 30000, //total task timeout before failing the request
+    maxtimeout: 5000, //maximum timeout for asynchronous requests
     initialwait: 1000, //initial wait for asynchronous requests to fill up
     callback: false, 
     meta: true, //enable checking for meta tags to affect the headers or status code
@@ -99,6 +100,7 @@ args.forEach(function(value, index){
     if (key === 'navigate') defaultConfig.navigate = parseBooleanStyle(propValue);
     if (key === 'loadimages') defaultConfig.loadimages = parseBooleanStyle(propValue);
     if (key === 'javascriptenabled') defaultConfig.javascriptenabled = parseBooleanStyle(propValue);
+    if (key === 'totaltimeout') defaultConfig.totaltimeout = propValue;
     if (key === 'maxtimeout') defaultConfig.maxtimeout = propValue;
     if (key === 'initialwait') defaultConfig.initialwait = propValue;
     if (key === 'callback') defaultConfig.callback = propValue;
@@ -158,6 +160,7 @@ if(service){
         navigate: 
         loadimages: //wont render screen shot if this is false and ignore width/height/base64... etc
         javascriptenabled:
+        totaltimeout: 
         maxtimeout: //milliseconds on the maximum wait before timing out and rendering/return html snapshot
         initialwait: 
         callback: //string
@@ -288,7 +291,7 @@ var processTask = function(task){
             console.log('Robot has exceeded maximum synchronous page opening time');
             failedOpeningPage();
         }
-    }, 30000);
+    }, currentConfig.totaltimeout);
 
     //this function is triggered to open a page with a specific url
     var openPage = function(url){

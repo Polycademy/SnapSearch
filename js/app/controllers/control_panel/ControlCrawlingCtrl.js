@@ -343,15 +343,15 @@ module.exports = [
 
         var getLogStats = function (userAccount) {
 
-            var limit = 10;
             var offset = 0;
+            var limit = 10;
 
             var getLogs = function () {
 
                 Restangular.all('log').customGET('', {
                     user: userAccount.id,
-                    limit: limit,
-                    offset: offset
+                    offset: offset,
+                    limit: limit
                 }).then(function (response) {
 
                     $scope.logs = response.content;

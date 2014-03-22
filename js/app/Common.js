@@ -18,6 +18,7 @@ global._ = require('lodash');
  * React is faster!
  */
 global.jQuery = require('jquery'); //jquery is a commonjs module, so we need to globalise it for other libraries
+require('../libraries/jquery.resize.js');
 require('bootstrap');
 require('angular');
 require('angular-cookies');

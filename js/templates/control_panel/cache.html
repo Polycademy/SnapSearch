@@ -1,80 +1,101 @@
 <div class="cache">
     <h2 class="control-title">Cache Statistics</h2>
     <em class="api-key">API Key: {{userAccount.sharedKey}}</em>
-    <p class="placeholder-text">Coming Soon!</p>
-    <div ng-show="false">
-        <div class="telemetry-block overview">
-            <h3>Overview</h3>
-            <div class="row overview-cache">
-                <div class="col-sm-6">
-                    <p>2040</p>
-                    <p>Pages Cached</p>
+    <div class="telemetry-block">
+        <h3>Overview</h3>
+        <div class="tally-block tally_block_cache tally_block_single">
+            <span class="tally-bg">S</span>
+            <p class="tally-number">{{snapshotCount}}</p>
+        </div>
+        <p class="tally-description">Snapshots Cached</p>
+    </div>
+    <div class="telemetry-block">
+        <h3>Cache Priming</h3>
+        <form class="cache-form form-horizontal" name="cacheForm">
+            <div 
+                class="form-group" 
+                ng-class="{
+                    'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty
+                }"
+            >
+                <div class="input-group input-group-lg">
+                    <input 
+                        class="form-control" 
+                        type="url" 
+                        name="url" 
+                        ng-model="cache.url" 
+                        required 
+                        placeholder="http://your-site.com/" 
+                    />
+                    <span class="input-group-btn">
+                        <button 
+                            class="btn btn-primary" 
+                            type="submit" 
+                            ng-disabled="cacheForm.$invalid" 
+                            ng-click="primeCache(cache)" 
+                        >
+                            Prime
+                        </button>
+                    </span>
                 </div>
-                <div class="col-sm-6">
-                    <p>48 KB</p>
-                    <p>Storage Used</p>
-                </div>
+                <span class="help-block text-center">Priming a snapshot is counted as a usage.</span>
+                <span class="help-block text-center" ng-show="cacheForm.url.$error.url">Invalid URL</span>
             </div>
+            <div 
+                class="form-group"
+                ng-class="{
+                    'has-error': cacheForm.parameters.$invalid && cacheForm.parameters.$dirty
+                }"
+            >
+                <label for="cacheFormParameters">Request Parameters</label>
+                <textarea 
+                    id="cacheFormParameters" 
+                    class="form-control" 
+                    name="parameters"
+                    ng-model="cache.parameters" 
+                    placeholder='{ "parameterKey": "parameterValue" }' 
+                    json-checker 
+                ></textarea>
+                <span class="help-block text-center">Setup custom <a href="documentation#parameters" target="_blank">request parameters</a>, it should be in JSON.</span>
+                <span class="help-block text-center" ng-show="cacheForm.parameters.$error.jsonChecker">Invalid JSON</span>
+            </div>
+            <div class="form-errors" ng-show="formErrors">
+                <em class="text-warning">Oops! Please fix up these errors:</em>
+                <ul class="form-errors-list">
+                    <li class="form-errors-list-item alert alert-warning" ng-repeat="error in formErrors">{{error}}</li>
+                </ul>
+            </div>
+            <div class="form-success alert alert-success" ng-show="formSuccess">
+                {{formSuccess}}
+            </div>
+        </form>
+    </div>
+    <div class="telemetry-block">
+        <h3>Cached Snapshots</h3>
+        <div class="log-buttons telemetry-buttons button-group">
+            <button class="btn btn-primary" type="button" ng-click="backwardLogs()">Backward</button>
+            <button class="btn btn-primary" type="button" ng-click="forwardLogs()">Forward</button>
         </div>
-        <div class="telemetry-block">
-            <h3>Domain Distinction</h3>
-        </div>
-        <div class="telemetry-block">
-            <h3>Cached Snapshots</h3>
-            <form class="cache-form" name="cacheForm">
-                <div 
-                    class="form-group" 
-                    ng-class="{
-                        'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty
-                    }"
-                >
-                    <div class="input-group">
-                        <input 
-                            class="form-control" 
-                            type="url" 
-                            name="url" 
-                            ng-model="cache.url" 
-                            required 
-                            placeholder="http://your-site.com/" 
-                        />
-                        <span class="input-group-btn">
-                            <button 
-                                class="btn btn-primary" 
-                                type="submit" 
-                                ng-disabled="cacheForm.$invalid" 
-                                ng-click="submit(cache)" 
-                            >
-                                Prime Cache
-                            </button>
-                        </span>
-                        <span class="help-block">Priming a snapshot will use up one usage.</span>
-                    </div>
-                </div>
-                <div class="form-errors" ng-show="formErrors">
-                    <em class="text-warning">Oops! Please fix up these errors:</em>
-                    <ul class="form-errors-list">
-                        <li class="form-errors-list-item alert alert-warning" ng-repeat="error in formErrors">{{error}}</li>
-                    </ul>
-                </div>
-                <div class="form-success alert alert-success" ng-show="formSuccess">
-                    {{formSuccess}}
-                </div>
-            </form>
-            <table>
+        <div class="table-responsive" ng-show="snapshots">
+            <table class="table table-striped table-hover">
                 <thead>
-                    <th>id</th>
-                    <th>snapshot (this would be a link)</th>
-                    <th>date</th>
-                    <th>expires</th>
-                    <th>refresh</th>
-                    <th>delete</th>
+                    <th class="text-center">#</th>
+                    <th class="text-center">URL</th>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Snapshot</th>
+                    <th class="text-center">Delete</th>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="record in snapshots">
-                        
+                    <tr ng-repeat="snapshot in snapshots">
+                        <td class="text-center">{{snapshot.id}}</td>
+                        <td class="text-center">{{snapshot.url}}</td>
+                        <td class="text-center">{{snapshot.date}}</td>
+                        <td class="text-center"><button class="btn" ng-click="viewSnapshot(snapshot.id)">snapshot</button></td>
+                        <td class="text-center"><button class="btn" ng-click="deleteSnapshot(snapshot.id)">delete</button></td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        <p class="text-center" ng-show="!snapshots"><strong>No snapshots yet!</strong></p>
     </div>
 </div>

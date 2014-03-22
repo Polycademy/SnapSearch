@@ -78,27 +78,17 @@ class Robot extends CI_Controller{
 				
 			}else{
 
-				$errors = $this->Robot_model->get_errors();
-				$fallback = $this->Robot_model->get_fallback();
-
-				if(!empty($fallback)){
-					$content = array(
-						'error'		=> current($errors),
-						'fallback'	=> $fallback,
-					);
-				}else{
-					$content = current($errors);
-				}
-			
-				$code = key($errors);
+				$content = current($this->Robot_model->get_errors());
+				$code = key($this->Robot_model->get_errors());
 				
 			}
 
 			if($code == 'success'){
 				$this->auth_response->setStatusCode(200);
-			}elseif($code == 'validation_error' OR $code == 'error'){
+			}elseif($code == 'validation_error'){
 				$this->auth_response->setStatusCode(400);
-			}elseif($code == 'system_error'){
+			}elseif($code == 'system_error' OR $code == 'error'){
+				//normal errors would be server errors, here's no 404s here
 				$this->auth_response->setStatusCode(500);
 			}
 

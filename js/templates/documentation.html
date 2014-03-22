@@ -87,6 +87,12 @@
                                 <br />
                                 Can be used in circumstances where you don't want to process javascript.
                             </dd>
+                            <dt>totaltimeout</dt>
+                            <dd>
+                                Maximum millisecond timeout for the entire request task. Default 30000
+                                <br />
+                                This determines how long before the entire request task is considered a failure. At which point the robot will cancel the task and return everything it has managed to scrape.
+                            </dd>
                             <dt>maxtimeout</dt>
                             <dd>
                                 Maximum millisecond timeout for asynchronous requests. Default: 5000

@@ -88,6 +88,54 @@
             display: block;
         }
     }
+    .tally-block {
+        height: 100px;
+        position: relative;
+        .tally-bg {
+            bottom: 0;
+            font-size: 120px;
+            #Fonts.family("fira_sans_otmedium");
+            left: 0;
+            line-height: 0.95;
+            overflow: hidden;
+            position: absolute;
+            right: 0;
+            text-align: center;
+            top: 0;
+            opacity: 0.2;
+            color: @snapsearch-white;
+        }
+        .tally-number {
+            font-size: 36px;
+            #Fonts.family("fira_sans_otmedium");
+            color: @snapsearch-white;
+            text-align: center;
+            #Centering.transformCenter(100%);
+        }
+    }
+    .tally-block.tally_block_single {
+        border-radius: 10px;
+        width: 260px;
+        margin: 20px auto;
+    }
+    .tally-block.tally_block_request {
+        background-color: @snapsearch-blue;
+    }
+    .tally-block.tally_block_usage {
+        background-color: @snapsearch-yellow;
+    }
+    .tally-block.tally_block_available {
+        background-color: @snapsearch-dark;
+    }
+    .tally-block.tally_block_cache {
+        background-color: @snapsearch-blue;
+    }
+    .tally-description {
+        margin-top: 10px;
+        text-align: center;
+        font-size: 14px;
+        #Fonts.family("fira_sans_otregular");
+    }
 }
 
 .crawling {
@@ -105,46 +153,6 @@
                 border-top-right-radius: 10px;
                 border-bottom-right-radius: 10px;
             }
-        }
-        .tally-block {
-            height: 100px;
-            position: relative;
-            .tally-bg {
-                bottom: 0;
-                font-size: 120px;
-                #Fonts.family("fira_sans_otmedium");
-                left: 0;
-                line-height: 0.95;
-                overflow: hidden;
-                position: absolute;
-                right: 0;
-                text-align: center;
-                top: 0;
-                opacity: 0.2;
-                color: @snapsearch-white;
-            }
-            .tally-number {
-                font-size: 36px;
-                #Fonts.family("fira_sans_otmedium");
-                color: @snapsearch-white;
-                text-align: center;
-                #Centering.transformCenter(100%);
-            }
-        }
-        .tally-block.tally_block_request {
-            background-color: @snapsearch-blue;
-        }
-        .tally-block.tally_block_usage {
-            background-color: @snapsearch-yellow;
-        }
-        .tally-block.tally_block_available {
-            background-color: @snapsearch-dark;
-        }
-        .tally-description {
-            margin-top: 10px;
-            text-align: center;
-            font-size: 14px;
-            #Fonts.family("fira_sans_otregular");
         }
     }
     .api-limit-modifier {
@@ -194,7 +202,13 @@
     }
 }
 
-.placeholder-text {
-    text-align: center;
-    margin: 40px;
+.cache {
+    .cache-form {
+        margin: 42px auto;
+        .form-group {
+            #Centering.blockCenter();
+            max-width: 600px;
+            margin-bottom: 0;
+        }
+    }
 }

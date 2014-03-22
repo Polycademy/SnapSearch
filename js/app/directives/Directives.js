@@ -12,4 +12,5 @@ module.exports = angular.module('App.Directives')
     .directive('passwordMatch', require('./passwordMatch'))
     .directive('affix', require('./affix'))
     .directive('minValid', require('./minValid'))
-    .directive('maxValid', require('./maxValid'));
+    .directive('maxValid', require('./maxValid'))
+    .directive('jsonChecker', require('./jsonChecker'));
