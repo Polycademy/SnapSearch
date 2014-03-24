@@ -78,7 +78,6 @@
             </div>
         </header>
 
-        <!-- The side bar will be contained inside the container and ui-view to allow Angularjs to handle it -->
         <div class="main" ui-view autoscroll="!$state.includes('home')"></div>
 
         <footer class="panel panel_yellow" anchor="about">
