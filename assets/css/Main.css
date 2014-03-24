@@ -6945,6 +6945,9 @@ input {
   padding-left: 0px;
   padding-right: 0px;
 }
+pre {
+  font-size: 14px;
+}
 /**
  * Common
  */
@@ -7830,7 +7833,8 @@ footer .attributions strong {
 }
 .control-box .tally-block.tally_block_single {
   border-radius: 10px;
-  width: 260px;
+  width: 100%;
+  max-width: 260px;
   margin: 20px auto;
 }
 .control-box .tally-block.tally_block_request {
@@ -7919,6 +7923,12 @@ footer .attributions strong {
   float: none;
   max-width: 600px;
   margin-bottom: 0;
+}
+.snapshot-code {
+  max-height: 360px;
+}
+.snapshot-code code {
+  white-space: pre-wrap;
 }
 /**
  * Documentation Page

@@ -3250,7 +3250,7 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":40,"./filters/Filters":78,"./modules/Modules":79,"./services/Services":89}],7:[function(require,module,exports){
+},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":32,"./elements/Elements":41,"./filters/Filters":79,"./modules/Modules":80,"./services/Services":90}],7:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3318,7 +3318,7 @@ module.exports = [
                 'controlPanel.cache',
                 {
                     url: '/cache',
-                    template: "<div class=\"cache\">\n    <h2 class=\"control-title\">Cache Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Overview</h3>\n        <div class=\"tally-block tally_block_cache tally_block_single\">\n            <span class=\"tally-bg\">S</span>\n            <p class=\"tally-number\">{{snapshotCount}}</p>\n        </div>\n        <p class=\"tally-description\">Snapshots Cached</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cache Priming</h3>\n        <form class=\"cache-form form-horizontal\" name=\"cacheForm\">\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty\n                }\"\n            >\n                <div class=\"input-group input-group-lg\">\n                    <input \n                        class=\"form-control\" \n                        type=\"url\" \n                        name=\"url\" \n                        ng-model=\"cache.url\" \n                        required \n                        placeholder=\"http://your-site.com/\" \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"cacheForm.$invalid\" \n                            ng-click=\"primeCache(cache)\" \n                        >\n                            Prime\n                        </button>\n                    </span>\n                </div>\n                <span class=\"help-block text-center\">Priming a snapshot is counted as a usage.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.url.$error.url\">Invalid URL</span>\n            </div>\n            <div \n                class=\"form-group\"\n                ng-class=\"{\n                    'has-error': cacheForm.parameters.$invalid && cacheForm.parameters.$dirty\n                }\"\n            >\n                <label for=\"cacheFormParameters\">Request Parameters</label>\n                <textarea \n                    id=\"cacheFormParameters\" \n                    class=\"form-control\" \n                    name=\"parameters\"\n                    ng-model=\"cache.parameters\" \n                    placeholder='{ \"parameterKey\": \"parameterValue\" }' \n                    json-checker \n                ></textarea>\n                <span class=\"help-block text-center\">Setup custom <a href=\"documentation#parameters\" target=\"_blank\">request parameters</a>, it should be in JSON.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.parameters.$error.jsonChecker\">Invalid JSON</span>\n            </div>\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cached Snapshots</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"snapshots\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <th class=\"text-center\">#</th>\n                    <th class=\"text-center\">URL</th>\n                    <th class=\"text-center\">Date</th>\n                    <th class=\"text-center\">Snapshot</th>\n                    <th class=\"text-center\">Refresh</th>\n                    <th class=\"text-center\">Delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"snapshot in snapshots\">\n                        <td class=\"text-center\">{{snapshot.id}}</td>\n                        <td class=\"text-center\">{{snapshot.url}}</td>\n                        <td class=\"text-center\">{{snapshot.date}}</td>\n                        <td class=\"text-center\"><button>snapshot</button></td>\n                        <td class=\"text-center\"><button>refresh</button></td>\n                        <td class=\"text-center\"><button>delete</button></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!snapshots\"><strong>No snapshots yet!</strong></p>\n    </div>\n</div>",
+                    template: "<div class=\"cache\">\n    <h2 class=\"control-title\">Cache Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Overview</h3>\n        <div class=\"tally-block tally_block_cache tally_block_single\">\n            <span class=\"tally-bg\">S</span>\n            <p class=\"tally-number\">{{snapshotCount}}</p>\n        </div>\n        <p class=\"tally-description\">Snapshots Cached</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cache Priming</h3>\n        <form class=\"cache-form form-horizontal\" name=\"cacheForm\">\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty\n                }\"\n            >\n                <div class=\"input-group input-group-lg\">\n                    <input \n                        class=\"form-control\" \n                        type=\"url\" \n                        name=\"url\" \n                        ng-model=\"cache.url\" \n                        required \n                        placeholder=\"http://your-site.com/\" \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"cacheForm.$invalid\" \n                            ng-click=\"primeCache(cache)\" \n                        >\n                            Prime\n                        </button>\n                    </span>\n                </div>\n                <span class=\"help-block text-center\">Priming a snapshot is counted as a usage.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.url.$error.url\">Invalid URL</span>\n            </div>\n            <div \n                class=\"form-group\"\n                ng-class=\"{\n                    'has-error': cacheForm.parameters.$invalid && cacheForm.parameters.$dirty\n                }\"\n            >\n                <label for=\"cacheFormParameters\">Request Parameters</label>\n                <textarea \n                    id=\"cacheFormParameters\" \n                    class=\"form-control\" \n                    name=\"parameters\"\n                    ng-model=\"cache.parameters\" \n                    placeholder='{ \"parameterKey\": \"parameterValue\" }' \n                    json-checker \n                ></textarea>\n                <span class=\"help-block text-center\">Setup custom <a href=\"documentation#parameters\" target=\"_blank\">request parameters</a>, it should be in JSON.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.parameters.$error.jsonChecker\">Invalid JSON</span>\n            </div>\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cached Snapshots</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"snapshots\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <th class=\"text-center\">#</th>\n                    <th class=\"text-center\">URL</th>\n                    <th class=\"text-center\">Date</th>\n                    <th class=\"text-center\">Snapshot</th>\n                    <th class=\"text-center\">Delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"snapshot in snapshots\">\n                        <td class=\"text-center\">{{snapshot.id}}</td>\n                        <td class=\"text-center\">{{snapshot.url}}</td>\n                        <td class=\"text-center\">{{snapshot.date}}</td>\n                        <td class=\"text-center\"><button class=\"btn btn-info\" ng-click=\"viewSnapshot(snapshot.id)\">snapshot</button></td>\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteSnapshot(snapshot.id, $index)\">delete</button></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!snapshots\"><strong>No snapshots yet!</strong></p>\n    </div>\n</div>",
                     controller: 'ControlCacheCtrl'
                 }
             )
@@ -3444,7 +3444,7 @@ angular.module('App.Controllers', [])
     .controller('PrivacyCtrl', require('./privacy/PrivacyCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./common/AppCtrl":11,"./common/HeaderCtrl":12,"./control_panel/ControlAccountCtrl":17,"./control_panel/ControlBillingCtrl":18,"./control_panel/ControlCacheCtrl":19,"./control_panel/ControlCrawlingCtrl":20,"./control_panel/ControlPanelCtrl":21,"./control_panel/ControlPaymentsCtrl":22,"./documentation/DocumentationCtrl":23,"./home/CodeGroupCtrl":24,"./home/DemoCtrl":25,"./home/HomeCtrl":26,"./pricing/CostCalculatorCtrl":27,"./pricing/PricingCtrl":28,"./privacy/PrivacyCtrl":29,"./terms/TermsCtrl":30}],11:[function(require,module,exports){
+},{"./common/AppCtrl":11,"./common/HeaderCtrl":12,"./control_panel/ControlAccountCtrl":17,"./control_panel/ControlBillingCtrl":18,"./control_panel/ControlCacheCtrl":19,"./control_panel/ControlCrawlingCtrl":20,"./control_panel/ControlPanelCtrl":21,"./control_panel/ControlPaymentsCtrl":22,"./documentation/DocumentationCtrl":24,"./home/CodeGroupCtrl":25,"./home/DemoCtrl":26,"./home/HomeCtrl":27,"./pricing/CostCalculatorCtrl":28,"./pricing/PricingCtrl":29,"./privacy/PrivacyCtrl":30,"./terms/TermsCtrl":31}],11:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3684,53 +3684,18 @@ module.exports = ['$scope', '$modal', function ($scope, $modal) {
 },{"./CardCreateModalCtrl":15,"./CardUpdateModalCtrl":16,"fs":1}],19:[function(require,module,exports){
 'use strict';
 
+var fs = require('fs');
+
 /**
  * Control Cache Controller
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', 'UserSystemServ', 'Restangular', function ($scope, UserSystemServ, Restangular) {
+module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function ($scope, $modal, UserSystemServ, Restangular) {
 
-    var handleCacheForm = function (userAccount) {
+    var userAccount;
 
-        $scope.primeCache = function (cache) {
-
-            $scope.formErrors = false;
-            $scope.formSuccess = false;
-
-            var parameters = {};
-            if (!_.isEmpty(cache.parameters)) {
-                parameters = JSON.parse(cache.parameters);
-            }
-            //if parameters is not an object or that it is an array, we discard and use an empty object
-            if (!angular.isObject(parameters) || angular.isArray(parameters)) {
-                parameters = {};
-            }
-            parameters.url = cache.url;
-
-            Restangular.all('v1/robot').post(parameters).then(function (response) {
-
-                $scope.formSuccess = 'Done!';
-
-                $scope.$apply();
-
-            }, function (response) {
-
-                if (response.status === 400) {
-                    $scope.formErrors = response.data.content;
-                } else if (response.status === 401 || response.status === 429) {
-                    $scope.formErrors = [response.data.content];
-                } else {
-                    $scope.formErrors = ['System error, try again or contact us.'];
-                }
-
-            });
-
-        };
-
-    };
-
-    var getCacheCount = function (userAccount) {
+    var getCacheCount = function () {
 
         Restangular.all('cache').customGET('', {
             user: userAccount.id,
@@ -3747,52 +3712,115 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', function ($scope, U
 
     };
 
-    var getCacheList = function (userAccount) {
+    var offset = 0;
+    var limit = 40;
 
-        var offset = 0;
-        var limit = 40;
+    var getCache = function () {
 
-        var getCache = function () {
+        Restangular.all('cache').customGET('', {
+            user: userAccount.id,
+            offset: offset,
+            limit: limit
+        }).then(function (response) {
 
-            Restangular.all('cache').customGET('', {
-                user: userAccount.id,
-                offset: offset,
-                limit: limit
-            }).then(function (response) {
+            $scope.snapshots = response.content;
 
-                $scope.snapshots = response.content;
+        }, function (response) {
 
-            }, function (response) {
+            $scope.snapshots = false;
 
-                $scope.snapshots = false;
+        });
 
-            });
+    };
 
-        };
+    $scope.forwardCache = function () {
 
-        $scope.forwardCache = function () {
-
-            offset = offset - limit;
-            getCache();
-
-        };
-
-        $scope.backwardCache = function () {
-
-            offset = offset + limit;
-            getCache();
-
-        };
-
+        offset = offset - limit;
         getCache();
 
     };
 
-    var initialise = function (userAccount) {
+    $scope.backwardCache = function () {
 
-        handleCacheForm(userAccount);
-        getCacheCount(userAccount);
-        getCacheList(userAccount);
+        offset = offset + limit;
+        getCache();
+
+    };
+
+    $scope.viewSnapshot = function (id) {
+
+        $modal.open({
+            template: "<div class=\"modal-header\">\n    <h3>Snapshot #{{snapshotId}}</h3>\n</div>\n<div class=\"modal-body\">\n    <syntax class=\"snapshot-code\" ng-show=\"snapshot\" syntax-language=\"json\" syntax-code=\"{{snapshot}}\"></syntax>\n    <pre class=\"snapshot-code\" ng-show=\"!snapshot\"><code>//loading snapshot data...</code></pre>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>", 
+            controller: require('./SnapshotModalCtrl'),
+            windowClass: 'snapshot-modal form-modal', 
+            resolve: {
+                snapshotId: function () {
+                    return id;
+                }
+            }
+        });
+
+    };
+
+    $scope.deleteSnapshot = function (id, index) {
+
+        //then update list
+        Restangular.one('cache', id).remove().then(function (response) {
+            //client side updates
+            $scope.snapshotCount = $scope.snapshotCount - 1;
+            $scope.snapshots.splice(index, 1);
+            //verify agains the server side
+            getCache();
+            getCacheCount();
+        }, function (response) {
+            //refresh the cache either way, if say the user deleted from a different page
+            getCache();
+            getCacheCount();
+        });
+
+    };
+
+    $scope.primeCache = function (cache) {
+
+        $scope.formErrors = false;
+        $scope.formSuccess = false;
+
+        var parameters = {};
+        if (!_.isEmpty(cache.parameters)) {
+            parameters = JSON.parse(cache.parameters);
+        }
+        //if parameters is not an object or that it is an array, we discard and use an empty object
+        if (!angular.isObject(parameters) || angular.isArray(parameters)) {
+            parameters = {};
+        }
+        parameters.url = cache.url;
+
+        Restangular.all('v1/robot').post(parameters).then(function (response) {
+
+            //we don't do client side updates because the new record may update an old record
+            getCache();
+            getCacheCount();
+            $scope.formSuccess = 'Done!';
+
+        }, function (response) {
+
+            if (response.status === 400) {
+                $scope.formErrors = response.data.content;
+            } else if (response.status === 401 || response.status === 429) {
+                $scope.formErrors = [response.data.content];
+            } else {
+                $scope.formErrors = ['System error, try again or contact us.'];
+            }
+
+        });
+
+    };
+
+    var initialise = function (userData) {
+
+        userAccount = userData;
+        getCacheCount();
+        getCache();
 
     };
 
@@ -3817,7 +3845,7 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', function ($scope, U
     }
 
 }];
-},{}],20:[function(require,module,exports){
+},{"./SnapshotModalCtrl":23,"fs":1}],20:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4288,6 +4316,34 @@ module.exports = ['$scope', function ($scope) {
 'use strict';
 
 /**
+ * Snapshot Modal Controller
+ */
+module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', function ($scope, $modalInstance, snapshotId, Restangular) {
+
+    $scope.snapshotId = snapshotId;
+
+    Restangular.one('cache', snapshotId).get().then(function (response) {
+
+        //pretty print JSON!
+        $scope.snapshot = JSON.stringify(response.content, undefined, 2);
+    
+    }, function (response) {
+
+        $scope.snapshot = '//cannot find snapshot';
+
+    });
+
+    $scope.cancel = function () {
+
+        $modalInstance.dismiss();
+
+    };
+
+}];
+},{}],24:[function(require,module,exports){
+'use strict';
+
+/**
  * Documentation Controller
  * 
  * @param {Object} $scope
@@ -4295,7 +4351,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4313,7 +4369,7 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4367,7 +4423,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
     };
 
 }];
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4378,7 +4434,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4425,7 +4481,7 @@ module.exports = ['$scope', 'CalculateServ', function ($scope, CalculateServ) {
     });
 
 }];
-},{"../../Settings":9}],28:[function(require,module,exports){
+},{"../../Settings":9}],29:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4441,7 +4497,7 @@ module.exports = ['$scope', function ($scope) {
     $scope.freeUsageCap = settings.meta.freeUsageCap;
 
 }];
-},{"../../Settings":9}],29:[function(require,module,exports){
+},{"../../Settings":9}],30:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4450,7 +4506,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4459,7 +4515,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4476,7 +4532,7 @@ module.exports = angular.module('App.Directives')
     .directive('minValid', require('./minValid'))
     .directive('maxValid', require('./maxValid'))
     .directive('jsonChecker', require('./jsonChecker'));
-},{"./affix":32,"./anchor":33,"./equaliseHeights":34,"./jsonChecker":35,"./maxValid":36,"./minValid":37,"./passwordMatch":38,"./scroll":39}],32:[function(require,module,exports){
+},{"./affix":33,"./anchor":34,"./equaliseHeights":35,"./jsonChecker":36,"./maxValid":37,"./minValid":38,"./passwordMatch":39,"./scroll":40}],33:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4565,7 +4621,7 @@ module.exports = ['$window', '$document', function ($window, $document) {
     };
 
 }];
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -4645,7 +4701,7 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
         };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],34:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],35:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -4687,7 +4743,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],35:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],36:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -4727,7 +4783,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -4767,7 +4823,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -4807,7 +4863,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4848,7 +4904,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4873,7 +4929,7 @@ module.exports = ['$anchorScroll', '$location', function ($anchorScroll, $locati
     };
 
 }];
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4886,7 +4942,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./chatTab":41,"./syntaxHighlight":77}],41:[function(require,module,exports){
+},{"./chatTab":42,"./syntaxHighlight":78}],42:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -4922,7 +4978,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":91}],42:[function(require,module,exports){
+},{"fs":1,"insert-css":92}],43:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -5613,7 +5669,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -5650,7 +5706,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":42,"./languages/apache.js":44,"./languages/bash.js":45,"./languages/clojure.js":46,"./languages/coffeescript.js":47,"./languages/cpp.js":48,"./languages/cs.js":49,"./languages/css.js":50,"./languages/diff.js":51,"./languages/erlang.js":52,"./languages/go.js":53,"./languages/haml.js":54,"./languages/haskell.js":55,"./languages/http.js":56,"./languages/ini.js":57,"./languages/java.js":58,"./languages/javascript.js":59,"./languages/json.js":60,"./languages/lisp.js":61,"./languages/lua.js":62,"./languages/makefile.js":63,"./languages/markdown.js":64,"./languages/nginx.js":65,"./languages/objectivec.js":66,"./languages/perl.js":67,"./languages/php.js":68,"./languages/python.js":69,"./languages/r.js":70,"./languages/ruby.js":71,"./languages/rust.js":72,"./languages/scala.js":73,"./languages/scss.js":74,"./languages/sql.js":75,"./languages/xml.js":76}],44:[function(require,module,exports){
+},{"./highlight":43,"./languages/apache.js":45,"./languages/bash.js":46,"./languages/clojure.js":47,"./languages/coffeescript.js":48,"./languages/cpp.js":49,"./languages/cs.js":50,"./languages/css.js":51,"./languages/diff.js":52,"./languages/erlang.js":53,"./languages/go.js":54,"./languages/haml.js":55,"./languages/haskell.js":56,"./languages/http.js":57,"./languages/ini.js":58,"./languages/java.js":59,"./languages/javascript.js":60,"./languages/json.js":61,"./languages/lisp.js":62,"./languages/lua.js":63,"./languages/makefile.js":64,"./languages/markdown.js":65,"./languages/nginx.js":66,"./languages/objectivec.js":67,"./languages/perl.js":68,"./languages/php.js":69,"./languages/python.js":70,"./languages/r.js":71,"./languages/ruby.js":72,"./languages/rust.js":73,"./languages/scala.js":74,"./languages/scss.js":75,"./languages/sql.js":76,"./languages/xml.js":77}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -5696,7 +5752,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -5759,7 +5815,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -5857,7 +5913,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -5988,7 +6044,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -6052,7 +6108,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -6125,7 +6181,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -6229,7 +6285,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -6269,7 +6325,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -6424,7 +6480,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -6463,7 +6519,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -6585,7 +6641,7 @@ function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -6711,7 +6767,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -6745,7 +6801,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -6775,7 +6831,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -6830,7 +6886,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -6902,7 +6958,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -6940,7 +6996,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -7016,7 +7072,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -7073,7 +7129,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -7118,7 +7174,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -7220,7 +7276,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -7301,7 +7357,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -7386,7 +7442,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -7535,7 +7591,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -7644,7 +7700,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -7728,7 +7784,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -7798,7 +7854,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -7957,7 +8013,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -8006,7 +8062,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -8065,7 +8121,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -8182,7 +8238,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -8285,7 +8341,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -8389,7 +8445,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -8416,11 +8472,12 @@ insertCss(css);
  *
  * @param {string} syntaxLanguage Determines the language to highlight
  */
-module.exports = ['$sce', function($sce){
+module.exports = ['$sce', function ($sce) {
 
     return {
         scope: {
-            'syntaxLanguage': '@'
+            'syntaxLanguage': '@',
+            'syntaxCode': '@'
         }, 
         restrict: 'AE',
         template: codeBlockTemplate, 
@@ -8428,25 +8485,45 @@ module.exports = ['$sce', function($sce){
         replace: true, 
         link: function (scope, element, attributes, controller, transclude) {
 
-            //transclude's clone is the child elements of the directive element, it will wrap any unwrapped text nodes with the span tag
-            transclude(scope, function (clone) {
+            //if the DOM attribute was defined, this takes precedence over transclusion
+            if (typeof attributes.syntaxCode !== 'undefined') {
 
-                //get the directive element's content as text, this will be the {{code}}
-                var code = angular.element(clone).text();
+                attributes.$observe('syntaxCode', function (syntaxCode) {
 
-                //convert the code string into a highlighted code string
-                var highlightedCode = hljs.highlight(scope.syntaxLanguage, code, true);
+                    if (typeof syntaxCode === 'string' && syntaxCode.length > 0) {
 
-                //bind to the scope as trusted HTML
-                scope.highlightedCode = $sce.trustAsHtml(highlightedCode.value.replace(/\n/g,'<br />'));
+                        var highlightedCode = hljs.highlight(scope.syntaxLanguage, syntaxCode, true);
 
-            });
+                        scope.highlightedCode = $sce.trustAsHtml(highlightedCode.value);
+
+                    }
+
+                });
+
+            } else {
+
+                //transclude's clone is the child elements of the directive element, it will wrap any unwrapped text nodes with the span tag
+                transclude(scope, function (clone) {
+
+                    //get the directive element's content as text, this will be the {{code}}
+                    var code = angular.element(clone).text();
+
+                    //convert the code string into a highlighted code string
+                    var highlightedCode = hljs.highlight(scope.syntaxLanguage, code, true);
+
+                    //bind to the scope as trusted HTML
+                    //new lines need to be converted to <br /> since this transclusion method doesn't seem to be able to keep the newlines from the source text
+                    scope.highlightedCode = $sce.trustAsHtml(highlightedCode.value.replace(/\n/g, '<br />'));
+
+                });
+
+            }
 
         }
     };
 
 }];
-},{"./lib/hljs/index":43,"fs":1,"insert-css":91}],78:[function(require,module,exports){
+},{"./lib/hljs/index":44,"fs":1,"insert-css":92}],79:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8455,7 +8532,7 @@ module.exports = ['$sce', function($sce){
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8466,7 +8543,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":80}],80:[function(require,module,exports){
+},{"./UserSystem":81}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8477,7 +8554,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":81,"./UserSystemServ":82}],81:[function(require,module,exports){
+},{"./UserSystemRun":82,"./UserSystemServ":83}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8497,7 +8574,7 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8662,7 +8739,7 @@ module.exports = function () {
     ];
 
 };
-},{}],83:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8685,14 +8762,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     }, true);
 
 }];
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 module.exports = ['$timeout', function ($timeout) {
@@ -8724,7 +8801,7 @@ module.exports = ['$timeout', function ($timeout) {
     };
 
 }];
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8761,7 +8838,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 'use strict';
 
 var moment = require("./..\\..\\..\\components\\moment\\moment.js");
@@ -8771,7 +8848,7 @@ module.exports = [function () {
     return moment;
 
 }];
-},{"./..\\..\\..\\components\\moment\\moment.js":5}],88:[function(require,module,exports){
+},{"./..\\..\\..\\components\\moment\\moment.js":5}],89:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8785,7 +8862,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8806,7 +8883,7 @@ module.exports = angular.module('App.Services')
     .service('CalculateServ', require('./CalculateServ'))
     .factory('MomentServ', require('./MomentServ'))
     .factory('BusyLoopServ', require('./BusyLoopServ'));
-},{"./AuthenticationStateRun":83,"./BaseUrlConst":84,"./BusyLoopServ":85,"./CalculateServ":86,"./MomentServ":87,"./RestangularConfig":88,"./UserSystemConfig":90}],90:[function(require,module,exports){
+},{"./AuthenticationStateRun":84,"./BaseUrlConst":85,"./BusyLoopServ":86,"./CalculateServ":87,"./MomentServ":88,"./RestangularConfig":89,"./UserSystemConfig":91}],91:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8818,7 +8895,7 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {

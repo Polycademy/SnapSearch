@@ -1,0 +1,10 @@
+<div class="modal-header">
+    <h3>Snapshot #{{snapshotId}}</h3>
+</div>
+<div class="modal-body">
+    <syntax class="snapshot-code" ng-show="snapshot" syntax-language="json" syntax-code="{{snapshot}}"></syntax>
+    <pre class="snapshot-code" ng-show="!snapshot"><code>//loading snapshot data...</code></pre>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" ng-click="cancel()">Close</button>
+</div>

@@ -1,5 +1,11 @@
 <?php
 
+use Aws\S3\S3Client;
+
+use Gaufrette\Filesystem;
+use Gaufrette\Adapter\AwsS3 as AwsS3Adapter;
+use Gaufrette\File;
+
 class Cache_model extends CI_Model{
 
     protected $filesystem;
@@ -32,19 +38,15 @@ class Cache_model extends CI_Model{
         $this->db->select('userId, snapshot');
         $this->db->from('snapshots');
         $this->db->where('id', $id);
+        if($user_id){
+            $this->db->where('userId', $user_id);
+        }
 
         $query = $this->db->get();
 
-        if($query->num_rows > 0){
+        if($query->num_rows() > 0){
 
             $row = $query->row();
-
-            if($user_id AND $user_id != $row->userId){
-                $this->errors = array(
-                    'error' => 'Not your snapshot.'
-                );
-                return false;
-            }
 
             $snapshot_file = new File($row->snapshot, $this->filesystem);
 
@@ -74,26 +76,27 @@ class Cache_model extends CI_Model{
         $this->db->select('userId, snapshot');
         $this->db->from('snapshots');
         $this->db->where('id', $id);
+        if($user_id){
+            $this->db->where('userId', $user_id);
+        }
 
         $query = $this->db->get();
 
-        if($query->num_rows > 0){
+        if($query->num_rows() > 0){
 
-            $row = $query->row();
-
-            if($user_id AND $user_id != $row->userId){
-                $this->errors = array(
-                    'error' => 'Not your snapshot.'
-                );
-                return false;
+            //delete it off the database
+            if($user_id){
+                $this->db->where('userId', $user_id);  
             }
+            $this->db->delete('snapshots', ['id' => $id]);
 
+            //delete it off the filesystem
+            $row = $query->row();
             $snapshot_file = new File($row->snapshot, $this->filesystem);
 
             if($snapshot_file->exists()){
 
                 $snapshot_file->delete();
-
                 return true;
 
             }

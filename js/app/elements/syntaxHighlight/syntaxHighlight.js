@@ -24,11 +24,12 @@ insertCss(css);
  *
  * @param {string} syntaxLanguage Determines the language to highlight
  */
-module.exports = ['$sce', function($sce){
+module.exports = ['$sce', function ($sce) {
 
     return {
         scope: {
-            'syntaxLanguage': '@'
+            'syntaxLanguage': '@',
+            'syntaxCode': '@'
         }, 
         restrict: 'AE',
         template: codeBlockTemplate, 
@@ -36,19 +37,39 @@ module.exports = ['$sce', function($sce){
         replace: true, 
         link: function (scope, element, attributes, controller, transclude) {
 
-            //transclude's clone is the child elements of the directive element, it will wrap any unwrapped text nodes with the span tag
-            transclude(scope, function (clone) {
+            //if the DOM attribute was defined, this takes precedence over transclusion
+            if (typeof attributes.syntaxCode !== 'undefined') {
 
-                //get the directive element's content as text, this will be the {{code}}
-                var code = angular.element(clone).text();
+                attributes.$observe('syntaxCode', function (syntaxCode) {
 
-                //convert the code string into a highlighted code string
-                var highlightedCode = hljs.highlight(scope.syntaxLanguage, code, true);
+                    if (typeof syntaxCode === 'string' && syntaxCode.length > 0) {
 
-                //bind to the scope as trusted HTML
-                scope.highlightedCode = $sce.trustAsHtml(highlightedCode.value.replace(/\n/g,'<br />'));
+                        var highlightedCode = hljs.highlight(scope.syntaxLanguage, syntaxCode, true);
 
-            });
+                        scope.highlightedCode = $sce.trustAsHtml(highlightedCode.value);
+
+                    }
+
+                });
+
+            } else {
+
+                //transclude's clone is the child elements of the directive element, it will wrap any unwrapped text nodes with the span tag
+                transclude(scope, function (clone) {
+
+                    //get the directive element's content as text, this will be the {{code}}
+                    var code = angular.element(clone).text();
+
+                    //convert the code string into a highlighted code string
+                    var highlightedCode = hljs.highlight(scope.syntaxLanguage, code, true);
+
+                    //bind to the scope as trusted HTML
+                    //new lines need to be converted to <br /> since this transclusion method doesn't seem to be able to keep the newlines from the source text
+                    scope.highlightedCode = $sce.trustAsHtml(highlightedCode.value.replace(/\n/g, '<br />'));
+
+                });
+
+            }
 
         }
     };

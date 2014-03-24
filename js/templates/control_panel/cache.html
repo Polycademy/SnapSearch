@@ -90,8 +90,8 @@
                         <td class="text-center">{{snapshot.id}}</td>
                         <td class="text-center">{{snapshot.url}}</td>
                         <td class="text-center">{{snapshot.date}}</td>
-                        <td class="text-center"><button class="btn" ng-click="viewSnapshot(snapshot.id)">snapshot</button></td>
-                        <td class="text-center"><button class="btn" ng-click="deleteSnapshot(snapshot.id)">delete</button></td>
+                        <td class="text-center"><button class="btn btn-info" ng-click="viewSnapshot(snapshot.id)">snapshot</button></td>
+                        <td class="text-center"><button class="btn btn-warning" ng-click="deleteSnapshot(snapshot.id, $index)">delete</button></td>
                     </tr>
                 </tbody>
             </table>

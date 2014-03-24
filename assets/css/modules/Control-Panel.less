@@ -115,7 +115,8 @@
     }
     .tally-block.tally_block_single {
         border-radius: 10px;
-        width: 260px;
+        width: 100%;
+        max-width: 260px;
         margin: 20px auto;
     }
     .tally-block.tally_block_request {
@@ -210,5 +211,12 @@
             max-width: 600px;
             margin-bottom: 0;
         }
+    }
+}
+
+.snapshot-code {
+    max-height: 360px;
+    code {
+        white-space: pre-wrap;
     }
 }
