@@ -14,7 +14,7 @@
 		"jamierumbelow/pigeon": "0.2.0",
 		"symfony/http-foundation": "~2.1",
 		"guzzle/guzzle": "3.7.4",
-		"knplabs/gaufrette": "0.1.6",
+		"knplabs/gaufrette": "0.1.7",
         "polycademy/polyauth": "0.0.11",
 		"psliwa/php-pdf": "1.2.2",
 		"phpmailer/phpmailer": "5.2.7",
