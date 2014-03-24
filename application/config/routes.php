@@ -40,6 +40,9 @@ Pigeon::map(function($r){
 		//DEMO
 		$r->resource('demo');
 
+		//INVOICES
+		$r->resources('invoices');
+
 	});
 
 	//CLI ROUTING
