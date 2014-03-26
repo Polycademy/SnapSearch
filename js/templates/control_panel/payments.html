@@ -1,43 +1,42 @@
 <div class="payments">
     <h2 class="control-title">Payment History</h2>
     <em class="api-key">API Key: {{userAccount.sharedKey}}</em>
-    <p class="placeholder-text">Coming Soon!</p>
-    <div ng-show="false">
-        <div class="telemetry-block overview">
-            <h3>Overview</h3>
-            <div class="row overview-payments">
-                <div class="col-sm-6">
-                    <p>2040</p>
-                    <p>Usages Used</p>
-                </div>
-                <div class="col-sm-6">
-                    <p>$20.00 AUD</p>
-                    <p>Bill this Month</p>
-                </div>
-            </div>
+    <div class="telemetry-block">
+        <h3>Overview</h3>
+        <div class="tally-block tally_block_cache tally_block_single">
+            <span class="tally-bg">B</span>
+            <p class="tally-number">${{billThisMonth}} AUD</p>
         </div>
-        <div class="telemetry-block">
-            <table ng-show="paymentHistory">
+        <p class="tally-description">Bill this Month</p>
+        <p class="telemetry-emphasis">Usage charges may include left over charges from the previous cycle.<br />Charges under 500 AUD cents are delayed and added to the next cycle.</p>
+    </div>
+    <div class="telemetry-block">
+        <h3>Invoices</h3>
+        <div class="log-buttons telemetry-buttons button-group">
+            <button class="btn btn-primary" type="button" ng-click="backwardPayments()">Backward</button>
+            <button class="btn btn-primary" type="button" ng-click="forwardPayments()">Forward</button>
+        </div>
+        <div class="table-responsive" ng-show="paymentRecords">
+            <table class="table table-striped table-hover">
                 <thead>
-                    <th>id</th>
-                    <th>date</th>
-                    <th>usage rate (including left over usage from previous cycles)</th>
-                    <th>amount</th>
-                    <th>currency</th>
-                    <th>invoice</th>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Usage Rate Charged</th>
+                    <th>Amount</th>
+                    <th>Currency</th>
+                    <th>Invoice</th>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="record in paymentHistory">
-                        <td>{{record.id}}</td>
-                        <td>{{record.date}}</td>
-                        <td>{{record.usageRate}}</td>
-                        <td>{{record.amount}}</td>
-                        <td>{{record.currency}}</td>
-                        <td><a href="#">{{record.invoice}}</a></td>
+                    <tr ng-repeat="payment in paymentRecords">
+                        <td class="text-center">{{payment.id}}</td>
+                        <td class="text-center">{{payment.date}}</td>
+                        <td class="text-center">{{payment.amount}}</td>
+                        <td class="text-center">{{payment.currency}}</td>
+                        <td class="text-center"><a class="btn btn-info" ng-href="api/invoices/{{payment.invoiceNumber}}">invoice</a></td>
                     </tr>
                 </tbody>
             </table>
-            <p ng-show="!paymentHistory">No payment history.</p>
         </div>
+        <p class="text-center" ng-show="!paymentRecords"><strong>No payments!</strong></p>
     </div>
 </div>
