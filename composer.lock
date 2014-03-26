@@ -772,9 +772,7 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Pimple is a simple Dependency Injection Container for PHP 5.3",
@@ -1168,9 +1166,7 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Symfony Community",
@@ -1187,12 +1183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/CMCDragonkai/Stash.git",
-                "reference": "2c18b333d73e275b6972dc49102f95f75abfd03d"
+                "reference": "31da95f7b34a149bd3fdd8aee0b181036ce77f15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CMCDragonkai/Stash/zipball/2c18b333d73e275b6972dc49102f95f75abfd03d",
-                "reference": "2c18b333d73e275b6972dc49102f95f75abfd03d",
+                "url": "https://api.github.com/repos/CMCDragonkai/Stash/zipball/31da95f7b34a149bd3fdd8aee0b181036ce77f15",
+                "reference": "31da95f7b34a149bd3fdd8aee0b181036ce77f15",
                 "shasum": ""
             },
             "require": {
@@ -1233,7 +1229,7 @@
             "support": {
                 "source": "https://github.com/CMCDragonkai/Stash/tree/patch-1"
             },
-            "time": "2014-03-15 17:46:49"
+            "time": "2014-03-26 01:27:52"
         },
         {
             "name": "zendframework/zend-cache",
