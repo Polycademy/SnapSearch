@@ -73,8 +73,8 @@
     <div class="telemetry-block">
         <h3>Cached Snapshots</h3>
         <div class="log-buttons telemetry-buttons button-group">
-            <button class="btn btn-primary" type="button" ng-click="backwardLogs()">Backward</button>
-            <button class="btn btn-primary" type="button" ng-click="forwardLogs()">Forward</button>
+            <button class="btn btn-primary" type="button" ng-click="backwardCache()">Backward</button>
+            <button class="btn btn-primary" type="button" ng-click="forwardCache()">Forward</button>
         </div>
         <div class="table-responsive" ng-show="snapshots">
             <table class="table table-striped table-hover">
@@ -96,6 +96,6 @@
                 </tbody>
             </table>
         </div>
-        <p class="text-center" ng-show="!snapshots"><strong>No snapshots yet!</strong></p>
+        <p class="text-center" ng-show="!snapshots"><strong>No snapshots!</strong></p>
     </div>
 </div>
