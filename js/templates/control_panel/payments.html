@@ -3,6 +3,7 @@
     <em class="api-key">API Key: {{userAccount.sharedKey}}</em>
     <div class="telemetry-block">
         <h3>Overview</h3>
+        <em class="telemetry-emphasis">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>
         <div class="tally-block tally_block_cache tally_block_single">
             <span class="tally-bg">B</span>
             <p class="tally-number">${{billThisMonth}} AUD</p>
