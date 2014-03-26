@@ -113,6 +113,10 @@ class Cache_model extends CI_Model{
 
     public function read_all($offset = false, $limit = false, $user_id = false){
 
+        //typecasting is required for when we check if they are integers
+        $offset = ($offset) ? (int) $offset : 0;
+        $limit = ($limit) ? (int) $limit : false;
+
         if($offset < 0){
             $offset = 0;
         }
