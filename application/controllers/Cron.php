@@ -62,7 +62,7 @@ class Cron extends CI_Controller{
 	 */
 	public function monthly_tracking(){
 
-		//0.5 cent per request
+		//this is in cents, not dollars
 		$charge_per_request = 0.2;
 		$currency = 'AUD';
 		$product_description = 'SnapSearch API Usage';
@@ -75,6 +75,7 @@ class Cron extends CI_Controller{
 		$this->load->model('Billing_model');
 		$this->load->model('Pin_model');
 		$this->load->model('Email_model');
+		$this->load->model('Invoices_model');
 		$this->load->model('Payments_model');
 
 		//we need to paginate across all the users because loading all the users into memory might be a bad idea
@@ -297,9 +298,15 @@ class Cron extends CI_Controller{
 
 							$payment_history['address'] = implode(' ', $address);
 
-							$payment_id = $this->Payments_model->create($payment_history);
+							//['invoiceNumber', 'invoiceFile']
+							$invoice_data = $this->Invoices_model->create($payment_history, true);
+							$invoice_number = $invoice_data['invoiceNumber'];
+							$invoice_file = $invoice_data['invoiceFile'];
 
-							$invoice_file_location = $this->Payments_model->read($payment_id)['invoiceFilePath'];
+							//store a record to the invoice number in the payment history
+							$payment_history['invoiceNumber'] = $invoice_number;
+
+							$this->Payments_model->create($payment_history);
 
 							$email = $this->Email_model->prepare_email('email/invoice_email', [
 								'month'			=> $today->format('F'),
@@ -314,8 +321,9 @@ class Cron extends CI_Controller{
 								[$user['email']],
 								'SnapSearch Monthly Invoice for ' . $today->format('F') . ' ' . $today->format('Y'),
 								$email,
+								null,
 								[
-									'SnapSearch Invoice for ' . $today->format('F') . ' ' . $today->format('Y') . '.pdf'	=> $invoice_file_location
+									'SnapSearch Invoice for ' . $today->format('F') . ' ' . $today->format('Y') . '.pdf'	=> $invoice_file
 								]
 							);
 

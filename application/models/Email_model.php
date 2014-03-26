@@ -30,7 +30,8 @@ class Email_model extends CI_Model{
 		array $to_addresses,
 		$subject,
 		$html_message,
-		array $attachments = null
+		array $attachments = null,
+		array $attachment_strings = null
 	){
 
 		$this->mailer->IsSMTP();
@@ -58,6 +59,13 @@ class Email_model extends CI_Model{
 				}else{
 					$this->mailer->addAttachment($attachment_file);
 				}
+			}
+		}
+
+		//binary string attachments need to have a specified name
+		if($attachment_strings){
+			foreach($attachment_strings as $attachment_name => $attachment_file){
+				$this->mailer->addStringAttachment($attachment_file, $attachment_name);
 			}
 		}
 
