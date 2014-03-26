@@ -13,7 +13,7 @@ module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ'
     //it will check if the session is active every 20 seconds
     var cancelBusyLoop = BusyLoopServ(function () {
         UserSystemServ.getSession();
-    }, 20000);
+    }, 30000);
 
     $scope.$on('$destroy', function () {
         cancelBusyLoop();

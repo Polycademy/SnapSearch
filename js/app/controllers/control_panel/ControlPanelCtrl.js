@@ -12,7 +12,7 @@ module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'Cal
             var userData = UserSystemServ.getUserData();
             UserSystemServ.getAccount(userData.id);
         }
-    }, 45000);
+    }, 60000);
 
     $scope.$on('$destroy', function () {
         cancelBusyLoop();
