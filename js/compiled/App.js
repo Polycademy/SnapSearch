@@ -892,7 +892,7 @@ function makeArray( obj ) {
 
 },{"./..\\eventEmitter\\EventEmitter.js":2,"./..\\eventie\\eventie.js":3}],5:[function(require,module,exports){
 //! moment.js
-//! version : 2.4.0
+//! version : 2.5.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -904,7 +904,8 @@ function makeArray( obj ) {
     ************************************/
 
     var moment,
-        VERSION = "2.4.0",
+        VERSION = "2.5.1",
+        global = this,
         round = Math.round,
         i,
 
@@ -919,8 +920,21 @@ function makeArray( obj ) {
         // internal storage for language config files
         languages = {},
 
+        // moment internal properties
+        momentProperties = {
+            _isAMomentObject: null,
+            _i : null,
+            _f : null,
+            _l : null,
+            _strict : null,
+            _isUTC : null,
+            _offset : null,  // optional. Combine with _isUTC
+            _pf : null,
+            _lang : null  // optional
+        },
+
         // check for nodeJS
-        hasModule = (typeof module !== 'undefined' && module.exports),
+        hasModule = (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined'),
 
         // ASP.NET json date format regex
         aspNetJsonRegex = /^\/?Date\((\-?\d+)/i,
@@ -931,32 +945,40 @@ function makeArray( obj ) {
         isoDurationRegex = /^(-)?P(?:(?:([0-9,.]*)Y)?(?:([0-9,.]*)M)?(?:([0-9,.]*)D)?(?:T(?:([0-9,.]*)H)?(?:([0-9,.]*)M)?(?:([0-9,.]*)S)?)?|([0-9,.]*)W)$/,
 
         // format tokens
-        formattingTokens = /(\[[^\[]*\])|(\\)?(Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,4}|X|zz?|ZZ?|.)/g,
+        formattingTokens = /(\[[^\[]*\])|(\\)?(Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,4}|X|zz?|ZZ?|.)/g,
         localFormattingTokens = /(\[[^\[]*\])|(\\)?(LT|LL?L?L?|l{1,4})/g,
 
         // parsing token regexes
         parseTokenOneOrTwoDigits = /\d\d?/, // 0 - 99
         parseTokenOneToThreeDigits = /\d{1,3}/, // 0 - 999
-        parseTokenThreeDigits = /\d{3}/, // 000 - 999
-        parseTokenFourDigits = /\d{1,4}/, // 0 - 9999
-        parseTokenSixDigits = /[+\-]?\d{1,6}/, // -999,999 - 999,999
+        parseTokenOneToFourDigits = /\d{1,4}/, // 0 - 9999
+        parseTokenOneToSixDigits = /[+\-]?\d{1,6}/, // -999,999 - 999,999
         parseTokenDigits = /\d+/, // nonzero number of digits
         parseTokenWord = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i, // any word (or two) characters or numbers including two/three word month in arabic.
-        parseTokenTimezone = /Z|[\+\-]\d\d:?\d\d/i, // +00:00 -00:00 +0000 -0000 or Z
-        parseTokenT = /T/i, // T (ISO seperator)
+        parseTokenTimezone = /Z|[\+\-]\d\d:?\d\d/gi, // +00:00 -00:00 +0000 -0000 or Z
+        parseTokenT = /T/i, // T (ISO separator)
         parseTokenTimestampMs = /[\+\-]?\d+(\.\d{1,3})?/, // 123456789 123456789.123
 
-        // preliminary iso regex
-        // 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000)
-        isoRegex = /^\s*\d{4}-(?:(\d\d-\d\d)|(W\d\d$)|(W\d\d-\d)|(\d\d\d))((T| )(\d\d(:\d\d(:\d\d(\.\d+)?)?)?)?([\+\-]\d\d:?\d\d|Z)?)?$/,
+        //strict parsing regexes
+        parseTokenOneDigit = /\d/, // 0 - 9
+        parseTokenTwoDigits = /\d\d/, // 00 - 99
+        parseTokenThreeDigits = /\d{3}/, // 000 - 999
+        parseTokenFourDigits = /\d{4}/, // 0000 - 9999
+        parseTokenSixDigits = /[+-]?\d{6}/, // -999,999 - 999,999
+        parseTokenSignedNumber = /[+-]?\d+/, // -inf - inf
+
+        // iso 8601 regex
+        // 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000 or +00)
+        isoRegex = /^\s*(?:[+-]\d{6}|\d{4})-(?:(\d\d-\d\d)|(W\d\d$)|(W\d\d-\d)|(\d\d\d))((T| )(\d\d(:\d\d(:\d\d(\.\d+)?)?)?)?([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/,
 
         isoFormat = 'YYYY-MM-DDTHH:mm:ssZ',
 
         isoDates = [
-            'YYYY-MM-DD',
-            'GGGG-[W]WW',
-            'GGGG-[W]WW-E',
-            'YYYY-DDD'
+            ['YYYYYY-MM-DD', /[+-]\d{6}-\d{2}-\d{2}/],
+            ['YYYY-MM-DD', /\d{4}-\d{2}-\d{2}/],
+            ['GGGG-[W]WW-E', /\d{4}-W\d{2}-\d/],
+            ['GGGG-[W]WW', /\d{4}-W\d{2}/],
+            ['YYYY-DDD', /\d{4}-\d{3}/]
         ],
 
         // iso time formats and regexes
@@ -1058,11 +1080,15 @@ function makeArray( obj ) {
             YYYYY : function () {
                 return leftZeroFill(this.year(), 5);
             },
+            YYYYYY : function () {
+                var y = this.year(), sign = y >= 0 ? '+' : '-';
+                return sign + leftZeroFill(Math.abs(y), 6);
+            },
             gg   : function () {
                 return leftZeroFill(this.weekYear() % 100, 2);
             },
             gggg : function () {
-                return this.weekYear();
+                return leftZeroFill(this.weekYear(), 4);
             },
             ggggg : function () {
                 return leftZeroFill(this.weekYear(), 5);
@@ -1071,7 +1097,7 @@ function makeArray( obj ) {
                 return leftZeroFill(this.isoWeekYear() % 100, 2);
             },
             GGGG : function () {
-                return this.isoWeekYear();
+                return leftZeroFill(this.isoWeekYear(), 4);
             },
             GGGGG : function () {
                 return leftZeroFill(this.isoWeekYear(), 5);
@@ -1128,7 +1154,7 @@ function makeArray( obj ) {
                     a = -a;
                     b = "-";
                 }
-                return b + leftZeroFill(toInt(10 * a / 6), 4);
+                return b + leftZeroFill(toInt(a / 60), 2) + leftZeroFill(toInt(a) % 60, 2);
             },
             z : function () {
                 return this.zoneAbbr();
@@ -1138,10 +1164,30 @@ function makeArray( obj ) {
             },
             X    : function () {
                 return this.unix();
+            },
+            Q : function () {
+                return this.quarter();
             }
         },
 
         lists = ['months', 'monthsShort', 'weekdays', 'weekdaysShort', 'weekdaysMin'];
+
+    function defaultParsingFlags() {
+        // We need to deep clone this object, and es5 standard is not very
+        // helpful.
+        return {
+            empty : false,
+            unusedTokens : [],
+            unusedInput : [],
+            overflow : -2,
+            charsLeftOver : 0,
+            nullInput : false,
+            invalidMonth : null,
+            invalidFormat : false,
+            userInvalidated : false,
+            iso: false
+        };
+    }
 
     function padToken(func, count) {
         return function (a) {
@@ -1191,9 +1237,6 @@ function makeArray( obj ) {
             seconds = normalizedInput.second || 0,
             milliseconds = normalizedInput.millisecond || 0;
 
-        // store reference to input for deterministic cloning
-        this._input = duration;
-
         // representation for dateAddRemove
         this._milliseconds = +milliseconds +
             seconds * 1e3 + // 1000
@@ -1237,6 +1280,17 @@ function makeArray( obj ) {
         return a;
     }
 
+    function cloneMoment(m) {
+        var result = {}, i;
+        for (i in m) {
+            if (m.hasOwnProperty(i) && momentProperties.hasOwnProperty(i)) {
+                result[i] = m[i];
+            }
+        }
+
+        return result;
+    }
+
     function absRound(number) {
         if (number < 0) {
             return Math.ceil(number);
@@ -1247,12 +1301,14 @@ function makeArray( obj ) {
 
     // left zero fill a number
     // see http://jsperf.com/left-zero-filling for performance comparison
-    function leftZeroFill(number, targetLength) {
-        var output = number + '';
+    function leftZeroFill(number, targetLength, forceSign) {
+        var output = '' + Math.abs(number),
+            sign = number >= 0;
+
         while (output.length < targetLength) {
             output = '0' + output;
         }
-        return output;
+        return (sign ? (forceSign ? '+' : '') : '-') + output;
     }
 
     // helper function for _.addTime and _.subtractTime
@@ -1323,8 +1379,7 @@ function makeArray( obj ) {
     function normalizeObjectUnits(inputObject) {
         var normalizedInput = {},
             normalizedProp,
-            prop,
-            index;
+            prop;
 
         for (prop in inputObject) {
             if (inputObject.hasOwnProperty(prop)) {
@@ -1427,21 +1482,6 @@ function makeArray( obj ) {
         }
     }
 
-    function initializeParsingFlags(config) {
-        config._pf = {
-            empty : false,
-            unusedTokens : [],
-            unusedInput : [],
-            overflow : -2,
-            charsLeftOver : 0,
-            nullInput : false,
-            invalidMonth : null,
-            invalidFormat : false,
-            userInvalidated : false,
-            iso: false
-        };
-    }
-
     function isValid(m) {
         if (m._isValid == null) {
             m._isValid = !isNaN(m._d.getTime()) &&
@@ -1463,6 +1503,12 @@ function makeArray( obj ) {
 
     function normalizeLanguage(key) {
         return key ? key.toLowerCase().replace('_', '-') : key;
+    }
+
+    // Return a moment from input, that is local/utc/zone equivalent to model.
+    function makeAs(input, model) {
+        return model._isUTC ? moment(input).zone(model._offset || 0) :
+            moment(input).local();
     }
 
     /************************************
@@ -1796,21 +1842,32 @@ function makeArray( obj ) {
 
     // get the regex to find the next token
     function getParseRegexForToken(token, config) {
-        var a;
+        var a, strict = config._strict;
         switch (token) {
         case 'DDDD':
             return parseTokenThreeDigits;
         case 'YYYY':
         case 'GGGG':
         case 'gggg':
-            return parseTokenFourDigits;
+            return strict ? parseTokenFourDigits : parseTokenOneToFourDigits;
+        case 'Y':
+        case 'G':
+        case 'g':
+            return parseTokenSignedNumber;
+        case 'YYYYYY':
         case 'YYYYY':
         case 'GGGGG':
         case 'ggggg':
-            return parseTokenSixDigits;
+            return strict ? parseTokenSixDigits : parseTokenOneToSixDigits;
         case 'S':
+            if (strict) { return parseTokenOneDigit; }
+            /* falls through */
         case 'SS':
+            if (strict) { return parseTokenTwoDigits; }
+            /* falls through */
         case 'SSS':
+            if (strict) { return parseTokenThreeDigits; }
+            /* falls through */
         case 'DDD':
             return parseTokenOneToThreeDigits;
         case 'MMM':
@@ -1840,6 +1897,9 @@ function makeArray( obj ) {
         case 'hh':
         case 'mm':
         case 'ss':
+        case 'ww':
+        case 'WW':
+            return strict ? parseTokenTwoDigits : parseTokenOneOrTwoDigits;
         case 'M':
         case 'D':
         case 'd':
@@ -1848,9 +1908,7 @@ function makeArray( obj ) {
         case 'm':
         case 's':
         case 'w':
-        case 'ww':
         case 'W':
-        case 'WW':
         case 'e':
         case 'E':
             return parseTokenOneOrTwoDigits;
@@ -1861,8 +1919,10 @@ function makeArray( obj ) {
     }
 
     function timezoneMinutesFromString(string) {
-        var tzchunk = (parseTokenTimezone.exec(string) || [])[0],
-            parts = (tzchunk + '').match(parseTimezoneChunker) || ['-', 0, 0],
+        string = string || "";
+        var possibleTzMatches = (string.match(parseTokenTimezone) || []),
+            tzChunk = possibleTzMatches[possibleTzMatches.length - 1] || [],
+            parts = (tzChunk + '').match(parseTimezoneChunker) || ['-', 0, 0],
             minutes = +(parts[1] * 60) + toInt(parts[2]);
 
         return parts[0] === '+' ? -minutes : minutes;
@@ -1911,6 +1971,7 @@ function makeArray( obj ) {
             break;
         case 'YYYY' :
         case 'YYYYY' :
+        case 'YYYYYY' :
             datePartArray[YEAR] = toInt(input);
             break;
         // AM / PM
@@ -1995,8 +2056,9 @@ function makeArray( obj ) {
         //compute day of the year from weeks and weekdays
         if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
             fixYear = function (val) {
+                var int_val = parseInt(val, 10);
                 return val ?
-                  (val.length < 3 ? (parseInt(val, 10) > 68 ? '19' + val : '20' + val) : val) :
+                  (val.length < 3 ? (int_val > 68 ? 1900 + int_val : 2000 + int_val) : int_val) :
                   (config._a[YEAR] == null ? moment().weekYear() : config._a[YEAR]);
             };
 
@@ -2108,7 +2170,7 @@ function makeArray( obj ) {
 
         for (i = 0; i < tokens.length; i++) {
             token = tokens[i];
-            parsedInput = (getParseRegexForToken(token, config).exec(string) || [])[0];
+            parsedInput = (string.match(getParseRegexForToken(token, config)) || [])[0];
             if (parsedInput) {
                 skipped = string.substr(0, string.indexOf(parsedInput));
                 if (skipped.length > 0) {
@@ -2180,7 +2242,7 @@ function makeArray( obj ) {
         for (i = 0; i < config._f.length; i++) {
             currentScore = 0;
             tempConfig = extend({}, config);
-            initializeParsingFlags(tempConfig);
+            tempConfig._pf = defaultParsingFlags();
             tempConfig._f = config._f[i];
             makeDateFromStringAndFormat(tempConfig);
 
@@ -2207,26 +2269,26 @@ function makeArray( obj ) {
 
     // date from iso format
     function makeDateFromString(config) {
-        var i,
+        var i, l,
             string = config._i,
             match = isoRegex.exec(string);
 
         if (match) {
             config._pf.iso = true;
-            for (i = 4; i > 0; i--) {
-                if (match[i]) {
+            for (i = 0, l = isoDates.length; i < l; i++) {
+                if (isoDates[i][1].exec(string)) {
                     // match[5] should be "T" or undefined
-                    config._f = isoDates[i - 1] + (match[6] || " ");
+                    config._f = isoDates[i][0] + (match[6] || " ");
                     break;
                 }
             }
-            for (i = 0; i < 4; i++) {
+            for (i = 0, l = isoTimes.length; i < l; i++) {
                 if (isoTimes[i][1].exec(string)) {
                     config._f += isoTimes[i][0];
                     break;
                 }
             }
-            if (parseTokenTimezone.exec(string)) {
+            if (string.match(parseTokenTimezone)) {
                 config._f += "Z";
             }
             makeDateFromStringAndFormat(config);
@@ -2361,11 +2423,10 @@ function makeArray( obj ) {
 
     //http://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
     function dayOfYearFromWeeks(year, week, weekday, firstDayOfWeekOfYear, firstDayOfWeek) {
-        var d = new Date(Date.UTC(year, 0)).getUTCDay(),
-            daysToAdd, dayOfYear;
+        var d = makeUTCDate(year, 0, 1).getUTCDay(), daysToAdd, dayOfYear;
 
         weekday = weekday != null ? weekday : firstDayOfWeek;
-        daysToAdd = firstDayOfWeek - d + (d > firstDayOfWeekOfYear ? 7 : 0);
+        daysToAdd = firstDayOfWeek - d + (d > firstDayOfWeekOfYear ? 7 : 0) - (d < firstDayOfWeek ? 7 : 0);
         dayOfYear = 7 * (week - 1) + (weekday - firstDayOfWeek) + daysToAdd + 1;
 
         return {
@@ -2382,10 +2443,6 @@ function makeArray( obj ) {
         var input = config._i,
             format = config._f;
 
-        if (typeof config._pf === 'undefined') {
-            initializeParsingFlags(config);
-        }
-
         if (input === null) {
             return moment.invalid({nullInput: true});
         }
@@ -2395,7 +2452,7 @@ function makeArray( obj ) {
         }
 
         if (moment.isMoment(input)) {
-            config = extend({}, input);
+            config = cloneMoment(input);
 
             config._d = new Date(+input._d);
         } else if (format) {
@@ -2412,37 +2469,47 @@ function makeArray( obj ) {
     }
 
     moment = function (input, format, lang, strict) {
+        var c;
+
         if (typeof(lang) === "boolean") {
             strict = lang;
             lang = undefined;
         }
-        return makeMoment({
-            _i : input,
-            _f : format,
-            _l : lang,
-            _strict : strict,
-            _isUTC : false
-        });
+        // object construction must be done this way.
+        // https://github.com/moment/moment/issues/1423
+        c = {};
+        c._isAMomentObject = true;
+        c._i = input;
+        c._f = format;
+        c._l = lang;
+        c._strict = strict;
+        c._isUTC = false;
+        c._pf = defaultParsingFlags();
+
+        return makeMoment(c);
     };
 
     // creating with utc
     moment.utc = function (input, format, lang, strict) {
-        var m;
+        var c;
 
         if (typeof(lang) === "boolean") {
             strict = lang;
             lang = undefined;
         }
-        m = makeMoment({
-            _useUTC : true,
-            _isUTC : true,
-            _l : lang,
-            _i : input,
-            _f : format,
-            _strict : strict
-        }).utc();
+        // object construction must be done this way.
+        // https://github.com/moment/moment/issues/1423
+        c = {};
+        c._isAMomentObject = true;
+        c._useUTC = true;
+        c._isUTC = true;
+        c._l = lang;
+        c._i = input;
+        c._f = format;
+        c._strict = strict;
+        c._pf = defaultParsingFlags();
 
-        return m;
+        return makeMoment(c).utc();
     };
 
     // creating with unix timestamp (in seconds)
@@ -2452,18 +2519,21 @@ function makeArray( obj ) {
 
     // duration
     moment.duration = function (input, key) {
-        var isDuration = moment.isDuration(input),
-            isNumber = (typeof input === 'number'),
-            duration = (isDuration ? input._input : (isNumber ? {} : input)),
+        var duration = input,
             // matching against regexp is expensive, do it on demand
             match = null,
             sign,
             ret,
-            parseIso,
-            timeEmpty,
-            dateTimeEmpty;
+            parseIso;
 
-        if (isNumber) {
+        if (moment.isDuration(input)) {
+            duration = {
+                ms: input._milliseconds,
+                d: input._days,
+                M: input._months
+            };
+        } else if (typeof input === 'number') {
+            duration = {};
             if (key) {
                 duration[key] = input;
             } else {
@@ -2502,7 +2572,7 @@ function makeArray( obj ) {
 
         ret = new Duration(duration);
 
-        if (isDuration && input.hasOwnProperty('_lang')) {
+        if (moment.isDuration(input) && input.hasOwnProperty('_lang')) {
             ret._lang = input._lang;
         }
 
@@ -2549,7 +2619,8 @@ function makeArray( obj ) {
 
     // compare moment object
     moment.isMoment = function (obj) {
-        return obj instanceof Moment;
+        return obj instanceof Moment ||
+            (obj != null &&  obj.hasOwnProperty('_isAMomentObject'));
     };
 
     // for typechecking Duration objects
@@ -2609,7 +2680,12 @@ function makeArray( obj ) {
         },
 
         toISOString : function () {
-            return formatMoment(moment(this).utc(), 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
+            var m = moment(this).utc();
+            if (0 < m.year() && m.year() <= 9999) {
+                return formatMoment(m, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
+            } else {
+                return formatMoment(m, 'YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
+            }
         },
 
         toArray : function () {
@@ -2686,7 +2762,7 @@ function makeArray( obj ) {
         },
 
         diff : function (input, units, asFloat) {
-            var that = this._isUTC ? moment(input).zone(this._offset || 0) : moment(input).local(),
+            var that = makeAs(input, this),
                 zoneDiff = (this.zone() - that.zone()) * 6e4,
                 diff, output;
 
@@ -2728,13 +2804,16 @@ function makeArray( obj ) {
         },
 
         calendar : function () {
-            var diff = this.diff(moment().zone(this.zone()).startOf('day'), 'days', true),
+            // We want to compare the start of today, vs this.
+            // Getting start-of-today depends on whether we're zone'd or not.
+            var sod = makeAs(moment(), this).startOf('day'),
+                diff = this.diff(sod, 'days', true),
                 format = diff < -6 ? 'sameElse' :
-                diff < -1 ? 'lastWeek' :
-                diff < 0 ? 'lastDay' :
-                diff < 1 ? 'sameDay' :
-                diff < 2 ? 'nextDay' :
-                diff < 7 ? 'nextWeek' : 'sameElse';
+                    diff < -1 ? 'lastWeek' :
+                    diff < 0 ? 'lastDay' :
+                    diff < 1 ? 'sameDay' :
+                    diff < 2 ? 'nextDay' :
+                    diff < 7 ? 'nextWeek' : 'sameElse';
             return this.format(this.lang().calendar(format, this));
         },
 
@@ -2834,8 +2913,8 @@ function makeArray( obj ) {
         },
 
         isSame: function (input, units) {
-            units = typeof units !== 'undefined' ? units : 'millisecond';
-            return +this.clone().startOf(units) === +moment(input).startOf(units);
+            units = units || 'ms';
+            return +this.clone().startOf(units) === +makeAs(input, this).startOf(units);
         },
 
         min: function (other) {
@@ -2877,7 +2956,9 @@ function makeArray( obj ) {
         },
 
         parseZone : function () {
-            if (typeof this._i === 'string') {
+            if (this._tzm) {
+                this.zone(this._tzm);
+            } else if (typeof this._i === 'string') {
                 this.zone(this._i);
             }
             return this;
@@ -2901,6 +2982,10 @@ function makeArray( obj ) {
         dayOfYear : function (input) {
             var dayOfYear = round((moment(this).startOf('day') - moment(this).startOf('year')) / 864e5) + 1;
             return input == null ? dayOfYear : this.add("d", (input - dayOfYear));
+        },
+
+        quarter : function () {
+            return Math.ceil((this.month() + 1.0) / 3.0);
         },
 
         weekYear : function (input) {
@@ -3173,7 +3258,7 @@ function makeArray( obj ) {
         // add `moment` as a global object via a string identifier,
         // for Closure Compiler "advanced" mode
         if (deprecate) {
-            this.moment = function () {
+            global.moment = function () {
                 if (!warned && console && console.warn) {
                     warned = true;
                     console.warn(
@@ -3183,8 +3268,9 @@ function makeArray( obj ) {
                 }
                 return local_moment.apply(null, arguments);
             };
+            extend(global.moment, local_moment);
         } else {
-            this['moment'] = moment;
+            global['moment'] = moment;
         }
     }
 
@@ -3194,7 +3280,7 @@ function makeArray( obj ) {
         makeGlobal(true);
     } else if (typeof define === "function" && define.amd) {
         define("moment", function (require, exports, module) {
-            if (module.config().noGlobal !== true) {
+            if (module.config && module.config() && module.config().noGlobal !== true) {
                 // If user provided noGlobal, he is aware of global
                 makeGlobal(module.config().noGlobal === undefined);
             }
@@ -3278,7 +3364,7 @@ module.exports = [
                 'home',
                 {
                     url: '/',
-                    template: "<div class=\"introduction panel panel_lego panel_transition_white_dark\">\n    <div class=\"container\">\n        <div class=\"panel-body\">\n            <div class=\"row\">\n                <div class=\"col-md-6\">\n                    <div class=\"page-header\">\n                        <h1>SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>\n                        <h3>Make your sites crawlable with SnapSearch!</h3>\n                        <button class=\"call-to-action btn btn-primary\" type=\"button\" ng-click=\"modal.signUp()\">\n                            <h4 class=\"call-to-action-text\">Get Started for Free<br /><small>No Credit Card Required</small></h4>\n                        </button>\n                    </div>\n                </div>\n                <div class=\"col-md-6\">\n                    <div class=\"code-group clearfix\" ng-controller=\"CodeGroupCtrl\">\n                        <ul class=\"nav nav-tabs\">\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'php'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('php')\">PHP</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'ruby'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('ruby')\">Ruby</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'node.js'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('node.js')\">Node.js</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'python'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('python')\">Python</button>\n                            </li>\n                        </ul>\n                        <div class=\"tab-content clearfix\" ng-switch=\"activeCode\">\n                            <div class=\"tab-panel\" ng-switch-when=\"php\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">composer require snapsearch/snapsearch-client-php</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"php\">$client = new SnapSearchClientPHPClient('email', 'key');\n$detector = new SnapSearchClientPHPDetector;\n$interceptor = new SnapSearchClientPHPInterceptor(\n    $client, \n    $detector\n);\n\n$response = $this-&gt;interceptor-&gt;intercept();\n\nif($response){\n\n    header(' ', true, $response['status']);\n\n    foreach($response['headers'] as $header){\n        if($header['name'] == 'Location'){\n            header($header['name'] . ': ' . $header['value']);\n        }\n    }\n\n    echo $response['html'];\n\n}else{\n\n    //continue with normal operations...\n\n}</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Fork me on Github\n                                </a>                                </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"ruby\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">gem install snapsearch-client-ruby</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"ruby\">require 'rack/snap_search'\n\nuse Rack::SnapSearch do |config|\n    \n    # Required: The email to authenticate with.\n    config.email = 'user@example.com'\n    \n    # Required: The key to authenticate with.\n    config.key = 'API_KEY_HERE'\n    \nend</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Fork me on Github\n                                </a>\n                            </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"node.js\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">npm install snapsearch-client-node</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"javascript\">var app = express();\nvar client = new SnapSearch.Client();\nvar detector = new SnapSearch.Detector();\nvar interceptor = new SnapSearch.Interceptor(client, detector);\n\napp.use(function (req, res, next) {\n\n    interceptor.intercept(req, function (data) {\n        if (data) {\n            console.log(data);\n            res.send('Was a robot and SnapChat Intercepted it Correctly');\n        } else {\n            next();\n        }\n    });\n\n});</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Fork me on Github\n                                </a>\n                            </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"python\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">pip install snapsearch-client-python</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"python\">#coming soon!</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Fork me on Github\n                                </a>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"demo panel panel_white panel_transition_white_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Try our Demo</h2>\n        </div>\n        <div class=\"panel-body\">\n            <form class=\"demo-form\" ng-controller=\"DemoCtrl\" name=\"demoForm\">\n                <div \n                    class=\"form-group\" \n                    ng-class=\"{\n                        'has-error': demoForm.url.$invalid && demoForm.url.$dirty\n                    }\"\n                >\n                    <div class=\"input-group input-group-lg\">\n                        <input \n                            class=\"form-control\" \n                            type=\"url\" \n                            name=\"url\" \n                            ng-model=\"demo.url\" \n                            required \n                            placeholder=\"http://your-site.com/\" \n                        />\n                        <span class=\"input-group-btn\">\n                            <button \n                                class=\"btn btn-primary\" \n                                type=\"submit\" \n                                ng-disabled=\"demoForm.$invalid\" \n                                ng-click=\"submit(demo)\" \n                            >\n                                Scrape\n                            </button>\n                        </span>\n                    </div>\n                </div>\n                <div class=\"form-errors\" ng-show=\"formErrors\">\n                    <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                    <ul class=\"form-errors-list\">\n                        <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                    </ul>\n                </div>\n                <div class=\"demo-output\" ng-switch=\"requestingDemoService\">\n                    <p class=\"demo-explanation\" ng-switch-when=\"never\">Try this on a single page application like https://snapsearch.io/. You'll see the difference between how \"javascriptless\" search engine robots view your application without SnapSearch, and how they view your application with SnapSearch.</p>\n                    <img class=\"demo-loading\" ng-switch-when=\"started\" src=\"assets/img/loading.gif\" />\n                    <div class=\"demo-response row\" ng-switch-when=\"finished\" ng-show=\"formSuccess\">\n                        <div class=\"col-sm-6\">\n                            <h4 class=\"demo-response-title\">Source Code without SnapSearch</h4>\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withoutSnapSearch.length}} <span class=\"text-muted\">(this one should be lower!)</span></span>\n                        </div>\n                        <div class=\"col-sm-6\">\n                            <h4 class=\"demo-response-title\">Source Code with SnapSearch</h4>\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withSnapSearch}}</code></pre>\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withSnapSearch.length}} <span class=\"text-muted\">(this one should be higher!)</span></span>\n                        </div>\n                    </div>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n<div class=\"problem-solution panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Why use SnapSearch?</h2>\n        </div>\n        <div class=\"panel-body\">\n            <h3 class=\"problem-title\">The Problem</h3>\n            <div class=\"problem row\">\n                <div class=\"col-md-6\">\n                    <img src=\"assets/img/user_coding.png\" />\n                    <div class=\"problem-explanation\">\n                        <p>You’ve coded up a javascript enhanced or single page application using the latest HTML5 technologies. Using a modern browser, you can see all the asynchronous or animated content appear.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-6\">\n                    <img src=\"assets/img/spider_reading.png\" />\n                    <div class=\"problem-explanation\">\n                        <p>Search engines however see nothing. This is because search engine robots are simple HTTP clients that cannot execute advanced javascript. They do not execute AJAX, and thus cannot load asynchronous resources, nor can they activate javascript events that make your application dynamic and user friendly.</p>\n                    </div>\n                </div>\n            </div>\n            <h3 class=\"solution-title\">Our Solution</h3>\n            <div class=\"solution row\">\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/globe.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">Client initiates an HTTP Request. This client can be search engine robot or a social network crawler such as Facebook or Twitter.</p>\n                        <p class=\"response-pipe\">The client will now receive the true full representation of your site’s content even though it cannot execute javascript.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/application.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">Your application using our supplied middleware detects whether the client cannot execute javascript. The middleware then initiates a snapshot request to SnapSearch. The request contains the client request URL, authentication credentials and custom API parameters.</p>\n                        <p class=\"response-pipe\">Once the response is received, it outputs your page’s status code, HTML content and any HTTP response headers.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/cloud_service.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">SnapSearch receives the request and commands our load balanced browser workers to scrape your site based on the client request URL while executing your javascript. Your content will be cached for future requests.</p>\n                        <p class=\"response-pipe\">A response is constructed containing the resulting status code, HTML content, headers and optionally a screenshot of your resource. This is returned to your application’s middleware.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/cache.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">A cache of the content is securely and safely stored on Amazon S3. All cached content are distinguished by a parameter checksum, so the same URL with different API parameters will be stored independently.</p>\n                        <p class=\"response-pipe\">If a resource has been cached before, SnapSearch will return the cached content. All cached content have adjustable cache lifetime.</p>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"features panel panel_yellow panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Features</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"row\" equalise-heights=\".features .feature-object\">\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">On Demand</h3>\n                    <img class=\"feature-image\" src=\"assets/img/snapsearch_bolt.png\" />\n                    <p class=\"feature-explanation\">Snapshots are created on the fly as you request it from the API. Resources are cached for a default time of 24 hrs.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Real Browser Workers</h3>\n                    <img class=\"feature-image\" src=\"assets/img/firefox.png\" />\n                    <p class=\"feature-explanation\">Our scrapers are powered by nightly versions of Mozilla Firefox. We’re able to run cutting edge HTML5 techniques. Our scrapers evolve as the web evolves.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Google Approved</h3>\n                    <img class=\"feature-image\" src=\"assets/img/google.png\" />\n                    <p class=\"feature-explanation\">SnapSearch complies with the AJAX Crawling Specification by Google. SnapSearch responds with the same content as a normal user would see, so you’re not in violation of cloaking rules.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Powerful Middleware</h3>\n                    <img class=\"feature-image\" src=\"assets/img/middleware.png\" />\n                    <p class=\"feature-explanation\">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect 196 robots. They can be configured to support custom clients.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Flexibility</h3>\n                    <img class=\"feature-image\" src=\"assets/img/flexibility.png\" />\n                    <p class=\"feature-explanation\">The API supports image snapshots, soft 404s, following redirects, custom headers and status code, cache time settings, width and height of the scraper (useful for infinite scrolling), and custom javascript callbacks that are evaled on the page.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Pay for What You Use</h3>\n                    <img class=\"feature-image\" src=\"assets/img/tiger_face.png\" />\n                    <p class=\"feature-explanation\">You only pay for each usage of the API that initiates a fresh snapshot. There is no minimum monthly fee. Requests hitting the cache is free, and storage of the cache is free.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Load Balanced</h3>\n                    <img class=\"feature-image\" src=\"assets/img/load_balanced.png\" />\n                    <p class=\"feature-explanation\">SnapSearch was built as a fault-tolerant load balanced service. We can handle small and big sites. Scrapers are horizontally scaled according to the number of users.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Analytics</h3>\n                    <img class=\"feature-image\" src=\"assets/img/analytics.png\" />\n                    <p class=\"feature-explanation\">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"framework-support panel panel_white panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">We’re 100% framework agnostic!</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"framework-logos row\">\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/sails_logo.png\" />\n                    <a href=\"http://sailsjs.org/\">Sails.js</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/angular_logo.png\" />\n                    <a href=\"http://angularjs.org/\">AngularJS</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/js_logo.png\" />\n                    <a href=\"http://http://www.html5rocks.com/\">HTML5 Javascript</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/jquery_logo.png\" />\n                    <a href=\"http://jquery.com/\">jQuery</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/backbone_logo.png\" />\n                    <a href=\"http://backbonejs.org/\">Backbone</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/ember_logo.png\" />\n                    <a href=\"http://emberjs.com/\">ember</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/knockout_logo.png\" />\n                    <a href=\"http://knockoutjs.com/\">Knockout</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/meteor_logo.png\" />\n                    <a href=\"https://www.meteor.com/\">Meteor</a>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"introduction panel panel_lego panel_transition_white_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"page-header\">\r\n                        <h1>SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>\r\n                        <h3>Make your sites crawlable with SnapSearch!</h3>\r\n                        <button class=\"call-to-action btn btn-primary\" type=\"button\" ng-click=\"modal.signUp()\">\r\n                            <h4 class=\"call-to-action-text\">Get Started for Free<br /><small>No Credit Card Required</small></h4>\r\n                        </button>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"code-group clearfix\" ng-controller=\"CodeGroupCtrl\">\r\n                        <ul class=\"nav nav-tabs\">\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'php'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('php')\">PHP</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'ruby'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('ruby')\">Ruby</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'node.js'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('node.js')\">Node.js</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'python'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('python')\">Python</button>\r\n                            </li>\r\n                        </ul>\r\n                        <div class=\"tab-content clearfix\" ng-switch=\"activeCode\">\r\n                            <div class=\"tab-panel\" ng-switch-when=\"php\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">composer require snapsearch/snapsearch-client-php</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"php\">$client = new SnapSearchClientPHPClient('email', 'key');\r\n$detector = new SnapSearchClientPHPDetector;\r\n$interceptor = new SnapSearchClientPHPInterceptor(\r\n    $client, \r\n    $detector\r\n);\r\n\r\n$response = $this-&gt;interceptor-&gt;intercept();\r\n\r\nif($response){\r\n\r\n    header(' ', true, $response['status']);\r\n\r\n    foreach($response['headers'] as $header){\r\n        if($header['name'] == 'Location'){\r\n            header($header['name'] . ': ' . $header['value']);\r\n        }\r\n    }\r\n\r\n    echo $response['html'];\r\n\r\n}else{\r\n\r\n    //continue with normal operations...\r\n\r\n}</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>                                </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"ruby\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">gem install snapsearch-client-ruby</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"ruby\">require 'rack/snap_search'\r\n\r\nuse Rack::SnapSearch do |config|\r\n    \r\n    # Required: The email to authenticate with.\r\n    config.email = 'user@example.com'\r\n    \r\n    # Required: The key to authenticate with.\r\n    config.key = 'API_KEY_HERE'\r\n    \r\nend</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>\r\n                            </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"node.js\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">npm install snapsearch-client-node</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"javascript\">var app = express();\r\nvar client = new SnapSearch.Client();\r\nvar detector = new SnapSearch.Detector();\r\nvar interceptor = new SnapSearch.Interceptor(client, detector);\r\n\r\napp.use(function (req, res, next) {\r\n\r\n    interceptor.intercept(req, function (data) {\r\n        if (data) {\r\n            console.log(data);\r\n            res.send('Was a robot and SnapChat Intercepted it Correctly');\r\n        } else {\r\n            next();\r\n        }\r\n    });\r\n\r\n});</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>\r\n                            </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"python\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">pip install snapsearch-client-python</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"python\">#coming soon!</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Fork me on Github\r\n                                </a>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"demo panel panel_white panel_transition_white_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Try our Demo</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <form class=\"demo-form\" ng-controller=\"DemoCtrl\" name=\"demoForm\">\r\n                <div \r\n                    class=\"form-group\" \r\n                    ng-class=\"{\r\n                        'has-error': demoForm.url.$invalid && demoForm.url.$dirty\r\n                    }\"\r\n                >\r\n                    <div class=\"input-group input-group-lg\">\r\n                        <input \r\n                            class=\"form-control\" \r\n                            type=\"url\" \r\n                            name=\"url\" \r\n                            ng-model=\"demo.url\" \r\n                            required \r\n                            placeholder=\"http://your-site.com/\" \r\n                        />\r\n                        <span class=\"input-group-btn\">\r\n                            <button \r\n                                class=\"btn btn-primary\" \r\n                                type=\"submit\" \r\n                                ng-disabled=\"demoForm.$invalid\" \r\n                                ng-click=\"submit(demo)\" \r\n                            >\r\n                                Scrape\r\n                            </button>\r\n                        </span>\r\n                    </div>\r\n                </div>\r\n                <div class=\"form-errors\" ng-show=\"formErrors\">\r\n                    <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n                    <ul class=\"form-errors-list\">\r\n                        <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n                    </ul>\r\n                </div>\r\n                <div class=\"demo-output\" ng-switch=\"requestingDemoService\">\r\n                    <p class=\"demo-explanation\" ng-switch-when=\"never\">Try this on a single page application like https://snapsearch.io/. You'll see the difference between how \"javascriptless\" search engine robots view your application without SnapSearch, and how they view your application with SnapSearch.</p>\r\n                    <img class=\"demo-loading\" ng-switch-when=\"started\" src=\"assets/img/loading.gif\" />\r\n                    <div class=\"demo-response row\" ng-switch-when=\"finished\" ng-show=\"formSuccess\">\r\n                        <div class=\"col-sm-6\">\r\n                            <h4 class=\"demo-response-title\">Source Code without SnapSearch</h4>\r\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>\r\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withoutSnapSearch.length}} <span class=\"text-muted\">(this one should be lower!)</span></span>\r\n                        </div>\r\n                        <div class=\"col-sm-6\">\r\n                            <h4 class=\"demo-response-title\">Source Code with SnapSearch</h4>\r\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withSnapSearch}}</code></pre>\r\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withSnapSearch.length}} <span class=\"text-muted\">(this one should be higher!)</span></span>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"problem-solution panel panel_lego panel_transition_yellow_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Why use SnapSearch?</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <h3 class=\"problem-title\">The Problem</h3>\r\n            <div class=\"problem row\">\r\n                <div class=\"col-md-6\">\r\n                    <img src=\"assets/img/user_coding.png\" />\r\n                    <div class=\"problem-explanation\">\r\n                        <p>You’ve coded up a javascript enhanced or single page application using the latest HTML5 technologies. Using a modern browser, you can see all the asynchronous or animated content appear.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <img src=\"assets/img/spider_reading.png\" />\r\n                    <div class=\"problem-explanation\">\r\n                        <p>Search engines however see nothing. This is because search engine robots are simple HTTP clients that cannot execute advanced javascript. They do not execute AJAX, and thus cannot load asynchronous resources, nor can they activate javascript events that make your application dynamic and user friendly.</p>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <h3 class=\"solution-title\">Our Solution</h3>\r\n            <div class=\"solution row\">\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/globe.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">Client initiates an HTTP Request. This client can be search engine robot or a social network crawler such as Facebook or Twitter.</p>\r\n                        <p class=\"response-pipe\">The client will now receive the true full representation of your site’s content even though it cannot execute javascript.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/application.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">Your application using our supplied middleware detects whether the client cannot execute javascript. The middleware then initiates a snapshot request to SnapSearch. The request contains the client request URL, authentication credentials and custom API parameters.</p>\r\n                        <p class=\"response-pipe\">Once the response is received, it outputs your page’s status code, HTML content and any HTTP response headers.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/cloud_service.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">SnapSearch receives the request and commands our load balanced browser workers to scrape your site based on the client request URL while executing your javascript. Your content will be cached for future requests.</p>\r\n                        <p class=\"response-pipe\">A response is constructed containing the resulting status code, HTML content, headers and optionally a screenshot of your resource. This is returned to your application’s middleware.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/cache.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">A cache of the content is securely and safely stored on Amazon S3. All cached content are distinguished by a parameter checksum, so the same URL with different API parameters will be stored independently.</p>\r\n                        <p class=\"response-pipe\">If a resource has been cached before, SnapSearch will return the cached content. All cached content have adjustable cache lifetime.</p>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"features panel panel_yellow panel_transition_white_yellow\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Features</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\" equalise-heights=\".features .feature-object\">\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">On Demand</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/snapsearch_bolt.png\" />\r\n                    <p class=\"feature-explanation\">Snapshots are created on the fly as you request it from the API. Resources are cached for a default time of 24 hrs.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Real Browser Workers</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/firefox.png\" />\r\n                    <p class=\"feature-explanation\">Our scrapers are powered by nightly versions of Mozilla Firefox. We’re able to run cutting edge HTML5 techniques. Our scrapers evolve as the web evolves.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Google Approved</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/google.png\" />\r\n                    <p class=\"feature-explanation\">SnapSearch complies with the AJAX Crawling Specification by Google. SnapSearch responds with the same content as a normal user would see, so you’re not in violation of cloaking rules.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Powerful Middleware</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/middleware.png\" />\r\n                    <p class=\"feature-explanation\">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect 196 robots. They can be configured to support custom clients.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Flexibility</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/flexibility.png\" />\r\n                    <p class=\"feature-explanation\">The API supports image snapshots, soft 404s, following redirects, custom headers and status code, cache time settings, width and height of the scraper (useful for infinite scrolling), and custom javascript callbacks that are evaled on the page.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Pay for What You Use</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/tiger_face.png\" />\r\n                    <p class=\"feature-explanation\">You only pay for each usage of the API that initiates a fresh snapshot. There is no minimum monthly fee. Requests hitting the cache is free, and storage of the cache is free.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Load Balanced</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/load_balanced.png\" />\r\n                    <p class=\"feature-explanation\">SnapSearch was built as a fault-tolerant load balanced service. We can handle small and big sites. Scrapers are horizontally scaled according to the number of users.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Analytics</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/analytics.png\" />\r\n                    <p class=\"feature-explanation\">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"framework-support panel panel_white panel_transition_white_yellow\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">We’re 100% framework agnostic!</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"framework-logos row\">\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/sails_logo.png\" />\r\n                    <a href=\"http://sailsjs.org/\">Sails.js</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/angular_logo.png\" />\r\n                    <a href=\"http://angularjs.org/\">AngularJS</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/js_logo.png\" />\r\n                    <a href=\"http://http://www.html5rocks.com/\">HTML5 Javascript</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/jquery_logo.png\" />\r\n                    <a href=\"http://jquery.com/\">jQuery</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/backbone_logo.png\" />\r\n                    <a href=\"http://backbonejs.org/\">Backbone</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/ember_logo.png\" />\r\n                    <a href=\"http://emberjs.com/\">ember</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/knockout_logo.png\" />\r\n                    <a href=\"http://knockoutjs.com/\">Knockout</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/meteor_logo.png\" />\r\n                    <a href=\"https://www.meteor.com/\">Meteor</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>",
                     controller: 'HomeCtrl'
                 }
             )
@@ -3294,7 +3380,7 @@ module.exports = [
                 'pricing',
                 {
                     url: '/pricing',
-                    template: "<div class=\"pricing panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Pricing</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"pricing-box\">\n                <h3 class=\"pricing-heading\">Pay for What You Use</h3>\n                <h4 class=\"pricing-subheading\">never exceed your budget with a flexible cap</h4>\n                <p class=\"price-per-month\">${{pricePerUsage}} AUD per Usage*<br /><small>(free {{freeUsageCap}} Usages Per Month)</small></p>\n                <dl class=\"feature-set\">\n                    <dt>Pages</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Free Usage Cap</dt>\n                    <dd>{{freeUsageCap}} Usages per Month<br /><small>(good for small applications)</small></dd>\n                    <dt>Cache Requests</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Storage</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Lifetime</dt>\n                    <dd>Configurable from 1 - 200 hrs</dd>\n                    <dt>Feature Set</dt>\n                    <dd>Complete</dd>\n                </dl>\n                <div class=\"usage-price-explanation\">\n                    <p class=\"lead\">* What is a Usage?</p>\n                    <p>Each request to the SnapSearch API either results in content being dynamically scraped using the SnapSearch scrapers, or content being fetched from the cache.  A usage refers to a request that does not hit the cache, and initiates a fresh snapshot.</p>\n                    <p>The number of usages per month is used for the calculation of the cost per month. The number of requests per month is not capped, but the number of usages per month can be capped in your control panel.</p>\n                    <p>If you’ve exceeded your usage cap, our middleware simply returns your content normally. So it’s best to keep your cap above average in case of search engine traffic spikes.</p>\n                </div>\n            </div>\n            <div class=\"cost-estimator\">\n                <h3 class=\"cost-heading\">Cost Estimator</h3>\n                <div class=\"cost-explanation\">\n                    <p>Use this tool to estimate your monthly payment. If you’re using a 24 hr cache lifetime, <strong>requests per month are roughly cut in half when converted to usages per month</strong>. The cost per month is calculated from total usages minus free usage cap, multiplied by the price per usage, rounded to the nearest cent.</p>\n                    <p>This is an estimation, to get proper usage figures, we recommend that you try our service with the free usage cap, and use our analytics to determine how many usages per month your web application needs.</p>\n                    <p>Our research shows that most small websites generate between 1000 to 2000 requests per month and hence 500 to 1000 usages per month.</p>\n                    <p>Checkout our <a href=\"documentation\">strategies</a> for reducing usages per month.</p>\n                </div>\n                <form class=\"cost-calculator\" ng-controller=\"CostCalculatorCtrl\" name=\"costCalculatorForm\">\n                    <h4>Usages per Month</h4>\n                    <div class=\"form-group\">\n                        <input \n                            class=\"form-control input-lg\" \n                            type=\"number\" \n                            name=\"quantity\" \n                            ng-model=\"cost.quantity\" \n                            placeholder=\"1000\" \n                            maxlength=\"5\" \n                        />\n                        <span class=\"help-block\">Try a number above the free usage cap.</span>\n                    </div>\n                    <h4>Cost per Month <small>(discounting Free Usage Cap)</small></h4>\n                    <p class=\"calculated-price-per-month\">${{price}} AUD per Month</p>\n                </form>\n                <em class=\"custom-plan\">Need an absurd number of Usages Per Month?<br /><a href=\"http://www.google.com/recaptcha/mailhide/d?k=01KxkEAwiT1nfx-BhMp7WKWg==&amp;c=iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24=\" onclick=\"window.open('http://www.google.com/recaptcha/mailhide/d?k\\07501KxkEAwiT1nfx-BhMp7WKWg\\75\\75\\46c\\75iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24\\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;\" title=\"Reveal this e-mail address\">Contact us!</a> We can figure out an economical plan for your business.</em>\n            </div>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"pricing panel panel_lego panel_transition_yellow_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Pricing</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"pricing-box\">\r\n                <h3 class=\"pricing-heading\">Pay for What You Use</h3>\r\n                <h4 class=\"pricing-subheading\">never exceed your budget with a flexible cap</h4>\r\n                <p class=\"price-per-month\">${{pricePerUsage}} AUD per Usage*<br /><small>(free {{freeUsageCap}} Usages Per Month)</small></p>\r\n                <dl class=\"feature-set\">\r\n                    <dt>Pages</dt>\r\n                    <dd>Unlimited</dd>\r\n                    <dt>Free Usage Cap</dt>\r\n                    <dd>{{freeUsageCap}} Usages per Month<br /><small>(good for small applications)</small></dd>\r\n                    <dt>Cache Requests</dt>\r\n                    <dd>Unlimited</dd>\r\n                    <dt>Cache Storage</dt>\r\n                    <dd>Unlimited</dd>\r\n                    <dt>Cache Lifetime</dt>\r\n                    <dd>Configurable from 1 - 200 hrs</dd>\r\n                    <dt>Feature Set</dt>\r\n                    <dd>Complete</dd>\r\n                </dl>\r\n                <div class=\"usage-price-explanation\">\r\n                    <p class=\"lead\">* What is a Usage?</p>\r\n                    <p>Each request to the SnapSearch API either results in content being dynamically scraped using the SnapSearch scrapers, or content being fetched from the cache.  A usage refers to a request that does not hit the cache, and initiates a fresh snapshot.</p>\r\n                    <p>The number of usages per month is used for the calculation of the cost per month. The number of requests per month is not capped, but the number of usages per month can be capped in your control panel.</p>\r\n                    <p>If you’ve exceeded your usage cap, our middleware simply returns your content normally. So it’s best to keep your cap above average in case of search engine traffic spikes.</p>\r\n                </div>\r\n            </div>\r\n            <div class=\"cost-estimator\">\r\n                <h3 class=\"cost-heading\">Cost Estimator</h3>\r\n                <div class=\"cost-explanation\">\r\n                    <p>Use this tool to estimate your monthly payment. If you’re using a 24 hr cache lifetime, <strong>requests per month are roughly cut in half when converted to usages per month</strong>. The cost per month is calculated from total usages minus free usage cap, multiplied by the price per usage, rounded to the nearest cent.</p>\r\n                    <p>This is an estimation, to get proper usage figures, we recommend that you try our service with the free usage cap, and use our analytics to determine how many usages per month your web application needs.</p>\r\n                    <p>Our research shows that most small websites generate between 1000 to 2000 requests per month and hence 500 to 1000 usages per month.</p>\r\n                    <p>Checkout our <a href=\"documentation\">strategies</a> for reducing usages per month.</p>\r\n                </div>\r\n                <form class=\"cost-calculator\" ng-controller=\"CostCalculatorCtrl\" name=\"costCalculatorForm\">\r\n                    <h4>Usages per Month</h4>\r\n                    <div class=\"form-group\">\r\n                        <input \r\n                            class=\"form-control input-lg\" \r\n                            type=\"number\" \r\n                            name=\"quantity\" \r\n                            ng-model=\"cost.quantity\" \r\n                            placeholder=\"1000\" \r\n                            maxlength=\"5\" \r\n                        />\r\n                        <span class=\"help-block\">Try a number above the free usage cap.</span>\r\n                    </div>\r\n                    <h4>Cost per Month <small>(discounting Free Usage Cap)</small></h4>\r\n                    <p class=\"calculated-price-per-month\">${{price}} AUD per Month</p>\r\n                </form>\r\n                <em class=\"custom-plan\">Need an absurd number of Usages Per Month?<br /><a href=\"http://www.google.com/recaptcha/mailhide/d?k=01KxkEAwiT1nfx-BhMp7WKWg==&amp;c=iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24=\" onclick=\"window.open('http://www.google.com/recaptcha/mailhide/d?k\\07501KxkEAwiT1nfx-BhMp7WKWg\\75\\75\\46c\\75iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24\\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;\" title=\"Reveal this e-mail address\">Contact us!</a> We can figure out an economical plan for your business.</em>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>",
                     controller: 'PricingCtrl'
                 }
             )
@@ -3310,7 +3396,7 @@ module.exports = [
                 'controlPanel.crawling', //default controlPanel childstate
                 {
                     url: '/crawling',
-                    template: "<div class=\"crawling\">\n    <h2 class=\"control-title\">Crawling Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"row overview-requests-usages-tally no-gutter\">\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_request\">\n                    <span class=\"tally-bg\">R</span>\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\n                </div>\n                <p class=\"tally-description\">Requests Received</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_usage\">\n                    <span class=\"tally-bg\">U</span>\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Used</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_available\">\n                    <span class=\"tally-bg\">A</span>\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\n        </div>\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <dl>\n                <dt>\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\n                </dt>\n                <dd \n                    class=\"input-group\" \n                    ng-class=\"{\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\n                    }\" \n                >\n                    <input \n                        id=\"apiLimitModifierFormQuantity\"\n                        class=\"form-control\" \n                        type=\"number\" \n                        name=\"quantity\" \n                        ng-model=\"apiLimitModifier.quantity\" \n                        ng-disabled = \"!hasBillingDetails\" \n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \n                        maxlength=\"10\" \n                        required \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \n                            ng-click=\"changeLimit(apiLimitModifier)\" \n                        >\n                            Change Cap\n                        </button>\n                    </span>\n                </dd>\n                <dt>Free Usage Cap:</dt>\n                <dd>{{userAccount.apiFreeLimit}}</dd>\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\n                <dd>${{price}} AUD</dd>\n            </dl>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"history-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\n        </div>\n        <div \n            id=\"usageHistoryChart\" \n            class=\"history-chart\" \n            nvd3-line-chart \n            data=\"usageHistoryData\" \n            showXAxis=\"true\" \n            showYAxis=\"true\" \n            tooltips=\"true\" \n            interactive=\"true\" \n            showLegend=\"true\" \n            showControls=\"true\" \n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \n            noData=\"No API history yet!\" \n        ></div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{domainDistinctionDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{domainDistinctionDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"domain-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardDomains()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardDomains()\">Forward</button>\n        </div>\n        <div class=\"row\">\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Requests - Total: {{totalDomainDistinctionRequestsQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartRequests\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataRequests\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionRequestsToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Usages - Total: {{totalDomainDistinctionUsagesQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartUsages\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataUsages\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionUsagesToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n        </div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Request & Usage Log</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"logs\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <tr>\n                        <th class=\"text-center\">#</th>\n                        <th class=\"text-center\">Date</th>\n                        <th class=\"text-center\">Type</th>\n                        <th class=\"text-center\">URL</th>\n                        <th class=\"text-center\">Response Time (s)</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"log in logs\">\n                        <td class=\"text-center\">{{log.id}}</td>\n                        <td class=\"text-center\">{{log.date}}</td>\n                        <td class=\"text-center\">{{log.type}}</td>\n                        <td class=\"text-center\">{{log.url}}</td>\n                        <td class=\"text-center\">{{log.responseTime}}</td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!logs\"><strong>No log data yet!</strong></p>\n    </div>\n</div>",
+                    template: "<div class=\"crawling\">\n    <h2 class=\"control-title\">Crawling Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"row overview-requests-usages-tally no-gutter\">\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_request\">\n                    <span class=\"tally-bg\">R</span>\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\n                </div>\n                <p class=\"tally-description\">Requests Received</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_usage\">\n                    <span class=\"tally-bg\">U</span>\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Used</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_available\">\n                    <span class=\"tally-bg\">A</span>\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\n        </div>\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <dl>\n                <dt>\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\n                </dt>\n                <dd \n                    class=\"input-group\" \n                    ng-class=\"{\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\n                    }\" \n                >\n                    <input \n                        id=\"apiLimitModifierFormQuantity\"\n                        class=\"form-control\" \n                        type=\"number\" \n                        name=\"quantity\" \n                        ng-model=\"apiLimitModifier.quantity\" \n                        ng-disabled = \"!hasBillingDetails\" \n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \n                        maxlength=\"10\" \n                        required \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \n                            ng-click=\"changeLimit(apiLimitModifier)\" \n                        >\n                            Change Cap\n                        </button>\n                    </span>\n                </dd>\n                <dt>Free Usage Cap:</dt>\n                <dd>{{userAccount.apiFreeLimit}}</dd>\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\n                <dd>${{price}} AUD</dd>\n            </dl>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"history-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\n        </div>\n        <div \n            id=\"usageHistoryChart\" \n            class=\"history-chart\" \n            nvd3-line-chart \n            data=\"usageHistoryData\" \n            showXAxis=\"true\" \n            showYAxis=\"true\" \n            tooltips=\"true\" \n            interactive=\"true\" \n            showLegend=\"true\" \n            showControls=\"true\" \n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \n            noData=\"No API history yet!\" \n        ></div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{domainDistinctionDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{domainDistinctionDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"domain-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardDomains()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardDomains()\">Forward</button>\n        </div>\n        <div class=\"row\">\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Requests - Total: {{totalDomainDistinctionRequestsQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartRequests\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataRequests\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionRequestsToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Usages - Total: {{totalDomainDistinctionUsagesQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartUsages\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataUsages\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionUsagesToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n        </div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Request & Usage Log</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"logs\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <tr>\n                        <th class=\"text-center\">#</th>\n                        <th class=\"text-center\">Date</th>\n                        <th class=\"text-center\">Type</th>\n                        <th class=\"text-center\">URL</th>\n                        <th class=\"text-center\">Response Time (s)</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"log in logs\">\n                        <td class=\"text-center\">{{log.id}}</td>\n                        <td class=\"text-center\">{{log.date}}</td>\n                        <td class=\"text-center\">{{log.type}}</td>\n                        <td class=\"text-center\">{{log.url}}</td>\n                        <td class=\"text-center\">{{log.responseTime}}</td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!logs\"><strong>No log data!</strong></p>\n    </div>\n</div>",
                     controller: 'ControlCrawlingCtrl'
                 }
             )
@@ -3318,7 +3404,7 @@ module.exports = [
                 'controlPanel.cache',
                 {
                     url: '/cache',
-                    template: "<div class=\"cache\">\n    <h2 class=\"control-title\">Cache Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Overview</h3>\n        <div class=\"tally-block tally_block_cache tally_block_single\">\n            <span class=\"tally-bg\">S</span>\n            <p class=\"tally-number\">{{snapshotCount}}</p>\n        </div>\n        <p class=\"tally-description\">Snapshots Cached</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cache Priming</h3>\n        <form class=\"cache-form form-horizontal\" name=\"cacheForm\">\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty\n                }\"\n            >\n                <div class=\"input-group input-group-lg\">\n                    <input \n                        class=\"form-control\" \n                        type=\"url\" \n                        name=\"url\" \n                        ng-model=\"cache.url\" \n                        required \n                        placeholder=\"http://your-site.com/\" \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"cacheForm.$invalid\" \n                            ng-click=\"primeCache(cache)\" \n                        >\n                            Prime\n                        </button>\n                    </span>\n                </div>\n                <span class=\"help-block text-center\">Priming a snapshot is counted as a usage.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.url.$error.url\">Invalid URL</span>\n            </div>\n            <div \n                class=\"form-group\"\n                ng-class=\"{\n                    'has-error': cacheForm.parameters.$invalid && cacheForm.parameters.$dirty\n                }\"\n            >\n                <label for=\"cacheFormParameters\">Request Parameters</label>\n                <textarea \n                    id=\"cacheFormParameters\" \n                    class=\"form-control\" \n                    name=\"parameters\"\n                    ng-model=\"cache.parameters\" \n                    placeholder='{ \"parameterKey\": \"parameterValue\" }' \n                    json-checker \n                ></textarea>\n                <span class=\"help-block text-center\">Setup custom <a href=\"documentation#parameters\" target=\"_blank\">request parameters</a>, it should be in JSON.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.parameters.$error.jsonChecker\">Invalid JSON</span>\n            </div>\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cached Snapshots</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"snapshots\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <th class=\"text-center\">#</th>\n                    <th class=\"text-center\">URL</th>\n                    <th class=\"text-center\">Date</th>\n                    <th class=\"text-center\">Snapshot</th>\n                    <th class=\"text-center\">Delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"snapshot in snapshots\">\n                        <td class=\"text-center\">{{snapshot.id}}</td>\n                        <td class=\"text-center\">{{snapshot.url}}</td>\n                        <td class=\"text-center\">{{snapshot.date}}</td>\n                        <td class=\"text-center\"><button class=\"btn btn-info\" ng-click=\"viewSnapshot(snapshot.id)\">snapshot</button></td>\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteSnapshot(snapshot.id, $index)\">delete</button></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!snapshots\"><strong>No snapshots yet!</strong></p>\n    </div>\n</div>",
+                    template: "<div class=\"cache\">\n    <h2 class=\"control-title\">Cache Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Overview</h3>\n        <div class=\"tally-block tally_block_cache tally_block_single\">\n            <span class=\"tally-bg\">S</span>\n            <p class=\"tally-number\">{{snapshotCount}}</p>\n        </div>\n        <p class=\"tally-description\">Snapshots Cached</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cache Priming</h3>\n        <form class=\"cache-form form-horizontal\" name=\"cacheForm\">\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty\n                }\"\n            >\n                <div class=\"input-group input-group-lg\">\n                    <input \n                        class=\"form-control\" \n                        type=\"url\" \n                        name=\"url\" \n                        ng-model=\"cache.url\" \n                        required \n                        placeholder=\"http://your-site.com/\" \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"cacheForm.$invalid\" \n                            ng-click=\"primeCache(cache)\" \n                        >\n                            Prime\n                        </button>\n                    </span>\n                </div>\n                <span class=\"help-block text-center\">Priming a snapshot is counted as a usage.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.url.$error.url\">Invalid URL</span>\n            </div>\n            <div \n                class=\"form-group\"\n                ng-class=\"{\n                    'has-error': cacheForm.parameters.$invalid && cacheForm.parameters.$dirty\n                }\"\n            >\n                <label for=\"cacheFormParameters\">Request Parameters</label>\n                <textarea \n                    id=\"cacheFormParameters\" \n                    class=\"form-control\" \n                    name=\"parameters\"\n                    ng-model=\"cache.parameters\" \n                    placeholder='{ \"parameterKey\": \"parameterValue\" }' \n                    json-checker \n                ></textarea>\n                <span class=\"help-block text-center\">Setup custom <a href=\"documentation#parameters\" target=\"_blank\">request parameters</a>, it should be in JSON.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.parameters.$error.jsonChecker\">Invalid JSON</span>\n            </div>\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cached Snapshots</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardCache()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardCache()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"snapshots\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <th class=\"text-center\">#</th>\n                    <th class=\"text-center\">URL</th>\n                    <th class=\"text-center\">Date</th>\n                    <th class=\"text-center\">Snapshot</th>\n                    <th class=\"text-center\">Delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"snapshot in snapshots\">\n                        <td class=\"text-center\">{{snapshot.id}}</td>\n                        <td class=\"text-center\">{{snapshot.url}}</td>\n                        <td class=\"text-center\">{{snapshot.date}}</td>\n                        <td class=\"text-center\"><button class=\"btn btn-info\" ng-click=\"viewSnapshot(snapshot.id)\">snapshot</button></td>\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteSnapshot(snapshot.id, $index)\">delete</button></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!snapshots\"><strong>No snapshots!</strong></p>\n    </div>\n</div>",
                     controller: 'ControlCacheCtrl'
                 }
             )
@@ -3326,7 +3412,7 @@ module.exports = [
                 'controlPanel.payments',
                 {
                     url: '/payments',
-                    template: "<div class=\"payments\">\n    <h2 class=\"control-title\">Payment History</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <p class=\"placeholder-text\">Coming Soon!</p>\n    <div ng-show=\"false\">\n        <div class=\"telemetry-block overview\">\n            <h3>Overview</h3>\n            <div class=\"row overview-payments\">\n                <div class=\"col-sm-6\">\n                    <p>2040</p>\n                    <p>Usages Used</p>\n                </div>\n                <div class=\"col-sm-6\">\n                    <p>$20.00 AUD</p>\n                    <p>Bill this Month</p>\n                </div>\n            </div>\n        </div>\n        <div class=\"telemetry-block\">\n            <table ng-show=\"paymentHistory\">\n                <thead>\n                    <th>id</th>\n                    <th>date</th>\n                    <th>usage rate (including left over usage from previous cycles)</th>\n                    <th>amount</th>\n                    <th>currency</th>\n                    <th>invoice</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"record in paymentHistory\">\n                        <td>{{record.id}}</td>\n                        <td>{{record.date}}</td>\n                        <td>{{record.usageRate}}</td>\n                        <td>{{record.amount}}</td>\n                        <td>{{record.currency}}</td>\n                        <td><a href=\"#\">{{record.invoice}}</a></td>\n                    </tr>\n                </tbody>\n            </table>\n            <p ng-show=\"!paymentHistory\">No payment history.</p>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"payments\">\r\n    <h2 class=\"control-title\">Payment History</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Overview</h3>\r\n        <div class=\"tally-block tally_block_cache tally_block_single\">\r\n            <span class=\"tally-bg\">B</span>\r\n            <p class=\"tally-number\">${{billThisMonth}} AUD</p>\r\n        </div>\r\n        <p class=\"tally-description\">Bill this Month</p>\r\n        <p class=\"telemetry-emphasis\">Usage charges may include left over charges from the previous cycle.<br />Charges under 500 AUD cents are delayed and added to the next cycle.</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Invoices</h3>\r\n        <div class=\"log-buttons telemetry-buttons button-group\">\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardPayments()\">Backward</button>\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardPayments()\">Forward</button>\r\n        </div>\r\n        <div class=\"table-responsive\" ng-show=\"paymentRecords\">\r\n            <table class=\"table table-striped table-hover\">\r\n                <thead>\r\n                    <th>#</th>\r\n                    <th>Date</th>\r\n                    <th>Usage Rate Charged</th>\r\n                    <th>Amount</th>\r\n                    <th>Currency</th>\r\n                    <th>Invoice</th>\r\n                </thead>\r\n                <tbody>\r\n                    <tr ng-repeat=\"payment in paymentRecords\">\r\n                        <td class=\"text-center\">{{payment.id}}</td>\r\n                        <td class=\"text-center\">{{payment.date}}</td>\r\n                        <td class=\"text-center\">{{payment.amount}}</td>\r\n                        <td class=\"text-center\">{{payment.currency}}</td>\r\n                        <td class=\"text-center\"><a class=\"btn btn-info\" ng-href=\"api/invoices/{{payment.invoiceNumber}}\">invoice</a></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n        <p class=\"text-center\" ng-show=\"!paymentRecords\"><strong>No payments!</strong></p>\r\n    </div>\r\n</div>",
                     controller: 'ControlPaymentsCtrl'
                 }
             )
@@ -3334,7 +3420,7 @@ module.exports = [
                 'controlPanel.billing',
                 {
                     url: '/billing',
-                    template: "<div class=\"billing\">\n    <h2 class=\"control-title\">Billing Information</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <p class=\"placeholder-text\">Coming Soon!</p>\n    <div ng-show=\"false\">\n        <div class=\"telemetry-block\">\n            <button ng-click=\"createCard\">Add a Card</button>\n            <table>\n                <thead>\n                    <th>id</th>\n                    <th>card number hint</th>\n                    <th>active</th>\n                    <th>update</th>\n                    <th>delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"record in cards\">\n                        <td></td>\n                        <td></td>\n                        <td></td>\n                        <td><button>Update Card</button></td>\n                        <td><button>Delete Card</button></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"billing\">\r\n    <h2 class=\"control-title\">Billing Information</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <p class=\"placeholder-text\">Coming Soon!</p>\r\n    <div ng-show=\"false\">\r\n        <div class=\"telemetry-block\">\r\n            <button ng-click=\"createCard\">Add a Card</button>\r\n            <table>\r\n                <thead>\r\n                    <th>id</th>\r\n                    <th>card number hint</th>\r\n                    <th>active</th>\r\n                    <th>update</th>\r\n                    <th>delete</th>\r\n                </thead>\r\n                <tbody>\r\n                    <tr ng-repeat=\"record in cards\">\r\n                        <td></td>\r\n                        <td></td>\r\n                        <td></td>\r\n                        <td><button>Update Card</button></td>\r\n                        <td><button>Delete Card</button></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n    </div>\r\n</div>",
                     controller: 'ControlBillingCtrl'
                 }
             )
@@ -3342,7 +3428,7 @@ module.exports = [
                 'controlPanel.account',
                 {
                     url: '/account',
-                    template: "<div class=\"account\">\n    <h2 class=\"control-title\">Account Details</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <p class=\"placeholder-text\">Coming Soon!</p>\n    <div ng-show=\"false\">\n        <button ng-click=\"regenerateApiKey()\">Regenerate API Key</button>\n        <form class=\"form-horizontal\" name=\"accountForm\">\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': accountForm.username.$invalid && accountForm.username.$dirty\n                }\"\n            >\n                <label class=\"control-label col-sm-2\" for=\"accountFormUsername\">Username:</label>\n                <div class=\"col-sm-10\">\n                    <input id=\"accountFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"account.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\n                    <span class=\"help-block\" ng-show=\"accountForm.username.$error.required\">Required</span>\n                </div>\n            </div>\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': accountForm.email.$invalid && accountForm.email.$dirty\n                }\"\n            >\n                <label class=\"control-label col-sm-2\" for=\"accountFormEmail\">Email:</label>\n                <div class=\"col-sm-10\">\n                    <input id=\"accountFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"account.email\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\n                    <span class=\"help-block\" ng-show=\"accountForm.email.$error.required\">Required</span>\n                </div>\n            </div>\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': accountForm.password.$invalid && accountForm.password.$dirty\n                }\"\n            >\n                <label class=\"control-label col-sm-2\" for=\"accountFormPassword\">Password:</label>\n                <div class=\"col-sm-10\">\n                    <input id=\"accountFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"account.password\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\n                    <span class=\"help-block\" ng-show=\"accountForm.password.$error.required\">Required</span>\n                </div>\n            </div>\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': accountForm.passwordConfirm.$invalid && accountForm.passwordConfirm.$dirty\n                }\"\n            >\n                <label class=\"control-label col-sm-2\" for=\"accountFormPasswordConfirm\">Password Confirm:</label>\n                <div class=\"col-sm-10\">\n                    <input id=\"accountFormPasswordConfirm\" class=\"form-control\" type=\"passwordConfirm\" name=\"passwordConfirm\" ng-model=\"account.passwordConfirm\" required ng-minlength=\"2\" ng-maxlength=\"100\" password-match=\"account.password\" />\n                    <span class=\"help-block\" ng-show=\"accountForm.passwordConfirm.$error.required\">Required</span>\n                </div>\n            </div>\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <button class=\"btn btn-primary\" ng-click=\"updateAccount(account)\" ng-disabled=\"accountForm.$invalid\">Update</button>\n        </form>\n    </div>\n</div>",
+                    template: "<div class=\"account\">\r\n    <h2 class=\"control-title\">Account Details</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <p class=\"placeholder-text\">Coming Soon!</p>\r\n    <div ng-show=\"false\">\r\n        <button ng-click=\"regenerateApiKey()\">Regenerate API Key</button>\r\n        <form class=\"form-horizontal\" name=\"accountForm\">\r\n            <div \r\n                class=\"form-group\" \r\n                ng-class=\"{\r\n                    'has-error': accountForm.username.$invalid && accountForm.username.$dirty\r\n                }\"\r\n            >\r\n                <label class=\"control-label col-sm-2\" for=\"accountFormUsername\">Username:</label>\r\n                <div class=\"col-sm-10\">\r\n                    <input id=\"accountFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"account.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                    <span class=\"help-block\" ng-show=\"accountForm.username.$error.required\">Required</span>\r\n                </div>\r\n            </div>\r\n            <div \r\n                class=\"form-group\" \r\n                ng-class=\"{\r\n                    'has-error': accountForm.email.$invalid && accountForm.email.$dirty\r\n                }\"\r\n            >\r\n                <label class=\"control-label col-sm-2\" for=\"accountFormEmail\">Email:</label>\r\n                <div class=\"col-sm-10\">\r\n                    <input id=\"accountFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"account.email\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                    <span class=\"help-block\" ng-show=\"accountForm.email.$error.required\">Required</span>\r\n                </div>\r\n            </div>\r\n            <div \r\n                class=\"form-group\" \r\n                ng-class=\"{\r\n                    'has-error': accountForm.password.$invalid && accountForm.password.$dirty\r\n                }\"\r\n            >\r\n                <label class=\"control-label col-sm-2\" for=\"accountFormPassword\">Password:</label>\r\n                <div class=\"col-sm-10\">\r\n                    <input id=\"accountFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"account.password\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                    <span class=\"help-block\" ng-show=\"accountForm.password.$error.required\">Required</span>\r\n                </div>\r\n            </div>\r\n            <div \r\n                class=\"form-group\" \r\n                ng-class=\"{\r\n                    'has-error': accountForm.passwordConfirm.$invalid && accountForm.passwordConfirm.$dirty\r\n                }\"\r\n            >\r\n                <label class=\"control-label col-sm-2\" for=\"accountFormPasswordConfirm\">Password Confirm:</label>\r\n                <div class=\"col-sm-10\">\r\n                    <input id=\"accountFormPasswordConfirm\" class=\"form-control\" type=\"passwordConfirm\" name=\"passwordConfirm\" ng-model=\"account.passwordConfirm\" required ng-minlength=\"2\" ng-maxlength=\"100\" password-match=\"account.password\" />\r\n                    <span class=\"help-block\" ng-show=\"accountForm.passwordConfirm.$error.required\">Required</span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-errors\" ng-show=\"formErrors\">\r\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n                <ul class=\"form-errors-list\">\r\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n                </ul>\r\n            </div>\r\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n                {{formSuccess}}\r\n            </div>\r\n            <button class=\"btn btn-primary\" ng-click=\"updateAccount(account)\" ng-disabled=\"accountForm.$invalid\">Update</button>\r\n        </form>\r\n    </div>\r\n</div>",
                     controller: 'ControlAccountCtrl'
                 }
             )
@@ -3460,7 +3546,7 @@ module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ'
     //it will check if the session is active every 20 seconds
     var cancelBusyLoop = BusyLoopServ(function () {
         UserSystemServ.getSession();
-    }, 20000);
+    }, 30000);
 
     $scope.$on('$destroy', function () {
         cancelBusyLoop();
@@ -3479,7 +3565,7 @@ module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ'
     $scope.modal.signUp = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\n    <h3>Sign Up</h3>\n</div>\n<div class=\"modal-body\">\n    <form name=\"signupForm\">\n        <div \n            class=\"form-group clearfix\" \n            ng-class=\"{\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group clearfix\" \n            ng-class=\"{\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group clearfix\"\n            ng-class=\"{\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\n            <div class=\"col-sm-10\">\n                <input \n                    id=\"signupFormPassword\" \n                    class=\"form-control\" \n                    type=\"password\" \n                    name=\"password\" \n                    ng-model=\"user.password\" \n                    required \n                    ng-minlength=\"6\" \n                    ng-maxlength=\"100\" \n                />\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.minlength\">Password is too short</span>\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group clearfix\" \n            ng-class=\"{\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\n            <div class=\"col-sm-10\">\n                <input \n                    id=\"signupFormPasswordConfirm\" \n                    class=\"form-control\" \n                    type=\"password\" \n                    name=\"passwordConfirm\" \n                    ng-model=\"user.passwordConfirm\" \n                    required \n                    ng-minlength=\"6\" \n                    ng-maxlength=\"100\" \n                    password-match=\"user.password\" \n                />\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password.</span>\n            </div>\n        </div>\n        <div class=\"form-group clearfix\">\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\n            <div class=\"col-sm-4\">\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\n                <span class=\"help-block\">Optional Promo Code</span>\n            </div>\n        </div>\n    </form>\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\n    <div class=\"form-errors\" ng-show=\"formErrors\">\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n        <ul class=\"form-errors-list\">\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n        </ul>\n    </div>\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n        {{formSuccess}}\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>", 
+            template: "<div class=\"modal-header\">\r\n    <h3>Sign Up</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form name=\"signupForm\">\r\n        <div \r\n            class=\"form-group clearfix\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group clearfix\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group clearfix\"\r\n            ng-class=\"{\r\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.minlength\">Password is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group clearfix\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPasswordConfirm\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"passwordConfirm\" \r\n                    ng-model=\"user.passwordConfirm\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                    password-match=\"user.password\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password.</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group clearfix\">\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\r\n            <div class=\"col-sm-4\">\r\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\r\n                <span class=\"help-block\">Optional Promo Code</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>", 
             controller: require('./SignUpModalCtrl'),
             windowClass: 'signup-modal form-modal'
         }).result.then(function () {
@@ -3491,7 +3577,7 @@ module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ'
     $scope.modal.logIn = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\n    <h3>Log In</h3>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"loginForm\">\n        <div \n            class=\"form-group clearfix\" \n            ng-class=\"{\n                'has-error': loginForm.email.$invalid && loginForm.email.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"loginFormEmail\">Email:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"loginFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.maxlength\">Email is too long</span>\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.email\">Email is invalid</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group clearfix\"\n            ng-class=\"{\n                'has-error': loginForm.password.$invalid && loginForm.password.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"loginFormPassword\">Password:</label>\n            <div class=\"col-sm-10\">\n                <input \n                    id=\"loginFormPassword\" \n                    class=\"form-control\" \n                    type=\"password\" \n                    name=\"password\" \n                    ng-model=\"user.password\" \n                    required \n                    ng-minlength=\"6\" \n                    ng-maxlength=\"100\" \n                />\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.minlength\">Password is too short</span>\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.maxlength\">Password is too long</span>\n            </div>\n        </div>\n        <div class=\"form-group clearfix\">\n            <div class=\"col-sm-offset-2 col-sm-10\">\n                <div class=\"checkbox\">\n                    <label>\n                        <input type=\"checkbox\" name=\"autologin\" ng-model=\"user.autologin\"> Remember Me\n                    </label>\n                </div>\n            </div>\n        </div>\n    </form>\n    <div class=\"form-errors\" ng-show=\"formErrors\">\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n        <ul class=\"form-errors-list\">\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n        </ul>\n    </div>\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n        {{formSuccess}}\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"login(user)\" ng-disabled=\"loginForm.$invalid\">Log In</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>",
+            template: "<div class=\"modal-header\">\r\n    <h3>Log In</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"loginForm\">\r\n        <div \r\n            class=\"form-group clearfix\" \r\n            ng-class=\"{\r\n                'has-error': loginForm.email.$invalid && loginForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"loginFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"loginFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group clearfix\"\r\n            ng-class=\"{\r\n                'has-error': loginForm.password.$invalid && loginForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"loginFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"loginFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.minlength\">Password is too short</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group clearfix\">\r\n            <div class=\"col-sm-offset-2 col-sm-10\">\r\n                <div class=\"checkbox\">\r\n                    <label>\r\n                        <input type=\"checkbox\" name=\"autologin\" ng-model=\"user.autologin\"> Remember Me\r\n                    </label>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"login(user)\" ng-disabled=\"loginForm.$invalid\">Log In</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>",
             controller: require('./LogInModalCtrl'),
             windowClass: 'login-modal form-modal'
         }).result.then(function () {
@@ -3654,7 +3740,7 @@ module.exports = ['$scope', '$modal', function ($scope, $modal) {
     $scope.modal.cardCreate = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\n    <h2>Create a new Credit Card</h2>\n    <em>Payments are processed by Pin payments, and we don't keep any credit card information on our servers.</em>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"signupForm\">\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': billingForm.cardNumber.$invalid && billingForm.cardNumber.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"billingFormCardNumber\">Card Number:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"billingFormCardNumber\" class=\"form-control\" type=\"text\" name=\"cardNumber\" ng-model=\"card.cardNumber\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"billingForm.cardNumber.$error.required\">Required</span>\n            </div>\n        </div>\n    </form>\n    <div class=\"form-errors\" ng-show=\"formErrors\">\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n        <ul class=\"form-errors-list\">\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n        </ul>\n    </div>\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n        {{formSuccess}}\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"addCard(card)\" ng-disabled=\"billingForm.$invalid\">Add Card</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>",
+            template: "<div class=\"modal-header\">\r\n    <h2>Create a new Credit Card</h2>\r\n    <em>Payments are processed by Pin payments, and we don't keep any credit card information on our servers.</em>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"signupForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': billingForm.cardNumber.$invalid && billingForm.cardNumber.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"billingFormCardNumber\">Card Number:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"billingFormCardNumber\" class=\"form-control\" type=\"text\" name=\"cardNumber\" ng-model=\"card.cardNumber\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"billingForm.cardNumber.$error.required\">Required</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"addCard(card)\" ng-disabled=\"billingForm.$invalid\">Add Card</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>",
             controller: require('./CardCreateModalCtrl'),
             windowClass: 'card-create-modal form-modal'
         }).result.then(function () {
@@ -3669,7 +3755,7 @@ module.exports = ['$scope', '$modal', function ($scope, $modal) {
     $scope.modal.cardUpdate = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\n    <h3>Sign Up</h3>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"signupForm\">\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\"\n            ng-class=\"{\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\n            <div class=\"col-sm-10\">\n                <input \n                    id=\"signupFormPassword\" \n                    class=\"form-control\" \n                    type=\"password\" \n                    name=\"password\" \n                    ng-model=\"user.password\" \n                    required \n                    ng-minlength=\"6\" \n                    ng-maxlength=\"100\" \n                />\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.minlength\">Password is too short</span>\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\n            <div class=\"col-sm-10\">\n                <input \n                    id=\"signupFormPasswordConfirm\" \n                    class=\"form-control\" \n                    type=\"password\" \n                    name=\"passwordConfirm\" \n                    ng-model=\"user.passwordConfirm\" \n                    required \n                    ng-minlength=\"6\" \n                    ng-maxlength=\"100\" \n                    password-match=\"user.password\" \n                />\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password.</span>\n            </div>\n        </div>\n        <div class=\"form-group\">\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\n            <div class=\"col-sm-4\">\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\n                <span class=\"help-block\">Optional Promo Code</span>\n            </div>\n        </div>\n    </form>\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\n    <div class=\"form-errors\" ng-show=\"formErrors\">\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n        <ul class=\"form-errors-list\">\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n        </ul>\n    </div>\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n        {{formSuccess}}\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>", 
+            template: "<div class=\"modal-header\">\r\n    <h3>Sign Up</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"signupForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\"\r\n            ng-class=\"{\r\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.minlength\">Password is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPasswordConfirm\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"passwordConfirm\" \r\n                    ng-model=\"user.passwordConfirm\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                    password-match=\"user.password\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password.</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\r\n            <div class=\"col-sm-4\">\r\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\r\n                <span class=\"help-block\">Optional Promo Code</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>", 
             controller: require('./CardUpdateModalCtrl'),
             windowClass: 'card-update-modal form-modal'
         }).result.then(function () {
@@ -4275,7 +4361,7 @@ module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'Cal
             var userData = UserSystemServ.getUserData();
             UserSystemServ.getAccount(userData.id);
         }
-    }, 45000);
+    }, 60000);
 
     $scope.$on('$destroy', function () {
         cancelBusyLoop();
@@ -4304,15 +4390,98 @@ module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'Cal
 },{}],22:[function(require,module,exports){
 'use strict';
 
+var settings = require('../../Settings');
+
 /**
  * Control Payments Controller
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', function ($scope) {
+module.exports = ['$scope', 'UserSystemServ', 'Restangular', 'CalculateServ', function ($scope, UserSystemServ, Restangular, CalculateServ) {
+
+    var userAccount;
+
+    var getCurrentBill = function () {
+
+        //convert to cents
+        var chargePerRequest = settings.meta.price * 100;
+
+        //we don't use apiLeftOverUsage to calculate charges
+        var currentCharge = chargePerRequest * (userAccount.apiUsage - userAccount.apiFreeLimit);
+        currentCharge = currentCharge + userAccount.apiLeftOverCharge;
+
+        if (currentCharge < 0) {
+            currentCharge = 0;
+        }
+
+        //convert back to dollars
+        currentCharge = currentCharge / 100;
+
+        $scope.billThisMonth = CalculateServ.round(currentCharge, 2);
+
+    };
+
+    var offset = 0;
+    var limit = 50;
+
+    var getPaymentRecords = function () {
+
+        Restangular.all('payments').customGET('', {
+            user: userAccount.id,
+            offset: offset,
+            limit: limit
+        }).then(function (response) {
+
+            $scope.paymentRecords = response.content;
+
+        });
+
+    };
+
+    $scope.forwardPayments = function () {
+
+        offset = offset - limit;
+        getPaymentRecords();
+
+    };
+
+    $scope.backwardPayments = function () {
+
+        offset = offset + limit;
+        getPaymentRecords();
+
+    };
+
+    var initialise = function (userData) {
+
+        userAccount = userData;
+        getCurrentBill();
+        getPaymentRecords();
+
+    };
+
+    //run every time the controller is reinstantiated
+    if (UserSystemServ.getUserState() && Object.keys(UserSystemServ.getUserData()).length > 0) {
+        
+        initialise(UserSystemServ.getUserData());
+    
+    } else {
+
+        $scope.$watch(UserSystemServ.getUserData, function (newUserAccount, oldUserAccount) {
+
+            //only if they are different, do we poll for new crawling data
+            if (!angular.equals(newUserAccount, oldUserAccount)) {
+                if (Object.keys(newUserAccount).length > 0) {
+                    initialise(newUserAccount);
+                }
+            }
+
+        });
+
+    }
 
 }];
-},{}],23:[function(require,module,exports){
+},{"../../Settings":9}],23:[function(require,module,exports){
 'use strict';
 
 /**
