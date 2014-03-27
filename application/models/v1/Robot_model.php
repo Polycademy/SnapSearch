@@ -56,6 +56,7 @@ class Robot_model extends CI_Model{
 			'navigate',
 			'loadimages',
 			'javascriptenabled',
+			'totaltimeout',
 			'maxtimeout',
 			'initialwait',
 			'callback',
@@ -112,6 +113,11 @@ class Robot_model extends CI_Model{
 				'field'	=> 'javascriptenabled',
 				'label'	=> 'Javascript enabled (javascriptenabled)',
 				'rules'	=> 'boolean_style',
+			],
+			[
+				'field'	=> 'totaltimeout',
+				'label'	=> 'Total timeout (totaltimeout)',
+				'rules'	=> 'greater_than_equal_to[10000]|less_than_equal_to[30000]',
 			],
 			[
 				'field'	=> 'maxtimeout',
