@@ -375,5 +375,58 @@ class Accounts extends CI_Controller{
 		Template::compose(false, $output, 'json');
 
 	}
+
+	public function regenerate_api_key($id){
+
+        if($this->user->authorized([
+            'roles' => 'admin'
+        ], [
+            'users' => $id
+        ])){
+            
+            $authorized = true;
+
+        }else{
+
+            $this->auth_response->setStatusCode(401);
+            $content = 'Not authorized to view this information.';
+            $code = 'error';
+
+        }
+
+        if($authorized){
+
+        	$query = $this->Accounts_model->regenerate_api_key($id);
+
+			if($query){
+
+				$content = $query;
+				$code = 'success';
+
+			}else{
+
+				$content = current($this->Accounts_model->get_errors());
+				$code = key($this->Accounts_model->get_errors());
+
+				if($code == 'validation_error'){
+					$this->auth_response->setStatusCode(400);
+				}elseif($code == 'system_error'){
+					$this->auth_response->setStatusCode(500);
+				}
+
+			}
+
+        }
+
+		$this->auth_response->sendHeaders();
+		
+		$output = array(
+			'content'	=> $content,
+			'code'		=> $code,
+		);
+		
+		Template::compose(false, $output, 'json');
+
+	}
 	
 }

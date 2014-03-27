@@ -12,11 +12,13 @@
         >
             <label class="control-label col-sm-3" for="cardFormCardNumber">Card Number:</label>
             <div class="col-sm-9">
-                <input id="cardFormCardNumber" class="form-control" type="number" name="cardNumber" ng-model="card.cardNumber" required ng-minlength="13" ng-maxlength="16" autocomplete="off" autocapitalize="off" size="16" />
-                <span class="help-block" ng-show="cardForm.cardNumber.$error.required">Required</span>
-                <span class="help-block" ng-show="cardForm.cardNumber.$error.number">Card number can only contain digits</span>
-                <span class="help-block" ng-show="cardForm.cardNumber.$error.minlength">Card number is too short</span>
-                <span class="help-block" ng-show="cardForm.cardNumber.$error.maxlength">Card number is too long</span>
+                <input id="cardFormCardNumber" class="form-control" type="number" name="cardNumber" ng-model="card.cardNumber" required ng-minlength="13" ng-maxlength="16" autocomplete="off" autocapitalize="off" />
+            </div>
+            <div class="help-messages">
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardNumber.$error.required">Required</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardNumber.$error.number">Card number can only contain digits</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardNumber.$error.minlength">Card number is too short</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardNumber.$error.maxlength">Card number is too long</span>
             </div>
         </div>
         <div 
@@ -26,12 +28,14 @@
             }"
         >
             <label class="control-label col-sm-3" for="cardFormCardCvc">Card CVC:</label>
-            <div class="col-sm-9">
-                <input id="cardFormCardCvc" class="form-control" type="number" name="cardCvc" ng-model="card.cardCvc" required ng-minlength="3" ng-maxlength="4" autocomplete="off" size="4" />
-                <span class="help-block" ng-show="cardForm.cardCvc.$error.required">Required</span>
-                <span class="help-block" ng-show="cardForm.cardCvc.$error.number">Card CVC can only contain digits</span>
-                <span class="help-block" ng-show="cardForm.cardCvc.$error.minlength">Card CVC is too short</span>
-                <span class="help-block" ng-show="cardForm.cardCvc.$error.maxlength">Card CVC is too long</span>
+            <div class="col-sm-3">
+                <input id="cardFormCardCvc" class="form-control" type="number" name="cardCvc" ng-model="card.cardCvc" required ng-minlength="3" ng-maxlength="4" autocomplete="off" />
+            </div>
+            <div class="help-messages">
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardCvc.$error.required">Required</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardCvc.$error.number">Card CVC can only contain digits</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardCvc.$error.minlength">Card CVC is too short</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardCvc.$error.maxlength">Card CVC is too long</span>
             </div>
         </div>
         <div 
@@ -41,12 +45,14 @@
             }"
         >
             <label class="control-label col-sm-3" for="cardFormCardExpiryMonth">Card Expiry Month:</label>
-            <div class="col-sm-9">
-                <input id="cardFormCardExpiryMonth" class="form-control" type="number" name="cardExpiryMonth" ng-model="card.cardExpiryMonth" required ng-minlength="2" ng-maxlength="2" autocomplete="off" size="2" />
-                <span class="help-block" ng-show="cardForm.cardExpiryMonth.$error.required">Required</span>
-                <span class="help-block" ng-show="cardForm.cardExpiryMonth.$error.number">Expiry month can only contain digits</span>
-                <span class="help-block" ng-show="cardForm.cardExpiryMonth.$error.minlength">Expiry month should be in 2 digit format</span>
-                <span class="help-block" ng-show="cardForm.cardExpiryMonth.$error.maxlength">Expiry month should be in 2 digit format</span>
+            <div class="col-sm-2">
+                <input id="cardFormCardExpiryMonth" class="form-control" type="number" name="cardExpiryMonth" ng-model="card.cardExpiryMonth" required ng-minlength="2" ng-maxlength="2" autocomplete="off" placeholder="MM" />
+            </div>
+            <div class="help-messages">
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardExpiryMonth.$error.required">Required</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardExpiryMonth.$error.number">Expiry month can only contain digits</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardExpiryMonth.$error.minlength">Expiry month should be in 2 digit format</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardExpiryMonth.$error.maxlength">Expiry month should be in 2 digit format</span>
             </div>
         </div>
         <div 
@@ -56,12 +62,14 @@
             }"
         >
             <label class="control-label col-sm-3" for="cardFormCardExpiryYear">Card Expiry Year:</label>
-            <div class="col-sm-9">
-                <input id="cardFormCardExpiryYear" class="form-control" type="number" name="cardExpiryYear" ng-model="card.cardExpiryYear" required ng-minlength="4" ng-maxlength="4" autocomplete="off" size="4" />
-                <span class="help-block" ng-show="cardForm.cardExpiryYear.$error.required">Required</span>
-                <span class="help-block" ng-show="cardForm.cardExpiryYear.$error.number">Expiry year can only contain digits</span>
-                <span class="help-block" ng-show="cardForm.cardExpiryYear.$error.minlength">Expiry year should be in 4 digit format</span>
-                <span class="help-block" ng-show="cardForm.cardExpiryYear.$error.maxlength">Expiry year should be in 4 digit format</span>
+            <div class="col-sm-3">
+                <input id="cardFormCardExpiryYear" class="form-control" type="number" name="cardExpiryYear" ng-model="card.cardExpiryYear" required ng-minlength="4" ng-maxlength="4" autocomplete="off" placeholder="YYYY" />
+            </div>
+            <div class="help-messages">
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardExpiryYear.$error.required">Required</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardExpiryYear.$error.number">Expiry year can only contain digits</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardExpiryYear.$error.minlength">Expiry year should be in 4 digit format</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardExpiryYear.$error.maxlength">Expiry year should be in 4 digit format</span>
             </div>
         </div>
         <div 
@@ -73,9 +81,11 @@
             <label class="control-label col-sm-3" for="cardFormCardName">Card Name:</label>
             <div class="col-sm-9">
                 <input id="cardFormCardName" class="form-control" type="text" name="cardName" ng-model="card.cardName" required ng-minlength="2" ng-maxlength="200" autocomplete="off" />
-                <span class="help-block" ng-show="cardForm.cardName.$error.required">Required</span>
-                <span class="help-block" ng-show="cardForm.cardName.$error.minlength">Card name is too short</span>
-                <span class="help-block" ng-show="cardForm.cardName.$error.maxlength">Card name is too long</span>
+            </div>
+            <div class="help-messages">
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardName.$error.required">Required</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardName.$error.minlength">Card name is too short</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardName.$error.maxlength">Card name is too long</span>
             </div>
         </div>
         <div 
@@ -84,12 +94,14 @@
                 'has-error': cardForm.cardAddress.$invalid && cardForm.cardAddress.$dirty
             }"
         >
-            <label class="control-label col-sm-3" for="cardFormCardAddress">Card Address:</label>
+            <label class="control-label col-sm-3" for="cardFormCardAddress">Address:</label>
             <div class="col-sm-9">
                 <input id="cardFormCardAddress" class="form-control" type="text" name="cardAddress" ng-model="card.cardAddress" required ng-minlength="2" ng-maxlength="400" autocomplete="off" />
-                <span class="help-block" ng-show="cardForm.cardAddress.$error.required">Required</span>
-                <span class="help-block" ng-show="cardForm.cardAddress.$error.minlength">Card address is too short</span>
-                <span class="help-block" ng-show="cardForm.cardAddress.$error.maxlength">Card address is too long</span>
+            </div>
+            <div class="help-messages">
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardAddress.$error.required">Required</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardAddress.$error.minlength">Card address is too short</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardAddress.$error.maxlength">Card address is too long</span>
             </div>
         </div>
         <div 
@@ -98,10 +110,12 @@
                 'has-error': cardForm.cardPostCode.$invalid && cardForm.cardPostCode.$dirty
             }"
         >
-            <label class="control-label col-sm-3" for="cardFormCardPostCode">Card Post Code:</label>
-            <div class="col-sm-9">
+            <label class="control-label col-sm-3" for="cardFormCardPostCode">Post Code:</label>
+            <div class="col-sm-3">
                 <input id="cardFormCardPostCode" class="form-control" type="text" name="cardPostCode" ng-model="card.cardPostCode" ng-maxlength="100" autocomplete="off" />
-                <span class="help-block" ng-show="cardForm.cardPostCode.$error.maxlength">Card post code is too long</span>
+            </div>
+            <div class="help-messages">
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardPostCode.$error.maxlength">Card post code is too long</span>
             </div>
         </div>
         <div 
@@ -110,12 +124,14 @@
                 'has-error': cardForm.cardCity.$invalid && cardForm.cardCity.$dirty
             }"
         >
-            <label class="control-label col-sm-3" for="cardFormCardCity">Card City:</label>
+            <label class="control-label col-sm-3" for="cardFormCardCity">City:</label>
             <div class="col-sm-9">
                 <input id="cardFormCardCity" class="form-control" type="text" name="cardCity" ng-model="card.cardCity" required ng-minlength="2" ng-maxlength="200" autocomplete="off" />
-                <span class="help-block" ng-show="cardForm.cardCity.$error.required">Required</span>
-                <span class="help-block" ng-show="cardForm.cardCity.$error.minlength">Card city is too short</span>
-                <span class="help-block" ng-show="cardForm.cardCity.$error.maxlength">Card city is too long</span>
+            </div>
+            <div class="help-messages">
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardCity.$error.required">Required</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardCity.$error.minlength">Card city is too short</span>
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardCity.$error.maxlength">Card city is too long</span>
             </div>
         </div>
         <div 
@@ -124,10 +140,12 @@
                 'has-error': cardForm.cardState.$invalid && cardForm.cardState.$dirty
             }"
         >
-            <label class="control-label col-sm-3" for="cardFormCardState">Card State:</label>
+            <label class="control-label col-sm-3" for="cardFormCardState">State:</label>
             <div class="col-sm-9">
                 <input id="cardFormCardState" class="form-control" type="text" name="cardState" ng-model="card.cardState" ng-maxlength="150" autocomplete="off" />
-                <span class="help-block" ng-show="cardForm.cardState.$error.maxlength">Card state is too long</span>
+            </div>
+            <div class="help-messages">
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardState.$error.maxlength">Card state is too long</span>
             </div>
         </div>
         <div 
@@ -136,7 +154,7 @@
                 'has-error': cardForm.cardCountry.$invalid && cardForm.cardCountry.$dirty
             }"
         >
-            <label class="control-label col-sm-3" for="cardFormCardCountry">Card Country:</label>
+            <label class="control-label col-sm-3" for="cardFormCardCountry">Country:</label>
             <div class="col-sm-9">
                 <select id="cardFormCardCountry" name="cardCountry" ng-model="card.cardCountry" required>
                     <option disabled="disabled" value="">Select Country</option>
@@ -385,7 +403,9 @@
                     <option value="ZM">Zambia</option>
                     <option value="ZW">Zimbabwe</option>
                 </select>
-                <span class="help-block" ng-show="cardForm.cardCountry.$error.required">Required</span>
+            </div>
+            <div class="help-messages">
+                <span class="help-block col-md-offset-3" ng-show="cardForm.cardCountry.$error.required">Required</span>
             </div>
         </div>
     </form>

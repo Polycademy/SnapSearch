@@ -511,6 +511,27 @@ class Accounts_model extends CI_Model{
 
 	}
 
+	public function regenerate_api_key($id){
+
+		try{
+
+			$user = $this->accounts_manager->get_user($id);
+
+			$new_key = $this->accounts_manager->reset_key($user);
+
+			return $new_key;
+
+		}catch(PolyAuthException $e){
+
+			$this->errors = array(
+				'validation_error'	=> $e->get_errors()
+			);
+			return false;
+
+		}
+
+	}
+
 	public function get_errors(){
 
 		return $this->errors;

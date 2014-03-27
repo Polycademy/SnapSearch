@@ -1,9 +1,7 @@
 <div class="account">
     <h2 class="control-title">Account Details</h2>
     <em class="api-key">API Key: {{userAccount.sharedKey}}</em>
-    <p class="placeholder-text">Coming Soon!</p>
-    <div ng-show="false">
-        <button ng-click="regenerateApiKey()">Regenerate API Key</button>
+    <div class="telemetry-block">
         <form class="form-horizontal" name="accountForm">
             <div 
                 class="form-group" 
@@ -11,10 +9,12 @@
                     'has-error': accountForm.username.$invalid && accountForm.username.$dirty
                 }"
             >
-                <label class="control-label col-sm-2" for="accountFormUsername">Username:</label>
-                <div class="col-sm-10">
+                <label class="control-label col-sm-3" for="accountFormUsername">Username:</label>
+                <div class="col-sm-8">
                     <input id="accountFormUsername" class="form-control" type="text" name="username" ng-model="account.username" required ng-minlength="2" ng-maxlength="100" />
                     <span class="help-block" ng-show="accountForm.username.$error.required">Required</span>
+                    <span class="help-block" ng-show="accountForm.username.$error.minlength">Username is too short</span>
+                    <span class="help-block" ng-show="accountForm.username.$error.maxlength">Username is too long</span>
                 </div>
             </div>
             <div 
@@ -23,10 +23,12 @@
                     'has-error': accountForm.email.$invalid && accountForm.email.$dirty
                 }"
             >
-                <label class="control-label col-sm-2" for="accountFormEmail">Email:</label>
-                <div class="col-sm-10">
+                <label class="control-label col-sm-3" for="accountFormEmail">Email:</label>
+                <div class="col-sm-8">
                     <input id="accountFormEmail" class="form-control" type="email" name="email" ng-model="account.email" required ng-minlength="2" ng-maxlength="100" />
                     <span class="help-block" ng-show="accountForm.email.$error.required">Required</span>
+                    <span class="help-block" ng-show="accountForm.email.$error.maxlength">Email is too long</span>
+                    <span class="help-block" ng-show="accountForm.email.$error.email">Email is invalid</span>
                 </div>
             </div>
             <div 
@@ -35,10 +37,11 @@
                     'has-error': accountForm.password.$invalid && accountForm.password.$dirty
                 }"
             >
-                <label class="control-label col-sm-2" for="accountFormPassword">Password:</label>
-                <div class="col-sm-10">
-                    <input id="accountFormPassword" class="form-control" type="password" name="password" ng-model="account.password" required ng-minlength="2" ng-maxlength="100" />
-                    <span class="help-block" ng-show="accountForm.password.$error.required">Required</span>
+                <label class="control-label col-sm-3" for="accountFormPassword">Password:</label>
+                <div class="col-sm-8">
+                    <input id="accountFormPassword" class="form-control" type="password" name="password" ng-model="account.password" ng-minlength="6" ng-maxlength="100" />
+                    <span class="help-block" ng-show="accountForm.password.$error.minlength">Password is too short</span>
+                    <span class="help-block" ng-show="accountForm.password.$error.maxlength">Password is too long</span>
                 </div>
             </div>
             <div 
@@ -47,10 +50,12 @@
                     'has-error': accountForm.passwordConfirm.$invalid && accountForm.passwordConfirm.$dirty
                 }"
             >
-                <label class="control-label col-sm-2" for="accountFormPasswordConfirm">Password Confirm:</label>
-                <div class="col-sm-10">
-                    <input id="accountFormPasswordConfirm" class="form-control" type="passwordConfirm" name="passwordConfirm" ng-model="account.passwordConfirm" required ng-minlength="2" ng-maxlength="100" password-match="account.password" />
-                    <span class="help-block" ng-show="accountForm.passwordConfirm.$error.required">Required</span>
+                <label class="control-label col-sm-3" for="accountFormPasswordConfirm">Password Confirm:</label>
+                <div class="col-sm-8">
+                    <input id="accountFormPasswordConfirm" class="form-control" type="password" name="passwordConfirm" ng-model="account.passwordConfirm" ng-minlength="2" ng-maxlength="100" password-match="account.password" />
+                    <span class="help-block" ng-show="accountForm.passwordConfirm.$error.minlength">Password Confirm is too short</span>
+                    <span class="help-block" ng-show="accountForm.passwordConfirm.$error.maxlength">Password Confirm is too long</span>
+                    <span class="help-block" ng-show="accountForm.passwordConfirm.$error.passwordMatch">Password Confirm doesn't match Password</span>
                 </div>
             </div>
             <div class="form-errors" ng-show="formErrors">
@@ -62,7 +67,12 @@
             <div class="form-success alert alert-success" ng-show="formSuccess">
                 {{formSuccess}}
             </div>
-            <button class="btn btn-primary" ng-click="updateAccount(account)" ng-disabled="accountForm.$invalid">Update</button>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-8">
+                    <button class="btn btn-primary" ng-click="updateAccount(account)" ng-disabled="accountForm.$invalid || !accountForm.$dirty">Update Account</button>
+                    <button class="btn btn-danger" ng-click="regenerateApiKey()">Regenerate API Key</button>
+                </div>
+            </div>
         </form>
-    </div>
+    </form>
 </div>
