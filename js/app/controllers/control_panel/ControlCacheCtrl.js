@@ -85,9 +85,6 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
             //client side updates
             $scope.snapshotCount = $scope.snapshotCount - 1;
             $scope.snapshots.splice(index, 1);
-            //verify agains the server side
-            getCache();
-            getCacheCount();
         }, function (response) {
             //refresh the cache either way, if say the user deleted from a different page
             getCache();
