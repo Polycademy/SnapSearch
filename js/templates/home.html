@@ -32,7 +32,10 @@
                                 <p>Installation:</p>
                                 <syntax syntax-language="bash">composer require snapsearch/snapsearch-client-php</syntax>
                                 <p>Usage:</p>
-                                <syntax class="code-usage" syntax-language="php">$client = new SnapSearchClientPHPClient('email', 'key');
+                                <syntax class="code-usage" syntax-language="php">// Inside your Front Controller
+// For StackPHP or HTTPKernel frameworks, check the source repository examples
+
+$client = new SnapSearchClientPHPClient('email', 'key');
 $detector = new SnapSearchClientPHPDetector;
 $interceptor = new SnapSearchClientPHPInterceptor(
     $client, 
@@ -60,13 +63,16 @@ if($response){
 }</syntax>
                                 <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-PHP" target="_blank">
                                     <img src="assets/img/github_mark.png" />
-                                    Fork me on Github
+                                    Examples and Source on Github
                                 </a>                                </div>
                             <div class="tab-panel" ng-switch-when="ruby">
                                 <p>Installation:</p>
                                 <syntax syntax-language="bash">gem install snapsearch-client-ruby</syntax>
                                 <p>Usage:</p>
-                                <syntax class="code-usage" syntax-language="ruby">require 'rack/snap_search'
+                                <syntax class="code-usage" syntax-language="ruby"># Inside your Rack config.ru
+
+require 'bundler/setup'
+require 'rack/snap_search'
 
 use Rack::SnapSearch do |config|
     
@@ -76,17 +82,21 @@ use Rack::SnapSearch do |config|
     # Required: The key to authenticate with.
     config.key = 'API_KEY_HERE'
     
-end</syntax>
+end
+
+# ...continue with Rack configuration</syntax>
                                 <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-Ruby" target="_blank">
                                     <img src="assets/img/github_mark.png" />
-                                    Fork me on Github
+                                    Examples and Source on Github
                                 </a>
                             </div>
                             <div class="tab-panel" ng-switch-when="node.js">
                                 <p>Installation:</p>
                                 <syntax syntax-language="bash">npm install snapsearch-client-node</syntax>
                                 <p>Usage:</p>
-                                <syntax class="code-usage" syntax-language="javascript">var app = express();
+                                <syntax class="code-usage" syntax-language="javascript">// Express integration
+
+var app = express();
 var client = new SnapSearch.Client();
 var detector = new SnapSearch.Detector();
 var interceptor = new SnapSearch.Interceptor(client, detector);
@@ -105,17 +115,112 @@ app.use(function (req, res, next) {
 });</syntax>
                                 <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-Node" target="_blank">
                                     <img src="assets/img/github_mark.png" />
-                                    Fork me on Github
+                                    Examples and Source on Github
                                 </a>
                             </div>
                             <div class="tab-panel" ng-switch-when="python">
                                 <p>Installation:</p>
                                 <syntax syntax-language="bash">pip install snapsearch-client-python</syntax>
                                 <p>Usage:</p>
-                                <syntax class="code-usage" syntax-language="python">#coming soon!</syntax>
+                                <syntax class="code-usage" syntax-language="python"># Inside your Front Controller or Entry Point
+
+# Django
+
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hello_world.settings")
+
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
+
+# API credentials
+api_email = "<email>"
+api_key = "<key>"
+
+# initialize the interceptor
+from SnapSearch import Client, Detector, Interceptor
+interceptor = Interceptor(
+    Client(api_email, api_key), 
+    Detector()
+)
+
+# deploy the interceptor
+from SnapSearch.wsgi import InterceptorMiddleware
+application = InterceptorMiddleware(
+    application, 
+    interceptor
+)
+
+# Flask
+
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return "Hello World!\r\n"
+
+if __name__ == '__main__':
+    # API credentials
+    api_email = "<email>"  # change this to the registered email
+    api_key = "<key>"  # change this to the real api credential
+
+    # initialize the interceptor
+    from SnapSearch import Client, Detector, Interceptor
+    interceptor = Interceptor(
+        Client(api_email, api_key), 
+        Detector()
+    )
+
+    # deploy the interceptor
+    from SnapSearch.wsgi import InterceptorMiddleware
+    app.wsgi_app = InterceptorMiddleware(
+        app.wsgi_app, 
+        interceptor
+    )
+
+    # start servicing
+    app.run(host="0.0.0.0", port=5000)
+
+# CGI
+
+#!/usr/bin/env python
+
+import cgi
+import sys
+
+def hello_world():
+    msg = b"Hello World!"
+    sys.stdout.write(b"Status: 200 OK\r\n")
+    sys.stdout.write(b"Content-Type: text/html; charset=utf-8\r\n")
+    sys.stdout.write(b"Content-Length: ")
+    sys.stdout.write(bytes(len(msg)))
+    sys.stdout.write(b"\r\n\r\n")
+    sys.stdout.write(msg)
+    sys.stdout.write(b"\r\n")
+    return 0
+
+if __name__ == '__main__':
+    # API credentials
+    api_email = "<email>"  # change this to the registered email
+    api_key = "<key>"  # change this to the real api credential
+
+    # initialize the interceptor
+    from SnapSearch import Client, Detector, Interceptor
+    interceptor = Interceptor(
+        Client(api_email, api_key), 
+        Detector()
+    )
+
+    # deploy the interceptor
+    from SnapSearch.cgi import InterceptorController
+    InterceptorController(interceptor).start()
+
+    # start servicing
+    sys.exit(hello_world())
+</syntax>
                                 <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-Python" target="_blank">
                                     <img src="assets/img/github_mark.png" />
-                                    Fork me on Github
+                                    Examples and Source on Github
                                 </a>
                             </div>
                         </div>
