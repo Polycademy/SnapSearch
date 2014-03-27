@@ -78,7 +78,7 @@
                 </dd>
                 <dt>Free Usage Cap:</dt>
                 <dd>{{userAccount.apiFreeLimit}}</dd>
-                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>
+                <dt>Max Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>
                 <dd>${{price}} AUD</dd>
             </dl>
         </form>
@@ -86,7 +86,7 @@
     <div class="telemetry-block">
         <h3 class="telemetry-title">API Requests & Usage History</h3>
         <em class="telemetry-emphasis">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>
-        <div class="history-buttons telemetry-buttons button-group">
+        <div class="telemetry-buttons button-group">
             <button class="btn btn-primary" type="button" ng-click="backwardGraph()">Backward</button>
             <button class="btn btn-primary" type="button" ng-click="forwardGraph()">Forward</button>
         </div>
@@ -153,7 +153,7 @@
     </div>
     <div class="telemetry-block">
         <h3 class="telemetry-title">Request & Usage Log</h3>
-        <div class="log-buttons telemetry-buttons button-group">
+        <div class="telemetry-buttons button-group">
             <button class="btn btn-primary" type="button" ng-click="backwardLogs()">Backward</button>
             <button class="btn btn-primary" type="button" ng-click="forwardLogs()">Forward</button>
         </div>
