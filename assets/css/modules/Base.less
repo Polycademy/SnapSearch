@@ -2,6 +2,8 @@
    Base Module
    ========================================================================== */
 
+@import (reference) "../mixins/Centering";
+
 /**
  * Base text colour
  */
@@ -47,4 +49,8 @@ input {
 
 pre {
     font-size: 14px;
+}
+
+.block-center {
+    #Centering.blockCenter();
 }
