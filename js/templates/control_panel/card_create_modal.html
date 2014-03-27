@@ -12,11 +12,10 @@
         >
             <label class="control-label col-sm-3" for="cardFormCardNumber">Card Number:</label>
             <div class="col-sm-9">
-                <input id="cardFormCardNumber" class="form-control" type="number" name="cardNumber" ng-model="card.cardNumber" required ng-minlength="13" ng-maxlength="16" autocomplete="off" autocapitalize="off" />
+                <input id="cardFormCardNumber" class="form-control" type="text" name="cardNumber" ng-model="card.cardNumber" required ng-minlength="13" ng-maxlength="16" autocomplete="off" autocapitalize="off" />
             </div>
             <div class="help-messages">
                 <span class="help-block col-md-offset-3" ng-show="cardForm.cardNumber.$error.required">Required</span>
-                <span class="help-block col-md-offset-3" ng-show="cardForm.cardNumber.$error.number">Card number can only contain digits</span>
                 <span class="help-block col-md-offset-3" ng-show="cardForm.cardNumber.$error.minlength">Card number is too short</span>
                 <span class="help-block col-md-offset-3" ng-show="cardForm.cardNumber.$error.maxlength">Card number is too long</span>
             </div>

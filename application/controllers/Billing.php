@@ -97,8 +97,8 @@ class Billing extends CI_Controller{
 			'content'	=> $content,
 			'code'		=> $code,
 		);
-		
-		Template::compose(false, $output, 'json');
+
+		echo json_encode($output);
 
 	}
 
@@ -141,7 +141,7 @@ class Billing extends CI_Controller{
 			'code'		=> $code,
 		);
 		
-		Template::compose(false, $output, 'json');
+		echo json_encode($output);
 
 	}
 

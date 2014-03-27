@@ -119,7 +119,7 @@ class Billing_model extends CI_Model{
 			$data = array(
 				'id'				=> $row->id,
 				'userId'			=> $row->userId,
-				'cardHint'			=> $row->cardHint,
+				'cardHint'			=> "{$row->cardHint}",
 				'customerToken'		=> $row->customerToken,
 				'active'			=> $row->active,
 				'cardInvalid'		=> $row->cardInvalid,
@@ -167,7 +167,7 @@ class Billing_model extends CI_Model{
 				$data[] = array(
 					'id'				=> $row->id,
 					'userId'			=> $row->userId,
-					'cardHint'			=> $row->cardHint,
+					'cardHint'			=> "{$row->cardHint}",
 					'customerToken'		=> $row->customerToken,
 					'active'			=> $row->active,
 					'cardInvalid'		=> $row->cardInvalid,

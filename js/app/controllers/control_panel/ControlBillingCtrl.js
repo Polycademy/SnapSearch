@@ -29,15 +29,15 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
         $modal.open({
             template: fs.readFileSync(__dirname + '/../../../templates/control_panel/card_create_modal.html', 'utf8'),
             controller: require('./CardCreateModalCtrl'),
-            windowClass: 'card-create-modal form-modal'
-        }).result.then(function (newCard) {
+            windowClass: 'card-create-modal form-modal',
+            resolve: {
+                userId: function () {
+                    return userAccount.id
+                }
+            }
+        }).result.then(function () {
 
-            //unshift to the top of the stack
-            newCard.then(function (response) {
-                $scope.billingRecords.unshift(response.content);
-            }, function (response) {
-                getBillingRecords();
-            });
+            getBillingRecords();
 
         });
 
@@ -48,6 +48,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
         Restangular.one('billing', id).remove().then(function (response) {
 
             $scope.billingRecords.splice(index, 1);
+            getBillingRecords();
 
         }, function (response) {
             

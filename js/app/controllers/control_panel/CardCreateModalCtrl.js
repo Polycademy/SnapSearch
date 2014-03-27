@@ -3,7 +3,7 @@
 /**
  * Card Create Modal
  */
-module.exports = ['$scope', '$modalInstance', '$timeout', 'Restangular', function ($scope, $modalInstance, $timeout, Restangular) {
+module.exports = ['$scope', '$modalInstance', '$timeout', 'userId', 'Restangular', function ($scope, $modalInstance, $timeout, userId, Restangular) {
 
     $scope.card = {};
 
@@ -12,12 +12,14 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'Restangular', functio
         $scope.formErrors = false;
         $scope.formSuccess = false;
 
+        //we're creating a billing record for a particular user id
+        $scope.card['userId'] = userId;
+
         Restangular.all('billing').post(card).then(function (response) {
 
             $scope.formSuccess = 'Created Card';
-            var newCard = Restangular.one('billing', response.content).get();
             $timeout(function () {
-                $modalInstance.close(newCard);
+                $modalInstance.close();
             }, 1000);
 
         }, function (response) {
