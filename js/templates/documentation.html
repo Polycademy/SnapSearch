@@ -18,22 +18,23 @@
                     <div class="documentation-information">
                         <h3 class="documentation-title" anchor="introduction">Introduction</h3>
                         <p>Snapsearch is a search engine optimisation (SEO) and robot proxy for complex front-end javascript & AJAX enabled (potentially realtime) HTML5 web applications.</p>
-                        <p>Search engines like Google's crawler and dumb HTTP clients such as Facebook's image extraction robot cannot execute complex javascript applications. Complex javascript applications include websites that utilise AngularJS, EmberJS, KnockoutJS, Dojo, Backbone.js, Ext.js, jQuery, JavascriptMVC, Meteor, SailsJS, Derby, RequireJS and much more. Basically any website that utilises javascript in order to bring in content and resources asynchronously after the page has been loaded, or utilises javascript to manipulate the page's content while the user is viewing them such as animation.</p>
-                        <p>Snapsearch intercepts any requests made by search engines or robots and sends its own javascript enabled robot to extract your page's content and creates a cached snapshot. This snapshot is then passed through your own web application back to the search engine, robot or browser.</p>
-                        <p>Snapsearch's robot is an automated load balanced Firefox browser. This Firefox browser is kept up to date with the release, beta, alpha and nightly versions (beta, alpha and nightly is still under implementation), so we'll always be able to serve the latest in HTML5 technology. Our load balancer ensures your requests won't be hampered by other user's requests.</p>
+                        <p>Search engines like Google's crawler and dumb HTTP clients such as Facebook's image extraction robot cannot execute complex javascript applications. Complex javascript applications include websites that utilise AngularJS, EmberJS, KnockoutJS, Backbone.js, jQuery, Meteor and much more. Basically any website that contains asynchronous content, resources or animation.</p>
+                        <p>Snapsearch intercepts requests made by search engines or robots and sends its own javascript enabled robot to your website in order to create a cached snapshot. This snapshot is passed back to the search engine, robot or browser.</p>
+                        <p>Snapsearch powered by load balanced Firefox instances. Theses Firefox browsers are kept up to date with the rapid 6 week release cycles from Mozilla. So we'll always be able to serve the latest in HTML5 technology. This is an advantage over using something like PhantomJS which is affected by the spurious QtWebKit engine development cycle.</p>
                     </div>
                     <div class="documentation-information">
                         <h3 class="documentation-title" anchor="apiUsage">API Usage</h3>
-                        <p>Make sure to register an account on SnapSearch before utilising these libraries. You will need your email and key to access SnapSearch's robot over SSL encrypted HTTP Basic Authorization.</p>
-                        <p>SnapSearch can be easily integrated into your solution stack via our client middleware libraries. These client libraries first automatically detect if an HTTP request comes from a search engine or robot. If it is indeed a search engine, it sends an HTTP POST request to <code>https://snapsearch.io/api/v1/robot</code> passing in parameters configuring how SnapSearch's robot should extract your content. SnapSearch will then send a HTTP GET request to the same URL and return the HTTP response (status code, headers and content) as a JSON response to the library. The client library then returns that data back to your application. You will have to select which data to present to the search engine. It is recommended to return the status code and content but not all of the headers, due to potential header mismatch with content encoding. However if you have specific headers that are important, then first test if it works with a simple HTTP client before deploying it.</p>
+                        <p>SnapSearch's API is accessible over SSL encrypted HTTP Basic Authorization using your registered Email as the username, and API Key as the password.</p>
+                        <p>Our API endpoint is <code>https://snapsearch.io/api/v1/robot</code></p>
+                        <p>We provide a <a scroll="middleware">range of middlewares</a> that provide easy integration into your current web application.</p>
+                        <p>These client libraries first automatically detect if an HTTP request comes from a search engine or robot. If it is indeed a search engine, it sends an HTTP POST request to <code>https://snapsearch.io/api/v1/robot</code> passing in parameters configuring how SnapSearch's robot should extract your content. SnapSearch will then send a HTTP GET request to the same URL and return the HTTP response (status code, headers and content) as a JSON response to the library. The client library then returns that data back to your application. You will have to select which data to present to the search engine. It is recommended to return the status code and content but not all of the headers, due to potential header mismatch with content encoding. However if you have specific headers that are important, then first test if it works with a simple HTTP client before deploying it.</p>
                         <p>Our cache is dependent on your request parameters. So new request parameters will create a new independent snapshot.</p>
-                        <p>All of the middleware libraries are ran on the application level requiring a server side programming language.</p>
-                        <p>For specific usage and installation instructions navigate to specific middleware.</p>
-                        <p>For sites using hash based url schemes please see our <a scroll="notes">notes on Hashbang urls</a>.</p>
+                        <p><strong>For sites using hash based url schemes <code>http://domain/#/path...</code> please see our <a scroll="notes">notes on Hashbang urls</a>.</strong></p>
                     </div>
                     <div class="documentation-information">
                         <h3 class="documentation-title" anchor="parameters">Request Parameters</h3>
-                        <p>Our HTTPS Robot endpoint <code>/api/v1/robot</code> requires HTTP basic auth with your email and key as username and password respectively, and it accepts these parameters in POST or GET format:</p>
+                        <p>ROBOT ENDPOINT: <code>/api/v1/robot</code></p>
+                        <p>These parameters can be passed in as GET query parameters or JSON POST body:</p>
                         <dl>
                             <dt>url</dt>
                             <dd>
@@ -91,7 +92,7 @@
                             <dd>
                                 Maximum millisecond timeout for the entire request task. Default 30000
                                 <br />
-                                This determines how long before the entire request task is considered a failure. At which point the robot will cancel the task and return everything it has managed to scrape.
+                                This determines how long before the entire request task is considered a failure. At which point the robot will cancel the task and return everything it has managed to scrape. The number can be between 10000 to 30000 milliseconds.
                             </dd>
                             <dt>maxtimeout</dt>
                             <dd>
@@ -136,7 +137,7 @@
                                 If you're in development mode or on localhost, set this to true, and it will only validate your request parameters, but not attempt to actually scrape anything.
                             </dd>
                         </dl>
-                        <p>Here is an example response:</p>
+                        <h4>API Response Structure</h4>
                         <pre><code>[
     'cache'             =&gt; true/false,
     'callbackResult'    =&gt; '',
@@ -171,10 +172,10 @@
                         <h3 class="documentation-title" anchor="middleware">Middleware</h3>
                         <p>SnapSearch officially supports and provides PHP, Ruby, Node.js and Python middleware. All middleware are framework agnostic, and should be able to work within a middleware framework or without.</p>
                         <ul>
-                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-PHP">PHP</a> - 1.1.0 (most stable)</li>
-                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Ruby">Ruby</a> - 0.1.0 (almost there)</li>
-                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Node">Node.js</a> - 0.0.2 (works but requires some improvements)</li>
-                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Python">Python</a> - Still under development.</li>
+                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-PHP">PHP</a> - 1.1.0</li>
+                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Ruby">Ruby</a> - 1.0.0</li>
+                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Node">Node.js</a> - 0.0.2</li>
+                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Python">Python</a> - 0.0.7</li>
                         </ul>
                         <p>All of the middleware are open source, and we welcome pull requests for patches or new middleware implementations. Check out our <a href="https://github.com/SnapSearch/">Github organisation</a> for more.</p>
                     </div>
@@ -208,6 +209,8 @@
                         <p>It's not possible to detect if the HTTP client supports Javascript on the first page load. Therefore you have to know the user agents beforehand. A workaround involves the HTML Meta Refresh tag. You set an HTML meta refresh tag which will refresh the browser and point it to the same url but with query parameter indicating to the server that the client doesn't run javascript. This meta refresh tag can be then be cancelled using javascript. Another approach would be to use the Noscript tag and place the meta refresh tag there. None of these methods are guaranteed to work. but if you're interested check out: <a href="http://stackoverflow.com/q/3252743/582917">http://stackoverflow.com/q/3252743/582917</a></p>
                         <h4>Soft 404s</h4>
                         <p>Soft 404s should be avoided. The final representation to the search engine should be exactly the same as normal user with a normal browser would see. However you can achieve this by using the special meta tags and switching <code>meta</code> request parameter to true.</p>
+                        <h4>Flash Support</h4>
+                        <p>Our robots can support flash. At this moment the flash plugin is not installed. However we are going to be adding this feature soon. Note that flash movies will not appear on any screenshots.</p>
                     </div>
                 </div>
             </div>
