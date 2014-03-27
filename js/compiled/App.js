@@ -3336,7 +3336,7 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":32,"./elements/Elements":41,"./filters/Filters":79,"./modules/Modules":80,"./services/Services":90}],7:[function(require,module,exports){
+},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":40,"./filters/Filters":78,"./modules/Modules":79,"./services/Services":89}],7:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3396,7 +3396,7 @@ module.exports = [
                 'controlPanel.crawling', //default controlPanel childstate
                 {
                     url: '/crawling',
-                    template: "<div class=\"crawling\">\n    <h2 class=\"control-title\">Crawling Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"row overview-requests-usages-tally no-gutter\">\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_request\">\n                    <span class=\"tally-bg\">R</span>\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\n                </div>\n                <p class=\"tally-description\">Requests Received</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_usage\">\n                    <span class=\"tally-bg\">U</span>\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Used</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_available\">\n                    <span class=\"tally-bg\">A</span>\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\n        </div>\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <dl>\n                <dt>\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\n                </dt>\n                <dd \n                    class=\"input-group\" \n                    ng-class=\"{\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\n                    }\" \n                >\n                    <input \n                        id=\"apiLimitModifierFormQuantity\"\n                        class=\"form-control\" \n                        type=\"number\" \n                        name=\"quantity\" \n                        ng-model=\"apiLimitModifier.quantity\" \n                        ng-disabled = \"!hasBillingDetails\" \n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \n                        maxlength=\"10\" \n                        required \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \n                            ng-click=\"changeLimit(apiLimitModifier)\" \n                        >\n                            Change Cap\n                        </button>\n                    </span>\n                </dd>\n                <dt>Free Usage Cap:</dt>\n                <dd>{{userAccount.apiFreeLimit}}</dd>\n                <dt>Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\n                <dd>${{price}} AUD</dd>\n            </dl>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"history-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\n        </div>\n        <div \n            id=\"usageHistoryChart\" \n            class=\"history-chart\" \n            nvd3-line-chart \n            data=\"usageHistoryData\" \n            showXAxis=\"true\" \n            showYAxis=\"true\" \n            tooltips=\"true\" \n            interactive=\"true\" \n            showLegend=\"true\" \n            showControls=\"true\" \n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \n            noData=\"No API history yet!\" \n        ></div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{domainDistinctionDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{domainDistinctionDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"domain-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardDomains()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardDomains()\">Forward</button>\n        </div>\n        <div class=\"row\">\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Requests - Total: {{totalDomainDistinctionRequestsQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartRequests\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataRequests\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionRequestsToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Usages - Total: {{totalDomainDistinctionUsagesQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartUsages\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataUsages\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionUsagesToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n        </div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Request & Usage Log</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"logs\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <tr>\n                        <th class=\"text-center\">#</th>\n                        <th class=\"text-center\">Date</th>\n                        <th class=\"text-center\">Type</th>\n                        <th class=\"text-center\">URL</th>\n                        <th class=\"text-center\">Response Time (s)</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"log in logs\">\n                        <td class=\"text-center\">{{log.id}}</td>\n                        <td class=\"text-center\">{{log.date}}</td>\n                        <td class=\"text-center\">{{log.type}}</td>\n                        <td class=\"text-center\">{{log.url}}</td>\n                        <td class=\"text-center\">{{log.responseTime}}</td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!logs\"><strong>No log data!</strong></p>\n    </div>\n</div>",
+                    template: "<div class=\"crawling\">\n    <h2 class=\"control-title\">Crawling Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"row overview-requests-usages-tally no-gutter\">\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_request\">\n                    <span class=\"tally-bg\">R</span>\n                    <p class=\"tally-number\">{{userAccount.apiRequests}}</p>\n                </div>\n                <p class=\"tally-description\">Requests Received</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_usage\">\n                    <span class=\"tally-bg\">U</span>\n                    <p class=\"tally-number\">{{userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Used</p>\n            </div>\n            <div class=\"col-sm-4 tally-col\">\n                <div class=\"tally-block tally_block_available\">\n                    <span class=\"tally-bg\">A</span>\n                    <p class=\"tally-number\">{{userAccount.apiLimit - userAccount.apiUsage}}</p>\n                </div>\n                <p class=\"tally-description\">Usages Available</p>\n            </div>\n        </div>\n        <div class=\"progress progress-striped active usage-bar\">\n            <div class=\"progress-bar\" ng-style=\"{ width: userAccount.apiUsagePercentage + '%' }\"></div>\n        </div>\n        <p class=\"telemetry-emphasis\">Used up {{userAccount.apiUsagePercentage}}% of API Usage Cap this cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Monthly Usage Cap</h3>\n        <form class=\"api-limit-modifier form-horizontal\" name=\"apiLimitModifierForm\">\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <dl>\n                <dt>\n                    <label class=\"control-label\" for=\"apiLimitModifierFormQuantity\">Enter Usage Cap:</label>\n                </dt>\n                <dd \n                    class=\"input-group\" \n                    ng-class=\"{\n                        'has-error': apiLimitModifierForm.quantity.$invalid && apiLimitModifierForm.quantity.$dirty\n                    }\" \n                >\n                    <input \n                        id=\"apiLimitModifierFormQuantity\"\n                        class=\"form-control\" \n                        type=\"number\" \n                        name=\"quantity\" \n                        ng-model=\"apiLimitModifier.quantity\" \n                        ng-disabled = \"!hasBillingDetails\" \n                        min-valid=\"{{userAccount.apiFreeLimit}}\" \n                        maxlength=\"10\" \n                        required \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"apiLimitModifierForm.$invalid || !hasBillingDetails\" \n                            ng-click=\"changeLimit(apiLimitModifier)\" \n                        >\n                            Change Cap\n                        </button>\n                    </span>\n                </dd>\n                <dt>Free Usage Cap:</dt>\n                <dd>{{userAccount.apiFreeLimit}}</dd>\n                <dt>Max Cost Per Month:<br /><small>(discounting free usage cap)</small></dt>\n                <dd>${{price}} AUD</dd>\n            </dl>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">API Requests & Usage History</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{logGraphDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{logGraphDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardGraph()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardGraph()\">Forward</button>\n        </div>\n        <div \n            id=\"usageHistoryChart\" \n            class=\"history-chart\" \n            nvd3-line-chart \n            data=\"usageHistoryData\" \n            showXAxis=\"true\" \n            showYAxis=\"true\" \n            tooltips=\"true\" \n            interactive=\"true\" \n            showLegend=\"true\" \n            showControls=\"true\" \n            xAxisTickFormat=\"xAxisDateFormatFunction()\" \n            noData=\"No API history yet!\" \n        ></div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Domain Distinction</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{domainDistinctionDate.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{domainDistinctionDate.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"domain-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardDomains()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardDomains()\">Forward</button>\n        </div>\n        <div class=\"row\">\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Requests - Total: {{totalDomainDistinctionRequestsQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartRequests\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataRequests\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionRequestsToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n            <div class=\"col-md-6\">\n                <p class=\"text-center\">\n                    <strong>Usages - Total: {{totalDomainDistinctionUsagesQuantity}}</strong>\n                </p>\n                <div \n                    id=\"domainDistinctionChartUsages\" \n                    class=\"domain-chart\" \n                    nvd3-pie-chart \n                    data=\"domainDistinctionDataUsages\" \n                    x=\"xPieFunction()\" \n                    y=\"yPieFunction()\" \n                    showLabels=\"true\" \n                    labelType=\"key\" \n                    tooltips=\"true\" \n                    tooltipcontent=\"domainDistinctionUsagesToolTip()\" \n                    noData=\"No domain data yet!\" \n                ></div>\n            </div>\n        </div>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3 class=\"telemetry-title\">Request & Usage Log</h3>\n        <div class=\"telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardLogs()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardLogs()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"logs\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <tr>\n                        <th class=\"text-center\">#</th>\n                        <th class=\"text-center\">Date</th>\n                        <th class=\"text-center\">Type</th>\n                        <th class=\"text-center\">URL</th>\n                        <th class=\"text-center\">Response Time (s)</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"log in logs\">\n                        <td class=\"text-center\">{{log.id}}</td>\n                        <td class=\"text-center\">{{log.date}}</td>\n                        <td class=\"text-center\">{{log.type}}</td>\n                        <td class=\"text-center\">{{log.url}}</td>\n                        <td class=\"text-center\">{{log.responseTime}}</td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!logs\"><strong>No log data!</strong></p>\n    </div>\n</div>",
                     controller: 'ControlCrawlingCtrl'
                 }
             )
@@ -3404,7 +3404,7 @@ module.exports = [
                 'controlPanel.cache',
                 {
                     url: '/cache',
-                    template: "<div class=\"cache\">\n    <h2 class=\"control-title\">Cache Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Overview</h3>\n        <div class=\"tally-block tally_block_cache tally_block_single\">\n            <span class=\"tally-bg\">S</span>\n            <p class=\"tally-number\">{{snapshotCount}}</p>\n        </div>\n        <p class=\"tally-description\">Snapshots Cached</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cache Priming</h3>\n        <form class=\"cache-form form-horizontal\" name=\"cacheForm\">\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty\n                }\"\n            >\n                <div class=\"input-group input-group-lg\">\n                    <input \n                        class=\"form-control\" \n                        type=\"url\" \n                        name=\"url\" \n                        ng-model=\"cache.url\" \n                        required \n                        placeholder=\"http://your-site.com/\" \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"cacheForm.$invalid\" \n                            ng-click=\"primeCache(cache)\" \n                        >\n                            Prime\n                        </button>\n                    </span>\n                </div>\n                <span class=\"help-block text-center\">Priming a snapshot is counted as a usage.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.url.$error.url\">Invalid URL</span>\n            </div>\n            <div \n                class=\"form-group\"\n                ng-class=\"{\n                    'has-error': cacheForm.parameters.$invalid && cacheForm.parameters.$dirty\n                }\"\n            >\n                <label for=\"cacheFormParameters\">Request Parameters</label>\n                <textarea \n                    id=\"cacheFormParameters\" \n                    class=\"form-control\" \n                    name=\"parameters\"\n                    ng-model=\"cache.parameters\" \n                    placeholder='{ \"parameterKey\": \"parameterValue\" }' \n                    json-checker \n                ></textarea>\n                <span class=\"help-block text-center\">Setup custom <a href=\"documentation#parameters\" target=\"_blank\">request parameters</a>, it should be in JSON.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.parameters.$error.jsonChecker\">Invalid JSON</span>\n            </div>\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cached Snapshots</h3>\n        <div class=\"log-buttons telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardCache()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardCache()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"snapshots\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <th class=\"text-center\">#</th>\n                    <th class=\"text-center\">URL</th>\n                    <th class=\"text-center\">Date</th>\n                    <th class=\"text-center\">Snapshot</th>\n                    <th class=\"text-center\">Delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"snapshot in snapshots\">\n                        <td class=\"text-center\">{{snapshot.id}}</td>\n                        <td class=\"text-center\">{{snapshot.url}}</td>\n                        <td class=\"text-center\">{{snapshot.date}}</td>\n                        <td class=\"text-center\"><button class=\"btn btn-info\" ng-click=\"viewSnapshot(snapshot.id)\">snapshot</button></td>\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteSnapshot(snapshot.id, $index)\">delete</button></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!snapshots\"><strong>No snapshots!</strong></p>\n    </div>\n</div>",
+                    template: "<div class=\"cache\">\n    <h2 class=\"control-title\">Cache Statistics</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Overview</h3>\n        <div class=\"tally-block tally_block_cache tally_block_single\">\n            <span class=\"tally-bg\">S</span>\n            <p class=\"tally-number\">{{snapshotCount}}</p>\n        </div>\n        <p class=\"tally-description\">Snapshots Cached</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cache Priming</h3>\n        <form class=\"cache-form form-horizontal\" name=\"cacheForm\">\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': cacheForm.url.$invalid && cacheForm.url.$dirty\n                }\"\n            >\n                <div class=\"input-group input-group-lg\">\n                    <input \n                        class=\"form-control\" \n                        type=\"url\" \n                        name=\"url\" \n                        ng-model=\"cache.url\" \n                        required \n                        placeholder=\"http://your-site.com/\" \n                    />\n                    <span class=\"input-group-btn\">\n                        <button \n                            class=\"btn btn-primary\" \n                            type=\"submit\" \n                            ng-disabled=\"cacheForm.$invalid\" \n                            ng-click=\"primeCache(cache)\" \n                        >\n                            Prime\n                        </button>\n                    </span>\n                </div>\n                <span class=\"help-block text-center\">Priming a snapshot is counted as a usage.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.url.$error.url\">Invalid URL</span>\n            </div>\n            <div \n                class=\"form-group\"\n                ng-class=\"{\n                    'has-error': cacheForm.parameters.$invalid && cacheForm.parameters.$dirty\n                }\"\n            >\n                <label for=\"cacheFormParameters\">Request Parameters</label>\n                <textarea \n                    id=\"cacheFormParameters\" \n                    class=\"form-control\" \n                    name=\"parameters\"\n                    ng-model=\"cache.parameters\" \n                    placeholder='{ \"parameterKey\": \"parameterValue\" }' \n                    json-checker \n                ></textarea>\n                <span class=\"help-block text-center\">Setup custom <a href=\"documentation#parameters\" target=\"_blank\">request parameters</a>, it should be in JSON.</span>\n                <span class=\"help-block text-center\" ng-show=\"cacheForm.parameters.$error.jsonChecker\">Invalid JSON</span>\n            </div>\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n        </form>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Cached Snapshots</h3>\n        <div class=\"telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardCache()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardCache()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"snapshots\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <th class=\"text-center\">#</th>\n                    <th class=\"text-center\">URL</th>\n                    <th class=\"text-center\">Date</th>\n                    <th class=\"text-center\">Snapshot</th>\n                    <th class=\"text-center\">Delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"snapshot in snapshots\">\n                        <td class=\"text-center\">{{snapshot.id}}</td>\n                        <td class=\"text-center\">{{snapshot.url}}</td>\n                        <td class=\"text-center\">{{snapshot.date}}</td>\n                        <td class=\"text-center\"><button class=\"btn btn-info\" ng-click=\"viewSnapshot(snapshot.id)\">snapshot</button></td>\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteSnapshot(snapshot.id, $index)\">delete</button></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!snapshots\"><strong>No snapshots!</strong></p>\n    </div>\n</div>",
                     controller: 'ControlCacheCtrl'
                 }
             )
@@ -3412,7 +3412,7 @@ module.exports = [
                 'controlPanel.payments',
                 {
                     url: '/payments',
-                    template: "<div class=\"payments\">\r\n    <h2 class=\"control-title\">Payment History</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Overview</h3>\r\n        <div class=\"tally-block tally_block_cache tally_block_single\">\r\n            <span class=\"tally-bg\">B</span>\r\n            <p class=\"tally-number\">${{billThisMonth}} AUD</p>\r\n        </div>\r\n        <p class=\"tally-description\">Bill this Month</p>\r\n        <p class=\"telemetry-emphasis\">Usage charges may include left over charges from the previous cycle.<br />Charges under 500 AUD cents are delayed and added to the next cycle.</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Invoices</h3>\r\n        <div class=\"log-buttons telemetry-buttons button-group\">\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardPayments()\">Backward</button>\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardPayments()\">Forward</button>\r\n        </div>\r\n        <div class=\"table-responsive\" ng-show=\"paymentRecords\">\r\n            <table class=\"table table-striped table-hover\">\r\n                <thead>\r\n                    <th>#</th>\r\n                    <th>Date</th>\r\n                    <th>Usage Rate Charged</th>\r\n                    <th>Amount</th>\r\n                    <th>Currency</th>\r\n                    <th>Invoice</th>\r\n                </thead>\r\n                <tbody>\r\n                    <tr ng-repeat=\"payment in paymentRecords\">\r\n                        <td class=\"text-center\">{{payment.id}}</td>\r\n                        <td class=\"text-center\">{{payment.date}}</td>\r\n                        <td class=\"text-center\">{{payment.amount}}</td>\r\n                        <td class=\"text-center\">{{payment.currency}}</td>\r\n                        <td class=\"text-center\"><a class=\"btn btn-info\" ng-href=\"api/invoices/{{payment.invoiceNumber}}\">invoice</a></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n        <p class=\"text-center\" ng-show=\"!paymentRecords\"><strong>No payments!</strong></p>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"payments\">\r\n    <h2 class=\"control-title\">Payment History</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Overview</h3>\r\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\r\n        <div class=\"tally-block tally_block_cache tally_block_single\">\r\n            <span class=\"tally-bg\">B</span>\r\n            <p class=\"tally-number\">${{billThisMonth}} AUD</p>\r\n        </div>\r\n        <p class=\"tally-description\">Bill this Month</p>\r\n        <p class=\"telemetry-emphasis\">Usage charges may include left over charges from the previous cycle.<br />Charges under 500 AUD cents are delayed and added to the next cycle.</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Invoices</h3>\r\n        <div class=\"telemetry-buttons button-group\">\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardPayments()\">Backward</button>\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardPayments()\">Forward</button>\r\n        </div>\r\n        <div class=\"table-responsive\" ng-show=\"paymentRecords\">\r\n            <table class=\"table table-striped table-hover\">\r\n                <thead>\r\n                    <th>#</th>\r\n                    <th>Date</th>\r\n                    <th>Usage Rate Charged</th>\r\n                    <th>Amount</th>\r\n                    <th>Currency</th>\r\n                    <th>Invoice</th>\r\n                </thead>\r\n                <tbody>\r\n                    <tr ng-repeat=\"payment in paymentRecords\">\r\n                        <td class=\"text-center\">{{payment.id}}</td>\r\n                        <td class=\"text-center\">{{payment.date}}</td>\r\n                        <td class=\"text-center\">{{payment.amount}}</td>\r\n                        <td class=\"text-center\">{{payment.currency}}</td>\r\n                        <td class=\"text-center\"><a class=\"btn btn-info\" ng-href=\"api/invoices/{{payment.invoiceNumber}}\" target=\"_blank\">invoice</a></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n        <p class=\"text-center\" ng-show=\"!paymentRecords\"><strong>No payments!</strong></p>\r\n    </div>\r\n</div>",
                     controller: 'ControlPaymentsCtrl'
                 }
             )
@@ -3420,7 +3420,7 @@ module.exports = [
                 'controlPanel.billing',
                 {
                     url: '/billing',
-                    template: "<div class=\"billing\">\r\n    <h2 class=\"control-title\">Billing Information</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <p class=\"placeholder-text\">Coming Soon!</p>\r\n    <div ng-show=\"false\">\r\n        <div class=\"telemetry-block\">\r\n            <button ng-click=\"createCard\">Add a Card</button>\r\n            <table>\r\n                <thead>\r\n                    <th>id</th>\r\n                    <th>card number hint</th>\r\n                    <th>active</th>\r\n                    <th>update</th>\r\n                    <th>delete</th>\r\n                </thead>\r\n                <tbody>\r\n                    <tr ng-repeat=\"record in cards\">\r\n                        <td></td>\r\n                        <td></td>\r\n                        <td></td>\r\n                        <td><button>Update Card</button></td>\r\n                        <td><button>Delete Card</button></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"billing\">\r\n    <h2 class=\"control-title\">Billing Information</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Billing Cards</h3>\r\n        <button class=\"btn btn-primary telemetry-button\" ng-click=\"modal.cardCreate()\">Add Card</button>\r\n        <div class=\"table-responsive\" ng-show=\"billingRecords\">\r\n            <table class=\"table table-striped table-hover\">\r\n                <thead>\r\n                    <th class=\"text-center\">#</th>\r\n                    <th class=\"text-center\">Card Number Hint</th>\r\n                    <th class=\"text-center\">Active</th>\r\n                    <th class=\"text-center\">Invalid</th>\r\n                    <th class=\"text-center\">Delete</th>\r\n                </thead>\r\n                <tbody>\r\n                    <tr ng-repeat=\"card in billingRecords\">\r\n                        <td class=\"text-center\">{{card.id}}</td>\r\n                        <td class=\"text-center\">{{card.cardHint}}</td>\r\n                        <td class=\"text-center\">{{card.active}}</td>\r\n                        <td class=\"text-center\">{{card.invalid}} {{card.invalidReason}}</td>\r\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteCard(card.id, $index)\">delete</button></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n        <p class=\"text-center\" ng-hide=\"billingRecords\"><strong>No cards!</strong></p>\r\n    </div>\r\n</div>",
                     controller: 'ControlBillingCtrl'
                 }
             )
@@ -3530,7 +3530,7 @@ angular.module('App.Controllers', [])
     .controller('PrivacyCtrl', require('./privacy/PrivacyCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./common/AppCtrl":11,"./common/HeaderCtrl":12,"./control_panel/ControlAccountCtrl":17,"./control_panel/ControlBillingCtrl":18,"./control_panel/ControlCacheCtrl":19,"./control_panel/ControlCrawlingCtrl":20,"./control_panel/ControlPanelCtrl":21,"./control_panel/ControlPaymentsCtrl":22,"./documentation/DocumentationCtrl":24,"./home/CodeGroupCtrl":25,"./home/DemoCtrl":26,"./home/HomeCtrl":27,"./pricing/CostCalculatorCtrl":28,"./pricing/PricingCtrl":29,"./privacy/PrivacyCtrl":30,"./terms/TermsCtrl":31}],11:[function(require,module,exports){
+},{"./common/AppCtrl":11,"./common/HeaderCtrl":12,"./control_panel/ControlAccountCtrl":16,"./control_panel/ControlBillingCtrl":17,"./control_panel/ControlCacheCtrl":18,"./control_panel/ControlCrawlingCtrl":19,"./control_panel/ControlPanelCtrl":20,"./control_panel/ControlPaymentsCtrl":21,"./documentation/DocumentationCtrl":23,"./home/CodeGroupCtrl":24,"./home/DemoCtrl":25,"./home/HomeCtrl":26,"./pricing/CostCalculatorCtrl":27,"./pricing/PricingCtrl":28,"./privacy/PrivacyCtrl":29,"./terms/TermsCtrl":30}],11:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3542,16 +3542,7 @@ var fs = require('fs');
  * @param {Object} $modal
  */
 module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ', function ($scope, $modal, $state, BusyLoopServ, UserSystemServ) {
-
-    //it will check if the session is active every 20 seconds
-    var cancelBusyLoop = BusyLoopServ(function () {
-        UserSystemServ.getSession();
-    }, 30000);
-
-    $scope.$on('$destroy', function () {
-        cancelBusyLoop();
-    });
-
+    
     $scope.modal = {};
     $scope.auth = {};
 
@@ -3694,23 +3685,43 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', func
 /**
  * Card Create Modal
  */
-module.exports = ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+module.exports = ['$scope', '$modalInstance', '$timeout', 'Restangular', function ($scope, $modalInstance, $timeout, Restangular) {
 
-    
+    $scope.card = {};
+
+    $scope.createCard = function (card) {
+
+        $scope.formErrors = false;
+        $scope.formSuccess = false;
+
+        Restangular.all('billing').post(card).then(function (response) {
+
+            $scope.formSuccess = 'Created Card';
+            var newCard = Restangular.one('billing', response.content).get();
+            $timeout(function () {
+                $modalInstance.close(newCard);
+            }, 1000);
+
+        }, function (response) {
+
+            if (response.status === 400) {
+                $scope.formErrors = response.data.content;
+            } else {
+                $scope.formErrors = ['System error, try again or contact us.'];
+            }
+
+        });
+
+    };
+
+    $scope.cancel = function () {
+
+        $modalInstance.dismiss();
+
+    };
 
 }];
 },{}],16:[function(require,module,exports){
-'use strict';
-
-/**
- * Card Update Modal
- */
-module.exports = ['$scope', '$modalInstance', function ($scope, $modalInstance) {
-
-
-
-}];
-},{}],17:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3721,7 +3732,7 @@ module.exports = ['$scope', '$modalInstance', function ($scope, $modalInstance) 
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3731,43 +3742,86 @@ var fs = require('fs');
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', '$modal', function ($scope, $modal) {
+module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function ($scope, $modal, UserSystemServ, Restangular) {
 
-    //once cards get created or updated, we need to either add to the card model client side, or requery the server...
-    //client side updating is quicker and more "semantic"
-    //server side requerying is easier to do
+    var userAccount;
+
+    var getBillingRecords = function () {
+
+        $scope.billingRecords = [];
+        Restangular.all('billing').customGET('', {
+            user: userAccount.id
+        }).then(function (response) {
+
+            $scope.billingRecords = response.content;
+
+        });
+
+    };
 
     $scope.modal.cardCreate = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\r\n    <h2>Create a new Credit Card</h2>\r\n    <em>Payments are processed by Pin payments, and we don't keep any credit card information on our servers.</em>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"signupForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': billingForm.cardNumber.$invalid && billingForm.cardNumber.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"billingFormCardNumber\">Card Number:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"billingFormCardNumber\" class=\"form-control\" type=\"text\" name=\"cardNumber\" ng-model=\"card.cardNumber\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"billingForm.cardNumber.$error.required\">Required</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"addCard(card)\" ng-disabled=\"billingForm.$invalid\">Add Card</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>",
+            template: "<div class=\"modal-header\">\r\n    <h2>Create a new Credit Card</h2>\r\n    <p>Card data and Payments are processed by <a href=\"https://pin.net.au/\" target=\"_blank\">Pin Payments</a></p>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"cardForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardNumber.$invalid && cardForm.cardNumber.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardNumber\">Card Number:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardNumber\" class=\"form-control\" type=\"number\" name=\"cardNumber\" ng-model=\"card.cardNumber\" required ng-minlength=\"13\" ng-maxlength=\"16\" autocomplete=\"off\" autocapitalize=\"off\" size=\"16\" />\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardNumber.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardNumber.$error.number\">Card number can only contain digits</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardNumber.$error.minlength\">Card number is too short</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardNumber.$error.maxlength\">Card number is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardCvc.$invalid && cardForm.cardCvc.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCvc\">Card CVC:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardCvc\" class=\"form-control\" type=\"number\" name=\"cardCvc\" ng-model=\"card.cardCvc\" required ng-minlength=\"3\" ng-maxlength=\"4\" autocomplete=\"off\" size=\"4\" />\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardCvc.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardCvc.$error.number\">Card CVC can only contain digits</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardCvc.$error.minlength\">Card CVC is too short</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardCvc.$error.maxlength\">Card CVC is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardExpiryMonth.$invalid && cardForm.cardExpiryMonth.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardExpiryMonth\">Card Expiry Month:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardExpiryMonth\" class=\"form-control\" type=\"number\" name=\"cardExpiryMonth\" ng-model=\"card.cardExpiryMonth\" required ng-minlength=\"2\" ng-maxlength=\"2\" autocomplete=\"off\" size=\"2\" />\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardExpiryMonth.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardExpiryMonth.$error.number\">Expiry month can only contain digits</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardExpiryMonth.$error.minlength\">Expiry month should be in 2 digit format</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardExpiryMonth.$error.maxlength\">Expiry month should be in 2 digit format</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardExpiryYear.$invalid && cardForm.cardExpiryYear.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardExpiryYear\">Card Expiry Year:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardExpiryYear\" class=\"form-control\" type=\"number\" name=\"cardExpiryYear\" ng-model=\"card.cardExpiryYear\" required ng-minlength=\"4\" ng-maxlength=\"4\" autocomplete=\"off\" size=\"4\" />\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardExpiryYear.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardExpiryYear.$error.number\">Expiry year can only contain digits</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardExpiryYear.$error.minlength\">Expiry year should be in 4 digit format</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardExpiryYear.$error.maxlength\">Expiry year should be in 4 digit format</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardName.$invalid && cardForm.cardName.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardName\">Card Name:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardName\" class=\"form-control\" type=\"text\" name=\"cardName\" ng-model=\"card.cardName\" required ng-minlength=\"2\" ng-maxlength=\"200\" autocomplete=\"off\" />\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardName.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardName.$error.minlength\">Card name is too short</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardName.$error.maxlength\">Card name is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardAddress.$invalid && cardForm.cardAddress.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardAddress\">Card Address:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardAddress\" class=\"form-control\" type=\"text\" name=\"cardAddress\" ng-model=\"card.cardAddress\" required ng-minlength=\"2\" ng-maxlength=\"400\" autocomplete=\"off\" />\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardAddress.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardAddress.$error.minlength\">Card address is too short</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardAddress.$error.maxlength\">Card address is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardPostCode.$invalid && cardForm.cardPostCode.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardPostCode\">Card Post Code:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardPostCode\" class=\"form-control\" type=\"text\" name=\"cardPostCode\" ng-model=\"card.cardPostCode\" ng-maxlength=\"100\" autocomplete=\"off\" />\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardPostCode.$error.maxlength\">Card post code is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardCity.$invalid && cardForm.cardCity.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCity\">Card City:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardCity\" class=\"form-control\" type=\"text\" name=\"cardCity\" ng-model=\"card.cardCity\" required ng-minlength=\"2\" ng-maxlength=\"200\" autocomplete=\"off\" />\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardCity.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardCity.$error.minlength\">Card city is too short</span>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardCity.$error.maxlength\">Card city is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardState.$invalid && cardForm.cardState.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardState\">Card State:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardState\" class=\"form-control\" type=\"text\" name=\"cardState\" ng-model=\"card.cardState\" ng-maxlength=\"150\" autocomplete=\"off\" />\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardState.$error.maxlength\">Card state is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardCountry.$invalid && cardForm.cardCountry.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCountry\">Card Country:</label>\r\n            <div class=\"col-sm-9\">\r\n                <select id=\"cardFormCardCountry\" name=\"cardCountry\" ng-model=\"card.cardCountry\" required>\r\n                    <option disabled=\"disabled\" value=\"\">Select Country</option>\r\n                    <option value=\"AF\">Afghanistan</option>\r\n                    <option value=\"AX\">Åland Islands</option>\r\n                    <option value=\"AL\">Albania</option>\r\n                    <option value=\"DZ\">Algeria</option>\r\n                    <option value=\"AS\">American Samoa</option>\r\n                    <option value=\"AD\">Andorra</option>\r\n                    <option value=\"AO\">Angola</option>\r\n                    <option value=\"AI\">Anguilla</option>\r\n                    <option value=\"AQ\">Antarctica</option>\r\n                    <option value=\"AG\">Antigua and Barbuda</option>\r\n                    <option value=\"AR\">Argentina</option>\r\n                    <option value=\"AM\">Armenia</option>\r\n                    <option value=\"AW\">Aruba</option>\r\n                    <option value=\"AU\">Australia</option>\r\n                    <option value=\"AT\">Austria</option>\r\n                    <option value=\"AZ\">Azerbaijan</option>\r\n                    <option value=\"BS\">Bahamas</option>\r\n                    <option value=\"BH\">Bahrain</option>\r\n                    <option value=\"BD\">Bangladesh</option>\r\n                    <option value=\"BB\">Barbados</option>\r\n                    <option value=\"BY\">Belarus</option>\r\n                    <option value=\"BE\">Belgium</option>\r\n                    <option value=\"BZ\">Belize</option>\r\n                    <option value=\"BJ\">Benin</option>\r\n                    <option value=\"BM\">Bermuda</option>\r\n                    <option value=\"BT\">Bhutan</option>\r\n                    <option value=\"BO\">Bolivia</option>\r\n                    <option value=\"BA\">Bosnia and Herzegovina</option>\r\n                    <option value=\"BW\">Botswana</option>\r\n                    <option value=\"BV\">Bouvet Island</option>\r\n                    <option value=\"BR\">Brazil</option>\r\n                    <option value=\"IO\">British Indian Ocean Territory</option>\r\n                    <option value=\"BN\">Brunei Darussalam</option>\r\n                    <option value=\"BG\">Bulgaria</option>\r\n                    <option value=\"BF\">Burkina Faso</option>\r\n                    <option value=\"BI\">Burundi</option>\r\n                    <option value=\"KH\">Cambodia</option>\r\n                    <option value=\"CM\">Cameroon</option>\r\n                    <option value=\"CA\">Canada</option>\r\n                    <option value=\"CV\">Cape Verde</option>\r\n                    <option value=\"KY\">Cayman Islands</option>\r\n                    <option value=\"CF\">Central African Republic</option>\r\n                    <option value=\"TD\">Chad</option>\r\n                    <option value=\"CL\">Chile</option>\r\n                    <option value=\"CN\">China</option>\r\n                    <option value=\"CX\">Christmas Island</option>\r\n                    <option value=\"CC\">Cocos (Keeling) Islands</option>\r\n                    <option value=\"CO\">Colombia</option>\r\n                    <option value=\"KM\">Comoros</option>\r\n                    <option value=\"CG\">Congo</option>\r\n                    <option value=\"CD\">Congo, The Democratic Republic of The</option>\r\n                    <option value=\"CK\">Cook Islands</option>\r\n                    <option value=\"CR\">Costa Rica</option>\r\n                    <option value=\"CI\">Cote D'ivoire</option>\r\n                    <option value=\"HR\">Croatia</option>\r\n                    <option value=\"CU\">Cuba</option>\r\n                    <option value=\"CY\">Cyprus</option>\r\n                    <option value=\"CZ\">Czech Republic</option>\r\n                    <option value=\"DK\">Denmark</option>\r\n                    <option value=\"DJ\">Djibouti</option>\r\n                    <option value=\"DM\">Dominica</option>\r\n                    <option value=\"DO\">Dominican Republic</option>\r\n                    <option value=\"EC\">Ecuador</option>\r\n                    <option value=\"EG\">Egypt</option>\r\n                    <option value=\"SV\">El Salvador</option>\r\n                    <option value=\"GQ\">Equatorial Guinea</option>\r\n                    <option value=\"ER\">Eritrea</option>\r\n                    <option value=\"EE\">Estonia</option>\r\n                    <option value=\"ET\">Ethiopia</option>\r\n                    <option value=\"FK\">Falkland Islands (Malvinas)</option>\r\n                    <option value=\"FO\">Faroe Islands</option>\r\n                    <option value=\"FJ\">Fiji</option>\r\n                    <option value=\"FI\">Finland</option>\r\n                    <option value=\"FR\">France</option>\r\n                    <option value=\"GF\">French Guiana</option>\r\n                    <option value=\"PF\">French Polynesia</option>\r\n                    <option value=\"TF\">French Southern Territories</option>\r\n                    <option value=\"GA\">Gabon</option>\r\n                    <option value=\"GM\">Gambia</option>\r\n                    <option value=\"GE\">Georgia</option>\r\n                    <option value=\"DE\">Germany</option>\r\n                    <option value=\"GH\">Ghana</option>\r\n                    <option value=\"GI\">Gibraltar</option>\r\n                    <option value=\"GR\">Greece</option>\r\n                    <option value=\"GL\">Greenland</option>\r\n                    <option value=\"GD\">Grenada</option>\r\n                    <option value=\"GP\">Guadeloupe</option>\r\n                    <option value=\"GU\">Guam</option>\r\n                    <option value=\"GT\">Guatemala</option>\r\n                    <option value=\"GG\">Guernsey</option>\r\n                    <option value=\"GN\">Guinea</option>\r\n                    <option value=\"GW\">Guinea-bissau</option>\r\n                    <option value=\"GY\">Guyana</option>\r\n                    <option value=\"HT\">Haiti</option>\r\n                    <option value=\"HM\">Heard Island and Mcdonald Islands</option>\r\n                    <option value=\"VA\">Holy See (Vatican City State)</option>\r\n                    <option value=\"HN\">Honduras</option>\r\n                    <option value=\"HK\">Hong Kong</option>\r\n                    <option value=\"HU\">Hungary</option>\r\n                    <option value=\"IS\">Iceland</option>\r\n                    <option value=\"IN\">India</option>\r\n                    <option value=\"ID\">Indonesia</option>\r\n                    <option value=\"IR\">Iran, Islamic Republic of</option>\r\n                    <option value=\"IQ\">Iraq</option>\r\n                    <option value=\"IE\">Ireland</option>\r\n                    <option value=\"IM\">Isle of Man</option>\r\n                    <option value=\"IL\">Israel</option>\r\n                    <option value=\"IT\">Italy</option>\r\n                    <option value=\"JM\">Jamaica</option>\r\n                    <option value=\"JP\">Japan</option>\r\n                    <option value=\"JE\">Jersey</option>\r\n                    <option value=\"JO\">Jordan</option>\r\n                    <option value=\"KZ\">Kazakhstan</option>\r\n                    <option value=\"KE\">Kenya</option>\r\n                    <option value=\"KI\">Kiribati</option>\r\n                    <option value=\"KP\">Korea, Democratic People's Republic of</option>\r\n                    <option value=\"KR\">Korea, Republic of</option>\r\n                    <option value=\"KW\">Kuwait</option>\r\n                    <option value=\"KG\">Kyrgyzstan</option>\r\n                    <option value=\"LA\">Lao People's Democratic Republic</option>\r\n                    <option value=\"LV\">Latvia</option>\r\n                    <option value=\"LB\">Lebanon</option>\r\n                    <option value=\"LS\">Lesotho</option>\r\n                    <option value=\"LR\">Liberia</option>\r\n                    <option value=\"LY\">Libyan Arab Jamahiriya</option>\r\n                    <option value=\"LI\">Liechtenstein</option>\r\n                    <option value=\"LT\">Lithuania</option>\r\n                    <option value=\"LU\">Luxembourg</option>\r\n                    <option value=\"MO\">Macao</option>\r\n                    <option value=\"MK\">Macedonia, The Former Yugoslav Republic of</option>\r\n                    <option value=\"MG\">Madagascar</option>\r\n                    <option value=\"MW\">Malawi</option>\r\n                    <option value=\"MY\">Malaysia</option>\r\n                    <option value=\"MV\">Maldives</option>\r\n                    <option value=\"ML\">Mali</option>\r\n                    <option value=\"MT\">Malta</option>\r\n                    <option value=\"MH\">Marshall Islands</option>\r\n                    <option value=\"MQ\">Martinique</option>\r\n                    <option value=\"MR\">Mauritania</option>\r\n                    <option value=\"MU\">Mauritius</option>\r\n                    <option value=\"YT\">Mayotte</option>\r\n                    <option value=\"MX\">Mexico</option>\r\n                    <option value=\"FM\">Micronesia, Federated States of</option>\r\n                    <option value=\"MD\">Moldova, Republic of</option>\r\n                    <option value=\"MC\">Monaco</option>\r\n                    <option value=\"MN\">Mongolia</option>\r\n                    <option value=\"ME\">Montenegro</option>\r\n                    <option value=\"MS\">Montserrat</option>\r\n                    <option value=\"MA\">Morocco</option>\r\n                    <option value=\"MZ\">Mozambique</option>\r\n                    <option value=\"MM\">Myanmar</option>\r\n                    <option value=\"NA\">Namibia</option>\r\n                    <option value=\"NR\">Nauru</option>\r\n                    <option value=\"NP\">Nepal</option>\r\n                    <option value=\"NL\">Netherlands</option>\r\n                    <option value=\"AN\">Netherlands Antilles</option>\r\n                    <option value=\"NC\">New Caledonia</option>\r\n                    <option value=\"NZ\">New Zealand</option>\r\n                    <option value=\"NI\">Nicaragua</option>\r\n                    <option value=\"NE\">Niger</option>\r\n                    <option value=\"NG\">Nigeria</option>\r\n                    <option value=\"NU\">Niue</option>\r\n                    <option value=\"NF\">Norfolk Island</option>\r\n                    <option value=\"MP\">Northern Mariana Islands</option>\r\n                    <option value=\"NO\">Norway</option>\r\n                    <option value=\"OM\">Oman</option>\r\n                    <option value=\"PK\">Pakistan</option>\r\n                    <option value=\"PW\">Palau</option>\r\n                    <option value=\"PS\">Palestinian Territory, Occupied</option>\r\n                    <option value=\"PA\">Panama</option>\r\n                    <option value=\"PG\">Papua New Guinea</option>\r\n                    <option value=\"PY\">Paraguay</option>\r\n                    <option value=\"PE\">Peru</option>\r\n                    <option value=\"PH\">Philippines</option>\r\n                    <option value=\"PN\">Pitcairn</option>\r\n                    <option value=\"PL\">Poland</option>\r\n                    <option value=\"PT\">Portugal</option>\r\n                    <option value=\"PR\">Puerto Rico</option>\r\n                    <option value=\"QA\">Qatar</option>\r\n                    <option value=\"RE\">Reunion</option>\r\n                    <option value=\"RO\">Romania</option>\r\n                    <option value=\"RU\">Russian Federation</option>\r\n                    <option value=\"RW\">Rwanda</option>\r\n                    <option value=\"SH\">Saint Helena</option>\r\n                    <option value=\"KN\">Saint Kitts and Nevis</option>\r\n                    <option value=\"LC\">Saint Lucia</option>\r\n                    <option value=\"PM\">Saint Pierre and Miquelon</option>\r\n                    <option value=\"VC\">Saint Vincent and The Grenadines</option>\r\n                    <option value=\"WS\">Samoa</option>\r\n                    <option value=\"SM\">San Marino</option>\r\n                    <option value=\"ST\">Sao Tome and Principe</option>\r\n                    <option value=\"SA\">Saudi Arabia</option>\r\n                    <option value=\"SN\">Senegal</option>\r\n                    <option value=\"RS\">Serbia</option>\r\n                    <option value=\"SC\">Seychelles</option>\r\n                    <option value=\"SL\">Sierra Leone</option>\r\n                    <option value=\"SG\">Singapore</option>\r\n                    <option value=\"SK\">Slovakia</option>\r\n                    <option value=\"SI\">Slovenia</option>\r\n                    <option value=\"SB\">Solomon Islands</option>\r\n                    <option value=\"SO\">Somalia</option>\r\n                    <option value=\"ZA\">South Africa</option>\r\n                    <option value=\"GS\">South Georgia and The South Sandwich Islands</option>\r\n                    <option value=\"ES\">Spain</option>\r\n                    <option value=\"LK\">Sri Lanka</option>\r\n                    <option value=\"SD\">Sudan</option>\r\n                    <option value=\"SR\">Suriname</option>\r\n                    <option value=\"SJ\">Svalbard and Jan Mayen</option>\r\n                    <option value=\"SZ\">Swaziland</option>\r\n                    <option value=\"SE\">Sweden</option>\r\n                    <option value=\"CH\">Switzerland</option>\r\n                    <option value=\"SY\">Syrian Arab Republic</option>\r\n                    <option value=\"TW\">Taiwan, Province of China</option>\r\n                    <option value=\"TJ\">Tajikistan</option>\r\n                    <option value=\"TZ\">Tanzania, United Republic of</option>\r\n                    <option value=\"TH\">Thailand</option>\r\n                    <option value=\"TL\">Timor-leste</option>\r\n                    <option value=\"TG\">Togo</option>\r\n                    <option value=\"TK\">Tokelau</option>\r\n                    <option value=\"TO\">Tonga</option>\r\n                    <option value=\"TT\">Trinidad and Tobago</option>\r\n                    <option value=\"TN\">Tunisia</option>\r\n                    <option value=\"TR\">Turkey</option>\r\n                    <option value=\"TM\">Turkmenistan</option>\r\n                    <option value=\"TC\">Turks and Caicos Islands</option>\r\n                    <option value=\"TV\">Tuvalu</option>\r\n                    <option value=\"UG\">Uganda</option>\r\n                    <option value=\"UA\">Ukraine</option>\r\n                    <option value=\"AE\">United Arab Emirates</option>\r\n                    <option value=\"GB\">United Kingdom</option>\r\n                    <option value=\"US\">United States</option>\r\n                    <option value=\"UM\">United States Minor Outlying Islands</option>\r\n                    <option value=\"UY\">Uruguay</option>\r\n                    <option value=\"UZ\">Uzbekistan</option>\r\n                    <option value=\"VU\">Vanuatu</option>\r\n                    <option value=\"VE\">Venezuela</option>\r\n                    <option value=\"VN\">Viet Nam</option>\r\n                    <option value=\"VG\">Virgin Islands, British</option>\r\n                    <option value=\"VI\">Virgin Islands, U.S.</option>\r\n                    <option value=\"WF\">Wallis and Futuna</option>\r\n                    <option value=\"EH\">Western Sahara</option>\r\n                    <option value=\"YE\">Yemen</option>\r\n                    <option value=\"ZM\">Zambia</option>\r\n                    <option value=\"ZW\">Zimbabwe</option>\r\n                </select>\r\n                <span class=\"help-block\" ng-show=\"cardForm.cardCountry.$error.required\">Required</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"createCard(card)\" ng-disabled=\"cardForm.$invalid\">Add Card</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>",
             controller: require('./CardCreateModalCtrl'),
             windowClass: 'card-create-modal form-modal'
-        }).result.then(function () {
+        }).result.then(function (newCard) {
 
-            //requery the server and update the cards model
+            //unshift to the top of the stack
+            newCard.then(function (response) {
+                $scope.billingRecords.unshift(response.content);
+            }, function (response) {
+                getBillingRecords();
+            });
+
+        });
+
+    };
+
+    $scope.deleteCard = function (id, index) {
+
+        Restangular.one('billing', id).remove().then(function (response) {
+
+            $scope.billingRecords.splice(index, 1);
+
+        }, function (response) {
+            
+            //verify it doesn't exist on the server side
+            getBillingRecords();
 
         });
 
     };
 
-    //card update modal is only available from the Billing controller
-    $scope.modal.cardUpdate = function () {
+    var initialise = function (userData) {
 
-        $modal.open({
-            template: "<div class=\"modal-header\">\r\n    <h3>Sign Up</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"signupForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\"\r\n            ng-class=\"{\r\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.minlength\">Password is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPasswordConfirm\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"passwordConfirm\" \r\n                    ng-model=\"user.passwordConfirm\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                    password-match=\"user.password\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password.</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group\">\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\r\n            <div class=\"col-sm-4\">\r\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\r\n                <span class=\"help-block\">Optional Promo Code</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>", 
-            controller: require('./CardUpdateModalCtrl'),
-            windowClass: 'card-update-modal form-modal'
-        }).result.then(function () {
+        userAccount = userData;
+        getBillingRecords();
 
-            //request the server and update the cards model
+    };
+
+    //run every time the controller is reinstantiated
+    if (UserSystemServ.getUserState() && Object.keys(UserSystemServ.getUserData()).length > 0) {
+        
+        initialise(UserSystemServ.getUserData());
+    
+    } else {
+
+        $scope.$watch(UserSystemServ.getUserData, function (newUserAccount, oldUserAccount) {
+
+            //only if they are different, do we poll for new crawling data
+            if (!angular.equals(newUserAccount, oldUserAccount)) {
+                if (Object.keys(newUserAccount).length > 0) {
+                    initialise(newUserAccount);
+                }
+            }
 
         });
 
-    };
+    }
 
 }];
-},{"./CardCreateModalCtrl":15,"./CardUpdateModalCtrl":16,"fs":1}],19:[function(require,module,exports){
+},{"./CardCreateModalCtrl":15,"fs":1}],18:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3855,9 +3909,6 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
             //client side updates
             $scope.snapshotCount = $scope.snapshotCount - 1;
             $scope.snapshots.splice(index, 1);
-            //verify agains the server side
-            getCache();
-            getCacheCount();
         }, function (response) {
             //refresh the cache either way, if say the user deleted from a different page
             getCache();
@@ -3931,7 +3982,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
     }
 
 }];
-},{"./SnapshotModalCtrl":23,"fs":1}],20:[function(require,module,exports){
+},{"./SnapshotModalCtrl":22,"fs":1}],19:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4346,7 +4397,7 @@ module.exports = [
         }
 
 }];
-},{"../../Settings":9}],21:[function(require,module,exports){
+},{"../../Settings":9}],20:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4387,7 +4438,7 @@ module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'Cal
     }, true);
 
 }];
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4481,7 +4532,7 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', 'CalculateServ', fu
     }
 
 }];
-},{"../../Settings":9}],23:[function(require,module,exports){
+},{"../../Settings":9}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4509,7 +4560,7 @@ module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', funct
     };
 
 }];
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4520,7 +4571,7 @@ module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', funct
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4538,7 +4589,7 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4592,7 +4643,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
     };
 
 }];
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4603,7 +4654,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4650,7 +4701,7 @@ module.exports = ['$scope', 'CalculateServ', function ($scope, CalculateServ) {
     });
 
 }];
-},{"../../Settings":9}],29:[function(require,module,exports){
+},{"../../Settings":9}],28:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4666,7 +4717,7 @@ module.exports = ['$scope', function ($scope) {
     $scope.freeUsageCap = settings.meta.freeUsageCap;
 
 }];
-},{"../../Settings":9}],30:[function(require,module,exports){
+},{"../../Settings":9}],29:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4675,7 +4726,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4684,7 +4735,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4701,7 +4752,7 @@ module.exports = angular.module('App.Directives')
     .directive('minValid', require('./minValid'))
     .directive('maxValid', require('./maxValid'))
     .directive('jsonChecker', require('./jsonChecker'));
-},{"./affix":33,"./anchor":34,"./equaliseHeights":35,"./jsonChecker":36,"./maxValid":37,"./minValid":38,"./passwordMatch":39,"./scroll":40}],33:[function(require,module,exports){
+},{"./affix":32,"./anchor":33,"./equaliseHeights":34,"./jsonChecker":35,"./maxValid":36,"./minValid":37,"./passwordMatch":38,"./scroll":39}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4790,7 +4841,7 @@ module.exports = ['$window', '$document', function ($window, $document) {
     };
 
 }];
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -4870,7 +4921,7 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
         };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],35:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],34:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -4912,7 +4963,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],36:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],35:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -4952,7 +5003,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -4992,7 +5043,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5032,7 +5083,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5073,7 +5124,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5098,7 +5149,7 @@ module.exports = ['$anchorScroll', '$location', function ($anchorScroll, $locati
     };
 
 }];
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5111,7 +5162,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./chatTab":42,"./syntaxHighlight":78}],42:[function(require,module,exports){
+},{"./chatTab":41,"./syntaxHighlight":77}],41:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -5147,7 +5198,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":92}],43:[function(require,module,exports){
+},{"fs":1,"insert-css":91}],42:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -5838,7 +5889,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],44:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -5875,7 +5926,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":43,"./languages/apache.js":45,"./languages/bash.js":46,"./languages/clojure.js":47,"./languages/coffeescript.js":48,"./languages/cpp.js":49,"./languages/cs.js":50,"./languages/css.js":51,"./languages/diff.js":52,"./languages/erlang.js":53,"./languages/go.js":54,"./languages/haml.js":55,"./languages/haskell.js":56,"./languages/http.js":57,"./languages/ini.js":58,"./languages/java.js":59,"./languages/javascript.js":60,"./languages/json.js":61,"./languages/lisp.js":62,"./languages/lua.js":63,"./languages/makefile.js":64,"./languages/markdown.js":65,"./languages/nginx.js":66,"./languages/objectivec.js":67,"./languages/perl.js":68,"./languages/php.js":69,"./languages/python.js":70,"./languages/r.js":71,"./languages/ruby.js":72,"./languages/rust.js":73,"./languages/scala.js":74,"./languages/scss.js":75,"./languages/sql.js":76,"./languages/xml.js":77}],45:[function(require,module,exports){
+},{"./highlight":42,"./languages/apache.js":44,"./languages/bash.js":45,"./languages/clojure.js":46,"./languages/coffeescript.js":47,"./languages/cpp.js":48,"./languages/cs.js":49,"./languages/css.js":50,"./languages/diff.js":51,"./languages/erlang.js":52,"./languages/go.js":53,"./languages/haml.js":54,"./languages/haskell.js":55,"./languages/http.js":56,"./languages/ini.js":57,"./languages/java.js":58,"./languages/javascript.js":59,"./languages/json.js":60,"./languages/lisp.js":61,"./languages/lua.js":62,"./languages/makefile.js":63,"./languages/markdown.js":64,"./languages/nginx.js":65,"./languages/objectivec.js":66,"./languages/perl.js":67,"./languages/php.js":68,"./languages/python.js":69,"./languages/r.js":70,"./languages/ruby.js":71,"./languages/rust.js":72,"./languages/scala.js":73,"./languages/scss.js":74,"./languages/sql.js":75,"./languages/xml.js":76}],44:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -5921,7 +5972,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -5984,7 +6035,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -6082,7 +6133,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],48:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -6213,7 +6264,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -6277,7 +6328,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -6350,7 +6401,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -6454,7 +6505,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -6494,7 +6545,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -6649,7 +6700,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -6688,7 +6739,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -6810,7 +6861,7 @@ function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -6936,7 +6987,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -6970,7 +7021,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -7000,7 +7051,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -7055,7 +7106,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -7127,7 +7178,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -7165,7 +7216,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -7241,7 +7292,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -7298,7 +7349,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -7343,7 +7394,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -7445,7 +7496,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -7526,7 +7577,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -7611,7 +7662,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -7760,7 +7811,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -7869,7 +7920,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -7953,7 +8004,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -8023,7 +8074,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -8182,7 +8233,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -8231,7 +8282,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -8290,7 +8341,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],75:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -8407,7 +8458,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],76:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -8510,7 +8561,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],77:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -8614,7 +8665,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],78:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -8692,7 +8743,7 @@ module.exports = ['$sce', function ($sce) {
     };
 
 }];
-},{"./lib/hljs/index":44,"fs":1,"insert-css":92}],79:[function(require,module,exports){
+},{"./lib/hljs/index":43,"fs":1,"insert-css":91}],78:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8701,7 +8752,7 @@ module.exports = ['$sce', function ($sce) {
 angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters');
-},{}],80:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8712,7 +8763,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":81}],81:[function(require,module,exports){
+},{"./UserSystem":80}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8723,7 +8774,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":82,"./UserSystemServ":83}],82:[function(require,module,exports){
+},{"./UserSystemRun":81,"./UserSystemServ":82}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8743,7 +8794,7 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],83:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8908,7 +8959,7 @@ module.exports = function () {
     ];
 
 };
-},{}],84:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8931,14 +8982,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     }, true);
 
 }];
-},{}],85:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],86:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 
 module.exports = ['$timeout', function ($timeout) {
@@ -8970,7 +9021,7 @@ module.exports = ['$timeout', function ($timeout) {
     };
 
 }];
-},{}],87:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9007,7 +9058,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],88:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 var moment = require("./..\\..\\..\\components\\moment\\moment.js");
@@ -9017,7 +9068,7 @@ module.exports = [function () {
     return moment;
 
 }];
-},{"./..\\..\\..\\components\\moment\\moment.js":5}],89:[function(require,module,exports){
+},{"./..\\..\\..\\components\\moment\\moment.js":5}],88:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9031,7 +9082,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],90:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9052,7 +9103,7 @@ module.exports = angular.module('App.Services')
     .service('CalculateServ', require('./CalculateServ'))
     .factory('MomentServ', require('./MomentServ'))
     .factory('BusyLoopServ', require('./BusyLoopServ'));
-},{"./AuthenticationStateRun":84,"./BaseUrlConst":85,"./BusyLoopServ":86,"./CalculateServ":87,"./MomentServ":88,"./RestangularConfig":89,"./UserSystemConfig":91}],91:[function(require,module,exports){
+},{"./AuthenticationStateRun":83,"./BaseUrlConst":84,"./BusyLoopServ":85,"./CalculateServ":86,"./MomentServ":87,"./RestangularConfig":88,"./UserSystemConfig":90}],90:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9064,7 +9115,7 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
-},{}],92:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {

@@ -13,7 +13,7 @@
     </div>
     <div class="telemetry-block">
         <h3>Invoices</h3>
-        <div class="log-buttons telemetry-buttons button-group">
+        <div class="telemetry-buttons button-group">
             <button class="btn btn-primary" type="button" ng-click="backwardPayments()">Backward</button>
             <button class="btn btn-primary" type="button" ng-click="forwardPayments()">Forward</button>
         </div>
@@ -33,7 +33,7 @@
                         <td class="text-center">{{payment.date}}</td>
                         <td class="text-center">{{payment.amount}}</td>
                         <td class="text-center">{{payment.currency}}</td>
-                        <td class="text-center"><a class="btn btn-info" ng-href="api/invoices/{{payment.invoiceNumber}}">invoice</a></td>
+                        <td class="text-center"><a class="btn btn-info" ng-href="api/invoices/{{payment.invoiceNumber}}" target="_blank">invoice</a></td>
                     </tr>
                 </tbody>
             </table>

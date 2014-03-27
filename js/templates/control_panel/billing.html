@@ -1,28 +1,29 @@
 <div class="billing">
     <h2 class="control-title">Billing Information</h2>
     <em class="api-key">API Key: {{userAccount.sharedKey}}</em>
-    <p class="placeholder-text">Coming Soon!</p>
-    <div ng-show="false">
-        <div class="telemetry-block">
-            <button ng-click="createCard">Add a Card</button>
-            <table>
+    <div class="telemetry-block">
+        <h3>Billing Cards</h3>
+        <button class="btn btn-primary telemetry-button" ng-click="modal.cardCreate()">Add Card</button>
+        <div class="table-responsive" ng-show="billingRecords">
+            <table class="table table-striped table-hover">
                 <thead>
-                    <th>id</th>
-                    <th>card number hint</th>
-                    <th>active</th>
-                    <th>update</th>
-                    <th>delete</th>
+                    <th class="text-center">#</th>
+                    <th class="text-center">Card Number Hint</th>
+                    <th class="text-center">Active</th>
+                    <th class="text-center">Invalid</th>
+                    <th class="text-center">Delete</th>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="record in cards">
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td><button>Update Card</button></td>
-                        <td><button>Delete Card</button></td>
+                    <tr ng-repeat="card in billingRecords">
+                        <td class="text-center">{{card.id}}</td>
+                        <td class="text-center">{{card.cardHint}}</td>
+                        <td class="text-center">{{card.active}}</td>
+                        <td class="text-center">{{card.invalid}} {{card.invalidReason}}</td>
+                        <td class="text-center"><button class="btn btn-warning" ng-click="deleteCard(card.id, $index)">delete</button></td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        <p class="text-center" ng-hide="billingRecords"><strong>No cards!</strong></p>
     </div>
 </div>

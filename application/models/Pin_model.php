@@ -107,7 +107,7 @@ class Pin_model extends CI_Model{
 				'rules'	=> 'required',
 			),
 			array(
-				'field'	=> 'cardPostCode',
+				'field'	=> 'cardPostCode', //card post code is not required
 				'label'	=> 'Card Post Code',
 				'rules'	=> 'integer',
 			),
