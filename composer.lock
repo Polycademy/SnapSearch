@@ -1183,12 +1183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/CMCDragonkai/Stash.git",
-                "reference": "31da95f7b34a149bd3fdd8aee0b181036ce77f15"
+                "reference": "88b53c47e6870ac57b0ca7094a736038e068fc01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CMCDragonkai/Stash/zipball/31da95f7b34a149bd3fdd8aee0b181036ce77f15",
-                "reference": "31da95f7b34a149bd3fdd8aee0b181036ce77f15",
+                "url": "https://api.github.com/repos/CMCDragonkai/Stash/zipball/88b53c47e6870ac57b0ca7094a736038e068fc01",
+                "reference": "88b53c47e6870ac57b0ca7094a736038e068fc01",
                 "shasum": ""
             },
             "require": {
@@ -1229,7 +1229,7 @@
             "support": {
                 "source": "https://github.com/CMCDragonkai/Stash/tree/patch-1"
             },
-            "time": "2014-03-26 01:27:52"
+            "time": "2014-03-28 09:49:57"
         },
         {
             "name": "zendframework/zend-cache",
