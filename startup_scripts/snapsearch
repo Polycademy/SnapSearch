@@ -7,5 +7,5 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # Every day check whether a user should be billed, and if so record their monthly usage
 0 0 * * * www-data /usr/bin/env php PROJECT_DIR/index.php cli cron monthly_tracking >> PROJECT_DIR/startup_scripts/cron_billing.log 2>&1
 
-# Every month purge the cache of items that are older than 100 hours which is the maximum cache time
+# Every month purge the cache of items that are older than 200 hours which is the maximum cache time
 0 0 1 * * www-data /usr/bin/env php PROJECT_DIR/index.php cli cron purge_cache PT201H >> PROJECT_DIR/startup_scripts/cron_purge.log 2>&1
