@@ -5,7 +5,7 @@
 	<any class="center" text-align="center"></any>
 	<!-- Header Styles -->
 	<div class="header" height="65px" text-align="center" font-size="26px" font-style="bold" margin-bottom="20px"></div>
-	<img class="logo" margin-left="auto" margin-right="auto" width="300px"></img>
+	<img class="logo" margin-left="auto" margin-right="auto" width="160px"></img>
 	<!-- Address Line Height -->
 	<div class="address">
 		<p padding-top="2px" padding-bottom="2px"></p>

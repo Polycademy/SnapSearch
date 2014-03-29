@@ -141,7 +141,7 @@
 
 					<h4>Hi <?= $username ?>,</h4>
 
-					<p>SnapSearch has prepared your latest monthly invoice. You can login to your <a href="http://snapsearch.io/user/<?= $user_id ?>/billing">billing control panel</a> to view it. It is also attached to this email. The invoice has been automatically charged, you do not need to take any action.</p>
+					<p>SnapSearch has prepared your latest monthly invoice. You can login to your <a href="https://snapsearch.io/control_panel/payments">payments control panel</a> to view it. It is also attached to this email. The invoice has been automatically charged, you do not need to take any action.</p>
 
 					<p>Thank you for your business.</p>
 
