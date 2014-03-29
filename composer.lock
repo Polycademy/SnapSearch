@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "fb07845c454079cb6b46f9bf9a4da89f",
+    "hash": "188cf8e4fbd3307059d20fe616dfab48",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -816,16 +816,16 @@
         },
         {
             "name": "polycademy/polyauth",
-            "version": "0.0.11",
+            "version": "0.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Polycademy/PolyAuth.git",
-                "reference": "1e9a2424bf02ecc02c6058bd8bbe49dbe60fae7a"
+                "reference": "3a9ac8c39cb68325aa16d8d3b52bfd37ec7ae5fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/1e9a2424bf02ecc02c6058bd8bbe49dbe60fae7a",
-                "reference": "1e9a2424bf02ecc02c6058bd8bbe49dbe60fae7a",
+                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/3a9ac8c39cb68325aa16d8d3b52bfd37ec7ae5fb",
+                "reference": "3a9ac8c39cb68325aa16d8d3b52bfd37ec7ae5fb",
                 "shasum": ""
             },
             "require": {
@@ -878,7 +878,7 @@
                 "sessions",
                 "user accounts"
             ],
-            "time": "2014-03-15 03:08:34"
+            "time": "2014-03-29 07:32:57"
         },
         {
             "name": "psliwa/php-pdf",
