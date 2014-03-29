@@ -1,9 +1,9 @@
 <?php
 
 /**
- * This will need to change to per day basis.
- * The cron will need to create per day records.
- * The cron will also need to check against the log to figure out how to setup the per day records.
+ * Currently for the purpose of analytics, the Log resource is used.
+ * This resource however is more accurate to know how much was user per charge cycle.
+ * It is not currently used.
  */
 class Usage extends CI_Controller{
 
