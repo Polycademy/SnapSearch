@@ -19,7 +19,6 @@ class Log_model extends CI_Model{
 
         $data = elements(array(
             'userId',
-            'date',
             'type',
             'url',
             'responseTime',
@@ -32,11 +31,6 @@ class Log_model extends CI_Model{
                 'field' => 'userId',
                 'label' => 'User ID',
                 'rules' => 'required|integer',
-            ),
-            array(
-                'field' => 'date',
-                'label' => 'Date',
-                'rules' => 'required|valid_date',
             ),
             array(
                 'field' => 'type',
@@ -71,6 +65,9 @@ class Log_model extends CI_Model{
             return false;
 
         }
+
+        //date of the log is not the same as the date of the snapshot
+        $data['date'] = date('Y-m-d H:i:s');
 
         $query = $this->db->insert('log', $data);
 

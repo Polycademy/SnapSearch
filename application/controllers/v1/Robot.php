@@ -160,7 +160,6 @@ class Robot extends CI_Controller{
 
 		$this->Log_model->create([
             'userId'		=> $this->user['id'],
-            'date'			=> date('Y-m-d H:i:s', $query['date']),
             'type'			=> $type,
             'url'			=> $parameters['url'],
             'responseTime'	=> $response_time,
