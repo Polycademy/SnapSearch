@@ -7,18 +7,16 @@
         <div class="table-responsive" ng-show="billingRecords">
             <table class="table table-striped table-hover">
                 <thead>
-                    <th class="text-center">#</th>
                     <th class="text-center">Card Number Hint</th>
                     <th class="text-center">Active</th>
-                    <th class="text-center">Invalid</th>
+                    <th class="text-center">Status</th>
                     <th class="text-center">Delete</th>
                 </thead>
                 <tbody>
                     <tr ng-repeat="card in billingRecords">
-                        <td class="text-center">{{card.id}}</td>
                         <td class="text-center">{{card.cardHint}}</td>
-                        <td class="text-center">{{card.active}}</td>
-                        <td class="text-center">{{card.invalid}} {{card.invalidReason}}</td>
+                        <td class="text-center">{{card.active | booleanStyle:'Active':'Inactive'}}</td>
+                        <td class="text-center">{{card.validation}}</td>
                         <td class="text-center"><button class="btn btn-warning" ng-click="deleteCard(card.id, $index)">delete</button></td>
                     </tr>
                 </tbody>

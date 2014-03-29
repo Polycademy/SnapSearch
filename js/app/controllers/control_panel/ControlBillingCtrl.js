@@ -18,6 +18,21 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
             user: userAccount.id
         }).then(function (response) {
 
+            response.content = response.content.map(function (card) {
+
+                //convert to integer
+                var invalid = parseInt(card.cardInvalid, 10);
+
+                if (invalid) {
+                    card.validation = 'Invalid: ' + card.invalidReason;
+                } else {
+                    card.validation = 'Valid';
+                }
+
+                return card;
+
+            });
+
             $scope.billingRecords = response.content;
 
         });

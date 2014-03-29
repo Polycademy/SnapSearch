@@ -3336,7 +3336,7 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":40,"./filters/Filters":78,"./modules/Modules":79,"./services/Services":89}],7:[function(require,module,exports){
+},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":40,"./filters/Filters":78,"./modules/Modules":80,"./services/Services":90}],7:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3420,7 +3420,7 @@ module.exports = [
                 'controlPanel.billing',
                 {
                     url: '/billing',
-                    template: "<div class=\"billing\">\r\n    <h2 class=\"control-title\">Billing Information</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Billing Cards</h3>\r\n        <button class=\"btn btn-primary telemetry-button\" ng-click=\"modal.cardCreate()\">Add Card</button>\r\n        <div class=\"table-responsive\" ng-show=\"billingRecords\">\r\n            <table class=\"table table-striped table-hover\">\r\n                <thead>\r\n                    <th class=\"text-center\">#</th>\r\n                    <th class=\"text-center\">Card Number Hint</th>\r\n                    <th class=\"text-center\">Active</th>\r\n                    <th class=\"text-center\">Invalid</th>\r\n                    <th class=\"text-center\">Delete</th>\r\n                </thead>\r\n                <tbody>\r\n                    <tr ng-repeat=\"card in billingRecords\">\r\n                        <td class=\"text-center\">{{card.id}}</td>\r\n                        <td class=\"text-center\">{{card.cardHint}}</td>\r\n                        <td class=\"text-center\">{{card.active}}</td>\r\n                        <td class=\"text-center\">{{card.invalid}} {{card.invalidReason}}</td>\r\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteCard(card.id, $index)\">delete</button></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n        <p class=\"text-center\" ng-hide=\"billingRecords\"><strong>No cards!</strong></p>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"billing\">\r\n    <h2 class=\"control-title\">Billing Information</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Billing Cards</h3>\r\n        <button class=\"btn btn-primary telemetry-button\" ng-click=\"modal.cardCreate()\">Add Card</button>\r\n        <div class=\"table-responsive\" ng-show=\"billingRecords\">\r\n            <table class=\"table table-striped table-hover\">\r\n                <thead>\r\n                    <th class=\"text-center\">Card Number Hint</th>\r\n                    <th class=\"text-center\">Active</th>\r\n                    <th class=\"text-center\">Status</th>\r\n                    <th class=\"text-center\">Delete</th>\r\n                </thead>\r\n                <tbody>\r\n                    <tr ng-repeat=\"card in billingRecords\">\r\n                        <td class=\"text-center\">{{card.cardHint}}</td>\r\n                        <td class=\"text-center\">{{card.active | booleanStyle:'Active':'Inactive'}}</td>\r\n                        <td class=\"text-center\">{{card.validation}}</td>\r\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteCard(card.id, $index)\">delete</button></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n        <p class=\"text-center\" ng-hide=\"billingRecords\"><strong>No cards!</strong></p>\r\n    </div>\r\n</div>",
                     controller: 'ControlBillingCtrl'
                 }
             )
@@ -3812,6 +3812,21 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
         Restangular.all('billing').customGET('', {
             user: userAccount.id
         }).then(function (response) {
+
+            response.content = response.content.map(function (card) {
+
+                //convert to integer
+                var invalid = parseInt(card.cardInvalid, 10);
+
+                if (invalid) {
+                    card.validation = 'Invalid: ' + card.invalidReason;
+                } else {
+                    card.validation = 'Valid';
+                }
+
+                return card;
+
+            });
 
             $scope.billingRecords = response.content;
 
@@ -5259,7 +5274,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":91}],42:[function(require,module,exports){
+},{"fs":1,"insert-css":92}],42:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -8804,7 +8819,7 @@ module.exports = ['$sce', function ($sce) {
     };
 
 }];
-},{"./lib/hljs/index":43,"fs":1,"insert-css":91}],78:[function(require,module,exports){
+},{"./lib/hljs/index":43,"fs":1,"insert-css":92}],78:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8812,8 +8827,53 @@ module.exports = ['$sce', function ($sce) {
  */
 angular.module('App.Filters', []);
 
-module.exports = angular.module('App.Filters');
-},{}],79:[function(require,module,exports){
+module.exports = angular.module('App.Filters')
+    .filter('booleanStyle', require('./booleanStyle'));
+},{"./booleanStyle":79}],79:[function(require,module,exports){
+'use strict';
+
+/**
+ * Boolean style filter.
+ * It will convert boolean style inputs into truthy of falsey values.
+ * By default it will just convert them into boolean true/false.
+ */
+module.exports = [function () {
+
+    return function (input, trueValue, falseValue) {
+
+        trueValue = (typeof trueValue === 'undefined') ? true : trueValue;
+        falseValue = (typeof falseValue === 'undefined') ? false : falseValue;
+
+        var output;
+
+        switch(input){
+            case true:
+            case 'true':
+            case 1:
+            case '1':
+            case 'on':
+            case 'yes':
+                output = trueValue;
+                break;
+            case false:
+            case 'false':
+            case 0:
+            case '0':
+            case 'off':
+            case 'no':
+                output = falseValue;
+                break;
+            default:
+                output = falseValue;
+                break;
+        }
+        
+        return output;
+
+    };
+
+}];
+},{}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8824,7 +8884,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":80}],80:[function(require,module,exports){
+},{"./UserSystem":81}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8835,7 +8895,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":81,"./UserSystemServ":82}],81:[function(require,module,exports){
+},{"./UserSystemRun":82,"./UserSystemServ":83}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8855,7 +8915,7 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9020,7 +9080,7 @@ module.exports = function () {
     ];
 
 };
-},{}],83:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9043,14 +9103,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     }, true);
 
 }];
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 module.exports = ['$timeout', function ($timeout) {
@@ -9082,7 +9142,7 @@ module.exports = ['$timeout', function ($timeout) {
     };
 
 }];
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9119,7 +9179,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 'use strict';
 
 var moment = require("./..\\..\\..\\components\\moment\\moment.js");
@@ -9129,7 +9189,7 @@ module.exports = [function () {
     return moment;
 
 }];
-},{"./..\\..\\..\\components\\moment\\moment.js":5}],88:[function(require,module,exports){
+},{"./..\\..\\..\\components\\moment\\moment.js":5}],89:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9143,7 +9203,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9164,7 +9224,7 @@ module.exports = angular.module('App.Services')
     .service('CalculateServ', require('./CalculateServ'))
     .factory('MomentServ', require('./MomentServ'))
     .factory('BusyLoopServ', require('./BusyLoopServ'));
-},{"./AuthenticationStateRun":83,"./BaseUrlConst":84,"./BusyLoopServ":85,"./CalculateServ":86,"./MomentServ":87,"./RestangularConfig":88,"./UserSystemConfig":90}],90:[function(require,module,exports){
+},{"./AuthenticationStateRun":84,"./BaseUrlConst":85,"./BusyLoopServ":86,"./CalculateServ":87,"./MomentServ":88,"./RestangularConfig":89,"./UserSystemConfig":91}],91:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9176,7 +9236,7 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {
