@@ -128,8 +128,8 @@ class Invoices_model extends CI_Model{
         //the invoice template will need this as their invoice ID
         $data['invoiceNumber'] = $invoice_number;
 
-        //calculate tax dollars of 10% inclusive
-        if(strtolower($data['country']) == 'australia'){
+        //calculate tax dollars of 10% inclusive but only in Australia, so it can be the full word or the ISO standard
+        if(strtolower($data['country']) == 'australia' OR strtolower($data['country']) == 'au'){
             $data['tax'] = '$' . round(($data['amount'] * 0.1) / 100, 2);
         }else{
             $data['tax'] = '$0';
@@ -138,8 +138,8 @@ class Invoices_model extends CI_Model{
         //convert the cents into dollars
         $data['amount'] = '$' . $data['amount'] / 100;
 
-        //add the logo image of Polycademy
-        $data['logo'] = FCPATH . 'img/polycademy_logo.png';
+        //add the logo image of Polycademy (make sure this file actually exists, or there will be a FATAL error)
+        $data['logo'] = FCPATH . 'assets/img/polycademy_logo.png';
 
         //load the invoice templates and styles
         $invoice_template = $this->load->view('invoices/invoice', $data, true);
