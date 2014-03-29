@@ -184,7 +184,7 @@ class Cron extends CI_Controller{
 
 						//if there are no active cards to be used, we'll add this charge back to the apiLeftOverCharge, reset the apiLimit and send the billing error email
 
-						echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} No Active Billing Record\n";
+						echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} No active billing record\n";
 
 						$this->Accounts_model->update($user['id'], [
 							'apiLeftOverUsage'	=> $total_usage,
@@ -197,8 +197,9 @@ class Cron extends CI_Controller{
 							'year'			=> $today->format('Y'),
 							'username'		=> $user['username'],
 							'charge_error'	=> 'No active and valid credit cards were found in the billing records.',
-							'user_id'		=> $user['id'],
 						]);
+
+						echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending billing error email\n";
 
 						$this->Email_model->send_email(
 							'enquiry@polycademy.com',
@@ -239,7 +240,7 @@ class Cron extends CI_Controller{
 								$charge_error_message .= $charge_errors['system_error'];
 							}
 
-							echo $today->format('Y-m-d H:i:s') . " - Saving left over usage and charge for User: #{$user['id']}\n";
+							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Saving left over usage and charge\n";
 
 							//update the account with the left over charge
 							//apiLimit gets reset to apiFreeLimit
@@ -249,7 +250,7 @@ class Cron extends CI_Controller{
 								'apiLimit'			=> $user['apiFreeLimit'],
 							]);
 
-							echo $today->format('Y-m-d H:i:s') . " - Invalidating active card for User: #{$user['id']}\n";
+							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Invalidating active card\n";
 
 							//update the billing details in order to make the current customer object invalid
 							$this->Billing_model->update($billing_record['id'], [
@@ -264,10 +265,9 @@ class Cron extends CI_Controller{
 								'year'			=> $today->format('Y'),
 								'username'		=> $user['username'],
 								'charge_error'	=> $charge_error_message,
-								'user_id'		=> $user['id'],
 							]);
 
-							echo $today->format('Y-m-d H:i:s') . " - Sending billing error email for User: #{$user['id']}\n";
+							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending billing error email\n";
 
 							//send the email
 							$this->Email_model->send_email(
@@ -307,7 +307,7 @@ class Cron extends CI_Controller{
 
 							$payment_history['address'] = implode(' ', $address);
 
-							echo $today->format('Y-m-d H:i:s') . " - Creating invoice for User: #{$user['id']}\n";
+							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created invoice\n";
 
 							//['invoiceNumber', 'invoiceFile']
 							$invoice_data = $this->Invoices_model->create($payment_history, true);
@@ -317,7 +317,7 @@ class Cron extends CI_Controller{
 							//store a record to the invoice number in the payment history
 							$payment_history['invoiceNumber'] = $invoice_number;
 
-							echo $today->format('Y-m-d H:i:s') . " - Creating payment record for User: #{$user['id']}\n";
+							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created payment record\n";
 
 							$this->Payments_model->create($payment_history);
 
@@ -325,10 +325,9 @@ class Cron extends CI_Controller{
 								'month'			=> $today->format('F'),
 								'year'			=> $today->format('Y'),
 								'username'		=> $user['username'],
-								'user_id'		=> $user['id'],
 							]);
 
-							echo $today->format('Y-m-d H:i:s') . " - Sending invoice email for User: #{$user['id']}\n";
+							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending invoice email\n";
 
 							//send the email
 							$this->Email_model->send_email(
