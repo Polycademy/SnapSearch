@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "188cf8e4fbd3307059d20fe616dfab48",
+    "hash": "5b0bfc9647a0218a3079806bc5827b53",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -772,7 +772,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 }
             ],
             "description": "Pimple is a simple Dependency Injection Container for PHP 5.3",
@@ -816,16 +818,16 @@
         },
         {
             "name": "polycademy/polyauth",
-            "version": "0.0.12",
+            "version": "0.0.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Polycademy/PolyAuth.git",
-                "reference": "3a9ac8c39cb68325aa16d8d3b52bfd37ec7ae5fb"
+                "reference": "d5240eb1bf636656e70ba46b2916b202d6671f38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/3a9ac8c39cb68325aa16d8d3b52bfd37ec7ae5fb",
-                "reference": "3a9ac8c39cb68325aa16d8d3b52bfd37ec7ae5fb",
+                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/d5240eb1bf636656e70ba46b2916b202d6671f38",
+                "reference": "d5240eb1bf636656e70ba46b2916b202d6671f38",
                 "shasum": ""
             },
             "require": {
@@ -840,7 +842,7 @@
                 "psr/log": "1.0.0",
                 "querypath/querypath": "3.0.2",
                 "symfony/http-foundation": "2.4.1",
-                "tedivm/stash": "~0.11.5"
+                "tedivm/stash": "~0.11.6"
             },
             "require-dev": {
                 "codeception/codeception": "1.8.1"
@@ -878,7 +880,7 @@
                 "sessions",
                 "user accounts"
             ],
-            "time": "2014-03-29 07:32:57"
+            "time": "2014-03-30 07:23:22"
         },
         {
             "name": "psliwa/php-pdf",
@@ -1166,7 +1168,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -1179,16 +1183,16 @@
         },
         {
             "name": "tedivm/stash",
-            "version": "dev-patch-1",
+            "version": "v0.11.6",
             "source": {
                 "type": "git",
-                "url": "https://github.com/CMCDragonkai/Stash.git",
-                "reference": "88b53c47e6870ac57b0ca7094a736038e068fc01"
+                "url": "https://github.com/tedivm/Stash.git",
+                "reference": "4a99597aa2fc363b321ff90ab1a781e1cd6b5491"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CMCDragonkai/Stash/zipball/88b53c47e6870ac57b0ca7094a736038e068fc01",
-                "reference": "88b53c47e6870ac57b0ca7094a736038e068fc01",
+                "url": "https://api.github.com/repos/tedivm/Stash/zipball/4a99597aa2fc363b321ff90ab1a781e1cd6b5491",
+                "reference": "4a99597aa2fc363b321ff90ab1a781e1cd6b5491",
                 "shasum": ""
             },
             "require": {
@@ -1203,6 +1207,7 @@
                     "Stash": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -1226,10 +1231,7 @@
                 "redis",
                 "sessions"
             ],
-            "support": {
-                "source": "https://github.com/CMCDragonkai/Stash/tree/patch-1"
-            },
-            "time": "2014-03-28 09:49:57"
+            "time": "2014-03-30 06:32:48"
         },
         {
             "name": "zendframework/zend-cache",
@@ -1552,17 +1554,12 @@
         }
     ],
     "aliases": [
-        {
-            "alias": "0.11.5",
-            "alias_normalized": "0.11.5.0",
-            "version": "dev-patch-1",
-            "package": "tedivm/stash"
-        }
+
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "tedivm/stash": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": [
 
     ],
