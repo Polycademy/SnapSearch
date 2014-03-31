@@ -125,6 +125,11 @@ class Robot_model extends CI_Model{
 				'rules'	=> 'greater_than_equal_to[1000]|less_than_equal_to[15000]',
 			],
 			[
+				'field'	=> 'initialwait',
+				'label'	=> 'Initial wait (initialwait)',
+				'rules'	=> 'greater_than_equal_to[1000]|less_than_equal_to[15000]',
+			],
+			[
 				'field'	=> 'callback',
 				'label'	=> 'Callback (callback)',
 				'rules'	=> 'min_length[1]|max_length[8000]',
