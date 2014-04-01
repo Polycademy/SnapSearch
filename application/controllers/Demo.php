@@ -87,7 +87,8 @@ class Demo extends CI_Controller {
                 $robot_errors = $this->Robot_model->get_errors();
             }
 
-            if($curl_result AND $robot_result){
+            //the results may actually be empty strings if the pages have no content
+            if($curl_result !== false AND $robot_result !== false){
 
                 $content = [
                     'withoutSnapSearch' => $curl_result,
