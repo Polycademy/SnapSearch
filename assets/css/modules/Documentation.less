@@ -45,16 +45,16 @@
     border-radius: 10px;
     border: 6px solid lighten(@snapsearch-dark, 10%);
     color: @snapsearch-text-dark;
-    padding: 20px 60px;
+    padding: 30px 0;
     .documentation-information {
         margin: 20px auto;
         font-size: 17px;
         letter-spacing: 0.5px;
         line-height: 1.74;
-        p {
+        p, ul {
             margin-left: auto;
             margin-right: auto;
-            max-width: 600px;
+            max-width: 740px;
         }
         .documentation-title {
             #Fonts.family("fira_sans_otlight");
@@ -62,7 +62,106 @@
             margin-bottom: 20px;
             margin-left: auto;
             margin-right: auto;
-            max-width: 600px;
+            max-width: 740px;
+        }
+        .documentation-sub-title {
+            font-size: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 740px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .alert {
+            background-image: none;
+            border-radius: 0;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .alert-info code {
+            font-size: 80%;
+            color: #31708F;  
+        }
+        .api-endpoint {
+            max-width: 740px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            .api-title {
+                font-size: 30px;
+                #Fonts.family("fira_sans_otmedium");
+            }
+            .api-explanation {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                font-size: 14px;
+                .api-url {
+                    pre {
+                        font-size: 16px;
+                    }
+                }
+                .api-parameters {
+                    .api-parameters-metadata {
+                        list-style: none;
+                        padding-left: 10px;
+                        li {
+                            overflow: auto;
+                            span {
+                                float: left;
+                            }
+                            ul {
+                                float: left;
+                                padding-left: 10px;
+                                list-style: none;
+                            }
+                        }
+                    }
+                    .api-parameter-accordion .panel .panel-heading, .api-parameter-accordion .panel .panel-body {
+                        color: @snapsearch-text-dark;
+                    }
+                    .api-parameter-accordion {
+                        //accordion uses panels, and so we have reset a lot of the panel styles
+                        margin-left: 10px;
+                        .panel {
+                            padding: 0;
+                        }
+                        .panel-heading {
+                            background: none;
+                            padding: 5px;
+                            .panel-title {
+                                font-size: 12px;
+                                text-align: left;
+                                .glyphicon {
+                                    font-size: 10px;
+                                    vertical-align: baseline;
+                                }
+                            }
+                        }
+                        .api-parameter-properties {
+                            font-size: 12px;
+                            dt {
+                                width: 102px;
+
+                            }
+                            dd {
+                                margin-left: 106px;
+                            }
+                        }
+                    }
+                }
+                .api-code {
+                    code {
+                        white-space: pre;
+                    }
+                }
+            }
+            .api-responses {
+                .api-response {
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                }
+            }
         }
     }
 }
