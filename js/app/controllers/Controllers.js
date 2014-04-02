@@ -4,6 +4,8 @@
  * Controllers
  */
 angular.module('App.Controllers', [])
+    //administrative
+    .controller('ConfirmForgottenPasswordCtrl', require('./administrative/ConfirmForgottenPasswordCtrl'))
     //common
     .controller('AppCtrl', require('./common/AppCtrl'))
     .controller('HeaderCtrl', require('./common/HeaderCtrl'))

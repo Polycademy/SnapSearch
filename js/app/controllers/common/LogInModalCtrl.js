@@ -1,9 +1,11 @@
 'use strict';
 
+var fs = require('fs');
+
 /**
  * Login Modal Controller
  */
-module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', function ($scope, $modalInstance, $timeout, UserSystemServ) {
+module.exports = ['$scope', '$modalInstance', '$timeout', '$modal', 'UserSystemServ', function ($scope, $modalInstance, $timeout, $modal, UserSystemServ) {
 
     $scope.user = {};
 
@@ -34,6 +36,18 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', func
     $scope.cancel = function () {
 
         $modalInstance.dismiss();
+
+    };
+
+    $scope.forgottenPassword = function () {
+
+        //dimiss because close results in a transition to control panel
+        $modalInstance.dismiss();
+        $modal.open({
+            template: fs.readFileSync(__dirname + '/../../../templates/forgotten_password_modal.html', 'utf8'),
+            controller: require('./ForgottenPasswordModalCtrl'),
+            windowClass: 'forgotten-password-modal form-modal'
+        });
 
     };
 

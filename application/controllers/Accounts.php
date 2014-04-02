@@ -298,10 +298,10 @@ class Accounts extends CI_Controller{
 
 	}
 
-	//so this will be called when someone clicks on "I forgot my password!"
-	//it needs to be passed in an identitifier
-	//api/accounts/forgot_password/roger.qiu@polycademy.com
-	//given this identifier we'll attempt something
+	/**
+	 * Called when someone clicks "I forgot my password".
+	 * @param  string $identifier The user account identifier such as their email
+	 */
 	public function forgotten_password($identifier){
 
 		$query = $this->Accounts_model->send_forgotten_password_confirmation($identifier);
@@ -316,7 +316,7 @@ class Accounts extends CI_Controller{
 			$content = current($this->Accounts_model->get_errors());
 			$code = key($this->Accounts_model->get_errors());
 
-			if($code == 'validation_error'){
+			if($code == 'validation_error' OR $code == 'error'){
 				//identifier did not match anybody
 				$this->auth_response->setStatusCode(400);
 			}elseif($code == 'system_error'){
@@ -349,12 +349,11 @@ class Accounts extends CI_Controller{
 			$code = 'success';
 		
 		}else{
-		
 			
 			$content = current($this->Accounts_model->get_errors());
 			$code = key($this->Accounts_model->get_errors());
 
-			if($code == 'validation_error'){
+			if($code == 'validation_error' OR $code == 'error'){
 				//the new password may not pass the requirements (might be the same old password)
 				//the forgotten code may be incorrect
 				//the user id may not exist in the system

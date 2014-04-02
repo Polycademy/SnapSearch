@@ -892,7 +892,7 @@ function makeArray( obj ) {
 
 },{"./..\\eventEmitter\\EventEmitter.js":2,"./..\\eventie\\eventie.js":3}],5:[function(require,module,exports){
 //! moment.js
-//! version : 2.5.1
+//! version : 2.4.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -904,8 +904,7 @@ function makeArray( obj ) {
     ************************************/
 
     var moment,
-        VERSION = "2.5.1",
-        global = this,
+        VERSION = "2.4.0",
         round = Math.round,
         i,
 
@@ -920,21 +919,8 @@ function makeArray( obj ) {
         // internal storage for language config files
         languages = {},
 
-        // moment internal properties
-        momentProperties = {
-            _isAMomentObject: null,
-            _i : null,
-            _f : null,
-            _l : null,
-            _strict : null,
-            _isUTC : null,
-            _offset : null,  // optional. Combine with _isUTC
-            _pf : null,
-            _lang : null  // optional
-        },
-
         // check for nodeJS
-        hasModule = (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined'),
+        hasModule = (typeof module !== 'undefined' && module.exports),
 
         // ASP.NET json date format regex
         aspNetJsonRegex = /^\/?Date\((\-?\d+)/i,
@@ -945,40 +931,32 @@ function makeArray( obj ) {
         isoDurationRegex = /^(-)?P(?:(?:([0-9,.]*)Y)?(?:([0-9,.]*)M)?(?:([0-9,.]*)D)?(?:T(?:([0-9,.]*)H)?(?:([0-9,.]*)M)?(?:([0-9,.]*)S)?)?|([0-9,.]*)W)$/,
 
         // format tokens
-        formattingTokens = /(\[[^\[]*\])|(\\)?(Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,4}|X|zz?|ZZ?|.)/g,
+        formattingTokens = /(\[[^\[]*\])|(\\)?(Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,4}|X|zz?|ZZ?|.)/g,
         localFormattingTokens = /(\[[^\[]*\])|(\\)?(LT|LL?L?L?|l{1,4})/g,
 
         // parsing token regexes
         parseTokenOneOrTwoDigits = /\d\d?/, // 0 - 99
         parseTokenOneToThreeDigits = /\d{1,3}/, // 0 - 999
-        parseTokenOneToFourDigits = /\d{1,4}/, // 0 - 9999
-        parseTokenOneToSixDigits = /[+\-]?\d{1,6}/, // -999,999 - 999,999
+        parseTokenThreeDigits = /\d{3}/, // 000 - 999
+        parseTokenFourDigits = /\d{1,4}/, // 0 - 9999
+        parseTokenSixDigits = /[+\-]?\d{1,6}/, // -999,999 - 999,999
         parseTokenDigits = /\d+/, // nonzero number of digits
         parseTokenWord = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i, // any word (or two) characters or numbers including two/three word month in arabic.
-        parseTokenTimezone = /Z|[\+\-]\d\d:?\d\d/gi, // +00:00 -00:00 +0000 -0000 or Z
-        parseTokenT = /T/i, // T (ISO separator)
+        parseTokenTimezone = /Z|[\+\-]\d\d:?\d\d/i, // +00:00 -00:00 +0000 -0000 or Z
+        parseTokenT = /T/i, // T (ISO seperator)
         parseTokenTimestampMs = /[\+\-]?\d+(\.\d{1,3})?/, // 123456789 123456789.123
 
-        //strict parsing regexes
-        parseTokenOneDigit = /\d/, // 0 - 9
-        parseTokenTwoDigits = /\d\d/, // 00 - 99
-        parseTokenThreeDigits = /\d{3}/, // 000 - 999
-        parseTokenFourDigits = /\d{4}/, // 0000 - 9999
-        parseTokenSixDigits = /[+-]?\d{6}/, // -999,999 - 999,999
-        parseTokenSignedNumber = /[+-]?\d+/, // -inf - inf
-
-        // iso 8601 regex
-        // 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000 or +00)
-        isoRegex = /^\s*(?:[+-]\d{6}|\d{4})-(?:(\d\d-\d\d)|(W\d\d$)|(W\d\d-\d)|(\d\d\d))((T| )(\d\d(:\d\d(:\d\d(\.\d+)?)?)?)?([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/,
+        // preliminary iso regex
+        // 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000)
+        isoRegex = /^\s*\d{4}-(?:(\d\d-\d\d)|(W\d\d$)|(W\d\d-\d)|(\d\d\d))((T| )(\d\d(:\d\d(:\d\d(\.\d+)?)?)?)?([\+\-]\d\d:?\d\d|Z)?)?$/,
 
         isoFormat = 'YYYY-MM-DDTHH:mm:ssZ',
 
         isoDates = [
-            ['YYYYYY-MM-DD', /[+-]\d{6}-\d{2}-\d{2}/],
-            ['YYYY-MM-DD', /\d{4}-\d{2}-\d{2}/],
-            ['GGGG-[W]WW-E', /\d{4}-W\d{2}-\d/],
-            ['GGGG-[W]WW', /\d{4}-W\d{2}/],
-            ['YYYY-DDD', /\d{4}-\d{3}/]
+            'YYYY-MM-DD',
+            'GGGG-[W]WW',
+            'GGGG-[W]WW-E',
+            'YYYY-DDD'
         ],
 
         // iso time formats and regexes
@@ -1080,15 +1058,11 @@ function makeArray( obj ) {
             YYYYY : function () {
                 return leftZeroFill(this.year(), 5);
             },
-            YYYYYY : function () {
-                var y = this.year(), sign = y >= 0 ? '+' : '-';
-                return sign + leftZeroFill(Math.abs(y), 6);
-            },
             gg   : function () {
                 return leftZeroFill(this.weekYear() % 100, 2);
             },
             gggg : function () {
-                return leftZeroFill(this.weekYear(), 4);
+                return this.weekYear();
             },
             ggggg : function () {
                 return leftZeroFill(this.weekYear(), 5);
@@ -1097,7 +1071,7 @@ function makeArray( obj ) {
                 return leftZeroFill(this.isoWeekYear() % 100, 2);
             },
             GGGG : function () {
-                return leftZeroFill(this.isoWeekYear(), 4);
+                return this.isoWeekYear();
             },
             GGGGG : function () {
                 return leftZeroFill(this.isoWeekYear(), 5);
@@ -1154,7 +1128,7 @@ function makeArray( obj ) {
                     a = -a;
                     b = "-";
                 }
-                return b + leftZeroFill(toInt(a / 60), 2) + leftZeroFill(toInt(a) % 60, 2);
+                return b + leftZeroFill(toInt(10 * a / 6), 4);
             },
             z : function () {
                 return this.zoneAbbr();
@@ -1164,30 +1138,10 @@ function makeArray( obj ) {
             },
             X    : function () {
                 return this.unix();
-            },
-            Q : function () {
-                return this.quarter();
             }
         },
 
         lists = ['months', 'monthsShort', 'weekdays', 'weekdaysShort', 'weekdaysMin'];
-
-    function defaultParsingFlags() {
-        // We need to deep clone this object, and es5 standard is not very
-        // helpful.
-        return {
-            empty : false,
-            unusedTokens : [],
-            unusedInput : [],
-            overflow : -2,
-            charsLeftOver : 0,
-            nullInput : false,
-            invalidMonth : null,
-            invalidFormat : false,
-            userInvalidated : false,
-            iso: false
-        };
-    }
 
     function padToken(func, count) {
         return function (a) {
@@ -1237,6 +1191,9 @@ function makeArray( obj ) {
             seconds = normalizedInput.second || 0,
             milliseconds = normalizedInput.millisecond || 0;
 
+        // store reference to input for deterministic cloning
+        this._input = duration;
+
         // representation for dateAddRemove
         this._milliseconds = +milliseconds +
             seconds * 1e3 + // 1000
@@ -1280,17 +1237,6 @@ function makeArray( obj ) {
         return a;
     }
 
-    function cloneMoment(m) {
-        var result = {}, i;
-        for (i in m) {
-            if (m.hasOwnProperty(i) && momentProperties.hasOwnProperty(i)) {
-                result[i] = m[i];
-            }
-        }
-
-        return result;
-    }
-
     function absRound(number) {
         if (number < 0) {
             return Math.ceil(number);
@@ -1301,14 +1247,12 @@ function makeArray( obj ) {
 
     // left zero fill a number
     // see http://jsperf.com/left-zero-filling for performance comparison
-    function leftZeroFill(number, targetLength, forceSign) {
-        var output = '' + Math.abs(number),
-            sign = number >= 0;
-
+    function leftZeroFill(number, targetLength) {
+        var output = number + '';
         while (output.length < targetLength) {
             output = '0' + output;
         }
-        return (sign ? (forceSign ? '+' : '') : '-') + output;
+        return output;
     }
 
     // helper function for _.addTime and _.subtractTime
@@ -1379,7 +1323,8 @@ function makeArray( obj ) {
     function normalizeObjectUnits(inputObject) {
         var normalizedInput = {},
             normalizedProp,
-            prop;
+            prop,
+            index;
 
         for (prop in inputObject) {
             if (inputObject.hasOwnProperty(prop)) {
@@ -1482,6 +1427,21 @@ function makeArray( obj ) {
         }
     }
 
+    function initializeParsingFlags(config) {
+        config._pf = {
+            empty : false,
+            unusedTokens : [],
+            unusedInput : [],
+            overflow : -2,
+            charsLeftOver : 0,
+            nullInput : false,
+            invalidMonth : null,
+            invalidFormat : false,
+            userInvalidated : false,
+            iso: false
+        };
+    }
+
     function isValid(m) {
         if (m._isValid == null) {
             m._isValid = !isNaN(m._d.getTime()) &&
@@ -1503,12 +1463,6 @@ function makeArray( obj ) {
 
     function normalizeLanguage(key) {
         return key ? key.toLowerCase().replace('_', '-') : key;
-    }
-
-    // Return a moment from input, that is local/utc/zone equivalent to model.
-    function makeAs(input, model) {
-        return model._isUTC ? moment(input).zone(model._offset || 0) :
-            moment(input).local();
     }
 
     /************************************
@@ -1842,32 +1796,21 @@ function makeArray( obj ) {
 
     // get the regex to find the next token
     function getParseRegexForToken(token, config) {
-        var a, strict = config._strict;
+        var a;
         switch (token) {
         case 'DDDD':
             return parseTokenThreeDigits;
         case 'YYYY':
         case 'GGGG':
         case 'gggg':
-            return strict ? parseTokenFourDigits : parseTokenOneToFourDigits;
-        case 'Y':
-        case 'G':
-        case 'g':
-            return parseTokenSignedNumber;
-        case 'YYYYYY':
+            return parseTokenFourDigits;
         case 'YYYYY':
         case 'GGGGG':
         case 'ggggg':
-            return strict ? parseTokenSixDigits : parseTokenOneToSixDigits;
+            return parseTokenSixDigits;
         case 'S':
-            if (strict) { return parseTokenOneDigit; }
-            /* falls through */
         case 'SS':
-            if (strict) { return parseTokenTwoDigits; }
-            /* falls through */
         case 'SSS':
-            if (strict) { return parseTokenThreeDigits; }
-            /* falls through */
         case 'DDD':
             return parseTokenOneToThreeDigits;
         case 'MMM':
@@ -1897,9 +1840,6 @@ function makeArray( obj ) {
         case 'hh':
         case 'mm':
         case 'ss':
-        case 'ww':
-        case 'WW':
-            return strict ? parseTokenTwoDigits : parseTokenOneOrTwoDigits;
         case 'M':
         case 'D':
         case 'd':
@@ -1908,7 +1848,9 @@ function makeArray( obj ) {
         case 'm':
         case 's':
         case 'w':
+        case 'ww':
         case 'W':
+        case 'WW':
         case 'e':
         case 'E':
             return parseTokenOneOrTwoDigits;
@@ -1919,10 +1861,8 @@ function makeArray( obj ) {
     }
 
     function timezoneMinutesFromString(string) {
-        string = string || "";
-        var possibleTzMatches = (string.match(parseTokenTimezone) || []),
-            tzChunk = possibleTzMatches[possibleTzMatches.length - 1] || [],
-            parts = (tzChunk + '').match(parseTimezoneChunker) || ['-', 0, 0],
+        var tzchunk = (parseTokenTimezone.exec(string) || [])[0],
+            parts = (tzchunk + '').match(parseTimezoneChunker) || ['-', 0, 0],
             minutes = +(parts[1] * 60) + toInt(parts[2]);
 
         return parts[0] === '+' ? -minutes : minutes;
@@ -1971,7 +1911,6 @@ function makeArray( obj ) {
             break;
         case 'YYYY' :
         case 'YYYYY' :
-        case 'YYYYYY' :
             datePartArray[YEAR] = toInt(input);
             break;
         // AM / PM
@@ -2056,9 +1995,8 @@ function makeArray( obj ) {
         //compute day of the year from weeks and weekdays
         if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
             fixYear = function (val) {
-                var int_val = parseInt(val, 10);
                 return val ?
-                  (val.length < 3 ? (int_val > 68 ? 1900 + int_val : 2000 + int_val) : int_val) :
+                  (val.length < 3 ? (parseInt(val, 10) > 68 ? '19' + val : '20' + val) : val) :
                   (config._a[YEAR] == null ? moment().weekYear() : config._a[YEAR]);
             };
 
@@ -2170,7 +2108,7 @@ function makeArray( obj ) {
 
         for (i = 0; i < tokens.length; i++) {
             token = tokens[i];
-            parsedInput = (string.match(getParseRegexForToken(token, config)) || [])[0];
+            parsedInput = (getParseRegexForToken(token, config).exec(string) || [])[0];
             if (parsedInput) {
                 skipped = string.substr(0, string.indexOf(parsedInput));
                 if (skipped.length > 0) {
@@ -2242,7 +2180,7 @@ function makeArray( obj ) {
         for (i = 0; i < config._f.length; i++) {
             currentScore = 0;
             tempConfig = extend({}, config);
-            tempConfig._pf = defaultParsingFlags();
+            initializeParsingFlags(tempConfig);
             tempConfig._f = config._f[i];
             makeDateFromStringAndFormat(tempConfig);
 
@@ -2269,26 +2207,26 @@ function makeArray( obj ) {
 
     // date from iso format
     function makeDateFromString(config) {
-        var i, l,
+        var i,
             string = config._i,
             match = isoRegex.exec(string);
 
         if (match) {
             config._pf.iso = true;
-            for (i = 0, l = isoDates.length; i < l; i++) {
-                if (isoDates[i][1].exec(string)) {
+            for (i = 4; i > 0; i--) {
+                if (match[i]) {
                     // match[5] should be "T" or undefined
-                    config._f = isoDates[i][0] + (match[6] || " ");
+                    config._f = isoDates[i - 1] + (match[6] || " ");
                     break;
                 }
             }
-            for (i = 0, l = isoTimes.length; i < l; i++) {
+            for (i = 0; i < 4; i++) {
                 if (isoTimes[i][1].exec(string)) {
                     config._f += isoTimes[i][0];
                     break;
                 }
             }
-            if (string.match(parseTokenTimezone)) {
+            if (parseTokenTimezone.exec(string)) {
                 config._f += "Z";
             }
             makeDateFromStringAndFormat(config);
@@ -2423,10 +2361,11 @@ function makeArray( obj ) {
 
     //http://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
     function dayOfYearFromWeeks(year, week, weekday, firstDayOfWeekOfYear, firstDayOfWeek) {
-        var d = makeUTCDate(year, 0, 1).getUTCDay(), daysToAdd, dayOfYear;
+        var d = new Date(Date.UTC(year, 0)).getUTCDay(),
+            daysToAdd, dayOfYear;
 
         weekday = weekday != null ? weekday : firstDayOfWeek;
-        daysToAdd = firstDayOfWeek - d + (d > firstDayOfWeekOfYear ? 7 : 0) - (d < firstDayOfWeek ? 7 : 0);
+        daysToAdd = firstDayOfWeek - d + (d > firstDayOfWeekOfYear ? 7 : 0);
         dayOfYear = 7 * (week - 1) + (weekday - firstDayOfWeek) + daysToAdd + 1;
 
         return {
@@ -2443,6 +2382,10 @@ function makeArray( obj ) {
         var input = config._i,
             format = config._f;
 
+        if (typeof config._pf === 'undefined') {
+            initializeParsingFlags(config);
+        }
+
         if (input === null) {
             return moment.invalid({nullInput: true});
         }
@@ -2452,7 +2395,7 @@ function makeArray( obj ) {
         }
 
         if (moment.isMoment(input)) {
-            config = cloneMoment(input);
+            config = extend({}, input);
 
             config._d = new Date(+input._d);
         } else if (format) {
@@ -2469,47 +2412,37 @@ function makeArray( obj ) {
     }
 
     moment = function (input, format, lang, strict) {
-        var c;
-
         if (typeof(lang) === "boolean") {
             strict = lang;
             lang = undefined;
         }
-        // object construction must be done this way.
-        // https://github.com/moment/moment/issues/1423
-        c = {};
-        c._isAMomentObject = true;
-        c._i = input;
-        c._f = format;
-        c._l = lang;
-        c._strict = strict;
-        c._isUTC = false;
-        c._pf = defaultParsingFlags();
-
-        return makeMoment(c);
+        return makeMoment({
+            _i : input,
+            _f : format,
+            _l : lang,
+            _strict : strict,
+            _isUTC : false
+        });
     };
 
     // creating with utc
     moment.utc = function (input, format, lang, strict) {
-        var c;
+        var m;
 
         if (typeof(lang) === "boolean") {
             strict = lang;
             lang = undefined;
         }
-        // object construction must be done this way.
-        // https://github.com/moment/moment/issues/1423
-        c = {};
-        c._isAMomentObject = true;
-        c._useUTC = true;
-        c._isUTC = true;
-        c._l = lang;
-        c._i = input;
-        c._f = format;
-        c._strict = strict;
-        c._pf = defaultParsingFlags();
+        m = makeMoment({
+            _useUTC : true,
+            _isUTC : true,
+            _l : lang,
+            _i : input,
+            _f : format,
+            _strict : strict
+        }).utc();
 
-        return makeMoment(c).utc();
+        return m;
     };
 
     // creating with unix timestamp (in seconds)
@@ -2519,21 +2452,18 @@ function makeArray( obj ) {
 
     // duration
     moment.duration = function (input, key) {
-        var duration = input,
+        var isDuration = moment.isDuration(input),
+            isNumber = (typeof input === 'number'),
+            duration = (isDuration ? input._input : (isNumber ? {} : input)),
             // matching against regexp is expensive, do it on demand
             match = null,
             sign,
             ret,
-            parseIso;
+            parseIso,
+            timeEmpty,
+            dateTimeEmpty;
 
-        if (moment.isDuration(input)) {
-            duration = {
-                ms: input._milliseconds,
-                d: input._days,
-                M: input._months
-            };
-        } else if (typeof input === 'number') {
-            duration = {};
+        if (isNumber) {
             if (key) {
                 duration[key] = input;
             } else {
@@ -2572,7 +2502,7 @@ function makeArray( obj ) {
 
         ret = new Duration(duration);
 
-        if (moment.isDuration(input) && input.hasOwnProperty('_lang')) {
+        if (isDuration && input.hasOwnProperty('_lang')) {
             ret._lang = input._lang;
         }
 
@@ -2619,8 +2549,7 @@ function makeArray( obj ) {
 
     // compare moment object
     moment.isMoment = function (obj) {
-        return obj instanceof Moment ||
-            (obj != null &&  obj.hasOwnProperty('_isAMomentObject'));
+        return obj instanceof Moment;
     };
 
     // for typechecking Duration objects
@@ -2680,12 +2609,7 @@ function makeArray( obj ) {
         },
 
         toISOString : function () {
-            var m = moment(this).utc();
-            if (0 < m.year() && m.year() <= 9999) {
-                return formatMoment(m, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
-            } else {
-                return formatMoment(m, 'YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
-            }
+            return formatMoment(moment(this).utc(), 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
         },
 
         toArray : function () {
@@ -2762,7 +2686,7 @@ function makeArray( obj ) {
         },
 
         diff : function (input, units, asFloat) {
-            var that = makeAs(input, this),
+            var that = this._isUTC ? moment(input).zone(this._offset || 0) : moment(input).local(),
                 zoneDiff = (this.zone() - that.zone()) * 6e4,
                 diff, output;
 
@@ -2804,16 +2728,13 @@ function makeArray( obj ) {
         },
 
         calendar : function () {
-            // We want to compare the start of today, vs this.
-            // Getting start-of-today depends on whether we're zone'd or not.
-            var sod = makeAs(moment(), this).startOf('day'),
-                diff = this.diff(sod, 'days', true),
+            var diff = this.diff(moment().zone(this.zone()).startOf('day'), 'days', true),
                 format = diff < -6 ? 'sameElse' :
-                    diff < -1 ? 'lastWeek' :
-                    diff < 0 ? 'lastDay' :
-                    diff < 1 ? 'sameDay' :
-                    diff < 2 ? 'nextDay' :
-                    diff < 7 ? 'nextWeek' : 'sameElse';
+                diff < -1 ? 'lastWeek' :
+                diff < 0 ? 'lastDay' :
+                diff < 1 ? 'sameDay' :
+                diff < 2 ? 'nextDay' :
+                diff < 7 ? 'nextWeek' : 'sameElse';
             return this.format(this.lang().calendar(format, this));
         },
 
@@ -2913,8 +2834,8 @@ function makeArray( obj ) {
         },
 
         isSame: function (input, units) {
-            units = units || 'ms';
-            return +this.clone().startOf(units) === +makeAs(input, this).startOf(units);
+            units = typeof units !== 'undefined' ? units : 'millisecond';
+            return +this.clone().startOf(units) === +moment(input).startOf(units);
         },
 
         min: function (other) {
@@ -2956,9 +2877,7 @@ function makeArray( obj ) {
         },
 
         parseZone : function () {
-            if (this._tzm) {
-                this.zone(this._tzm);
-            } else if (typeof this._i === 'string') {
+            if (typeof this._i === 'string') {
                 this.zone(this._i);
             }
             return this;
@@ -2982,10 +2901,6 @@ function makeArray( obj ) {
         dayOfYear : function (input) {
             var dayOfYear = round((moment(this).startOf('day') - moment(this).startOf('year')) / 864e5) + 1;
             return input == null ? dayOfYear : this.add("d", (input - dayOfYear));
-        },
-
-        quarter : function () {
-            return Math.ceil((this.month() + 1.0) / 3.0);
         },
 
         weekYear : function (input) {
@@ -3258,7 +3173,7 @@ function makeArray( obj ) {
         // add `moment` as a global object via a string identifier,
         // for Closure Compiler "advanced" mode
         if (deprecate) {
-            global.moment = function () {
+            this.moment = function () {
                 if (!warned && console && console.warn) {
                     warned = true;
                     console.warn(
@@ -3268,9 +3183,8 @@ function makeArray( obj ) {
                 }
                 return local_moment.apply(null, arguments);
             };
-            extend(global.moment, local_moment);
         } else {
-            global['moment'] = moment;
+            this['moment'] = moment;
         }
     }
 
@@ -3280,7 +3194,7 @@ function makeArray( obj ) {
         makeGlobal(true);
     } else if (typeof define === "function" && define.amd) {
         define("moment", function (require, exports, module) {
-            if (module.config && module.config() && module.config().noGlobal !== true) {
+            if (module.config().noGlobal !== true) {
                 // If user provided noGlobal, he is aware of global
                 makeGlobal(module.config().noGlobal === undefined);
             }
@@ -3336,7 +3250,7 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":31,"./elements/Elements":40,"./filters/Filters":78,"./modules/Modules":80,"./services/Services":90}],7:[function(require,module,exports){
+},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":33,"./elements/Elements":42,"./filters/Filters":80,"./modules/Modules":82,"./services/Services":92}],7:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3364,7 +3278,7 @@ module.exports = [
                 'home',
                 {
                     url: '/',
-                    template: "<div class=\"introduction panel panel_lego panel_transition_white_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"page-header\">\r\n                        <h1>SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>\r\n                        <h3>Make your sites crawlable with SnapSearch!</h3>\r\n                        <button class=\"call-to-action btn btn-primary\" type=\"button\" ng-click=\"modal.signUp()\">\r\n                            <h4 class=\"call-to-action-text\">Get Started for Free<br /><small>No Credit Card Required</small></h4>\r\n                        </button>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"code-group clearfix\" ng-controller=\"CodeGroupCtrl\">\r\n                        <ul class=\"nav nav-tabs\">\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'php'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('php')\">PHP</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'ruby'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('ruby')\">Ruby</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'node.js'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('node.js')\">Node.js</button>\r\n                            </li>\r\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'python'}\">\r\n                                <button class=\"btn\" ng-click=\"changeCode('python')\">Python</button>\r\n                            </li>\r\n                        </ul>\r\n                        <div class=\"tab-content clearfix\" ng-switch=\"activeCode\">\r\n                            <div class=\"tab-panel\" ng-switch-when=\"php\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">composer require snapsearch/snapsearch-client-php</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"php\">// Inside your Front Controller\r\n// For StackPHP or HTTPKernel frameworks, check the source repository examples\r\n\r\n$client = new SnapSearchClientPHPClient('email', 'key');\r\n$detector = new SnapSearchClientPHPDetector;\r\n$interceptor = new SnapSearchClientPHPInterceptor(\r\n    $client, \r\n    $detector\r\n);\r\n\r\n$response = $this-&gt;interceptor-&gt;intercept();\r\n\r\nif($response){\r\n\r\n    header(' ', true, $response['status']);\r\n\r\n    foreach($response['headers'] as $header){\r\n        if($header['name'] == 'Location'){\r\n            header($header['name'] . ': ' . $header['value']);\r\n        }\r\n    }\r\n\r\n    echo $response['html'];\r\n\r\n}else{\r\n\r\n    //continue with normal operations...\r\n\r\n}</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Examples and Source on Github\r\n                                </a>                                </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"ruby\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">gem install snapsearch-client-ruby</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"ruby\"># Inside your Rack config.ru\r\n\r\nrequire 'bundler/setup'\r\nrequire 'rack/snap_search'\r\n\r\nuse Rack::SnapSearch do |config|\r\n    \r\n    # Required: The email to authenticate with.\r\n    config.email = 'user@example.com'\r\n    \r\n    # Required: The key to authenticate with.\r\n    config.key = 'API_KEY_HERE'\r\n    \r\nend\r\n\r\n# ...continue with Rack configuration</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Examples and Source on Github\r\n                                </a>\r\n                            </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"node.js\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">npm install snapsearch-client-node</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"javascript\">// Express integration\r\n\r\nvar app = express();\r\nvar client = new SnapSearch.Client();\r\nvar detector = new SnapSearch.Detector();\r\nvar interceptor = new SnapSearch.Interceptor(client, detector);\r\n\r\napp.use(function (req, res, next) {\r\n\r\n    interceptor.intercept(req, function (data) {\r\n        if (data) {\r\n            console.log(data);\r\n            res.send('Was a robot and SnapChat Intercepted it Correctly');\r\n        } else {\r\n            next();\r\n        }\r\n    });\r\n\r\n});</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Examples and Source on Github\r\n                                </a>\r\n                            </div>\r\n                            <div class=\"tab-panel\" ng-switch-when=\"python\">\r\n                                <p>Installation:</p>\r\n                                <syntax syntax-language=\"bash\">pip install snapsearch-client-python</syntax>\r\n                                <p>Usage:</p>\r\n                                <syntax class=\"code-usage\" syntax-language=\"python\"># Inside your Front Controller or Entry Point\r\n\r\n# Django\r\n\r\nimport os\r\nos.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"hello_world.settings\")\r\n\r\nfrom django.core.wsgi import get_wsgi_application\r\napplication = get_wsgi_application()\r\n\r\n# API credentials\r\napi_email = \"<email>\"\r\napi_key = \"<key>\"\r\n\r\n# initialize the interceptor\r\nfrom SnapSearch import Client, Detector, Interceptor\r\ninterceptor = Interceptor(\r\n    Client(api_email, api_key), \r\n    Detector()\r\n)\r\n\r\n# deploy the interceptor\r\nfrom SnapSearch.wsgi import InterceptorMiddleware\r\napplication = InterceptorMiddleware(\r\n    application, \r\n    interceptor\r\n)\r\n\r\n# Flask\r\n\r\nfrom flask import Flask\r\napp = Flask(__name__)\r\n\r\n@app.route('/')\r\ndef hello_world():\r\n    return \"Hello World!\\r\\n\"\r\n\r\nif __name__ == '__main__':\r\n    # API credentials\r\n    api_email = \"<email>\"  # change this to the registered email\r\n    api_key = \"<key>\"  # change this to the real api credential\r\n\r\n    # initialize the interceptor\r\n    from SnapSearch import Client, Detector, Interceptor\r\n    interceptor = Interceptor(\r\n        Client(api_email, api_key), \r\n        Detector()\r\n    )\r\n\r\n    # deploy the interceptor\r\n    from SnapSearch.wsgi import InterceptorMiddleware\r\n    app.wsgi_app = InterceptorMiddleware(\r\n        app.wsgi_app, \r\n        interceptor\r\n    )\r\n\r\n    # start servicing\r\n    app.run(host=\"0.0.0.0\", port=5000)\r\n\r\n# CGI\r\n\r\n#!/usr/bin/env python\r\n\r\nimport cgi\r\nimport sys\r\n\r\ndef hello_world():\r\n    msg = b\"Hello World!\"\r\n    sys.stdout.write(b\"Status: 200 OK\\r\\n\")\r\n    sys.stdout.write(b\"Content-Type: text/html; charset=utf-8\\r\\n\")\r\n    sys.stdout.write(b\"Content-Length: \")\r\n    sys.stdout.write(bytes(len(msg)))\r\n    sys.stdout.write(b\"\\r\\n\\r\\n\")\r\n    sys.stdout.write(msg)\r\n    sys.stdout.write(b\"\\r\\n\")\r\n    return 0\r\n\r\nif __name__ == '__main__':\r\n    # API credentials\r\n    api_email = \"<email>\"  # change this to the registered email\r\n    api_key = \"<key>\"  # change this to the real api credential\r\n\r\n    # initialize the interceptor\r\n    from SnapSearch import Client, Detector, Interceptor\r\n    interceptor = Interceptor(\r\n        Client(api_email, api_key), \r\n        Detector()\r\n    )\r\n\r\n    # deploy the interceptor\r\n    from SnapSearch.cgi import InterceptorController\r\n    InterceptorController(interceptor).start()\r\n\r\n    # start servicing\r\n    sys.exit(hello_world())\r\n</syntax>\r\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\" target=\"_blank\">\r\n                                    <img src=\"assets/img/github_mark.png\" />\r\n                                    Examples and Source on Github\r\n                                </a>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"demo panel panel_white panel_transition_white_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Try our Demo</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <form class=\"demo-form\" ng-controller=\"DemoCtrl\" name=\"demoForm\">\r\n                <div \r\n                    class=\"form-group\" \r\n                    ng-class=\"{\r\n                        'has-error': demoForm.url.$invalid && demoForm.url.$dirty\r\n                    }\"\r\n                >\r\n                    <div class=\"input-group input-group-lg\">\r\n                        <input \r\n                            class=\"form-control\" \r\n                            type=\"url\" \r\n                            name=\"url\" \r\n                            ng-model=\"demo.url\" \r\n                            required \r\n                            placeholder=\"http://your-site.com/\" \r\n                        />\r\n                        <span class=\"input-group-btn\">\r\n                            <button \r\n                                class=\"btn btn-primary\" \r\n                                type=\"submit\" \r\n                                ng-disabled=\"demoForm.$invalid\" \r\n                                ng-click=\"submit(demo)\" \r\n                            >\r\n                                Scrape\r\n                            </button>\r\n                        </span>\r\n                    </div>\r\n                </div>\r\n                <div class=\"form-errors\" ng-show=\"formErrors\">\r\n                    <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n                    <ul class=\"form-errors-list\">\r\n                        <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n                    </ul>\r\n                </div>\r\n                <div class=\"demo-output\" ng-switch=\"requestingDemoService\">\r\n                    <p class=\"demo-explanation\" ng-switch-when=\"never\">Try this on a single page application like https://snapsearch.io/. You'll see the difference between how \"javascriptless\" search engine robots view your application without SnapSearch, and how they view your application with SnapSearch.</p>\r\n                    <img class=\"demo-loading\" ng-switch-when=\"started\" src=\"assets/img/loading.gif\" />\r\n                    <div class=\"demo-response row\" ng-switch-when=\"finished\" ng-show=\"formSuccess\">\r\n                        <div class=\"col-sm-6\">\r\n                            <h4 class=\"demo-response-title\">Source Code without SnapSearch</h4>\r\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>\r\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withoutSnapSearch.length}} <span class=\"text-muted\">(this one should be lower!)</span></span>\r\n                        </div>\r\n                        <div class=\"col-sm-6\">\r\n                            <h4 class=\"demo-response-title\">Source Code with SnapSearch</h4>\r\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withSnapSearch}}</code></pre>\r\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withSnapSearch.length}} <span class=\"text-muted\">(this one should be higher!)</span></span>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"problem-solution panel panel_lego panel_transition_yellow_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Why use SnapSearch?</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <h3 class=\"problem-title\">The Problem</h3>\r\n            <div class=\"problem row\">\r\n                <div class=\"col-md-6\">\r\n                    <img src=\"assets/img/user_coding.png\" />\r\n                    <div class=\"problem-explanation\">\r\n                        <p>You’ve coded up a javascript enhanced or single page application using the latest HTML5 technologies. Using a modern browser, you can see all the asynchronous or animated content appear.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <img src=\"assets/img/spider_reading.png\" />\r\n                    <div class=\"problem-explanation\">\r\n                        <p>Search engines however see nothing. This is because search engine robots are simple HTTP clients that cannot execute advanced javascript. They do not execute AJAX, and thus cannot load asynchronous resources, nor can they activate javascript events that make your application dynamic and user friendly.</p>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <h3 class=\"solution-title\">Our Solution</h3>\r\n            <div class=\"solution row\">\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/globe.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">Client initiates an HTTP Request. This client can be search engine robot or a social network crawler such as Facebook or Twitter.</p>\r\n                        <p class=\"response-pipe\">The client will now receive the true full representation of your site’s content even though it cannot execute javascript.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/application.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">Your application using our supplied middleware detects whether the client cannot execute javascript. The middleware then initiates a snapshot request to SnapSearch. The request contains the client request URL, authentication credentials and custom API parameters.</p>\r\n                        <p class=\"response-pipe\">Once the response is received, it outputs your page’s status code, HTML content and any HTTP response headers.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/cloud_service.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">SnapSearch receives the request and commands our load balanced browser workers to scrape your site based on the client request URL while executing your javascript. Your content will be cached for future requests.</p>\r\n                        <p class=\"response-pipe\">A response is constructed containing the resulting status code, HTML content, headers and optionally a screenshot of your resource. This is returned to your application’s middleware.</p>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <img src=\"assets/img/cache.png\" />\r\n                    <div class=\"solution-explanation\">\r\n                        <p class=\"request-pipe\">A cache of the content is securely and safely stored on Amazon S3. All cached content are distinguished by a parameter checksum, so the same URL with different API parameters will be stored independently.</p>\r\n                        <p class=\"response-pipe\">If a resource has been cached before, SnapSearch will return the cached content. All cached content have adjustable cache lifetime.</p>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"features panel panel_yellow panel_transition_white_yellow\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Features</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\" equalise-heights=\".features .feature-object\">\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">On Demand</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/snapsearch_bolt.png\" />\r\n                    <p class=\"feature-explanation\">Snapshots are created on the fly as you request it from the API. Resources are cached for a default time of 24 hrs.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Real Browser Workers</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/firefox.png\" />\r\n                    <p class=\"feature-explanation\">Our scrapers are powered by nightly versions of Mozilla Firefox. We’re able to run cutting edge HTML5 techniques. Our scrapers evolve as the web evolves.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Google Approved</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/google.png\" />\r\n                    <p class=\"feature-explanation\">SnapSearch complies with the AJAX Crawling Specification by Google. SnapSearch responds with the same content as a normal user would see, so you’re not in violation of cloaking rules.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Powerful Middleware</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/middleware.png\" />\r\n                    <p class=\"feature-explanation\">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect 196 robots. They can be configured to support custom clients.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Flexibility</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/flexibility.png\" />\r\n                    <p class=\"feature-explanation\">The API supports image snapshots, soft 404s, following redirects, custom headers and status code, cache time settings, width and height of the scraper (useful for infinite scrolling), and custom javascript callbacks that are evaled on the page.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Pay for What You Use</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/tiger_face.png\" />\r\n                    <p class=\"feature-explanation\">You only pay for each usage of the API that initiates a fresh snapshot. There is no minimum monthly fee. Requests hitting the cache is free, and storage of the cache is free.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Load Balanced</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/load_balanced.png\" />\r\n                    <p class=\"feature-explanation\">SnapSearch was built as a fault-tolerant load balanced service. We can handle small and big sites. Scrapers are horizontally scaled according to the number of users.</p>\r\n                </div>\r\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\r\n                    <h3 class=\"feature-title\">Analytics</h3>\r\n                    <img class=\"feature-image\" src=\"assets/img/analytics.png\" />\r\n                    <p class=\"feature-explanation\">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class=\"framework-support panel panel_white panel_transition_white_yellow\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">We’re 100% framework agnostic!</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"framework-logos row\">\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/sails_logo.png\" />\r\n                    <a href=\"http://sailsjs.org/\">Sails.js</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/angular_logo.png\" />\r\n                    <a href=\"http://angularjs.org/\">AngularJS</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/js_logo.png\" />\r\n                    <a href=\"http://http://www.html5rocks.com/\">HTML5 Javascript</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/jquery_logo.png\" />\r\n                    <a href=\"http://jquery.com/\">jQuery</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/backbone_logo.png\" />\r\n                    <a href=\"http://backbonejs.org/\">Backbone</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/ember_logo.png\" />\r\n                    <a href=\"http://emberjs.com/\">ember</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/knockout_logo.png\" />\r\n                    <a href=\"http://knockoutjs.com/\">Knockout</a>\r\n                </div>\r\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\r\n                    <img class=\"framework-logo\" src=\"assets/img/meteor_logo.png\" />\r\n                    <a href=\"https://www.meteor.com/\">Meteor</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"introduction panel panel_lego panel_transition_white_dark\">\n    <div class=\"container\">\n        <div class=\"panel-body\">\n            <div class=\"row\">\n                <div class=\"col-md-6\">\n                    <div class=\"page-header\">\n                        <h1>SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>\n                        <h3>Make your sites crawlable with SnapSearch!</h3>\n                        <button class=\"call-to-action btn btn-primary\" type=\"button\" ng-click=\"modal.signUp()\">\n                            <h4 class=\"call-to-action-text\">Get Started for Free<br /><small>No Credit Card Required</small></h4>\n                        </button>\n                    </div>\n                </div>\n                <div class=\"col-md-6\">\n                    <div class=\"code-group clearfix\" ng-controller=\"CodeGroupCtrl\">\n                        <ul class=\"nav nav-tabs\">\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'php'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('php')\">PHP</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'ruby'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('ruby')\">Ruby</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'node.js'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('node.js')\">Node.js</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'python'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('python')\">Python</button>\n                            </li>\n                        </ul>\n                        <div class=\"tab-content clearfix\" ng-switch=\"activeCode\">\n                            <div class=\"tab-panel\" ng-switch-when=\"php\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">composer require snapsearch/snapsearch-client-php</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"php\">// Inside your Front Controller\n// For StackPHP or HTTPKernel frameworks, check the source repository examples\n\n$client = new SnapSearchClientPHPClient('email', 'key');\n$detector = new SnapSearchClientPHPDetector;\n$interceptor = new SnapSearchClientPHPInterceptor(\n    $client, \n    $detector\n);\n\n$response = $this-&gt;interceptor-&gt;intercept();\n\nif($response){\n\n    header(' ', true, $response['status']);\n\n    foreach($response['headers'] as $header){\n        if($header['name'] == 'Location'){\n            header($header['name'] . ': ' . $header['value']);\n        }\n    }\n\n    echo $response['html'];\n\n}else{\n\n    //continue with normal operations...\n\n}</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>                                </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"ruby\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">gem install snapsearch-client-ruby</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"ruby\"># Inside your Rack config.ru\n\nrequire 'bundler/setup'\nrequire 'rack/snap_search'\n\nuse Rack::SnapSearch do |config|\n    \n    # Required: The email to authenticate with.\n    config.email = 'user@example.com'\n    \n    # Required: The key to authenticate with.\n    config.key = 'API_KEY_HERE'\n    \nend\n\n# ...continue with Rack configuration</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>\n                            </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"node.js\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">npm install snapsearch-client-node</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"javascript\">// Express integration\n\nvar app = express();\nvar client = new SnapSearch.Client();\nvar detector = new SnapSearch.Detector();\nvar interceptor = new SnapSearch.Interceptor(client, detector);\n\napp.use(function (req, res, next) {\n\n    interceptor.intercept(req, function (data) {\n        if (data) {\n            console.log(data);\n            res.send('Was a robot and SnapChat Intercepted it Correctly');\n        } else {\n            next();\n        }\n    });\n\n});</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>\n                            </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"python\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">pip install snapsearch-client-python</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"python\"># Inside your Front Controller or Entry Point\n\n# Django\n\nimport os\nos.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"hello_world.settings\")\n\nfrom django.core.wsgi import get_wsgi_application\napplication = get_wsgi_application()\n\n# API credentials\napi_email = \"<email>\"\napi_key = \"<key>\"\n\n# initialize the interceptor\nfrom SnapSearch import Client, Detector, Interceptor\ninterceptor = Interceptor(\n    Client(api_email, api_key), \n    Detector()\n)\n\n# deploy the interceptor\nfrom SnapSearch.wsgi import InterceptorMiddleware\napplication = InterceptorMiddleware(\n    application, \n    interceptor\n)\n\n# Flask\n\nfrom flask import Flask\napp = Flask(__name__)\n\n@app.route('/')\ndef hello_world():\n    return \"Hello World!\\r\\n\"\n\nif __name__ == '__main__':\n    # API credentials\n    api_email = \"<email>\"  # change this to the registered email\n    api_key = \"<key>\"  # change this to the real api credential\n\n    # initialize the interceptor\n    from SnapSearch import Client, Detector, Interceptor\n    interceptor = Interceptor(\n        Client(api_email, api_key), \n        Detector()\n    )\n\n    # deploy the interceptor\n    from SnapSearch.wsgi import InterceptorMiddleware\n    app.wsgi_app = InterceptorMiddleware(\n        app.wsgi_app, \n        interceptor\n    )\n\n    # start servicing\n    app.run(host=\"0.0.0.0\", port=5000)\n\n# CGI\n\n#!/usr/bin/env python\n\nimport cgi\nimport sys\n\ndef hello_world():\n    msg = b\"Hello World!\"\n    sys.stdout.write(b\"Status: 200 OK\\r\\n\")\n    sys.stdout.write(b\"Content-Type: text/html; charset=utf-8\\r\\n\")\n    sys.stdout.write(b\"Content-Length: \")\n    sys.stdout.write(bytes(len(msg)))\n    sys.stdout.write(b\"\\r\\n\\r\\n\")\n    sys.stdout.write(msg)\n    sys.stdout.write(b\"\\r\\n\")\n    return 0\n\nif __name__ == '__main__':\n    # API credentials\n    api_email = \"<email>\"  # change this to the registered email\n    api_key = \"<key>\"  # change this to the real api credential\n\n    # initialize the interceptor\n    from SnapSearch import Client, Detector, Interceptor\n    interceptor = Interceptor(\n        Client(api_email, api_key), \n        Detector()\n    )\n\n    # deploy the interceptor\n    from SnapSearch.cgi import InterceptorController\n    InterceptorController(interceptor).start()\n\n    # start servicing\n    sys.exit(hello_world())\n</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"demo panel panel_white panel_transition_white_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Try our Demo</h2>\n        </div>\n        <div class=\"panel-body\">\n            <form class=\"demo-form\" ng-controller=\"DemoCtrl\" name=\"demoForm\">\n                <div \n                    class=\"form-group\" \n                    ng-class=\"{\n                        'has-error': demoForm.url.$invalid && demoForm.url.$dirty\n                    }\"\n                >\n                    <div class=\"input-group input-group-lg\">\n                        <input \n                            class=\"form-control\" \n                            type=\"url\" \n                            name=\"url\" \n                            ng-model=\"demo.url\" \n                            required \n                            placeholder=\"http://your-site.com/\" \n                        />\n                        <span class=\"input-group-btn\">\n                            <button \n                                class=\"btn btn-primary\" \n                                type=\"submit\" \n                                ng-disabled=\"demoForm.$invalid\" \n                                ng-click=\"submit(demo)\" \n                            >\n                                Scrape\n                            </button>\n                        </span>\n                    </div>\n                </div>\n                <div class=\"form-errors\" ng-show=\"formErrors\">\n                    <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                    <ul class=\"form-errors-list\">\n                        <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                    </ul>\n                </div>\n                <div class=\"demo-output\" ng-switch=\"requestingDemoService\">\n                    <p class=\"demo-explanation\" ng-switch-when=\"never\">Try this on a single page application like https://snapsearch.io/. You'll see the difference between how \"javascriptless\" search engine robots view your application without SnapSearch, and how they view your application with SnapSearch.</p>\n                    <img class=\"demo-loading\" ng-switch-when=\"started\" src=\"assets/img/loading.gif\" />\n                    <div class=\"demo-response row\" ng-switch-when=\"finished\" ng-show=\"formSuccess\">\n                        <div class=\"col-sm-6\">\n                            <h4 class=\"demo-response-title\">Source Code without SnapSearch</h4>\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withoutSnapSearch.length}} <span class=\"text-muted\">(this one should be lower!)</span></span>\n                        </div>\n                        <div class=\"col-sm-6\">\n                            <h4 class=\"demo-response-title\">Source Code with SnapSearch</h4>\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withSnapSearch}}</code></pre>\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withSnapSearch.length}} <span class=\"text-muted\">(this one should be higher!)</span></span>\n                        </div>\n                    </div>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n<div class=\"problem-solution panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Why use SnapSearch?</h2>\n        </div>\n        <div class=\"panel-body\">\n            <h3 class=\"problem-title\">The Problem</h3>\n            <div class=\"problem row\">\n                <div class=\"col-md-6\">\n                    <img src=\"assets/img/user_coding.png\" />\n                    <div class=\"problem-explanation\">\n                        <p>You’ve coded up a javascript enhanced or single page application using the latest HTML5 technologies. Using a modern browser, you can see all the asynchronous or animated content appear.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-6\">\n                    <img src=\"assets/img/spider_reading.png\" />\n                    <div class=\"problem-explanation\">\n                        <p>Search engines however see nothing. This is because search engine robots are simple HTTP clients that cannot execute advanced javascript. They do not execute AJAX, and thus cannot load asynchronous resources, nor can they activate javascript events that make your application dynamic and user friendly.</p>\n                    </div>\n                </div>\n            </div>\n            <h3 class=\"solution-title\">Our Solution</h3>\n            <div class=\"solution row\">\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/globe.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">Client initiates an HTTP Request. This client can be search engine robot or a social network crawler such as Facebook or Twitter.</p>\n                        <p class=\"response-pipe\">The client will now receive the true full representation of your site’s content even though it cannot execute javascript.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/application.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">Your application using our supplied middleware detects whether the client cannot execute javascript. The middleware then initiates a snapshot request to SnapSearch. The request contains the client request URL, authentication credentials and custom API parameters.</p>\n                        <p class=\"response-pipe\">Once the response is received, it outputs your page’s status code, HTML content and any HTTP response headers.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/cloud_service.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">SnapSearch receives the request and commands our load balanced browser workers to scrape your site based on the client request URL while executing your javascript. Your content will be cached for future requests.</p>\n                        <p class=\"response-pipe\">A response is constructed containing the resulting status code, HTML content, headers and optionally a screenshot of your resource. This is returned to your application’s middleware.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/cache.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">A cache of the content is securely and safely stored on Amazon S3. All cached content are distinguished by a parameter checksum, so the same URL with different API parameters will be stored independently.</p>\n                        <p class=\"response-pipe\">If a resource has been cached before, SnapSearch will return the cached content. All cached content have adjustable cache lifetime.</p>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"features panel panel_yellow panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Features</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"row\" equalise-heights=\".features .feature-object\">\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">On Demand</h3>\n                    <img class=\"feature-image\" src=\"assets/img/snapsearch_bolt.png\" />\n                    <p class=\"feature-explanation\">Snapshots are created on the fly as you request it from the API. Resources are cached for a default time of 24 hrs.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Real Browser Workers</h3>\n                    <img class=\"feature-image\" src=\"assets/img/firefox.png\" />\n                    <p class=\"feature-explanation\">Our scrapers are powered by nightly versions of Mozilla Firefox. We’re able to run cutting edge HTML5 techniques. Our scrapers evolve as the web evolves.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Google Approved</h3>\n                    <img class=\"feature-image\" src=\"assets/img/google.png\" />\n                    <p class=\"feature-explanation\">SnapSearch complies with the AJAX Crawling Specification by Google. SnapSearch responds with the same content as a normal user would see, so you’re not in violation of cloaking rules.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Powerful Middleware</h3>\n                    <img class=\"feature-image\" src=\"assets/img/middleware.png\" />\n                    <p class=\"feature-explanation\">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect 196 robots. They can be configured to support custom clients.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Flexibility</h3>\n                    <img class=\"feature-image\" src=\"assets/img/flexibility.png\" />\n                    <p class=\"feature-explanation\">The API supports image snapshots, soft 404s, following redirects, custom headers and status code, cache time settings, width and height of the scraper (useful for infinite scrolling), and custom javascript callbacks that are evaled on the page.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Pay for What You Use</h3>\n                    <img class=\"feature-image\" src=\"assets/img/tiger_face.png\" />\n                    <p class=\"feature-explanation\">You only pay for each usage of the API that initiates a fresh snapshot. There is no minimum monthly fee. Requests hitting the cache is free, and storage of the cache is free.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Load Balanced</h3>\n                    <img class=\"feature-image\" src=\"assets/img/load_balanced.png\" />\n                    <p class=\"feature-explanation\">SnapSearch was built as a fault-tolerant load balanced service. We can handle small and big sites. Scrapers are horizontally scaled according to the number of users.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Analytics</h3>\n                    <img class=\"feature-image\" src=\"assets/img/analytics.png\" />\n                    <p class=\"feature-explanation\">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"framework-support panel panel_white panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">We’re 100% framework agnostic!</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"framework-logos row\">\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/sails_logo.png\" />\n                    <a href=\"http://sailsjs.org/\">Sails.js</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/angular_logo.png\" />\n                    <a href=\"http://angularjs.org/\">AngularJS</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/js_logo.png\" />\n                    <a href=\"http://http://www.html5rocks.com/\">HTML5 Javascript</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/jquery_logo.png\" />\n                    <a href=\"http://jquery.com/\">jQuery</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/backbone_logo.png\" />\n                    <a href=\"http://backbonejs.org/\">Backbone</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/ember_logo.png\" />\n                    <a href=\"http://emberjs.com/\">ember</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/knockout_logo.png\" />\n                    <a href=\"http://knockoutjs.com/\">Knockout</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/meteor_logo.png\" />\n                    <a href=\"https://www.meteor.com/\">Meteor</a>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
                     controller: 'HomeCtrl'
                 }
             )
@@ -3380,7 +3294,7 @@ module.exports = [
                 'pricing',
                 {
                     url: '/pricing',
-                    template: "<div class=\"pricing panel panel_lego panel_transition_yellow_dark\">\r\n    <div class=\"container\">\r\n        <div class=\"panel-heading\">\r\n            <h2 class=\"panel-title\">Pricing</h2>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"pricing-box\">\r\n                <h3 class=\"pricing-heading\">Pay for What You Use</h3>\r\n                <h4 class=\"pricing-subheading\">never exceed your budget with a flexible cap</h4>\r\n                <p class=\"price-per-month\">${{pricePerUsage}} AUD per Usage*<br /><small>(free {{freeUsageCap}} Usages Per Month)</small></p>\r\n                <dl class=\"feature-set\">\r\n                    <dt>Pages</dt>\r\n                    <dd>Unlimited</dd>\r\n                    <dt>Free Usage Cap</dt>\r\n                    <dd>{{freeUsageCap}} Usages per Month<br /><small>(good for small applications)</small></dd>\r\n                    <dt>Cache Requests</dt>\r\n                    <dd>Unlimited</dd>\r\n                    <dt>Cache Storage</dt>\r\n                    <dd>Unlimited</dd>\r\n                    <dt>Cache Lifetime</dt>\r\n                    <dd>Configurable from 1 - 200 hrs</dd>\r\n                    <dt>Feature Set</dt>\r\n                    <dd>Complete</dd>\r\n                </dl>\r\n                <div class=\"usage-price-explanation\">\r\n                    <p class=\"lead\">* What is a Usage?</p>\r\n                    <p>Each request to the SnapSearch API either results in content being dynamically scraped using the SnapSearch scrapers, or content being fetched from the cache.  A usage refers to a request that does not hit the cache, and initiates a fresh snapshot.</p>\r\n                    <p>The number of usages per month is used for the calculation of the cost per month. The number of requests per month is not capped, but the number of usages per month can be capped in your control panel.</p>\r\n                    <p>If you’ve exceeded your usage cap, our middleware simply returns your content normally. So it’s best to keep your cap above average in case of search engine traffic spikes.</p>\r\n                </div>\r\n            </div>\r\n            <div class=\"cost-estimator\">\r\n                <h3 class=\"cost-heading\">Cost Estimator</h3>\r\n                <div class=\"cost-explanation\">\r\n                    <p>Use this tool to estimate your monthly payment. If you’re using a 24 hr cache lifetime, <strong>requests per month are roughly cut in half when converted to usages per month</strong>. The cost per month is calculated from total usages minus free usage cap, multiplied by the price per usage, rounded to the nearest cent.</p>\r\n                    <p>This is an estimation, to get proper usage figures, we recommend that you try our service with the free usage cap, and use our analytics to determine how many usages per month your web application needs.</p>\r\n                    <p>Our research shows that most small websites generate between 1000 to 2000 requests per month and hence 500 to 1000 usages per month.</p>\r\n                    <p>Checkout our <a href=\"documentation\">strategies</a> for reducing usages per month.</p>\r\n                </div>\r\n                <form class=\"cost-calculator\" ng-controller=\"CostCalculatorCtrl\" name=\"costCalculatorForm\">\r\n                    <h4>Usages per Month</h4>\r\n                    <div class=\"form-group\">\r\n                        <input \r\n                            class=\"form-control input-lg\" \r\n                            type=\"number\" \r\n                            name=\"quantity\" \r\n                            ng-model=\"cost.quantity\" \r\n                            placeholder=\"1000\" \r\n                            maxlength=\"5\" \r\n                        />\r\n                        <span class=\"help-block\">Try a number above the free usage cap.</span>\r\n                    </div>\r\n                    <h4>Cost per Month <small>(discounting Free Usage Cap)</small></h4>\r\n                    <p class=\"calculated-price-per-month\">${{price}} AUD per Month</p>\r\n                </form>\r\n                <em class=\"custom-plan\">Need an absurd number of Usages Per Month?<br /><a href=\"http://www.google.com/recaptcha/mailhide/d?k=01KxkEAwiT1nfx-BhMp7WKWg==&amp;c=iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24=\" onclick=\"window.open('http://www.google.com/recaptcha/mailhide/d?k\\07501KxkEAwiT1nfx-BhMp7WKWg\\75\\75\\46c\\75iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24\\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;\" title=\"Reveal this e-mail address\">Contact us!</a> We can figure out an economical plan for your business.</em>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"pricing panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Pricing</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"pricing-box\">\n                <h3 class=\"pricing-heading\">Pay for What You Use</h3>\n                <h4 class=\"pricing-subheading\">never exceed your budget with a flexible cap</h4>\n                <p class=\"price-per-month\">${{pricePerUsage}} AUD per Usage*<br /><small>(free {{freeUsageCap}} Usages Per Month)</small></p>\n                <dl class=\"feature-set\">\n                    <dt>Pages</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Free Usage Cap</dt>\n                    <dd>{{freeUsageCap}} Usages per Month<br /><small>(good for small applications)</small></dd>\n                    <dt>Cache Requests</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Storage</dt>\n                    <dd>Unlimited</dd>\n                    <dt>Cache Lifetime</dt>\n                    <dd>Configurable from 1 - 200 hrs</dd>\n                    <dt>Feature Set</dt>\n                    <dd>Complete</dd>\n                </dl>\n                <div class=\"usage-price-explanation\">\n                    <p class=\"lead\">* What is a Usage?</p>\n                    <p>Each request to the SnapSearch API either results in content being dynamically scraped using the SnapSearch scrapers, or content being fetched from the cache.  A usage refers to a request that does not hit the cache, and initiates a fresh snapshot.</p>\n                    <p>The number of usages per month is used for the calculation of the cost per month. The number of requests per month is not capped, but the number of usages per month can be capped in your control panel.</p>\n                    <p>If you’ve exceeded your usage cap, our middleware simply returns your content normally. So it’s best to keep your cap above average in case of search engine traffic spikes.</p>\n                </div>\n            </div>\n            <div class=\"cost-estimator\">\n                <h3 class=\"cost-heading\">Cost Estimator</h3>\n                <div class=\"cost-explanation\">\n                    <p>Use this tool to estimate your monthly payment. If you’re using a 24 hr cache lifetime, <strong>requests per month are roughly cut in half when converted to usages per month</strong>. The cost per month is calculated from total usages minus free usage cap, multiplied by the price per usage, rounded to the nearest cent.</p>\n                    <p>This is an estimation, to get proper usage figures, we recommend that you try our service with the free usage cap, and use our analytics to determine how many usages per month your web application needs.</p>\n                    <p>Our research shows that most small websites generate between 1000 to 2000 requests per month and hence 500 to 1000 usages per month.</p>\n                    <p>Checkout our <a href=\"documentation\">strategies</a> for reducing usages per month.</p>\n                </div>\n                <form class=\"cost-calculator\" ng-controller=\"CostCalculatorCtrl\" name=\"costCalculatorForm\">\n                    <h4>Usages per Month</h4>\n                    <div class=\"form-group\">\n                        <input \n                            class=\"form-control input-lg\" \n                            type=\"number\" \n                            name=\"quantity\" \n                            ng-model=\"cost.quantity\" \n                            placeholder=\"1000\" \n                            maxlength=\"5\" \n                        />\n                        <span class=\"help-block\">Try a number above the free usage cap.</span>\n                    </div>\n                    <h4>Cost per Month <small>(discounting Free Usage Cap)</small></h4>\n                    <p class=\"calculated-price-per-month\">${{price}} AUD per Month</p>\n                </form>\n                <em class=\"custom-plan\">Need an absurd number of Usages Per Month?<br /><a href=\"http://www.google.com/recaptcha/mailhide/d?k=01KxkEAwiT1nfx-BhMp7WKWg==&amp;c=iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24=\" onclick=\"window.open('http://www.google.com/recaptcha/mailhide/d?k\\07501KxkEAwiT1nfx-BhMp7WKWg\\75\\75\\46c\\75iaojzr8kgOuD5gSlcb7Tdexe9yVtnztvwDbDcomRY24\\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;\" title=\"Reveal this e-mail address\">Contact us!</a> We can figure out an economical plan for your business.</em>\n            </div>\n        </div>\n    </div>\n</div>",
                     controller: 'PricingCtrl'
                 }
             )
@@ -3412,7 +3326,7 @@ module.exports = [
                 'controlPanel.payments',
                 {
                     url: '/payments',
-                    template: "<div class=\"payments\">\r\n    <h2 class=\"control-title\">Payment History</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Overview</h3>\r\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\r\n        <div class=\"tally-block tally_block_cache tally_block_single\">\r\n            <span class=\"tally-bg\">B</span>\r\n            <p class=\"tally-number\">${{billThisMonth}} AUD</p>\r\n        </div>\r\n        <p class=\"tally-description\">Bill this Month</p>\r\n        <p class=\"telemetry-emphasis\">Usage charges may include left over charges from the previous cycle.<br />Charges under 500 AUD cents are delayed and added to the next cycle.</p>\r\n    </div>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Invoices</h3>\r\n        <div class=\"telemetry-buttons button-group\">\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardPayments()\">Backward</button>\r\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardPayments()\">Forward</button>\r\n        </div>\r\n        <div class=\"table-responsive\" ng-show=\"paymentRecords\">\r\n            <table class=\"table table-striped table-hover\">\r\n                <thead>\r\n                    <th class=\"text-center\">#</th>\r\n                    <th class=\"text-center\">Date</th>\r\n                    <th class=\"text-center\">Charged Usage Rate</th>\r\n                    <th class=\"text-center\">Amount</th>\r\n                    <th class=\"text-center\">Currency</th>\r\n                    <th class=\"text-center\">Invoice</th>\r\n                </thead>\r\n                <tbody>\r\n                    <tr ng-repeat=\"payment in paymentRecords\">\r\n                        <td class=\"text-center\">{{payment.id}}</td>\r\n                        <td class=\"text-center\">{{payment.date}}</td>\r\n                        <td class=\"text-center\">{{payment.usageRate}}</td>\r\n                        <td class=\"text-center\">${{payment.amount / 100}}</td>\r\n                        <td class=\"text-center\">{{payment.currency}}</td>\r\n                        <td class=\"text-center\"><a class=\"btn btn-info\" ng-href=\"api/invoices/{{payment.invoiceNumber}}\" target=\"_blank\">invoice</a></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n        <p class=\"text-center\" ng-show=\"!paymentRecords\"><strong>No payments!</strong></p>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"payments\">\n    <h2 class=\"control-title\">Payment History</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Overview</h3>\n        <em class=\"telemetry-emphasis\">This Cycle - from <strong>{{chargeCycle.beginning.format('YYYY/MM/DD')}}</strong> to <strong>{{chargeCycle.ending.format('YYYY/MM/DD')}}</strong></em>\n        <div class=\"tally-block tally_block_cache tally_block_single\">\n            <span class=\"tally-bg\">B</span>\n            <p class=\"tally-number\">${{billThisMonth}} AUD</p>\n        </div>\n        <p class=\"tally-description\">Bill this Month</p>\n        <p class=\"telemetry-emphasis\">Usage charges may include left over charges from the previous cycle.<br />Charges under 500 AUD cents are delayed and added to the next cycle.</p>\n    </div>\n    <div class=\"telemetry-block\">\n        <h3>Invoices</h3>\n        <div class=\"telemetry-buttons button-group\">\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"backwardPayments()\">Backward</button>\n            <button class=\"btn btn-primary\" type=\"button\" ng-click=\"forwardPayments()\">Forward</button>\n        </div>\n        <div class=\"table-responsive\" ng-show=\"paymentRecords\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <th class=\"text-center\">#</th>\n                    <th class=\"text-center\">Date</th>\n                    <th class=\"text-center\">Charged Usage Rate</th>\n                    <th class=\"text-center\">Amount</th>\n                    <th class=\"text-center\">Currency</th>\n                    <th class=\"text-center\">Invoice</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"payment in paymentRecords\">\n                        <td class=\"text-center\">{{payment.id}}</td>\n                        <td class=\"text-center\">{{payment.date}}</td>\n                        <td class=\"text-center\">{{payment.usageRate}}</td>\n                        <td class=\"text-center\">${{payment.amount / 100}}</td>\n                        <td class=\"text-center\">{{payment.currency}}</td>\n                        <td class=\"text-center\"><a class=\"btn btn-info\" ng-href=\"api/invoices/{{payment.invoiceNumber}}\" target=\"_blank\">invoice</a></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-show=\"!paymentRecords\"><strong>No payments!</strong></p>\n    </div>\n</div>",
                     controller: 'ControlPaymentsCtrl'
                 }
             )
@@ -3420,7 +3334,7 @@ module.exports = [
                 'controlPanel.billing',
                 {
                     url: '/billing',
-                    template: "<div class=\"billing\">\r\n    <h2 class=\"control-title\">Billing Information</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block\">\r\n        <h3>Billing Cards</h3>\r\n        <button class=\"btn btn-primary telemetry-button\" ng-click=\"modal.cardCreate()\">Add Card</button>\r\n        <div class=\"table-responsive\" ng-show=\"billingRecords\">\r\n            <table class=\"table table-striped table-hover\">\r\n                <thead>\r\n                    <th class=\"text-center\">Card Number Hint</th>\r\n                    <th class=\"text-center\">Active</th>\r\n                    <th class=\"text-center\">Status</th>\r\n                    <th class=\"text-center\">Delete</th>\r\n                </thead>\r\n                <tbody>\r\n                    <tr ng-repeat=\"card in billingRecords\">\r\n                        <td class=\"text-center\">{{card.cardHint}}</td>\r\n                        <td class=\"text-center\">{{card.active | booleanStyle:'Active':'Inactive'}}</td>\r\n                        <td class=\"text-center\">{{card.validation}}</td>\r\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteCard(card.id, $index)\">delete</button></td>\r\n                    </tr>\r\n                </tbody>\r\n            </table>\r\n        </div>\r\n        <p class=\"text-center\" ng-hide=\"billingRecords\"><strong>No cards!</strong></p>\r\n    </div>\r\n</div>",
+                    template: "<div class=\"billing\">\n    <h2 class=\"control-title\">Billing Information</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Billing Cards</h3>\n        <button class=\"btn btn-primary telemetry-button\" ng-click=\"modal.cardCreate()\">Add Card</button>\n        <div class=\"table-responsive\" ng-show=\"billingRecords\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <th class=\"text-center\">Card Number Hint</th>\n                    <th class=\"text-center\">Active</th>\n                    <th class=\"text-center\">Status</th>\n                    <th class=\"text-center\">Delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"card in billingRecords\">\n                        <td class=\"text-center\">{{card.cardHint}}</td>\n                        <td class=\"text-center\">{{card.active | booleanStyle:'Active':'Inactive'}}</td>\n                        <td class=\"text-center\">{{card.validation}}</td>\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteCard(card.id, $index)\">delete</button></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-hide=\"billingRecords\"><strong>No cards!</strong></p>\n    </div>\n</div>",
                     controller: 'ControlBillingCtrl'
                 }
             )
@@ -3428,7 +3342,7 @@ module.exports = [
                 'controlPanel.account',
                 {
                     url: '/account',
-                    template: "<div class=\"account\">\r\n    <h2 class=\"control-title\">Account Details</h2>\r\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\r\n    <div class=\"telemetry-block\">\r\n        <form class=\"form-horizontal\" name=\"accountForm\">\r\n            <div \r\n                class=\"form-group\" \r\n                ng-class=\"{\r\n                    'has-error': accountForm.username.$invalid && accountForm.username.$dirty\r\n                }\"\r\n            >\r\n                <label class=\"control-label col-sm-3\" for=\"accountFormUsername\">Username:</label>\r\n                <div class=\"col-sm-8\">\r\n                    <input id=\"accountFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"account.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                    <span class=\"help-block\" ng-show=\"accountForm.username.$error.required\">Required</span>\r\n                    <span class=\"help-block\" ng-show=\"accountForm.username.$error.minlength\">Username is too short</span>\r\n                    <span class=\"help-block\" ng-show=\"accountForm.username.$error.maxlength\">Username is too long</span>\r\n                </div>\r\n            </div>\r\n            <div \r\n                class=\"form-group\" \r\n                ng-class=\"{\r\n                    'has-error': accountForm.email.$invalid && accountForm.email.$dirty\r\n                }\"\r\n            >\r\n                <label class=\"control-label col-sm-3\" for=\"accountFormEmail\">Email:</label>\r\n                <div class=\"col-sm-8\">\r\n                    <input id=\"accountFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"account.email\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                    <span class=\"help-block\" ng-show=\"accountForm.email.$error.required\">Required</span>\r\n                    <span class=\"help-block\" ng-show=\"accountForm.email.$error.maxlength\">Email is too long</span>\r\n                    <span class=\"help-block\" ng-show=\"accountForm.email.$error.email\">Email is invalid</span>\r\n                </div>\r\n            </div>\r\n            <div \r\n                class=\"form-group\" \r\n                ng-class=\"{\r\n                    'has-error': accountForm.password.$invalid && accountForm.password.$dirty\r\n                }\"\r\n            >\r\n                <label class=\"control-label col-sm-3\" for=\"accountFormPassword\">Password:</label>\r\n                <div class=\"col-sm-8\">\r\n                    <input id=\"accountFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"account.password\" ng-minlength=\"6\" ng-maxlength=\"100\" />\r\n                    <span class=\"help-block\" ng-show=\"accountForm.password.$error.minlength\">Password is too short</span>\r\n                    <span class=\"help-block\" ng-show=\"accountForm.password.$error.maxlength\">Password is too long</span>\r\n                </div>\r\n            </div>\r\n            <div \r\n                class=\"form-group\" \r\n                ng-class=\"{\r\n                    'has-error': accountForm.passwordConfirm.$invalid && accountForm.passwordConfirm.$dirty\r\n                }\"\r\n            >\r\n                <label class=\"control-label col-sm-3\" for=\"accountFormPasswordConfirm\">Password Confirm:</label>\r\n                <div class=\"col-sm-8\">\r\n                    <input id=\"accountFormPasswordConfirm\" class=\"form-control\" type=\"password\" name=\"passwordConfirm\" ng-model=\"account.passwordConfirm\" ng-minlength=\"2\" ng-maxlength=\"100\" password-match=\"account.password\" />\r\n                    <span class=\"help-block\" ng-show=\"accountForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\r\n                    <span class=\"help-block\" ng-show=\"accountForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\r\n                    <span class=\"help-block\" ng-show=\"accountForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password</span>\r\n                </div>\r\n            </div>\r\n            <div class=\"form-errors\" ng-show=\"formErrors\">\r\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n                <ul class=\"form-errors-list\">\r\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n                </ul>\r\n            </div>\r\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n                {{formSuccess}}\r\n            </div>\r\n            <div class=\"form-group\">\r\n                <div class=\"col-sm-offset-3 col-sm-8\">\r\n                    <button class=\"btn btn-primary\" ng-click=\"updateAccount(account)\" ng-disabled=\"accountForm.$invalid || !accountForm.$dirty\">Update Account</button>\r\n                    <button class=\"btn btn-danger\" ng-click=\"regenerateApiKey()\">Regenerate API Key</button>\r\n                </div>\r\n            </div>\r\n        </form>\r\n    </form>\r\n</div>",
+                    template: "<div class=\"account\">\n    <h2 class=\"control-title\">Account Details</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <form class=\"form-horizontal\" name=\"accountForm\">\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': accountForm.username.$invalid && accountForm.username.$dirty\n                }\"\n            >\n                <label class=\"control-label col-sm-3\" for=\"accountFormUsername\">Username:</label>\n                <div class=\"col-sm-8\">\n                    <input id=\"accountFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"account.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\n                    <span class=\"help-block\" ng-show=\"accountForm.username.$error.required\">Required</span>\n                    <span class=\"help-block\" ng-show=\"accountForm.username.$error.minlength\">Username is too short</span>\n                    <span class=\"help-block\" ng-show=\"accountForm.username.$error.maxlength\">Username is too long</span>\n                </div>\n            </div>\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': accountForm.email.$invalid && accountForm.email.$dirty\n                }\"\n            >\n                <label class=\"control-label col-sm-3\" for=\"accountFormEmail\">Email:</label>\n                <div class=\"col-sm-8\">\n                    <input id=\"accountFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"account.email\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\n                    <span class=\"help-block\" ng-show=\"accountForm.email.$error.required\">Required</span>\n                    <span class=\"help-block\" ng-show=\"accountForm.email.$error.maxlength\">Email is too long</span>\n                    <span class=\"help-block\" ng-show=\"accountForm.email.$error.email\">Email is invalid</span>\n                </div>\n            </div>\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': accountForm.password.$invalid && accountForm.password.$dirty\n                }\"\n            >\n                <label class=\"control-label col-sm-3\" for=\"accountFormPassword\">Password:</label>\n                <div class=\"col-sm-8\">\n                    <input id=\"accountFormPassword\" class=\"form-control\" type=\"password\" name=\"password\" ng-model=\"account.password\" ng-minlength=\"6\" ng-maxlength=\"100\" />\n                    <span class=\"help-block\" ng-show=\"accountForm.password.$error.minlength\">Password is too short</span>\n                    <span class=\"help-block\" ng-show=\"accountForm.password.$error.maxlength\">Password is too long</span>\n                </div>\n            </div>\n            <div \n                class=\"form-group\" \n                ng-class=\"{\n                    'has-error': accountForm.passwordConfirm.$invalid && accountForm.passwordConfirm.$dirty\n                }\"\n            >\n                <label class=\"control-label col-sm-3\" for=\"accountFormPasswordConfirm\">Password Confirm:</label>\n                <div class=\"col-sm-8\">\n                    <input id=\"accountFormPasswordConfirm\" class=\"form-control\" type=\"password\" name=\"passwordConfirm\" ng-model=\"account.passwordConfirm\" ng-minlength=\"2\" ng-maxlength=\"100\" password-match=\"account.password\" />\n                    <span class=\"help-block\" ng-show=\"accountForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\n                    <span class=\"help-block\" ng-show=\"accountForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\n                    <span class=\"help-block\" ng-show=\"accountForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password</span>\n                </div>\n            </div>\n            <div class=\"form-errors\" ng-show=\"formErrors\">\n                <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                <ul class=\"form-errors-list\">\n                    <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                </ul>\n            </div>\n            <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                {{formSuccess}}\n            </div>\n            <div class=\"form-group\">\n                <div class=\"col-sm-offset-3 col-sm-8\">\n                    <button class=\"btn btn-primary\" ng-click=\"updateAccount(account)\" ng-disabled=\"accountForm.$invalid || !accountForm.$dirty\">Update Account</button>\n                    <button class=\"btn btn-danger\" ng-click=\"regenerateApiKey()\">Regenerate API Key</button>\n                </div>\n            </div>\n        </form>\n    </form>\n</div>",
                     controller: 'ControlAccountCtrl'
                 }
             )
@@ -3446,6 +3360,14 @@ module.exports = [
                     url: '/privacy',
                     template: "<div class=\"privacy panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">SnapSearch Privacy Policy</h2>\n        </div>\n        <div class=\"panel-body\">\n            <p>This Privacy Policy was last modified on March 05, 2014.</p>\n\n            <p>Golden World (au) pty ltd (\"us\", \"we\", or \"our\") operates https://snapsearch.io (the \"Site\"). This page informs you of our policies regarding the collection, use and disclosure of Personal Information we receive from users of the Site.</p>\n\n            <p>We use your Personal Information only for providing and improving the Site. By using the Site, you agree to the collection and use of information in accordance with this policy. Unless otherwise defined in this Privacy Policy, terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, accessible at https://snapsearch.io.</p>\n\n            <p><strong>Information Collection And Use</strong><br />While using our Site, we may ask you to provide us with certain personally identifiable information that can be used to contact or identify you. Personally identifiable information may include, but is not limited to, your name, email address, postal address and phone number (\"Personal Information\").</p>\n\n            <p><strong>Log Data</strong><br />Like many site operators, we collect information that your browser sends whenever you visit our Site (\"Log Data\"). This Log Data may include information such as your computer's Internet Protocol (\"IP\") address, browser type, browser version, the pages of our Site that you visit, the time and date of your visit, the time spent on those pages and other statistics.</p>\n\n            <p><strong>Cookies</strong><br />Cookies are files with small amount of data, which may include an anonymous unique identifier. Cookies are sent to your browser from a web site and stored on your computer's hard drive.</p>\n\n            <p>Like many sites, we use \"cookies\" to collect information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our Site.</p>\n\n            <p><strong>Security</strong><br />The security of your Personal Information is important to us, but remember that no method of transmission over the Internet, or method of electronic storage, is 100% secure. While we strive to use commercially acceptable means to protect your Personal Information, we cannot guarantee its absolute security.</p>\n\n            <p><strong>Links To Other Sites</strong><br />Our Site may contain links to other sites that are not operated by us. If you click on a third party link, you will be directed to that third party's site. We strongly advise you to review the Privacy Policy of every site you visit.</p>\n            \n            <p>Golden World (au) pty ltd has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third party sites or services.</p>\n\n            <p><strong>Changes To This Privacy Policy</strong><br />Golden World (au) pty ltd may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on the Site. You are advised to review this Privacy Policy periodically for any changes.</p>\n\n            <p><strong>Contact Us</strong><br />If you have any questions about this Privacy Policy, please contact us.</p>\n        </div>\n    </div>\n</div>",
                     controller: 'PrivacyCtrl'
+                }
+            )
+            .state(
+                'confirmForgottenPassword',
+                {
+                    url: '/confirm_forgotten_password?user_id&forgotten_code',
+                    template: "",
+                    controller: 'ConfirmForgottenPasswordCtrl'
                 }
             );
 
@@ -3505,6 +3427,8 @@ module.exports = {
  * Controllers
  */
 angular.module('App.Controllers', [])
+    //administrative
+    .controller('ConfirmForgottenPasswordCtrl', require('./administrative/ConfirmForgottenPasswordCtrl'))
     //common
     .controller('AppCtrl', require('./common/AppCtrl'))
     .controller('HeaderCtrl', require('./common/HeaderCtrl'))
@@ -3530,7 +3454,22 @@ angular.module('App.Controllers', [])
     .controller('PrivacyCtrl', require('./privacy/PrivacyCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./common/AppCtrl":11,"./common/HeaderCtrl":12,"./control_panel/ControlAccountCtrl":16,"./control_panel/ControlBillingCtrl":17,"./control_panel/ControlCacheCtrl":18,"./control_panel/ControlCrawlingCtrl":19,"./control_panel/ControlPanelCtrl":20,"./control_panel/ControlPaymentsCtrl":21,"./documentation/DocumentationCtrl":23,"./home/CodeGroupCtrl":24,"./home/DemoCtrl":25,"./home/HomeCtrl":26,"./pricing/CostCalculatorCtrl":27,"./pricing/PricingCtrl":28,"./privacy/PrivacyCtrl":29,"./terms/TermsCtrl":30}],11:[function(require,module,exports){
+},{"./administrative/ConfirmForgottenPasswordCtrl":11,"./common/AppCtrl":12,"./common/HeaderCtrl":14,"./control_panel/ControlAccountCtrl":18,"./control_panel/ControlBillingCtrl":19,"./control_panel/ControlCacheCtrl":20,"./control_panel/ControlCrawlingCtrl":21,"./control_panel/ControlPanelCtrl":22,"./control_panel/ControlPaymentsCtrl":23,"./documentation/DocumentationCtrl":25,"./home/CodeGroupCtrl":26,"./home/DemoCtrl":27,"./home/HomeCtrl":28,"./pricing/CostCalculatorCtrl":29,"./pricing/PricingCtrl":30,"./privacy/PrivacyCtrl":31,"./terms/TermsCtrl":32}],11:[function(require,module,exports){
+'use strict';
+
+/**
+ * Confirm Forgotten Password Controller
+ * This is where the person arrives once they get the password.
+ * 
+ * @param {Object} $scope
+ */
+module.exports = ['$scope', '$stateParams', function ($scope, $stateParams) {
+
+    var userId = $stateParams.user_id;
+    var forgottenCode = $stateParams.forgotten_code;
+
+}];
+},{}],12:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3556,7 +3495,7 @@ module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ'
     $scope.modal.signUp = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\r\n    <h3>Sign Up</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form name=\"signupForm\">\r\n        <div \r\n            class=\"form-group clearfix\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group clearfix\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group clearfix\"\r\n            ng-class=\"{\r\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.minlength\">Password is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group clearfix\" \r\n            ng-class=\"{\r\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"signupFormPasswordConfirm\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"passwordConfirm\" \r\n                    ng-model=\"user.passwordConfirm\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                    password-match=\"user.password\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\r\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group clearfix\">\r\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\r\n            <div class=\"col-sm-4\">\r\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\r\n                <span class=\"help-block\">Optional Promo Code</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>", 
+            template: "<div class=\"modal-header\">\n    <h3>Sign Up</h3>\n</div>\n<div class=\"modal-body\">\n    <form name=\"signupForm\">\n        <div \n            class=\"form-group clearfix\" \n            ng-class=\"{\n                'has-error': signupForm.username.$invalid && signupForm.username.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormUsername\">Username:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"signupFormUsername\" class=\"form-control\" type=\"text\" name=\"username\" ng-model=\"user.username\" required ng-minlength=\"2\" ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.minlength\">Username is too short</span>\n                <span class=\"help-block\" ng-show=\"signupForm.username.$error.maxlength\">Username is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group clearfix\" \n            ng-class=\"{\n                'has-error': signupForm.email.$invalid && signupForm.email.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormEmail\">Email:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"signupFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.maxlength\">Email is too long</span>\n                <span class=\"help-block\" ng-show=\"signupForm.email.$error.email\">Email is invalid</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group clearfix\"\n            ng-class=\"{\n                'has-error': signupForm.password.$invalid && signupForm.password.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormPassword\">Password:</label>\n            <div class=\"col-sm-10\">\n                <input \n                    id=\"signupFormPassword\" \n                    class=\"form-control\" \n                    type=\"password\" \n                    name=\"password\" \n                    ng-model=\"user.password\" \n                    required \n                    ng-minlength=\"6\" \n                    ng-maxlength=\"100\" \n                />\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.minlength\">Password is too short</span>\n                <span class=\"help-block\" ng-show=\"signupForm.password.$error.maxlength\">Password is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group clearfix\" \n            ng-class=\"{\n                'has-error': signupForm.passwordConfirm.$invalid && signupForm.passwordConfirm.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"signupFormPasswordConfirm\">Password Confirm:</label>\n            <div class=\"col-sm-10\">\n                <input \n                    id=\"signupFormPasswordConfirm\" \n                    class=\"form-control\" \n                    type=\"password\" \n                    name=\"passwordConfirm\" \n                    ng-model=\"user.passwordConfirm\" \n                    required \n                    ng-minlength=\"6\" \n                    ng-maxlength=\"100\" \n                    password-match=\"user.password\" \n                />\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.minlength\">Password Confirm is too short</span>\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.maxlength\">Password Confirm is too long</span>\n                <span class=\"help-block\" ng-show=\"signupForm.passwordConfirm.$error.passwordMatch\">Password Confirm doesn't match Password</span>\n            </div>\n        </div>\n        <div class=\"form-group clearfix\">\n            <label class=\"control-label col-sm-2\" for=\"signupFormCode\">Code:</label>\n            <div class=\"col-sm-4\">\n                <input id=\"signupFormCode\" class=\"form-control\" type=\"text\" name=\"code\" ng-model=\"user.code\" />\n                <span class=\"help-block\">Optional Promo Code</span>\n            </div>\n        </div>\n    </form>\n    <p>By clicking \"Sign Up\", you agree to our <a href=\"terms\" ng-click=\"cancel()\">terms of service</a> and <a href=\"privacy\" ng-click=\"cancel()\">privacy policy</a>.</p>\n    <div class=\"form-errors\" ng-show=\"formErrors\">\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n        <ul class=\"form-errors-list\">\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n        </ul>\n    </div>\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n        {{formSuccess}}\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"signup(user)\" ng-disabled=\"signupForm.$invalid\">Sign Up</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>", 
             controller: require('./SignUpModalCtrl'),
             windowClass: 'signup-modal form-modal'
         }).result.then(function () {
@@ -3568,7 +3507,7 @@ module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ'
     $scope.modal.logIn = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\r\n    <h3>Log In</h3>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"loginForm\">\r\n        <div \r\n            class=\"form-group clearfix\" \r\n            ng-class=\"{\r\n                'has-error': loginForm.email.$invalid && loginForm.email.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"loginFormEmail\">Email:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input id=\"loginFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.maxlength\">Email is too long</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.email\">Email is invalid</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group clearfix\"\r\n            ng-class=\"{\r\n                'has-error': loginForm.password.$invalid && loginForm.password.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-2\" for=\"loginFormPassword\">Password:</label>\r\n            <div class=\"col-sm-10\">\r\n                <input \r\n                    id=\"loginFormPassword\" \r\n                    class=\"form-control\" \r\n                    type=\"password\" \r\n                    name=\"password\" \r\n                    ng-model=\"user.password\" \r\n                    required \r\n                    ng-minlength=\"6\" \r\n                    ng-maxlength=\"100\" \r\n                />\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.required\">Required</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.minlength\">Password is too short</span>\r\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.maxlength\">Password is too long</span>\r\n            </div>\r\n        </div>\r\n        <div class=\"form-group clearfix\">\r\n            <div class=\"col-sm-offset-2 col-sm-10\">\r\n                <div class=\"checkbox\">\r\n                    <label>\r\n                        <input type=\"checkbox\" name=\"autologin\" ng-model=\"user.autologin\"> Remember Me\r\n                    </label>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"login(user)\" ng-disabled=\"loginForm.$invalid\">Log In</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>",
+            template: "<div class=\"modal-header\">\n    <h3>Log In</h3>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"loginForm\">\n        <div \n            class=\"form-group clearfix\" \n            ng-class=\"{\n                'has-error': loginForm.email.$invalid && loginForm.email.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"loginFormEmail\">Email:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"loginFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.maxlength\">Email is too long</span>\n                <span class=\"help-block\" ng-show=\"loginForm.email.$error.email\">Email is invalid</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group clearfix\"\n            ng-class=\"{\n                'has-error': loginForm.password.$invalid && loginForm.password.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"loginFormPassword\">Password:</label>\n            <div class=\"col-sm-10\">\n                <input \n                    id=\"loginFormPassword\" \n                    class=\"form-control\" \n                    type=\"password\" \n                    name=\"password\" \n                    ng-model=\"user.password\" \n                    required \n                    ng-minlength=\"6\" \n                    ng-maxlength=\"100\" \n                />\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.minlength\">Password is too short</span>\n                <span class=\"help-block\" ng-show=\"loginForm.password.$error.maxlength\">Password is too long</span>\n            </div>\n        </div>\n        <div class=\"form-group clearfix\">\n            <div class=\"col-sm-offset-2 col-sm-10\">\n                <div class=\"checkbox\">\n                    <label>\n                        <input type=\"checkbox\" name=\"autologin\" ng-model=\"user.autologin\"> Remember Me\n                    </label>\n                </div>\n            </div>\n        </div>\n    </form>\n    <div class=\"form-errors\" ng-show=\"formErrors\">\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n        <ul class=\"form-errors-list\">\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n        </ul>\n    </div>\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n        {{formSuccess}}\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"login(user)\" ng-disabled=\"loginForm.$invalid\">Log In</button>\n    <button class=\"btn btn-info\" ng-click=\"forgottenPassword()\">Forgot Password?</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>",
             controller: require('./LogInModalCtrl'),
             windowClass: 'login-modal form-modal'
         }).result.then(function () {
@@ -3586,7 +3525,48 @@ module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ'
     };
 
 }];
-},{"./LogInModalCtrl":13,"./SignUpModalCtrl":14,"fs":1}],12:[function(require,module,exports){
+},{"./LogInModalCtrl":15,"./SignUpModalCtrl":16,"fs":1}],13:[function(require,module,exports){
+'use strict';
+
+/**
+ * Forgotten Password Modal Controller
+ */
+module.exports = ['$scope', '$modalInstance', '$timeout', 'Restangular', function ($scope, $modalInstance, $timeout, Restangular) {
+
+    $scope.user = {};
+
+    $scope.forgot = function (user) {
+
+        $scope.formErrors = false;
+        $scope.formSuccess = false;
+
+        Restangular.all('accounts/forgotten_password/' + user.email).customGET().then(function (response) {
+            
+            $scope.formSuccess = 'Sent password reset request email. Please check your email and spam filters.'
+            $timeout(function () {
+                $modalInstance.close();
+            }, 1500);
+
+        }, function (response) {
+
+            if (typeof response.data.content == 'string') {
+                $scope.formErrors = [response.data.content];
+            } else {
+                $scope.formErrors = response.data.content;
+            }
+
+        });
+
+    };
+
+    $scope.cancel = function () {
+
+        $modalInstance.dismiss();
+    
+    };
+
+}];
+},{}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3597,13 +3577,15 @@ module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ'
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
+
+var fs = require('fs');
 
 /**
  * Login Modal Controller
  */
-module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', function ($scope, $modalInstance, $timeout, UserSystemServ) {
+module.exports = ['$scope', '$modalInstance', '$timeout', '$modal', 'UserSystemServ', function ($scope, $modalInstance, $timeout, $modal, UserSystemServ) {
 
     $scope.user = {};
 
@@ -3637,8 +3619,20 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', func
 
     };
 
+    $scope.forgottenPassword = function () {
+
+        //dimiss because close results in a transition to control panel
+        $modalInstance.dismiss();
+        $modal.open({
+            template: "<div class=\"modal-header\">\n    <h3>Forgotten Password</h3>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"forgottenPasswordForm\">\n        <div \n            class=\"form-group clearfix\" \n            ng-class=\"{\n                'has-error': forgottenPasswordForm.email.$invalid && forgottenPasswordForm.email.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-2\" for=\"forgottenPasswordFormEmail\">Email:</label>\n            <div class=\"col-sm-10\">\n                <input id=\"forgottenPasswordFormEmail\" class=\"form-control\" type=\"email\" name=\"email\" ng-model=\"user.email\" required ng-maxlength=\"100\" />\n                <span class=\"help-block\" ng-show=\"forgottenPasswordForm.email.$error.required\">Required</span>\n                <span class=\"help-block\" ng-show=\"forgottenPasswordForm.email.$error.maxlength\">Email is too long</span>\n                <span class=\"help-block\" ng-show=\"forgottenPasswordForm.email.$error.email\">Email is invalid</span>\n            </div>\n        </div>\n    </form>\n    <div class=\"form-errors\" ng-show=\"formErrors\">\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n        <ul class=\"form-errors-list\">\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n        </ul>\n    </div>\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n        {{formSuccess}}\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"forgot(user)\" ng-disabled=\"forgottenPasswordForm.$invalid\">Reset Password</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>",
+            controller: require('./ForgottenPasswordModalCtrl'),
+            windowClass: 'forgotten-password-modal form-modal'
+        });
+
+    };
+
 }];
-},{}],14:[function(require,module,exports){
+},{"./ForgottenPasswordModalCtrl":13,"fs":1}],16:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3679,7 +3673,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', func
     };
 
 }];
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3723,7 +3717,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'userId', 'Restangular
     };
 
 }];
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3792,7 +3786,7 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', function ($scope, U
     }
 
 }];
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3837,7 +3831,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
     $scope.modal.cardCreate = function () {
 
         $modal.open({
-            template: "<div class=\"modal-header\">\r\n    <h2>Create a new Credit Card</h2>\r\n    <p>Card data and Payments are processed by <a href=\"https://pin.net.au/\" target=\"_blank\">Pin Payments</a></p>\r\n</div>\r\n<div class=\"modal-body\">\r\n    <form class=\"form-horizontal\" name=\"cardForm\">\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardNumber.$invalid && cardForm.cardNumber.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardNumber\">Card Number:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardNumber\" class=\"form-control\" type=\"text\" name=\"cardNumber\" ng-model=\"card.cardNumber\" required ng-minlength=\"13\" ng-maxlength=\"16\" autocomplete=\"off\" autocapitalize=\"off\" />\r\n            </div>\r\n            <div class=\"help-messages\">\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardNumber.$error.required\">Required</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardNumber.$error.minlength\">Card number is too short</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardNumber.$error.maxlength\">Card number is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardCvc.$invalid && cardForm.cardCvc.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCvc\">Card CVC:</label>\r\n            <div class=\"col-sm-3\">\r\n                <input id=\"cardFormCardCvc\" class=\"form-control\" type=\"number\" name=\"cardCvc\" ng-model=\"card.cardCvc\" required ng-minlength=\"3\" ng-maxlength=\"4\" autocomplete=\"off\" />\r\n            </div>\r\n            <div class=\"help-messages\">\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.required\">Required</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.number\">Card CVC can only contain digits</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.minlength\">Card CVC is too short</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.maxlength\">Card CVC is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardExpiryMonth.$invalid && cardForm.cardExpiryMonth.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardExpiryMonth\">Card Expiry Month:</label>\r\n            <div class=\"col-sm-2\">\r\n                <input id=\"cardFormCardExpiryMonth\" class=\"form-control\" type=\"number\" name=\"cardExpiryMonth\" ng-model=\"card.cardExpiryMonth\" required ng-minlength=\"2\" ng-maxlength=\"2\" autocomplete=\"off\" placeholder=\"MM\" />\r\n            </div>\r\n            <div class=\"help-messages\">\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.required\">Required</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.number\">Expiry month can only contain digits</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.minlength\">Expiry month should be in 2 digit format</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.maxlength\">Expiry month should be in 2 digit format</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardExpiryYear.$invalid && cardForm.cardExpiryYear.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardExpiryYear\">Card Expiry Year:</label>\r\n            <div class=\"col-sm-3\">\r\n                <input id=\"cardFormCardExpiryYear\" class=\"form-control\" type=\"number\" name=\"cardExpiryYear\" ng-model=\"card.cardExpiryYear\" required ng-minlength=\"4\" ng-maxlength=\"4\" autocomplete=\"off\" placeholder=\"YYYY\" />\r\n            </div>\r\n            <div class=\"help-messages\">\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.required\">Required</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.number\">Expiry year can only contain digits</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.minlength\">Expiry year should be in 4 digit format</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.maxlength\">Expiry year should be in 4 digit format</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardName.$invalid && cardForm.cardName.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardName\">Card Name:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardName\" class=\"form-control\" type=\"text\" name=\"cardName\" ng-model=\"card.cardName\" required ng-minlength=\"2\" ng-maxlength=\"200\" autocomplete=\"off\" />\r\n            </div>\r\n            <div class=\"help-messages\">\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardName.$error.required\">Required</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardName.$error.minlength\">Card name is too short</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardName.$error.maxlength\">Card name is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardAddress.$invalid && cardForm.cardAddress.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardAddress\">Address:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardAddress\" class=\"form-control\" type=\"text\" name=\"cardAddress\" ng-model=\"card.cardAddress\" required ng-minlength=\"2\" ng-maxlength=\"400\" autocomplete=\"off\" />\r\n            </div>\r\n            <div class=\"help-messages\">\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardAddress.$error.required\">Required</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardAddress.$error.minlength\">Card address is too short</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardAddress.$error.maxlength\">Card address is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardPostCode.$invalid && cardForm.cardPostCode.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardPostCode\">Post Code:</label>\r\n            <div class=\"col-sm-3\">\r\n                <input id=\"cardFormCardPostCode\" class=\"form-control\" type=\"text\" name=\"cardPostCode\" ng-model=\"card.cardPostCode\" ng-maxlength=\"100\" autocomplete=\"off\" />\r\n            </div>\r\n            <div class=\"help-messages\">\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardPostCode.$error.maxlength\">Card post code is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardCity.$invalid && cardForm.cardCity.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCity\">City:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardCity\" class=\"form-control\" type=\"text\" name=\"cardCity\" ng-model=\"card.cardCity\" required ng-minlength=\"2\" ng-maxlength=\"200\" autocomplete=\"off\" />\r\n            </div>\r\n            <div class=\"help-messages\">\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCity.$error.required\">Required</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCity.$error.minlength\">Card city is too short</span>\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCity.$error.maxlength\">Card city is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardState.$invalid && cardForm.cardState.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardState\">State:</label>\r\n            <div class=\"col-sm-9\">\r\n                <input id=\"cardFormCardState\" class=\"form-control\" type=\"text\" name=\"cardState\" ng-model=\"card.cardState\" ng-maxlength=\"150\" autocomplete=\"off\" />\r\n            </div>\r\n            <div class=\"help-messages\">\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardState.$error.maxlength\">Card state is too long</span>\r\n            </div>\r\n        </div>\r\n        <div \r\n            class=\"form-group\" \r\n            ng-class=\"{\r\n                'has-error': cardForm.cardCountry.$invalid && cardForm.cardCountry.$dirty\r\n            }\"\r\n        >\r\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCountry\">Country:</label>\r\n            <div class=\"col-sm-9\">\r\n                <select id=\"cardFormCardCountry\" name=\"cardCountry\" ng-model=\"card.cardCountry\" required>\r\n                    <option disabled=\"disabled\" value=\"\">Select Country</option>\r\n                    <option value=\"AF\">Afghanistan</option>\r\n                    <option value=\"AX\">Åland Islands</option>\r\n                    <option value=\"AL\">Albania</option>\r\n                    <option value=\"DZ\">Algeria</option>\r\n                    <option value=\"AS\">American Samoa</option>\r\n                    <option value=\"AD\">Andorra</option>\r\n                    <option value=\"AO\">Angola</option>\r\n                    <option value=\"AI\">Anguilla</option>\r\n                    <option value=\"AQ\">Antarctica</option>\r\n                    <option value=\"AG\">Antigua and Barbuda</option>\r\n                    <option value=\"AR\">Argentina</option>\r\n                    <option value=\"AM\">Armenia</option>\r\n                    <option value=\"AW\">Aruba</option>\r\n                    <option value=\"AU\">Australia</option>\r\n                    <option value=\"AT\">Austria</option>\r\n                    <option value=\"AZ\">Azerbaijan</option>\r\n                    <option value=\"BS\">Bahamas</option>\r\n                    <option value=\"BH\">Bahrain</option>\r\n                    <option value=\"BD\">Bangladesh</option>\r\n                    <option value=\"BB\">Barbados</option>\r\n                    <option value=\"BY\">Belarus</option>\r\n                    <option value=\"BE\">Belgium</option>\r\n                    <option value=\"BZ\">Belize</option>\r\n                    <option value=\"BJ\">Benin</option>\r\n                    <option value=\"BM\">Bermuda</option>\r\n                    <option value=\"BT\">Bhutan</option>\r\n                    <option value=\"BO\">Bolivia</option>\r\n                    <option value=\"BA\">Bosnia and Herzegovina</option>\r\n                    <option value=\"BW\">Botswana</option>\r\n                    <option value=\"BV\">Bouvet Island</option>\r\n                    <option value=\"BR\">Brazil</option>\r\n                    <option value=\"IO\">British Indian Ocean Territory</option>\r\n                    <option value=\"BN\">Brunei Darussalam</option>\r\n                    <option value=\"BG\">Bulgaria</option>\r\n                    <option value=\"BF\">Burkina Faso</option>\r\n                    <option value=\"BI\">Burundi</option>\r\n                    <option value=\"KH\">Cambodia</option>\r\n                    <option value=\"CM\">Cameroon</option>\r\n                    <option value=\"CA\">Canada</option>\r\n                    <option value=\"CV\">Cape Verde</option>\r\n                    <option value=\"KY\">Cayman Islands</option>\r\n                    <option value=\"CF\">Central African Republic</option>\r\n                    <option value=\"TD\">Chad</option>\r\n                    <option value=\"CL\">Chile</option>\r\n                    <option value=\"CN\">China</option>\r\n                    <option value=\"CX\">Christmas Island</option>\r\n                    <option value=\"CC\">Cocos (Keeling) Islands</option>\r\n                    <option value=\"CO\">Colombia</option>\r\n                    <option value=\"KM\">Comoros</option>\r\n                    <option value=\"CG\">Congo</option>\r\n                    <option value=\"CD\">Congo, The Democratic Republic of The</option>\r\n                    <option value=\"CK\">Cook Islands</option>\r\n                    <option value=\"CR\">Costa Rica</option>\r\n                    <option value=\"CI\">Cote D'ivoire</option>\r\n                    <option value=\"HR\">Croatia</option>\r\n                    <option value=\"CU\">Cuba</option>\r\n                    <option value=\"CY\">Cyprus</option>\r\n                    <option value=\"CZ\">Czech Republic</option>\r\n                    <option value=\"DK\">Denmark</option>\r\n                    <option value=\"DJ\">Djibouti</option>\r\n                    <option value=\"DM\">Dominica</option>\r\n                    <option value=\"DO\">Dominican Republic</option>\r\n                    <option value=\"EC\">Ecuador</option>\r\n                    <option value=\"EG\">Egypt</option>\r\n                    <option value=\"SV\">El Salvador</option>\r\n                    <option value=\"GQ\">Equatorial Guinea</option>\r\n                    <option value=\"ER\">Eritrea</option>\r\n                    <option value=\"EE\">Estonia</option>\r\n                    <option value=\"ET\">Ethiopia</option>\r\n                    <option value=\"FK\">Falkland Islands (Malvinas)</option>\r\n                    <option value=\"FO\">Faroe Islands</option>\r\n                    <option value=\"FJ\">Fiji</option>\r\n                    <option value=\"FI\">Finland</option>\r\n                    <option value=\"FR\">France</option>\r\n                    <option value=\"GF\">French Guiana</option>\r\n                    <option value=\"PF\">French Polynesia</option>\r\n                    <option value=\"TF\">French Southern Territories</option>\r\n                    <option value=\"GA\">Gabon</option>\r\n                    <option value=\"GM\">Gambia</option>\r\n                    <option value=\"GE\">Georgia</option>\r\n                    <option value=\"DE\">Germany</option>\r\n                    <option value=\"GH\">Ghana</option>\r\n                    <option value=\"GI\">Gibraltar</option>\r\n                    <option value=\"GR\">Greece</option>\r\n                    <option value=\"GL\">Greenland</option>\r\n                    <option value=\"GD\">Grenada</option>\r\n                    <option value=\"GP\">Guadeloupe</option>\r\n                    <option value=\"GU\">Guam</option>\r\n                    <option value=\"GT\">Guatemala</option>\r\n                    <option value=\"GG\">Guernsey</option>\r\n                    <option value=\"GN\">Guinea</option>\r\n                    <option value=\"GW\">Guinea-bissau</option>\r\n                    <option value=\"GY\">Guyana</option>\r\n                    <option value=\"HT\">Haiti</option>\r\n                    <option value=\"HM\">Heard Island and Mcdonald Islands</option>\r\n                    <option value=\"VA\">Holy See (Vatican City State)</option>\r\n                    <option value=\"HN\">Honduras</option>\r\n                    <option value=\"HK\">Hong Kong</option>\r\n                    <option value=\"HU\">Hungary</option>\r\n                    <option value=\"IS\">Iceland</option>\r\n                    <option value=\"IN\">India</option>\r\n                    <option value=\"ID\">Indonesia</option>\r\n                    <option value=\"IR\">Iran, Islamic Republic of</option>\r\n                    <option value=\"IQ\">Iraq</option>\r\n                    <option value=\"IE\">Ireland</option>\r\n                    <option value=\"IM\">Isle of Man</option>\r\n                    <option value=\"IL\">Israel</option>\r\n                    <option value=\"IT\">Italy</option>\r\n                    <option value=\"JM\">Jamaica</option>\r\n                    <option value=\"JP\">Japan</option>\r\n                    <option value=\"JE\">Jersey</option>\r\n                    <option value=\"JO\">Jordan</option>\r\n                    <option value=\"KZ\">Kazakhstan</option>\r\n                    <option value=\"KE\">Kenya</option>\r\n                    <option value=\"KI\">Kiribati</option>\r\n                    <option value=\"KP\">Korea, Democratic People's Republic of</option>\r\n                    <option value=\"KR\">Korea, Republic of</option>\r\n                    <option value=\"KW\">Kuwait</option>\r\n                    <option value=\"KG\">Kyrgyzstan</option>\r\n                    <option value=\"LA\">Lao People's Democratic Republic</option>\r\n                    <option value=\"LV\">Latvia</option>\r\n                    <option value=\"LB\">Lebanon</option>\r\n                    <option value=\"LS\">Lesotho</option>\r\n                    <option value=\"LR\">Liberia</option>\r\n                    <option value=\"LY\">Libyan Arab Jamahiriya</option>\r\n                    <option value=\"LI\">Liechtenstein</option>\r\n                    <option value=\"LT\">Lithuania</option>\r\n                    <option value=\"LU\">Luxembourg</option>\r\n                    <option value=\"MO\">Macao</option>\r\n                    <option value=\"MK\">Macedonia, The Former Yugoslav Republic of</option>\r\n                    <option value=\"MG\">Madagascar</option>\r\n                    <option value=\"MW\">Malawi</option>\r\n                    <option value=\"MY\">Malaysia</option>\r\n                    <option value=\"MV\">Maldives</option>\r\n                    <option value=\"ML\">Mali</option>\r\n                    <option value=\"MT\">Malta</option>\r\n                    <option value=\"MH\">Marshall Islands</option>\r\n                    <option value=\"MQ\">Martinique</option>\r\n                    <option value=\"MR\">Mauritania</option>\r\n                    <option value=\"MU\">Mauritius</option>\r\n                    <option value=\"YT\">Mayotte</option>\r\n                    <option value=\"MX\">Mexico</option>\r\n                    <option value=\"FM\">Micronesia, Federated States of</option>\r\n                    <option value=\"MD\">Moldova, Republic of</option>\r\n                    <option value=\"MC\">Monaco</option>\r\n                    <option value=\"MN\">Mongolia</option>\r\n                    <option value=\"ME\">Montenegro</option>\r\n                    <option value=\"MS\">Montserrat</option>\r\n                    <option value=\"MA\">Morocco</option>\r\n                    <option value=\"MZ\">Mozambique</option>\r\n                    <option value=\"MM\">Myanmar</option>\r\n                    <option value=\"NA\">Namibia</option>\r\n                    <option value=\"NR\">Nauru</option>\r\n                    <option value=\"NP\">Nepal</option>\r\n                    <option value=\"NL\">Netherlands</option>\r\n                    <option value=\"AN\">Netherlands Antilles</option>\r\n                    <option value=\"NC\">New Caledonia</option>\r\n                    <option value=\"NZ\">New Zealand</option>\r\n                    <option value=\"NI\">Nicaragua</option>\r\n                    <option value=\"NE\">Niger</option>\r\n                    <option value=\"NG\">Nigeria</option>\r\n                    <option value=\"NU\">Niue</option>\r\n                    <option value=\"NF\">Norfolk Island</option>\r\n                    <option value=\"MP\">Northern Mariana Islands</option>\r\n                    <option value=\"NO\">Norway</option>\r\n                    <option value=\"OM\">Oman</option>\r\n                    <option value=\"PK\">Pakistan</option>\r\n                    <option value=\"PW\">Palau</option>\r\n                    <option value=\"PS\">Palestinian Territory, Occupied</option>\r\n                    <option value=\"PA\">Panama</option>\r\n                    <option value=\"PG\">Papua New Guinea</option>\r\n                    <option value=\"PY\">Paraguay</option>\r\n                    <option value=\"PE\">Peru</option>\r\n                    <option value=\"PH\">Philippines</option>\r\n                    <option value=\"PN\">Pitcairn</option>\r\n                    <option value=\"PL\">Poland</option>\r\n                    <option value=\"PT\">Portugal</option>\r\n                    <option value=\"PR\">Puerto Rico</option>\r\n                    <option value=\"QA\">Qatar</option>\r\n                    <option value=\"RE\">Reunion</option>\r\n                    <option value=\"RO\">Romania</option>\r\n                    <option value=\"RU\">Russian Federation</option>\r\n                    <option value=\"RW\">Rwanda</option>\r\n                    <option value=\"SH\">Saint Helena</option>\r\n                    <option value=\"KN\">Saint Kitts and Nevis</option>\r\n                    <option value=\"LC\">Saint Lucia</option>\r\n                    <option value=\"PM\">Saint Pierre and Miquelon</option>\r\n                    <option value=\"VC\">Saint Vincent and The Grenadines</option>\r\n                    <option value=\"WS\">Samoa</option>\r\n                    <option value=\"SM\">San Marino</option>\r\n                    <option value=\"ST\">Sao Tome and Principe</option>\r\n                    <option value=\"SA\">Saudi Arabia</option>\r\n                    <option value=\"SN\">Senegal</option>\r\n                    <option value=\"RS\">Serbia</option>\r\n                    <option value=\"SC\">Seychelles</option>\r\n                    <option value=\"SL\">Sierra Leone</option>\r\n                    <option value=\"SG\">Singapore</option>\r\n                    <option value=\"SK\">Slovakia</option>\r\n                    <option value=\"SI\">Slovenia</option>\r\n                    <option value=\"SB\">Solomon Islands</option>\r\n                    <option value=\"SO\">Somalia</option>\r\n                    <option value=\"ZA\">South Africa</option>\r\n                    <option value=\"GS\">South Georgia and The South Sandwich Islands</option>\r\n                    <option value=\"ES\">Spain</option>\r\n                    <option value=\"LK\">Sri Lanka</option>\r\n                    <option value=\"SD\">Sudan</option>\r\n                    <option value=\"SR\">Suriname</option>\r\n                    <option value=\"SJ\">Svalbard and Jan Mayen</option>\r\n                    <option value=\"SZ\">Swaziland</option>\r\n                    <option value=\"SE\">Sweden</option>\r\n                    <option value=\"CH\">Switzerland</option>\r\n                    <option value=\"SY\">Syrian Arab Republic</option>\r\n                    <option value=\"TW\">Taiwan, Province of China</option>\r\n                    <option value=\"TJ\">Tajikistan</option>\r\n                    <option value=\"TZ\">Tanzania, United Republic of</option>\r\n                    <option value=\"TH\">Thailand</option>\r\n                    <option value=\"TL\">Timor-leste</option>\r\n                    <option value=\"TG\">Togo</option>\r\n                    <option value=\"TK\">Tokelau</option>\r\n                    <option value=\"TO\">Tonga</option>\r\n                    <option value=\"TT\">Trinidad and Tobago</option>\r\n                    <option value=\"TN\">Tunisia</option>\r\n                    <option value=\"TR\">Turkey</option>\r\n                    <option value=\"TM\">Turkmenistan</option>\r\n                    <option value=\"TC\">Turks and Caicos Islands</option>\r\n                    <option value=\"TV\">Tuvalu</option>\r\n                    <option value=\"UG\">Uganda</option>\r\n                    <option value=\"UA\">Ukraine</option>\r\n                    <option value=\"AE\">United Arab Emirates</option>\r\n                    <option value=\"GB\">United Kingdom</option>\r\n                    <option value=\"US\">United States</option>\r\n                    <option value=\"UM\">United States Minor Outlying Islands</option>\r\n                    <option value=\"UY\">Uruguay</option>\r\n                    <option value=\"UZ\">Uzbekistan</option>\r\n                    <option value=\"VU\">Vanuatu</option>\r\n                    <option value=\"VE\">Venezuela</option>\r\n                    <option value=\"VN\">Viet Nam</option>\r\n                    <option value=\"VG\">Virgin Islands, British</option>\r\n                    <option value=\"VI\">Virgin Islands, U.S.</option>\r\n                    <option value=\"WF\">Wallis and Futuna</option>\r\n                    <option value=\"EH\">Western Sahara</option>\r\n                    <option value=\"YE\">Yemen</option>\r\n                    <option value=\"ZM\">Zambia</option>\r\n                    <option value=\"ZW\">Zimbabwe</option>\r\n                </select>\r\n            </div>\r\n            <div class=\"help-messages\">\r\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCountry.$error.required\">Required</span>\r\n            </div>\r\n        </div>\r\n    </form>\r\n    <div class=\"form-errors\" ng-show=\"formErrors\">\r\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\r\n        <ul class=\"form-errors-list\">\r\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\r\n        </ul>\r\n    </div>\r\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\r\n        {{formSuccess}}\r\n    </div>\r\n</div>\r\n<div class=\"modal-footer\">\r\n    <button class=\"btn btn-primary\" ng-click=\"createCard(card)\" ng-disabled=\"cardForm.$invalid\">Add Card</button>\r\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\r\n</div>",
+            template: "<div class=\"modal-header\">\n    <h2>Create a new Credit Card</h2>\n    <p>Card data and Payments are processed by <a href=\"https://pin.net.au/\" target=\"_blank\">Pin Payments</a></p>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"cardForm\">\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardNumber.$invalid && cardForm.cardNumber.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardNumber\">Card Number:</label>\n            <div class=\"col-sm-9\">\n                <input id=\"cardFormCardNumber\" class=\"form-control\" type=\"text\" name=\"cardNumber\" ng-model=\"card.cardNumber\" required ng-minlength=\"13\" ng-maxlength=\"16\" autocomplete=\"off\" autocapitalize=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardNumber.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardNumber.$error.minlength\">Card number is too short</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardNumber.$error.maxlength\">Card number is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardCvc.$invalid && cardForm.cardCvc.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCvc\">Card CVC:</label>\n            <div class=\"col-sm-3\">\n                <input id=\"cardFormCardCvc\" class=\"form-control\" type=\"number\" name=\"cardCvc\" ng-model=\"card.cardCvc\" required ng-minlength=\"3\" ng-maxlength=\"4\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.number\">Card CVC can only contain digits</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.minlength\">Card CVC is too short</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.maxlength\">Card CVC is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardExpiryMonth.$invalid && cardForm.cardExpiryMonth.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardExpiryMonth\">Card Expiry Month:</label>\n            <div class=\"col-sm-2\">\n                <input id=\"cardFormCardExpiryMonth\" class=\"form-control\" type=\"number\" name=\"cardExpiryMonth\" ng-model=\"card.cardExpiryMonth\" required ng-minlength=\"2\" ng-maxlength=\"2\" autocomplete=\"off\" placeholder=\"MM\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.number\">Expiry month can only contain digits</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.minlength\">Expiry month should be in 2 digit format</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.maxlength\">Expiry month should be in 2 digit format</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardExpiryYear.$invalid && cardForm.cardExpiryYear.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardExpiryYear\">Card Expiry Year:</label>\n            <div class=\"col-sm-3\">\n                <input id=\"cardFormCardExpiryYear\" class=\"form-control\" type=\"number\" name=\"cardExpiryYear\" ng-model=\"card.cardExpiryYear\" required ng-minlength=\"4\" ng-maxlength=\"4\" autocomplete=\"off\" placeholder=\"YYYY\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.number\">Expiry year can only contain digits</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.minlength\">Expiry year should be in 4 digit format</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.maxlength\">Expiry year should be in 4 digit format</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardName.$invalid && cardForm.cardName.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardName\">Card Name:</label>\n            <div class=\"col-sm-9\">\n                <input id=\"cardFormCardName\" class=\"form-control\" type=\"text\" name=\"cardName\" ng-model=\"card.cardName\" required ng-minlength=\"2\" ng-maxlength=\"200\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardName.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardName.$error.minlength\">Card name is too short</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardName.$error.maxlength\">Card name is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardAddress.$invalid && cardForm.cardAddress.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardAddress\">Address:</label>\n            <div class=\"col-sm-9\">\n                <input id=\"cardFormCardAddress\" class=\"form-control\" type=\"text\" name=\"cardAddress\" ng-model=\"card.cardAddress\" required ng-minlength=\"2\" ng-maxlength=\"400\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardAddress.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardAddress.$error.minlength\">Card address is too short</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardAddress.$error.maxlength\">Card address is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardPostCode.$invalid && cardForm.cardPostCode.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardPostCode\">Post Code:</label>\n            <div class=\"col-sm-3\">\n                <input id=\"cardFormCardPostCode\" class=\"form-control\" type=\"text\" name=\"cardPostCode\" ng-model=\"card.cardPostCode\" ng-maxlength=\"100\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardPostCode.$error.maxlength\">Card post code is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardCity.$invalid && cardForm.cardCity.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCity\">City:</label>\n            <div class=\"col-sm-9\">\n                <input id=\"cardFormCardCity\" class=\"form-control\" type=\"text\" name=\"cardCity\" ng-model=\"card.cardCity\" required ng-minlength=\"2\" ng-maxlength=\"200\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCity.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCity.$error.minlength\">Card city is too short</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCity.$error.maxlength\">Card city is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardState.$invalid && cardForm.cardState.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardState\">State:</label>\n            <div class=\"col-sm-9\">\n                <input id=\"cardFormCardState\" class=\"form-control\" type=\"text\" name=\"cardState\" ng-model=\"card.cardState\" ng-maxlength=\"150\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardState.$error.maxlength\">Card state is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardCountry.$invalid && cardForm.cardCountry.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCountry\">Country:</label>\n            <div class=\"col-sm-9\">\n                <select id=\"cardFormCardCountry\" name=\"cardCountry\" ng-model=\"card.cardCountry\" required>\n                    <option disabled=\"disabled\" value=\"\">Select Country</option>\n                    <option value=\"AF\">Afghanistan</option>\n                    <option value=\"AX\">Åland Islands</option>\n                    <option value=\"AL\">Albania</option>\n                    <option value=\"DZ\">Algeria</option>\n                    <option value=\"AS\">American Samoa</option>\n                    <option value=\"AD\">Andorra</option>\n                    <option value=\"AO\">Angola</option>\n                    <option value=\"AI\">Anguilla</option>\n                    <option value=\"AQ\">Antarctica</option>\n                    <option value=\"AG\">Antigua and Barbuda</option>\n                    <option value=\"AR\">Argentina</option>\n                    <option value=\"AM\">Armenia</option>\n                    <option value=\"AW\">Aruba</option>\n                    <option value=\"AU\">Australia</option>\n                    <option value=\"AT\">Austria</option>\n                    <option value=\"AZ\">Azerbaijan</option>\n                    <option value=\"BS\">Bahamas</option>\n                    <option value=\"BH\">Bahrain</option>\n                    <option value=\"BD\">Bangladesh</option>\n                    <option value=\"BB\">Barbados</option>\n                    <option value=\"BY\">Belarus</option>\n                    <option value=\"BE\">Belgium</option>\n                    <option value=\"BZ\">Belize</option>\n                    <option value=\"BJ\">Benin</option>\n                    <option value=\"BM\">Bermuda</option>\n                    <option value=\"BT\">Bhutan</option>\n                    <option value=\"BO\">Bolivia</option>\n                    <option value=\"BA\">Bosnia and Herzegovina</option>\n                    <option value=\"BW\">Botswana</option>\n                    <option value=\"BV\">Bouvet Island</option>\n                    <option value=\"BR\">Brazil</option>\n                    <option value=\"IO\">British Indian Ocean Territory</option>\n                    <option value=\"BN\">Brunei Darussalam</option>\n                    <option value=\"BG\">Bulgaria</option>\n                    <option value=\"BF\">Burkina Faso</option>\n                    <option value=\"BI\">Burundi</option>\n                    <option value=\"KH\">Cambodia</option>\n                    <option value=\"CM\">Cameroon</option>\n                    <option value=\"CA\">Canada</option>\n                    <option value=\"CV\">Cape Verde</option>\n                    <option value=\"KY\">Cayman Islands</option>\n                    <option value=\"CF\">Central African Republic</option>\n                    <option value=\"TD\">Chad</option>\n                    <option value=\"CL\">Chile</option>\n                    <option value=\"CN\">China</option>\n                    <option value=\"CX\">Christmas Island</option>\n                    <option value=\"CC\">Cocos (Keeling) Islands</option>\n                    <option value=\"CO\">Colombia</option>\n                    <option value=\"KM\">Comoros</option>\n                    <option value=\"CG\">Congo</option>\n                    <option value=\"CD\">Congo, The Democratic Republic of The</option>\n                    <option value=\"CK\">Cook Islands</option>\n                    <option value=\"CR\">Costa Rica</option>\n                    <option value=\"CI\">Cote D'ivoire</option>\n                    <option value=\"HR\">Croatia</option>\n                    <option value=\"CU\">Cuba</option>\n                    <option value=\"CY\">Cyprus</option>\n                    <option value=\"CZ\">Czech Republic</option>\n                    <option value=\"DK\">Denmark</option>\n                    <option value=\"DJ\">Djibouti</option>\n                    <option value=\"DM\">Dominica</option>\n                    <option value=\"DO\">Dominican Republic</option>\n                    <option value=\"EC\">Ecuador</option>\n                    <option value=\"EG\">Egypt</option>\n                    <option value=\"SV\">El Salvador</option>\n                    <option value=\"GQ\">Equatorial Guinea</option>\n                    <option value=\"ER\">Eritrea</option>\n                    <option value=\"EE\">Estonia</option>\n                    <option value=\"ET\">Ethiopia</option>\n                    <option value=\"FK\">Falkland Islands (Malvinas)</option>\n                    <option value=\"FO\">Faroe Islands</option>\n                    <option value=\"FJ\">Fiji</option>\n                    <option value=\"FI\">Finland</option>\n                    <option value=\"FR\">France</option>\n                    <option value=\"GF\">French Guiana</option>\n                    <option value=\"PF\">French Polynesia</option>\n                    <option value=\"TF\">French Southern Territories</option>\n                    <option value=\"GA\">Gabon</option>\n                    <option value=\"GM\">Gambia</option>\n                    <option value=\"GE\">Georgia</option>\n                    <option value=\"DE\">Germany</option>\n                    <option value=\"GH\">Ghana</option>\n                    <option value=\"GI\">Gibraltar</option>\n                    <option value=\"GR\">Greece</option>\n                    <option value=\"GL\">Greenland</option>\n                    <option value=\"GD\">Grenada</option>\n                    <option value=\"GP\">Guadeloupe</option>\n                    <option value=\"GU\">Guam</option>\n                    <option value=\"GT\">Guatemala</option>\n                    <option value=\"GG\">Guernsey</option>\n                    <option value=\"GN\">Guinea</option>\n                    <option value=\"GW\">Guinea-bissau</option>\n                    <option value=\"GY\">Guyana</option>\n                    <option value=\"HT\">Haiti</option>\n                    <option value=\"HM\">Heard Island and Mcdonald Islands</option>\n                    <option value=\"VA\">Holy See (Vatican City State)</option>\n                    <option value=\"HN\">Honduras</option>\n                    <option value=\"HK\">Hong Kong</option>\n                    <option value=\"HU\">Hungary</option>\n                    <option value=\"IS\">Iceland</option>\n                    <option value=\"IN\">India</option>\n                    <option value=\"ID\">Indonesia</option>\n                    <option value=\"IR\">Iran, Islamic Republic of</option>\n                    <option value=\"IQ\">Iraq</option>\n                    <option value=\"IE\">Ireland</option>\n                    <option value=\"IM\">Isle of Man</option>\n                    <option value=\"IL\">Israel</option>\n                    <option value=\"IT\">Italy</option>\n                    <option value=\"JM\">Jamaica</option>\n                    <option value=\"JP\">Japan</option>\n                    <option value=\"JE\">Jersey</option>\n                    <option value=\"JO\">Jordan</option>\n                    <option value=\"KZ\">Kazakhstan</option>\n                    <option value=\"KE\">Kenya</option>\n                    <option value=\"KI\">Kiribati</option>\n                    <option value=\"KP\">Korea, Democratic People's Republic of</option>\n                    <option value=\"KR\">Korea, Republic of</option>\n                    <option value=\"KW\">Kuwait</option>\n                    <option value=\"KG\">Kyrgyzstan</option>\n                    <option value=\"LA\">Lao People's Democratic Republic</option>\n                    <option value=\"LV\">Latvia</option>\n                    <option value=\"LB\">Lebanon</option>\n                    <option value=\"LS\">Lesotho</option>\n                    <option value=\"LR\">Liberia</option>\n                    <option value=\"LY\">Libyan Arab Jamahiriya</option>\n                    <option value=\"LI\">Liechtenstein</option>\n                    <option value=\"LT\">Lithuania</option>\n                    <option value=\"LU\">Luxembourg</option>\n                    <option value=\"MO\">Macao</option>\n                    <option value=\"MK\">Macedonia, The Former Yugoslav Republic of</option>\n                    <option value=\"MG\">Madagascar</option>\n                    <option value=\"MW\">Malawi</option>\n                    <option value=\"MY\">Malaysia</option>\n                    <option value=\"MV\">Maldives</option>\n                    <option value=\"ML\">Mali</option>\n                    <option value=\"MT\">Malta</option>\n                    <option value=\"MH\">Marshall Islands</option>\n                    <option value=\"MQ\">Martinique</option>\n                    <option value=\"MR\">Mauritania</option>\n                    <option value=\"MU\">Mauritius</option>\n                    <option value=\"YT\">Mayotte</option>\n                    <option value=\"MX\">Mexico</option>\n                    <option value=\"FM\">Micronesia, Federated States of</option>\n                    <option value=\"MD\">Moldova, Republic of</option>\n                    <option value=\"MC\">Monaco</option>\n                    <option value=\"MN\">Mongolia</option>\n                    <option value=\"ME\">Montenegro</option>\n                    <option value=\"MS\">Montserrat</option>\n                    <option value=\"MA\">Morocco</option>\n                    <option value=\"MZ\">Mozambique</option>\n                    <option value=\"MM\">Myanmar</option>\n                    <option value=\"NA\">Namibia</option>\n                    <option value=\"NR\">Nauru</option>\n                    <option value=\"NP\">Nepal</option>\n                    <option value=\"NL\">Netherlands</option>\n                    <option value=\"AN\">Netherlands Antilles</option>\n                    <option value=\"NC\">New Caledonia</option>\n                    <option value=\"NZ\">New Zealand</option>\n                    <option value=\"NI\">Nicaragua</option>\n                    <option value=\"NE\">Niger</option>\n                    <option value=\"NG\">Nigeria</option>\n                    <option value=\"NU\">Niue</option>\n                    <option value=\"NF\">Norfolk Island</option>\n                    <option value=\"MP\">Northern Mariana Islands</option>\n                    <option value=\"NO\">Norway</option>\n                    <option value=\"OM\">Oman</option>\n                    <option value=\"PK\">Pakistan</option>\n                    <option value=\"PW\">Palau</option>\n                    <option value=\"PS\">Palestinian Territory, Occupied</option>\n                    <option value=\"PA\">Panama</option>\n                    <option value=\"PG\">Papua New Guinea</option>\n                    <option value=\"PY\">Paraguay</option>\n                    <option value=\"PE\">Peru</option>\n                    <option value=\"PH\">Philippines</option>\n                    <option value=\"PN\">Pitcairn</option>\n                    <option value=\"PL\">Poland</option>\n                    <option value=\"PT\">Portugal</option>\n                    <option value=\"PR\">Puerto Rico</option>\n                    <option value=\"QA\">Qatar</option>\n                    <option value=\"RE\">Reunion</option>\n                    <option value=\"RO\">Romania</option>\n                    <option value=\"RU\">Russian Federation</option>\n                    <option value=\"RW\">Rwanda</option>\n                    <option value=\"SH\">Saint Helena</option>\n                    <option value=\"KN\">Saint Kitts and Nevis</option>\n                    <option value=\"LC\">Saint Lucia</option>\n                    <option value=\"PM\">Saint Pierre and Miquelon</option>\n                    <option value=\"VC\">Saint Vincent and The Grenadines</option>\n                    <option value=\"WS\">Samoa</option>\n                    <option value=\"SM\">San Marino</option>\n                    <option value=\"ST\">Sao Tome and Principe</option>\n                    <option value=\"SA\">Saudi Arabia</option>\n                    <option value=\"SN\">Senegal</option>\n                    <option value=\"RS\">Serbia</option>\n                    <option value=\"SC\">Seychelles</option>\n                    <option value=\"SL\">Sierra Leone</option>\n                    <option value=\"SG\">Singapore</option>\n                    <option value=\"SK\">Slovakia</option>\n                    <option value=\"SI\">Slovenia</option>\n                    <option value=\"SB\">Solomon Islands</option>\n                    <option value=\"SO\">Somalia</option>\n                    <option value=\"ZA\">South Africa</option>\n                    <option value=\"GS\">South Georgia and The South Sandwich Islands</option>\n                    <option value=\"ES\">Spain</option>\n                    <option value=\"LK\">Sri Lanka</option>\n                    <option value=\"SD\">Sudan</option>\n                    <option value=\"SR\">Suriname</option>\n                    <option value=\"SJ\">Svalbard and Jan Mayen</option>\n                    <option value=\"SZ\">Swaziland</option>\n                    <option value=\"SE\">Sweden</option>\n                    <option value=\"CH\">Switzerland</option>\n                    <option value=\"SY\">Syrian Arab Republic</option>\n                    <option value=\"TW\">Taiwan, Province of China</option>\n                    <option value=\"TJ\">Tajikistan</option>\n                    <option value=\"TZ\">Tanzania, United Republic of</option>\n                    <option value=\"TH\">Thailand</option>\n                    <option value=\"TL\">Timor-leste</option>\n                    <option value=\"TG\">Togo</option>\n                    <option value=\"TK\">Tokelau</option>\n                    <option value=\"TO\">Tonga</option>\n                    <option value=\"TT\">Trinidad and Tobago</option>\n                    <option value=\"TN\">Tunisia</option>\n                    <option value=\"TR\">Turkey</option>\n                    <option value=\"TM\">Turkmenistan</option>\n                    <option value=\"TC\">Turks and Caicos Islands</option>\n                    <option value=\"TV\">Tuvalu</option>\n                    <option value=\"UG\">Uganda</option>\n                    <option value=\"UA\">Ukraine</option>\n                    <option value=\"AE\">United Arab Emirates</option>\n                    <option value=\"GB\">United Kingdom</option>\n                    <option value=\"US\">United States</option>\n                    <option value=\"UM\">United States Minor Outlying Islands</option>\n                    <option value=\"UY\">Uruguay</option>\n                    <option value=\"UZ\">Uzbekistan</option>\n                    <option value=\"VU\">Vanuatu</option>\n                    <option value=\"VE\">Venezuela</option>\n                    <option value=\"VN\">Viet Nam</option>\n                    <option value=\"VG\">Virgin Islands, British</option>\n                    <option value=\"VI\">Virgin Islands, U.S.</option>\n                    <option value=\"WF\">Wallis and Futuna</option>\n                    <option value=\"EH\">Western Sahara</option>\n                    <option value=\"YE\">Yemen</option>\n                    <option value=\"ZM\">Zambia</option>\n                    <option value=\"ZW\">Zimbabwe</option>\n                </select>\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCountry.$error.required\">Required</span>\n            </div>\n        </div>\n    </form>\n    <div class=\"form-errors\" ng-show=\"formErrors\">\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n        <ul class=\"form-errors-list\">\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n        </ul>\n    </div>\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n        {{formSuccess}}\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"createCard(card)\" ng-disabled=\"cardForm.$invalid\">Add Card</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>",
             controller: require('./CardCreateModalCtrl'),
             windowClass: 'card-create-modal form-modal',
             resolve: {
@@ -3897,7 +3891,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
     }
 
 }];
-},{"./CardCreateModalCtrl":15,"fs":1}],18:[function(require,module,exports){
+},{"./CardCreateModalCtrl":17,"fs":1}],20:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -4058,7 +4052,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
     }
 
 }];
-},{"./SnapshotModalCtrl":22,"fs":1}],19:[function(require,module,exports){
+},{"./SnapshotModalCtrl":24,"fs":1}],21:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4473,7 +4467,7 @@ module.exports = [
         }
 
 }];
-},{"../../Settings":9}],20:[function(require,module,exports){
+},{"../../Settings":9}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4514,7 +4508,7 @@ module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'Cal
     }, true);
 
 }];
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4608,7 +4602,7 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', 'CalculateServ', fu
     }
 
 }];
-},{"../../Settings":9}],22:[function(require,module,exports){
+},{"../../Settings":9}],24:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4636,7 +4630,7 @@ module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', funct
     };
 
 }];
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4647,7 +4641,7 @@ module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', funct
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4665,7 +4659,7 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4719,7 +4713,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
     };
 
 }];
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4730,7 +4724,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4777,7 +4771,7 @@ module.exports = ['$scope', 'CalculateServ', function ($scope, CalculateServ) {
     });
 
 }];
-},{"../../Settings":9}],28:[function(require,module,exports){
+},{"../../Settings":9}],30:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4793,7 +4787,7 @@ module.exports = ['$scope', function ($scope) {
     $scope.freeUsageCap = settings.meta.freeUsageCap;
 
 }];
-},{"../../Settings":9}],29:[function(require,module,exports){
+},{"../../Settings":9}],31:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4802,7 +4796,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4811,7 +4805,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4828,7 +4822,7 @@ module.exports = angular.module('App.Directives')
     .directive('minValid', require('./minValid'))
     .directive('maxValid', require('./maxValid'))
     .directive('jsonChecker', require('./jsonChecker'));
-},{"./affix":32,"./anchor":33,"./equaliseHeights":34,"./jsonChecker":35,"./maxValid":36,"./minValid":37,"./passwordMatch":38,"./scroll":39}],32:[function(require,module,exports){
+},{"./affix":34,"./anchor":35,"./equaliseHeights":36,"./jsonChecker":37,"./maxValid":38,"./minValid":39,"./passwordMatch":40,"./scroll":41}],34:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4917,7 +4911,7 @@ module.exports = ['$window', '$document', function ($window, $document) {
     };
 
 }];
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -4997,7 +4991,7 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
         };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],34:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],36:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -5039,7 +5033,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],35:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],37:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5079,7 +5073,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5119,7 +5113,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5159,7 +5153,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5200,7 +5194,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5225,7 +5219,7 @@ module.exports = ['$anchorScroll', '$location', function ($anchorScroll, $locati
     };
 
 }];
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5238,7 +5232,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./chatTab":41,"./syntaxHighlight":77}],41:[function(require,module,exports){
+},{"./chatTab":43,"./syntaxHighlight":79}],43:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -5274,7 +5268,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":92}],42:[function(require,module,exports){
+},{"fs":1,"insert-css":94}],44:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -5965,7 +5959,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -6002,7 +5996,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":42,"./languages/apache.js":44,"./languages/bash.js":45,"./languages/clojure.js":46,"./languages/coffeescript.js":47,"./languages/cpp.js":48,"./languages/cs.js":49,"./languages/css.js":50,"./languages/diff.js":51,"./languages/erlang.js":52,"./languages/go.js":53,"./languages/haml.js":54,"./languages/haskell.js":55,"./languages/http.js":56,"./languages/ini.js":57,"./languages/java.js":58,"./languages/javascript.js":59,"./languages/json.js":60,"./languages/lisp.js":61,"./languages/lua.js":62,"./languages/makefile.js":63,"./languages/markdown.js":64,"./languages/nginx.js":65,"./languages/objectivec.js":66,"./languages/perl.js":67,"./languages/php.js":68,"./languages/python.js":69,"./languages/r.js":70,"./languages/ruby.js":71,"./languages/rust.js":72,"./languages/scala.js":73,"./languages/scss.js":74,"./languages/sql.js":75,"./languages/xml.js":76}],44:[function(require,module,exports){
+},{"./highlight":44,"./languages/apache.js":46,"./languages/bash.js":47,"./languages/clojure.js":48,"./languages/coffeescript.js":49,"./languages/cpp.js":50,"./languages/cs.js":51,"./languages/css.js":52,"./languages/diff.js":53,"./languages/erlang.js":54,"./languages/go.js":55,"./languages/haml.js":56,"./languages/haskell.js":57,"./languages/http.js":58,"./languages/ini.js":59,"./languages/java.js":60,"./languages/javascript.js":61,"./languages/json.js":62,"./languages/lisp.js":63,"./languages/lua.js":64,"./languages/makefile.js":65,"./languages/markdown.js":66,"./languages/nginx.js":67,"./languages/objectivec.js":68,"./languages/perl.js":69,"./languages/php.js":70,"./languages/python.js":71,"./languages/r.js":72,"./languages/ruby.js":73,"./languages/rust.js":74,"./languages/scala.js":75,"./languages/scss.js":76,"./languages/sql.js":77,"./languages/xml.js":78}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -6048,7 +6042,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -6111,7 +6105,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -6209,7 +6203,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -6340,7 +6334,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -6404,7 +6398,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -6477,7 +6471,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -6581,7 +6575,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -6621,7 +6615,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -6776,7 +6770,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -6815,7 +6809,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -6937,7 +6931,7 @@ function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -7063,7 +7057,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -7097,7 +7091,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -7127,7 +7121,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -7182,7 +7176,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -7254,7 +7248,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -7292,7 +7286,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -7368,7 +7362,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -7425,7 +7419,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -7470,7 +7464,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -7572,7 +7566,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -7653,7 +7647,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -7738,7 +7732,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -7887,7 +7881,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -7996,7 +7990,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -8080,7 +8074,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -8150,7 +8144,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -8309,7 +8303,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -8358,7 +8352,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -8417,7 +8411,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -8534,7 +8528,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],75:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -8637,7 +8631,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],76:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -8741,7 +8735,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],77:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -8819,7 +8813,7 @@ module.exports = ['$sce', function ($sce) {
     };
 
 }];
-},{"./lib/hljs/index":43,"fs":1,"insert-css":92}],78:[function(require,module,exports){
+},{"./lib/hljs/index":45,"fs":1,"insert-css":94}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8829,7 +8823,7 @@ angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters')
     .filter('booleanStyle', require('./booleanStyle'));
-},{"./booleanStyle":79}],79:[function(require,module,exports){
+},{"./booleanStyle":81}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8873,7 +8867,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],80:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8884,7 +8878,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":81}],81:[function(require,module,exports){
+},{"./UserSystem":83}],83:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8895,7 +8889,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":82,"./UserSystemServ":83}],82:[function(require,module,exports){
+},{"./UserSystemRun":84,"./UserSystemServ":85}],84:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8915,7 +8909,7 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],83:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9080,7 +9074,7 @@ module.exports = function () {
     ];
 
 };
-},{}],84:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9103,14 +9097,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     }, true);
 
 }];
-},{}],85:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],86:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 'use strict';
 
 module.exports = ['$timeout', function ($timeout) {
@@ -9142,7 +9136,7 @@ module.exports = ['$timeout', function ($timeout) {
     };
 
 }];
-},{}],87:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9179,7 +9173,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],88:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 'use strict';
 
 var moment = require("./..\\..\\..\\components\\moment\\moment.js");
@@ -9189,7 +9183,7 @@ module.exports = [function () {
     return moment;
 
 }];
-},{"./..\\..\\..\\components\\moment\\moment.js":5}],89:[function(require,module,exports){
+},{"./..\\..\\..\\components\\moment\\moment.js":5}],91:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9203,7 +9197,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],90:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9224,7 +9218,7 @@ module.exports = angular.module('App.Services')
     .service('CalculateServ', require('./CalculateServ'))
     .factory('MomentServ', require('./MomentServ'))
     .factory('BusyLoopServ', require('./BusyLoopServ'));
-},{"./AuthenticationStateRun":84,"./BaseUrlConst":85,"./BusyLoopServ":86,"./CalculateServ":87,"./MomentServ":88,"./RestangularConfig":89,"./UserSystemConfig":91}],91:[function(require,module,exports){
+},{"./AuthenticationStateRun":86,"./BaseUrlConst":87,"./BusyLoopServ":88,"./CalculateServ":89,"./MomentServ":90,"./RestangularConfig":91,"./UserSystemConfig":93}],93:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9236,7 +9230,7 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
-},{}],92:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {
