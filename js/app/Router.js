@@ -108,6 +108,14 @@ module.exports = [
                     template: fs.readFileSync(__dirname + '/../templates/privacy.html', 'utf8'),
                     controller: 'PrivacyCtrl'
                 }
+            )
+            .state(
+                'confirmForgottenPassword',
+                {
+                    url: '/confirm_forgotten_password?user_id&forgotten_code',
+                    template: fs.readFileSync(__dirname + '/../templates/confirm_forgotten_password.html', 'utf8'),
+                    controller: 'ConfirmForgottenPasswordCtrl'
+                }
             );
 
     }

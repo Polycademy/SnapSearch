@@ -3366,7 +3366,7 @@ module.exports = [
                 'confirmForgottenPassword',
                 {
                     url: '/confirm_forgotten_password?user_id&forgotten_code',
-                    template: "",
+                    template: "<div class=\"confirm-forgotten-password panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Confirm Forgotten Password</h2>\n        </div>\n        <div class=\"panel-body row\">\n            <form name=\"confirmForgottenPasswordForm\">\n                <div \n                    class=\"form-group clearfix\" \n                    ng-class=\"{\n                        'has-error': confirmForgottenPasswordForm.newPassword.$invalid && confirmForgottenPasswordForm.newPassword.$dirty\n                    }\"\n                >\n                    <label class=\"control-label col-sm-2\" for=\"confirmForgottenPasswordFormNewPassword\">New Password:</label>\n                    <div class=\"col-sm-10\">\n                        <input \n                            id=\"confirmForgottenPasswordFormNewPassword\" \n                            class=\"form-control\" \n                            type=\"password\" \n                            name=\"newPassword\" \n                            ng-model=\"user.newPassword\" \n                            required \n                            ng-minlength=\"6\" \n                            ng-maxlength=\"100\" \n                        />\n                        <span class=\"help-block\" ng-show=\"confirmForgottenPasswordForm.newPassword.$error.required\">Required</span>\n                        <span class=\"help-block\" ng-show=\"confirmForgottenPasswordForm.newPassword.$error.minlength\">New Password is too short</span>\n                        <span class=\"help-block\" ng-show=\"confirmForgottenPasswordForm.newPassword.$error.maxlength\">New Password is too long</span>\n                    </div>\n                </div>\n                <div \n                    class=\"form-group clearfix\" \n                    ng-class=\"{\n                        'has-error': confirmForgottenPasswordForm.newPasswordConfirm.$invalid && confirmForgottenPasswordForm.newPasswordConfirm.$dirty\n                    }\"\n                >\n                    <label class=\"control-label col-sm-2\" for=\"confirmForgottenPasswordFormNewPasswordConfirm\">New Password Confirm:</label>\n                    <div class=\"col-sm-10\">\n                        <input \n                            id=\"confirmForgottenPasswordFormNewPasswordConfirm\" \n                            class=\"form-control\" \n                            type=\"password\" \n                            name=\"newPasswordConfirm\" \n                            ng-model=\"user.newPasswordConfirm\" \n                            required \n                            ng-minlength=\"6\" \n                            ng-maxlength=\"100\" \n                            password-match=\"user.newPassword\" \n                        />\n                        <span class=\"help-block\" ng-show=\"confirmForgottenPasswordForm.newPasswordConfirm.$error.required\">Required</span>\n                        <span class=\"help-block\" ng-show=\"confirmForgottenPasswordForm.newPasswordConfirm.$error.minlength\">New Password Confirm is too short</span>\n                        <span class=\"help-block\" ng-show=\"confirmForgottenPasswordForm.newPasswordConfirm.$error.maxlength\">New Password Confirm is too long</span>\n                        <span class=\"help-block\" ng-show=\"confirmForgottenPasswordForm.newPasswordConfirm.$error.passwordMatch\">New Password Confirm doesn't match Password</span>\n                    </div>\n                </div>\n                <div class=\"form-errors\" ng-show=\"formErrors\">\n                    <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                    <ul class=\"form-errors-list\">\n                        <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                    </ul>\n                </div>\n                <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n                    {{formSuccess}}\n                </div>\n                <div class=\"form-group\">\n                    <div class=\"col-sm-offset-2\">\n                        <button class=\"btn btn-primary\" ng-click=\"changePassword(user)\" ng-disabled=\"confirmForgottenPasswordForm.$invalid || !confirmForgottenPasswordForm.$dirty\">Change Password</button>\n                    </div>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>",
                     controller: 'ConfirmForgottenPasswordCtrl'
                 }
             );
@@ -3463,10 +3463,42 @@ module.exports = angular.module('App.Controllers');
  * 
  * @param {Object} $scope
  */
-module.exports = ['$scope', '$stateParams', function ($scope, $stateParams) {
+module.exports = ['$scope', '$state', '$stateParams', 'Restangular', function ($scope, $state, $stateParams, Restangular) {
 
     var userId = $stateParams.user_id;
     var forgottenCode = $stateParams.forgotten_code;
+
+    $scope.user = {};
+
+    $scope.changePassword = function (user) {
+
+        $scope.formErrors = false;
+        $scope.formSuccess = false;
+
+        Restangular.all('accounts/confirm_forgotten_password').post({
+            userId: userId,
+            forgottenCode: forgottenCode,
+            newPassword: user.newPassword
+        }).then(function (response) {
+
+            $scope.formSuccess = 'Successfully Changed Password.'
+            $timeout(function () {
+                $state.go('home');
+            }, 1500);
+
+        }, function (response) {
+
+            if (typeof response.data.content == 'string') {
+                $scope.formErrors = [response.data.content];
+            } else {
+                $scope.formErrors = response.data.content;
+            }
+
+        });
+
+    };
+
+
 
 }];
 },{}],12:[function(require,module,exports){
