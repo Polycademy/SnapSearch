@@ -3463,7 +3463,7 @@ module.exports = angular.module('App.Controllers');
  * 
  * @param {Object} $scope
  */
-module.exports = ['$scope', '$state', '$stateParams', 'Restangular', function ($scope, $state, $stateParams, Restangular) {
+module.exports = ['$scope', '$state', '$stateParams', '$timeout', 'Restangular', function ($scope, $state, $stateParams, $timeout, Restangular) {
 
     var userId = $stateParams.user_id;
     var forgottenCode = $stateParams.forgotten_code;
