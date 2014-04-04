@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "5b0bfc9647a0218a3079806bc5827b53",
+    "hash": "be00f4c5b8c210ade5b947159ba81248",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -772,7 +772,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 }
             ],
             "description": "Pimple is a simple Dependency Injection Container for PHP 5.3",
@@ -816,16 +818,16 @@
         },
         {
             "name": "polycademy/polyauth",
-            "version": "0.0.13",
+            "version": "0.0.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Polycademy/PolyAuth.git",
-                "reference": "d5240eb1bf636656e70ba46b2916b202d6671f38"
+                "reference": "ab4525c0e1334b87e6e06a710c157a159b73419d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/d5240eb1bf636656e70ba46b2916b202d6671f38",
-                "reference": "d5240eb1bf636656e70ba46b2916b202d6671f38",
+                "url": "https://api.github.com/repos/Polycademy/PolyAuth/zipball/ab4525c0e1334b87e6e06a710c157a159b73419d",
+                "reference": "ab4525c0e1334b87e6e06a710c157a159b73419d",
                 "shasum": ""
             },
             "require": {
@@ -878,7 +880,7 @@
                 "sessions",
                 "user accounts"
             ],
-            "time": "2014-03-30 07:23:22"
+            "time": "2014-04-04 05:54:11"
         },
         {
             "name": "psliwa/php-pdf",
@@ -1166,7 +1168,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",

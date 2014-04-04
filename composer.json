@@ -9,7 +9,7 @@
 		"symfony/http-foundation": "~2.1",
 		"guzzle/guzzle": "3.7.4",
 		"knplabs/gaufrette": "0.1.7",
-        "polycademy/polyauth": "0.0.13",
+        "polycademy/polyauth": "0.0.14",
 		"psliwa/php-pdf": "1.2.2",
 		"phpmailer/phpmailer": "5.2.7",
 		"aws/aws-sdk-php": "2.5.1",
