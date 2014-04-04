@@ -11,6 +11,11 @@ module.exports = ['$scope', '$state', '$stateParams', 'Restangular', function ($
     var userId = $stateParams.user_id;
     var forgottenCode = $stateParams.forgotten_code;
 
+    $scope.showForm = true;
+    if (!forgottenCode || !userId) {
+        $scope.showForm = false;
+    }
+
     $scope.user = {};
 
     $scope.changePassword = function (user) {
