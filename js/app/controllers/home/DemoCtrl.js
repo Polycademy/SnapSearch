@@ -7,6 +7,15 @@
  */
 module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
 
+    $scope.demoUrls = [
+        'http://your-site.com/', 
+        'https://snapsearch.io/',
+        'http://dreamitapp.com/',
+        'http://angularjs.org/',
+        'http://www.yearofmoo.com/',
+        'http://hn.premii.com/'
+    ];
+
     /**
      * State to indicate requesting status.
      * 'never' => never requested

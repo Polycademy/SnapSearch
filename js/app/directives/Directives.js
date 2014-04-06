@@ -13,4 +13,5 @@ module.exports = angular.module('App.Directives')
     .directive('affix', require('./affix'))
     .directive('minValid', require('./minValid'))
     .directive('maxValid', require('./maxValid'))
-    .directive('jsonChecker', require('./jsonChecker'));
+    .directive('jsonChecker', require('./jsonChecker'))
+    .directive('placeholderSwitch', require('./placeholderSwitch'));
