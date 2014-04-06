@@ -46,6 +46,4 @@ module.exports = ['$scope', '$state', '$stateParams', '$timeout', 'Restangular',
 
     };
 
-
-
 }];

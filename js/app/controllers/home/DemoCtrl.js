@@ -33,13 +33,9 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
             if (response.status === 400) {
                 $scope.formErrors = response.data.content;
             } else if (response.status === 500) {
-                $scope.formErrors = [];
-                $scope.formErrors = $scope.formErrors.concat(
-                    response.data.content.robotErrors, 
-                    response.data.content.curlErrors
-                ).filter(function (value) {
-                    return value != undefined;
-                });
+                $scope.formErrors = [
+                    'Failed to scrape URL. Please try again later.'
+                ];
             }
 
         })['finally'](function () {
