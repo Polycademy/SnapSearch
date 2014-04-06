@@ -4795,7 +4795,6 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
         'https://snapsearch.io/',
         'http://dreamitapp.com/',
         'http://angularjs.org/',
-        'http://www.yearofmoo.com/',
         'http://hn.premii.com/'
     ];
 
