@@ -424,9 +424,27 @@ var processTask = function(task){
                         }, currentConfig.callback);
                     }
 
+                    var doctype = page.evaluate(function(){
+                        if(document.doctype){
+                            var doctype = "<!DOCTYPE "
+                                + document.doctype.name
+                                + (document.doctype.publicId ? ' PUBLIC "' + document.doctype.publicId + '"' : '')
+                                + (!document.doctype.publicId && document.doctype.systemId ? ' SYSTEM' : '') 
+                                + (document.doctype.systemId ? ' "' + document.doctype.systemId + '"' : '')
+                                + '>';
+                            return doctype;
+                        }else{
+                            return '';
+                        }
+                    });
+
+                    //this does not acquire the doctype
                     var html = page.evaluate(function(){
                         return document.documentElement.outerHTML;
                     });
+
+                    //add the doctype to the html
+                    html = doctype + html;
 
                     var screenshot = '';
                     if(currentConfig.screenshot){
