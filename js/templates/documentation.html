@@ -224,27 +224,27 @@ Vary: Accept-Encoding
         "callbackResult"    =&gt; "",
         "date"              =&gt; 1390382314,
         "headers"           =&gt; [
-            [
+            {
                 "name"  =&gt; "Content-Type",
                 "value" =&gt; "text/html"
-            ]
+            }
         ],
         "html"              =&gt; "&lt;html&gt;&lt;/html&gt;",
         "message"           =&gt; "Success/Failed/Validation Errors",
         "pageErrors"        =&gt; [
-            [
+            {
                 "error"   =&gt; "Error: document.querySelector(...) is null",
                 "trace"   =&gt; [
-                    [
+                    {
                         "file"      =&gt; "filename",
                         "function"  =&gt; "anonymous",
                         "line"      =&gt; "41",
                         "sourceURL" =&gt; "urltofile"
-                    ]
+                    }
                 ]
-            ]
+            }
         ],
-        "screensot"         =&gt; "BASE64 ENCODED IMAGE CONTENT",
+        "screenshot"        =&gt; "BASE64 ENCODED IMAGE CONTENT",
         "status"            =&gt; 200
     }
 }</syntax>
@@ -271,10 +271,10 @@ Transfer-Encoding: chunked
                         <h3 class="documentation-title" anchor="middleware">Middleware</h3>
                         <p>SnapSearch officially supports and provides PHP, Ruby, Node.js and Python middleware. All middleware are framework agnostic, and should be able to work within a middleware framework or without.</p>
                         <ul>
-                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-PHP">PHP</a> - 1.1.0</li>
-                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Ruby">Ruby</a> - 1.0.0</li>
-                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Node">Node.js</a> - 0.0.2</li>
-                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Python">Python</a> - 0.0.7</li>
+                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-PHP">PHP</a></li>
+                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Ruby">Ruby</a></li>
+                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Node">Node.js</a></li>
+                            <li><a href="https://github.com/SnapSearch/SnapSearch-Client-Python">Python</a></li>
                         </ul>
                         <p>These libraries first automatically detect if an HTTP request comes from a search engine or robot. If it is indeed a search engine, it sends an HTTP POST request to <code>https://snapsearch.io/api/v1/robot</code> passing in parameters configuring how SnapSearch's robot should extract your content. SnapSearch will then send a HTTP GET request to the same URL and return the HTTP response (status code, headers and content) as a JSON response to the library. The client library then returns that data back to your application. You will have to select which data to present to the search engine. It is recommended to return the status code and content but not all of the headers, due to potential header mismatch with content encoding. However if you have specific headers that are important, then first test if it works with a simple HTTP client before deploying it.</p>
                         <p>All of the middleware are open source, and we welcome pull requests for patches or new middleware implementations. Check out our <a href="https://github.com/SnapSearch/">Github organisation</a> for more.</p>
