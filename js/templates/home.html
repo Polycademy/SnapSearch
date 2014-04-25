@@ -95,24 +95,19 @@ end
                                 <syntax syntax-language="bash">npm install snapsearch-client-node</syntax>
                                 <p>Usage:</p>
                                 <syntax class="code-usage" syntax-language="javascript">// Express integration
+var express = require('express');
+var snapsearch = require('snapsearch-client-nodejs');
 
 var app = express();
-var client = new SnapSearch.Client();
-var detector = new SnapSearch.Detector();
-var interceptor = new SnapSearch.Interceptor(client, detector);
 
-app.use(function (req, res, next) {
+app.use(snapsearch.connect(
+    new snapsearch.Interceptor(
+        new snapsearch.Client('EMAIL', 'KEY'),
+        new snapsearch.Detector()
+    )
+);
 
-    interceptor.intercept(req, function (data) {
-        if (data) {
-            console.log(data);
-            res.send('Was a robot and SnapChat Intercepted it Correctly');
-        } else {
-            next();
-        }
-    });
-
-});</syntax>
+app.listen(1337);</syntax>
                                 <a class="btn btn-primary btn-fork pull-right" href="https://github.com/SnapSearch/SnapSearch-Client-Node" target="_blank">
                                     <img src="assets/img/github_mark.png" />
                                     Examples and Source on Github
@@ -371,7 +366,7 @@ if __name__ == '__main__':
                 <div class="feature-object col-sm-6 col-md-4 col-lg-3">
                     <h3 class="feature-title">Powerful Middleware</h3>
                     <img class="feature-image" src="assets/img/middleware.png" />
-                    <p class="feature-explanation">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect 196 robots. They can be configured to support custom clients.</p>
+                    <p class="feature-explanation">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect more than 200 robots. They can be configured to support custom clients.</p>
                 </div>
                 <div class="feature-object col-sm-6 col-md-4 col-lg-3">
                     <h3 class="feature-title">Flexibility</h3>
