@@ -50,6 +50,7 @@ ssh -L LOCALPORT:127.0.0.1:REMOTEPORT USER@IP
 Building App.js:
 
 browserify -t debowerify -t deglobalify -t brfs -e js/app/App.js -o js/compiled/App.js
+browserify -t debowerify -t deglobalify -t brfs -e js/app/Common.js -o js/compiled/Common.js
 
 Improvements
 ------------
