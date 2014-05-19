@@ -1,4 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+
+},{}],2:[function(require,module,exports){
 /*!
  * EventEmitter v4.2.7 - git.io/ee
  * Oliver Caldwell
@@ -472,7 +474,7 @@
 	}
 }.call(this));
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /*!
  * eventie v1.0.5
  * event binding helper
@@ -556,7 +558,7 @@ if ( typeof define === 'function' && define.amd ) {
 
 })( this );
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /*!
  * imagesLoaded v3.1.4
  * JavaScript is all like "You images are done yet or what?"
@@ -580,8 +582,8 @@ if ( typeof define === 'function' && define.amd ) {
     // CommonJS
     module.exports = factory(
       window,
-      require("./../eventEmitter/EventEmitter.js"),
-      require("./../eventie/eventie.js")
+      require("./..\\eventEmitter\\EventEmitter.js"),
+      require("./..\\eventie\\eventie.js")
     );
   } else {
     // browser global
@@ -888,7 +890,7 @@ function makeArray( obj ) {
 
 });
 
-},{"./../eventEmitter/EventEmitter.js":1,"./../eventie/eventie.js":2}],4:[function(require,module,exports){
+},{"./..\\eventEmitter\\EventEmitter.js":2,"./..\\eventie\\eventie.js":3}],5:[function(require,module,exports){
 //! moment.js
 //! version : 2.5.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -3290,7 +3292,7 @@ function makeArray( obj ) {
     }
 }).call(this);
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3334,7 +3336,7 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"./Router":6,"./Run":7,"./controllers/Controllers":9,"./directives/Directives":32,"./elements/Elements":42,"./filters/Filters":80,"./modules/Modules":82,"./services/Services":92}],6:[function(require,module,exports){
+},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":33,"./elements/Elements":43,"./filters/Filters":81,"./modules/Modules":83,"./services/Services":93}],7:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3457,7 +3459,7 @@ module.exports = [
 
     }
 ];
-},{"fs":95}],7:[function(require,module,exports){
+},{"fs":1}],8:[function(require,module,exports){
 'use strict';
 
 var settings = require('./Settings');
@@ -3492,7 +3494,7 @@ module.exports = [
 
     }
 ];
-},{"./Settings":8}],8:[function(require,module,exports){
+},{"./Settings":9}],9:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -3500,11 +3502,11 @@ module.exports = {
         email: 'enquiry@snapsearch.io',
         price: 0.002,
         freeUsageCap: 1000,
-        chatUrl: 'http://www.hipchat.com/gz6yae0iP'
+        chatUrl: 'https://app.kato.im/public#/8f0340e01b870162707d5cba254e10acfc965b3a76be55d567a9c83c8e8631d'
     },
     apiKeys: {}
 };
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3538,7 +3540,7 @@ angular.module('App.Controllers', [])
     .controller('PrivacyCtrl', require('./privacy/PrivacyCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./administrative/ConfirmForgottenPasswordCtrl":10,"./common/AppCtrl":11,"./common/HeaderCtrl":13,"./control_panel/ControlAccountCtrl":17,"./control_panel/ControlBillingCtrl":18,"./control_panel/ControlCacheCtrl":19,"./control_panel/ControlCrawlingCtrl":20,"./control_panel/ControlPanelCtrl":21,"./control_panel/ControlPaymentsCtrl":22,"./documentation/DocumentationCtrl":24,"./home/CodeGroupCtrl":25,"./home/DemoCtrl":26,"./home/HomeCtrl":27,"./pricing/CostCalculatorCtrl":28,"./pricing/PricingCtrl":29,"./privacy/PrivacyCtrl":30,"./terms/TermsCtrl":31}],10:[function(require,module,exports){
+},{"./administrative/ConfirmForgottenPasswordCtrl":11,"./common/AppCtrl":12,"./common/HeaderCtrl":14,"./control_panel/ControlAccountCtrl":18,"./control_panel/ControlBillingCtrl":19,"./control_panel/ControlCacheCtrl":20,"./control_panel/ControlCrawlingCtrl":21,"./control_panel/ControlPanelCtrl":22,"./control_panel/ControlPaymentsCtrl":23,"./documentation/DocumentationCtrl":25,"./home/CodeGroupCtrl":26,"./home/DemoCtrl":27,"./home/HomeCtrl":28,"./pricing/CostCalculatorCtrl":29,"./pricing/PricingCtrl":30,"./privacy/PrivacyCtrl":31,"./terms/TermsCtrl":32}],11:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3588,7 +3590,7 @@ module.exports = ['$scope', '$state', '$stateParams', '$timeout', 'Restangular',
     };
 
 }];
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3644,7 +3646,7 @@ module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ'
     };
 
 }];
-},{"./LogInModalCtrl":14,"./SignUpModalCtrl":15,"fs":95}],12:[function(require,module,exports){
+},{"./LogInModalCtrl":15,"./SignUpModalCtrl":16,"fs":1}],13:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3685,7 +3687,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'Restangular', functio
     };
 
 }];
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3696,7 +3698,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'Restangular', functio
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3751,7 +3753,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', '$modal', 'UserSystemS
     };
 
 }];
-},{"./ForgottenPasswordModalCtrl":12,"fs":95}],15:[function(require,module,exports){
+},{"./ForgottenPasswordModalCtrl":13,"fs":1}],16:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3792,7 +3794,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', func
     };
 
 }];
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3836,7 +3838,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'userId', 'Restangular
     };
 
 }];
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3905,7 +3907,7 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', function ($scope, U
     }
 
 }];
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -4010,7 +4012,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
     }
 
 }];
-},{"./CardCreateModalCtrl":16,"fs":95}],19:[function(require,module,exports){
+},{"./CardCreateModalCtrl":17,"fs":1}],20:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -4171,7 +4173,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
     }
 
 }];
-},{"./SnapshotModalCtrl":23,"fs":95}],20:[function(require,module,exports){
+},{"./SnapshotModalCtrl":24,"fs":1}],21:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4586,7 +4588,7 @@ module.exports = [
         }
 
 }];
-},{"../../Settings":8}],21:[function(require,module,exports){
+},{"../../Settings":9}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4627,7 +4629,7 @@ module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'Cal
     }, true);
 
 }];
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4721,7 +4723,7 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', 'CalculateServ', fu
     }
 
 }];
-},{"../../Settings":8}],23:[function(require,module,exports){
+},{"../../Settings":9}],24:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4749,7 +4751,7 @@ module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', funct
     };
 
 }];
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4760,7 +4762,7 @@ module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', funct
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4778,7 +4780,7 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4836,7 +4838,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
     };
 
 }];
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4847,7 +4849,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4894,7 +4896,7 @@ module.exports = ['$scope', 'CalculateServ', function ($scope, CalculateServ) {
     });
 
 }];
-},{"../../Settings":8}],29:[function(require,module,exports){
+},{"../../Settings":9}],30:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4910,7 +4912,7 @@ module.exports = ['$scope', function ($scope) {
     $scope.freeUsageCap = settings.meta.freeUsageCap;
 
 }];
-},{"../../Settings":8}],30:[function(require,module,exports){
+},{"../../Settings":9}],31:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4919,7 +4921,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4928,7 +4930,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4946,7 +4948,7 @@ module.exports = angular.module('App.Directives')
     .directive('maxValid', require('./maxValid'))
     .directive('jsonChecker', require('./jsonChecker'))
     .directive('placeholderSwitch', require('./placeholderSwitch'));
-},{"./affix":33,"./anchor":34,"./equaliseHeights":35,"./jsonChecker":36,"./maxValid":37,"./minValid":38,"./passwordMatch":39,"./placeholderSwitch":40,"./scroll":41}],33:[function(require,module,exports){
+},{"./affix":34,"./anchor":35,"./equaliseHeights":36,"./jsonChecker":37,"./maxValid":38,"./minValid":39,"./passwordMatch":40,"./placeholderSwitch":41,"./scroll":42}],34:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5035,10 +5037,10 @@ module.exports = ['$window', '$document', function ($window, $document) {
     };
 
 }];
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
-var imagesloaded = require("./../../../components/imagesloaded/imagesloaded.js");
+var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
 
 /**
  * Asynchronous Anchor Scroll
@@ -5115,10 +5117,10 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
     };
 
 }];
-},{"./../../../components/imagesloaded/imagesloaded.js":3}],35:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],36:[function(require,module,exports){
 'use strict';
 
-var imagesloaded = require("./../../../components/imagesloaded/imagesloaded.js");
+var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
 
 /**
  * Equalise Heights given a selector
@@ -5157,7 +5159,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./../../../components/imagesloaded/imagesloaded.js":3}],36:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],37:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5197,7 +5199,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5237,7 +5239,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5277,7 +5279,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5318,7 +5320,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5374,7 +5376,7 @@ module.exports = ['$interval', function ($interval) {
     };
 
 }];
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5399,7 +5401,7 @@ module.exports = ['$anchorScroll', '$location', function ($anchorScroll, $locati
     };
 
 }];
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5412,7 +5414,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./chatTab":43,"./syntaxHighlight":79}],43:[function(require,module,exports){
+},{"./chatTab":44,"./syntaxHighlight":80}],44:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -5448,7 +5450,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":95,"insert-css":94}],44:[function(require,module,exports){
+},{"fs":1,"insert-css":95}],45:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -6139,7 +6141,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -6176,7 +6178,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":44,"./languages/apache.js":46,"./languages/bash.js":47,"./languages/clojure.js":48,"./languages/coffeescript.js":49,"./languages/cpp.js":50,"./languages/cs.js":51,"./languages/css.js":52,"./languages/diff.js":53,"./languages/erlang.js":54,"./languages/go.js":55,"./languages/haml.js":56,"./languages/haskell.js":57,"./languages/http.js":58,"./languages/ini.js":59,"./languages/java.js":60,"./languages/javascript.js":61,"./languages/json.js":62,"./languages/lisp.js":63,"./languages/lua.js":64,"./languages/makefile.js":65,"./languages/markdown.js":66,"./languages/nginx.js":67,"./languages/objectivec.js":68,"./languages/perl.js":69,"./languages/php.js":70,"./languages/python.js":71,"./languages/r.js":72,"./languages/ruby.js":73,"./languages/rust.js":74,"./languages/scala.js":75,"./languages/scss.js":76,"./languages/sql.js":77,"./languages/xml.js":78}],46:[function(require,module,exports){
+},{"./highlight":45,"./languages/apache.js":47,"./languages/bash.js":48,"./languages/clojure.js":49,"./languages/coffeescript.js":50,"./languages/cpp.js":51,"./languages/cs.js":52,"./languages/css.js":53,"./languages/diff.js":54,"./languages/erlang.js":55,"./languages/go.js":56,"./languages/haml.js":57,"./languages/haskell.js":58,"./languages/http.js":59,"./languages/ini.js":60,"./languages/java.js":61,"./languages/javascript.js":62,"./languages/json.js":63,"./languages/lisp.js":64,"./languages/lua.js":65,"./languages/makefile.js":66,"./languages/markdown.js":67,"./languages/nginx.js":68,"./languages/objectivec.js":69,"./languages/perl.js":70,"./languages/php.js":71,"./languages/python.js":72,"./languages/r.js":73,"./languages/ruby.js":74,"./languages/rust.js":75,"./languages/scala.js":76,"./languages/scss.js":77,"./languages/sql.js":78,"./languages/xml.js":79}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -6222,7 +6224,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -6285,7 +6287,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -6383,7 +6385,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -6514,7 +6516,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -6578,7 +6580,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -6651,7 +6653,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -6755,7 +6757,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -6795,7 +6797,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -6950,7 +6952,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -6989,7 +6991,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -7111,7 +7113,7 @@ function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -7237,7 +7239,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -7271,7 +7273,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -7301,7 +7303,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -7356,7 +7358,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -7428,7 +7430,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -7466,7 +7468,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -7542,7 +7544,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -7599,7 +7601,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -7644,7 +7646,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -7746,7 +7748,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -7827,7 +7829,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -7912,7 +7914,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -8061,7 +8063,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -8170,7 +8172,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -8254,7 +8256,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -8324,7 +8326,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -8483,7 +8485,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -8532,7 +8534,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -8591,7 +8593,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -8708,7 +8710,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -8811,7 +8813,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -8915,7 +8917,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -8993,7 +8995,7 @@ module.exports = ['$sce', function ($sce) {
     };
 
 }];
-},{"./lib/hljs/index":45,"fs":95,"insert-css":94}],80:[function(require,module,exports){
+},{"./lib/hljs/index":46,"fs":1,"insert-css":95}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9003,7 +9005,7 @@ angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters')
     .filter('booleanStyle', require('./booleanStyle'));
-},{"./booleanStyle":81}],81:[function(require,module,exports){
+},{"./booleanStyle":82}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9047,7 +9049,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9058,7 +9060,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":83}],83:[function(require,module,exports){
+},{"./UserSystem":84}],84:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9069,7 +9071,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":84,"./UserSystemServ":85}],84:[function(require,module,exports){
+},{"./UserSystemRun":85,"./UserSystemServ":86}],85:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9089,7 +9091,7 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9254,7 +9256,7 @@ module.exports = function () {
     ];
 
 };
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9277,14 +9279,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     }, true);
 
 }];
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
 module.exports = ['$timeout', function ($timeout) {
@@ -9316,7 +9318,7 @@ module.exports = ['$timeout', function ($timeout) {
     };
 
 }];
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9353,17 +9355,17 @@ module.exports = [function () {
     };
 
 }];
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 'use strict';
 
-var moment = require("./../../../components/moment/moment.js");
+var moment = require("./..\\..\\..\\components\\moment\\moment.js");
 
 module.exports = [function () {
 
     return moment;
 
 }];
-},{"./../../../components/moment/moment.js":4}],91:[function(require,module,exports){
+},{"./..\\..\\..\\components\\moment\\moment.js":5}],92:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9377,7 +9379,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],92:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9398,7 +9400,7 @@ module.exports = angular.module('App.Services')
     .service('CalculateServ', require('./CalculateServ'))
     .factory('MomentServ', require('./MomentServ'))
     .factory('BusyLoopServ', require('./BusyLoopServ'));
-},{"./AuthenticationStateRun":86,"./BaseUrlConst":87,"./BusyLoopServ":88,"./CalculateServ":89,"./MomentServ":90,"./RestangularConfig":91,"./UserSystemConfig":93}],93:[function(require,module,exports){
+},{"./AuthenticationStateRun":87,"./BaseUrlConst":88,"./BusyLoopServ":89,"./CalculateServ":90,"./MomentServ":91,"./RestangularConfig":92,"./UserSystemConfig":94}],94:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9410,7 +9412,7 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
-},{}],94:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 var inserted = {};
 
 module.exports = function (css) {
@@ -9430,6 +9432,4 @@ module.exports = function (css) {
     head.appendChild(elem);
 };
 
-},{}],95:[function(require,module,exports){
-
-},{}]},{},[5])
+},{}]},{},[6])

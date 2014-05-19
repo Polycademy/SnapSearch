@@ -82286,10 +82286,10 @@ module.provider('Restangular', function() {
 /**
  * Shims and Polyfills and Utilities
  */
-require("./../../components/es5-shim/es5-shim.js");
-require("./../../components/es6-shim/es6-shim.js");
-require("./../../components/json3/lib/json3.min.js");
-global._ = require("./../../components/lodash/dist/lodash.compat.js");
+require("./..\\..\\components\\es5-shim\\es5-shim.js");
+require("./..\\..\\components\\es6-shim\\es6-shim.js");
+require("./..\\..\\components\\json3\\lib\\json3.min.js");
+global._ = require("./..\\..\\components\\lodash\\dist\\lodash.compat.js");
 
 /**
  * Globals (to be eventually converted and shimmed and compiled into common.js)
@@ -82300,25 +82300,25 @@ global._ = require("./../../components/lodash/dist/lodash.compat.js");
  * http://facebook.github.io/react/ and http://stackoverflow.com/a/21244706/582917 (and using requestAnimationFrame http://stackoverflow.com/a/21395442/582917) http://www.youtube.com/watch?v=x7cQ3mrcKaY#t=749
  * React is faster!
  */
-global.jQuery = require("./../../components/jquery/dist/jquery.js"); //jquery is a commonjs module, so we need to globalise it for other libraries
+global.jQuery = require("./..\\..\\components\\jquery\\dist\\jquery.js"); //jquery is a commonjs module, so we need to globalise it for other libraries
 require('../libraries/jquery.resize.js');
-require("./../../components/bootstrap/dist/js/bootstrap.js");
-require("./../../components/angular/angular.js");
-require("./../../components/angular-cookies/angular-cookies.js");
-require("./../../components/angular-resource/angular-resource.js");
-require("./../../components/angular-sanitize/angular-sanitize.js");
-require("./../../components/angular-animate/angular-animate.js");
-require("./../../components/restangular/dist/restangular.js");
-require("./../../components/angular-ui-router/release/angular-ui-router.js");
-require("./../../components/angular-bootstrap/ui-bootstrap-tpls.js");
-require("./../../components/angular-ui-utils/ui-utils.js");
-require("./../../components/angulartics/src/angulartics.js");
+require("./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js");
+require("./..\\..\\components\\angular\\angular.js");
+require("./..\\..\\components\\angular-cookies\\angular-cookies.js");
+require("./..\\..\\components\\angular-resource\\angular-resource.js");
+require("./..\\..\\components\\angular-sanitize\\angular-sanitize.js");
+require("./..\\..\\components\\angular-animate\\angular-animate.js");
+require("./..\\..\\components\\restangular\\dist\\restangular.js");
+require("./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js");
+require("./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js");
+require("./..\\..\\components\\angular-ui-utils\\ui-utils.js");
+require("./..\\..\\components\\angulartics\\src\\angulartics.js");
 require('../../components/angulartics/src/angulartics-ga.js');
-require("./../../components/d3/d3.js");
-require("./../../components/nvd3/nv.d3.js");
-require("./../../components/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js");
+require("./..\\..\\components\\d3\\d3.js");
+require("./..\\..\\components\\nvd3\\nv.d3.js");
+require("./..\\..\\components\\angularjs-nvd3-directives\\dist\\angularjs-nvd3-directives.js");
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../components/angulartics/src/angulartics-ga.js":10,"../libraries/jquery.resize.js":22,"./../../components/angular-animate/angular-animate.js":1,"./../../components/angular-bootstrap/ui-bootstrap-tpls.js":2,"./../../components/angular-cookies/angular-cookies.js":3,"./../../components/angular-resource/angular-resource.js":4,"./../../components/angular-sanitize/angular-sanitize.js":5,"./../../components/angular-ui-router/release/angular-ui-router.js":6,"./../../components/angular-ui-utils/ui-utils.js":7,"./../../components/angular/angular.js":8,"./../../components/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js":9,"./../../components/angulartics/src/angulartics.js":11,"./../../components/bootstrap/dist/js/bootstrap.js":12,"./../../components/d3/d3.js":13,"./../../components/es5-shim/es5-shim.js":14,"./../../components/es6-shim/es6-shim.js":15,"./../../components/jquery/dist/jquery.js":16,"./../../components/json3/lib/json3.min.js":17,"./../../components/lodash/dist/lodash.compat.js":18,"./../../components/nvd3/nv.d3.js":19,"./../../components/restangular/dist/restangular.js":20}],22:[function(require,module,exports){
+},{"../../components/angulartics/src/angulartics-ga.js":10,"../libraries/jquery.resize.js":22,"./..\\..\\components\\angular-animate\\angular-animate.js":1,"./..\\..\\components\\angular-bootstrap\\ui-bootstrap-tpls.js":2,"./..\\..\\components\\angular-cookies\\angular-cookies.js":3,"./..\\..\\components\\angular-resource\\angular-resource.js":4,"./..\\..\\components\\angular-sanitize\\angular-sanitize.js":5,"./..\\..\\components\\angular-ui-router\\release\\angular-ui-router.js":6,"./..\\..\\components\\angular-ui-utils\\ui-utils.js":7,"./..\\..\\components\\angular\\angular.js":8,"./..\\..\\components\\angularjs-nvd3-directives\\dist\\angularjs-nvd3-directives.js":9,"./..\\..\\components\\angulartics\\src\\angulartics.js":11,"./..\\..\\components\\bootstrap\\dist\\js\\bootstrap.js":12,"./..\\..\\components\\d3\\d3.js":13,"./..\\..\\components\\es5-shim\\es5-shim.js":14,"./..\\..\\components\\es6-shim\\es6-shim.js":15,"./..\\..\\components\\jquery\\dist\\jquery.js":16,"./..\\..\\components\\json3\\lib\\json3.min.js":17,"./..\\..\\components\\lodash\\dist\\lodash.compat.js":18,"./..\\..\\components\\nvd3\\nv.d3.js":19,"./..\\..\\components\\restangular\\dist\\restangular.js":20}],22:[function(require,module,exports){
 /**
 * Detect Element Resize Plugin for jQuery
 *

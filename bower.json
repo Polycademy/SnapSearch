@@ -27,7 +27,6 @@
   "resolutions": {
     "angular": "1.2.16",
     "d3": "3.3.11",
-    "moment": "~2.5.1",
-    "nvd3": "v1.1.14-beta"
+    "moment": "~2.5.1"
   }
 }
