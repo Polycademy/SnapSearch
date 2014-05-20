@@ -20,7 +20,7 @@
         <link rel="shortcut icon" href="assets/img/favicon.ico">
         <link rel="apple-touch-icon-precomposed" href="assets/img/apple-touch-icon-precomposed.png">
         
-        <link rel="stylesheet" href="assets/css/Main.css">
+        <link rel="stylesheet" href="assets/css/CompiledMain.css">
 
         <!-- TODO: Modernizr should be built in production -->
         <script src="components/modernizr/modernizr.js"></script>
@@ -44,8 +44,8 @@
         </script>
 
         <!-- Here we go! Weee! -->
-        <script src="js/compiled/Common.js"></script>
-        <script src="js/compiled/App.js" async></script>
+        <script src="js/compiled/CompiledCommon.js"></script>
+        <script src="js/compiled/CompiledApp.js" async></script>
 
     </head>
     <body class="ng-cloak" ng-cloak ng-controller="AppCtrl">
