@@ -4,6 +4,8 @@ Vagrant.configure("2") do |config|
 
     config.vm.network "forwarded_port", guest: 80, host: 8080
 
+    config.ssh.forward_agent = true
+
     # test private network
     #config.vm.network "private_network", type: "dhcp"
 
