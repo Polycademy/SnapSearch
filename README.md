@@ -5,9 +5,14 @@ sudo add-apt-repository ppa:chris-lea/node.js
 sudo apt-get update
 sudo apt-get install -y make libc6 libstdc++6 libgcc1 xvfb git python-setuptools python-pip curl nginx php5-fpm mysql-server php5-mysql php5-json php5-mcrypt php5-cli php5-curl nodejs cron
 
-(MySQL config: https://www.digitalocean.com/community/articles/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-12-04)
-(PHP FPM config: http://arstechnica.com/information-technology/2012/12/web-served-part-3-bolting-on-php-with-php-fpm/)
-(PHP-FPM Mcrypt Fix http://askubuntu.com/a/360657 | sudo ln -s /etc/php5/conf.d/mcrypt.ini /etc/php5/mods-available/mcrypt.ini | sudo php5enmod mcrypt | sudo service php5-fpm restart)
+MySQL config: 
+https://www.digitalocean.com/community/articles/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-12-04
+PHP FPM config:
+http://arstechnica.com/information-technology/2012/12/web-served-part-3-bolting-on-php-with-php-fpm/
+PHP FPM mcrypt fix:
+In < 14.04 -> http://askubuntu.com/a/360657
+In > 14.04 -> `sudo php5enmod mcrypt && sudo service php5-fpm restart`
+
 Make sure the `session_save_path()` is writable!
 
 If SlimerJS doesn't start, make sure firefox is installed
@@ -86,3 +91,31 @@ Load testing: http://jmeter.apache.org/ or Apache Bench (but for only cached req
 Based on the idea of Freemium. We should expect the 1% to pay for the 99%. We need to scale quickly, so we reduce are marginal cost as much as possible. And provide a higher usage cap!
 
 Idea: Show the number of signups. The more signups we get the lower the usage cost per use. By percentages!
+
+Planning Documents
+------------------
+
+Here we need to discuss SnapSearch's core scripting technology in terms of:
+
+ Core R&D activities
+
+Records of core R&D activities should document: 
+
+    the state of knowledge or technology that existed when the R&D was undertaken
+    the new knowledge or information concerning the creation of new or improved materials, products, devices, processes or services that was sought through the R&D
+    that the knowledge or information was not publicly available. For example, this might include:
+
+a) literature reviews
+b) patent or other searches
+c) scientific or technological reviews and articles
+d) trade journals
+
+    the proposed hypothesis (that is, the idea, theory or possible solution) being tested
+    the systematic progression of work to test the hypothesis based on the principles of established science, that is, the 'scientific method’ that was employed
+    documents detailing the experiments undertaken, the experiments’ results, the analysis of the results, and the subsequent changes implemented to the experiments.
+
+Regular progress reports against the planned milestones are important records. They provide evidence of your R&D project’s progression and record decision points.
+
+Any material changes to the purpose of your R&D project, or the hypothesis being investigated, should be documented.
+
+Development first began on mhas's repository: https://github.com/mhas16/ajax_seo/commit/0fba85b81005bad72d01cc069b03877c62f23067

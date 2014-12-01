@@ -37,7 +37,8 @@ read -p "$(tput bold)$(tput setaf 2)Setup SlimerJS? [Y/n]: $(tput sgr0)" -n 1 -r
 echo
 if [[ $DOWNLOAD_SLIMERJS =~ ^[Y]$ ]]; then
     echo "Downloading SlimerJS 0.9.0"
-    curl http://download.slimerjs.org/v0.9/0.9.0/slimerjs-0.9.0-linux-i686.tar.bz2 -o slimerjs.tar.bz2
+    curl http://download.slimerjs.org/releases/0.9.1/slimerjs-0.9.1-linux-i686.tar.bz2 -o slimerjs.tar.bz2
+    # If you want to use 64bit make sure to download http://download.slimerjs.org/releases/0.9.1/slimerjs-0.9.1-linux-x86_64.tar.bz2
     echo "Uncompressing and extracting SlimerJS into ./slimerjs"
     mkdir -p slimerjs && tar xjvf slimerjs.tar.bz2 -C slimerjs --strip-components 1
     rm slimerjs.tar.bz2
