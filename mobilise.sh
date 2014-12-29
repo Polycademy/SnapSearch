@@ -118,10 +118,10 @@ echo "Confirming root path in snapsearch.io site config"
 sudo perl -pi -e "s/root .*/root $ESCAPED_PROJECT_DIR;/g" /etc/nginx/sites-enabled/snapsearch.io
 echo "Copying SSL certificate and key to NGINX ssl directory"
 sudo mkdir -p /etc/nginx/ssl
-sudo cp secrets/snapsearch.io.pem /etc/nginx/ssl/snapsearch.io.pem
-sudo cp secrets/snapsearch.io.key /etc/nginx/ssl/snapsearch.io.key
-sudo cp secrets/dev.snapsearch.io.crt /etc/nginx/ssl/dev.snapsearch.io.crt
-sudo cp secrets/dev.snapsearch.io.key /etc/nginx/ssl/dev.snapsearch.io.key
+sudo cp -f --remove-destination secrets/snapsearch.io.pem /etc/nginx/ssl/snapsearch.io.pem
+sudo cp -f --remove-destination secrets/snapsearch.io.key /etc/nginx/ssl/snapsearch.io.key
+sudo cp -f --remove-destination secrets/dev.snapsearch.io.crt /etc/nginx/ssl/dev.snapsearch.io.crt
+sudo cp -f --remove-destination secrets/dev.snapsearch.io.key /etc/nginx/ssl/dev.snapsearch.io.key
 sudo service nginx reload
 
 # Setting up Cron Tasks
