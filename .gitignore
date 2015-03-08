@@ -22,6 +22,8 @@ slimerjs/*
 invoices/*
 !invoices/.gitkeep
 .vagrant/*
+robot_scripts/logs/*
+!robot_scripts/logs/.gitkeep
 
 #################
 ## Eclipse
