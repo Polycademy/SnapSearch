@@ -44,8 +44,8 @@
         </script>
 
         <!-- Here we go! Weee! -->
-        <script src="js/compiled/CompiledCommon.js"></script>
-        <script src="js/compiled/CompiledApp.js" async></script>
+        <script src="js/compiled/Common.js"></script>
+        <script src="js/compiled/App.js" async></script>
 
     </head>
     <body class="ng-cloak" ng-cloak ng-controller="AppCtrl">
