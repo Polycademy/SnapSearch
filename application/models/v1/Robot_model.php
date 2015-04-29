@@ -201,7 +201,7 @@ class Robot_model extends CI_Model{
 
 		//is it in test mode?
 		if(isset($parameters['test'])){
-			$test_mode = filter_var($parameters['cache'], FILTER_VALIDATE_BOOLEAN);
+			$test_mode = filter_var($parameters['test'], FILTER_VALIDATE_BOOLEAN);
 		}else{
 			$test_mode = false;
 		}
