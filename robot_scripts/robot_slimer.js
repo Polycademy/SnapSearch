@@ -53,7 +53,7 @@ var parseBooleanStyle = function(value){
 var defaultConfig = {
     ipaddress: '127.0.0.1', 
     port: 8500, 
-    numpages: 20,
+    numpages: 40,
     width: '1280', 
     height: '1024', //this can be used to facilitate scroll based pagination
     imgformat: 'png', 
