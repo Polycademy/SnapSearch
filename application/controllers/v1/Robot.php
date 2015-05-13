@@ -14,6 +14,7 @@ class Robot extends CI_Controller{
 		$this->load->model('v1/Robot_model');
 		$this->load->model('Accounts_model');
 		$this->load->model('Log_model');
+		$this->load->model('Email_model');
 
 		$ioc = $this->config->item('ioc');
 
@@ -137,9 +138,39 @@ class Robot extends CI_Controller{
 
 		$api_usage = $this->user['apiUsage'] + 1;
 
-		$this->Accounts_model->update($this->user['id'], [
-			'apiUsage'	=> $api_usage,
-		]);
+		// if apiUsage is greater than 90% of the apiLimit, we need to send an email at this point
+		$usage_percentage = ($api_usage / $this->user['apiLimit']) * 100;
+		if (!$this->user['apiUsageNotification'] && $usage_percentage > 90) {
+			
+			// send email
+			// now we need to create the template
+			// and setup cron to wipe the apiEmailNotification
+			$email = $this->Email_model->prepare_email('email/usage_notification_email', [
+				'usage'			=> $api_usage,
+				'limit'			=> $this->user['apiLimit'],
+				'percentage'	=> intval(round($usage_percentage)),
+				'username'		=> $this->user['username'],
+			]);
+
+			$this->Email_model->send_email(
+				'enquiry@snapsearch.io',
+				[$this->user['email']],
+				'SnapSearch Usage Notification',
+				$email
+			);
+
+			$this->Accounts_model->update($this->user['id'], [
+				'apiUsage'				=> $api_usage,
+				'apiUsageNotification'	=> 1
+			]);
+
+		} else {
+
+			$this->Accounts_model->update($this->user['id'], [
+				'apiUsage'	=> $api_usage,
+			]);
+
+		}
 
 	}
 

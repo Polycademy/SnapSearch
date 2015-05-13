@@ -144,12 +144,13 @@ class Cron extends CI_Controller{
 				$charge_interval = new DateInterval($user['chargeInterval']);
 				$next_charge_date = $charge_date->add($charge_interval);
 
-				//clear apiUsage, apiRequests and apiLeftOverCharge for this month and add the next month's chargeDate
+				//clear apiUsage, apiRequests, apiLeftOverCharge and apiUsageNotification for this month and add the next month's chargeDate
 				$this->Accounts_model->update($user['id'], [
-					'apiUsage'			=> 0,
-					'apiRequests'		=> 0,
-					'apiLeftOverUsage'	=> 0,
-					'apiLeftOverCharge'	=> 0,
+					'apiUsage'				=> 0,
+					'apiRequests'			=> 0,
+					'apiLeftOverUsage'		=> 0,
+					'apiLeftOverCharge'		=> 0,
+					'apiUsageNotification'	=> 0,
 					'chargeDate'		=> $next_charge_date->format('Y-m-d H:i:s'),
 				]);
 
@@ -202,7 +203,7 @@ class Cron extends CI_Controller{
 						echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending billing error email\n";
 
 						$this->Email_model->send_email(
-							'enquiry@polycademy.com',
+							'enquiry@snapsearch.io',
 							[$user['email']],
 							'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 							$email
@@ -271,7 +272,7 @@ class Cron extends CI_Controller{
 
 							//send the email
 							$this->Email_model->send_email(
-								'enquiry@polycademy.com',
+								'enquiry@snapsearch.io',
 								[$user['email']],
 								'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 								$email
@@ -331,7 +332,7 @@ class Cron extends CI_Controller{
 
 							//send the email
 							$this->Email_model->send_email(
-								'enquiry@polycademy.com',
+								'enquiry@snapsearch.io',
 								[$user['email']],
 								'SnapSearch Monthly Invoice for ' . $today->format('F') . ' ' . $today->format('Y'),
 								$email,

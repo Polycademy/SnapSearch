@@ -214,6 +214,7 @@ class Accounts_model extends CI_Model{
 			'apiRequests',
 			'apiLeftOverUsage',
 			'apiLeftOverCharge',
+			'apiUsageNotification',
 			'chargeInterval',
 			'chargeDate',
 		), $input_data, null, true);
@@ -267,6 +268,11 @@ class Accounts_model extends CI_Model{
 				'rules'	=> 'integer',
 			),
 			array(
+				'field' => 'apiUsageNotification',
+				'label'	=> 'API Usage Notification',
+				'rules'	=> 'boolean_style',
+			),
+			array(
 				'field'	=> 'chargeInterval',
 				'label'	=> 'Charge Interval',
 				'rules'	=> 'valid_date_duration',
@@ -317,6 +323,10 @@ class Accounts_model extends CI_Model{
 		//if password wasn't passed in, don't update the password
 		if(empty($data['password'])){
 			unset($data['password']);
+		}
+
+		if (isset($data['apiUsageNotification'])) {
+			$data['apiUsageNotification'] = filter_var($data['apiUsageNotification'], FILTER_VALIDATE_BOOLEAN);
 		}
 
 		try{

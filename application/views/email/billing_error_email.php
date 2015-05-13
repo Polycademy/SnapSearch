@@ -156,11 +156,11 @@
 
 					<p>Thank you for your business.</p>
 
-					<div style="color: #8f8f8f; margin-top: 20px; font-size: 12px;">
-						<p>
-							SnapSearch is an SEO interception service for advanced javascript applications provided by Polycademy. You can contact Polycademy at <a href="mailto:enquiry@polycademy.com">enquiry@polycademy.com</a>
-						</p>
-					</div>
+                    <div style="color: #8f8f8f; margin-top: 20px; font-size: 12px;">
+                        <p>
+                            SnapSearch is an SEO interception service for advanced javascript applications provided by Polycademy. You can contact SnapSearch at <a href="mailto:enquiry@snapsearch.io">enquiry@snapsearch.io</a>
+                        </p>
+                    </div>
 
 				</td>
 			</tr>

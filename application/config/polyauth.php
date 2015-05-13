@@ -151,9 +151,11 @@ $forgotten_password_email = <<<'EOD'
 
 					<p>If you do not recognise this action, just ignore this email.</p>
 
-					<div style="color: #8f8f8f; margin-top: 20px; font-size: 12px;">
-						<p>SnapSearch is Search Engine Optimisation for Javascript, HTML5 and Single Page Applications.</p>
-					</div>
+                    <div style="color: #8f8f8f; margin-top: 20px; font-size: 12px;">
+                        <p>
+                            SnapSearch is an SEO interception service for advanced javascript applications provided by Polycademy. You can contact SnapSearch at <a href="mailto:enquiry@snapsearch.io">enquiry@snapsearch.io</a>
+                        </p>
+                    </div>
 
 				</td>
 			</tr>
