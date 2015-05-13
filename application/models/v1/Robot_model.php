@@ -63,6 +63,7 @@ class Robot_model extends CI_Model{
 			'meta',
 			'cache',
 			'cachetime',
+			'refresh',
 			'test'
 		), $input_parameters, null, true);
 
@@ -150,9 +151,14 @@ class Robot_model extends CI_Model{
 				'rules'	=> 'greater_than_equal_to[1]|less_than_equal_to[200]',
 			],
 			[
+				'field'	=> 'refresh',
+				'label'	=> 'Refresh (refresh)',
+				'rules'	=> 'boolean_style',
+			],
+			[
 				'field'	=> 'test',
 				'label'	=> 'Test Mode (test)',
-				'rules'	=> 'boolean_style'
+				'rules'	=> 'boolean_style',
 			]
 		]);
 
@@ -241,13 +247,21 @@ class Robot_model extends CI_Model{
 		}
 		if(!isset($parameters['cachetime'])) $parameters['cachetime'] = 24;
 
+		//default refresh parameter of false, remove it from the parameters array to prevent it from being hashed
+		if(isset($parameters['refresh'])) {
+			$refresh = filter_var($parameters['refresh'], FILTER_VALIDATE_BOOLEAN);
+		} else {
+			$refresh = false;
+		}
+		unset($parameters['refresh']);
+
 		//we need a checksum of the parameters to compare with the cache's checksum
 		$parameters_checksum = md5(json_encode($parameters));
 
 		$existing_cache_id = false;
 		$existing_cache_name = false;
-		$cache = $this->read_cache($user_id, $parameters_checksum);
 
+		$cache = $this->read_cache($user_id, $parameters_checksum);
 		if($cache){
 
 			//we can update the cache when it's invalid
@@ -255,7 +269,12 @@ class Robot_model extends CI_Model{
 			$existing_cache_id = $cache['id'];
 			$existing_cache_name = $cache['snapshot'];
 
-			if($parameters['cache']){
+			// regardless of refresh, we still need to check the cache, to see if we need to replace the file inside the cache
+			// if the user passed cache=false, we never hit the cache at all, but we never replace the cache either
+			//if refresh was false (it is by default), we continue as normal
+			//if refresh was true, then we ignore the part, and continue to fetch a new snapshot
+			//a permanent solution would be to make the parametersChecksum a unique key, unfortunately this was done in the beginning
+			if(!$refresh && $parameters['cache']){
 
 				//valid date is the current time minus $cache_time in hours
 				$current_date = new DateTime();
@@ -360,6 +379,7 @@ class Robot_model extends CI_Model{
 
 		//recalculating the content-length headers if they exist
 		//this is because the content-length that came from the server could be different from the final resolve true length due to asynchronous content
+		//this assumes the content is UTF8, which is a good guess, but may give the wrong results if the website doesn't use UTF8
 		if(isset($response_array['headers'])){
 			foreach($response_array['headers'] as $key => $header){
 				if(strtolower($header['name']) == 'content-length'){
