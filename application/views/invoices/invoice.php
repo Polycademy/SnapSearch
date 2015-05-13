@@ -12,8 +12,8 @@
         </div>
         <div class="address">
             <h2>Polycademy</h2>
-            <p>Vibewire</p>
-            <p>525 Harris St Ultimo</p>
+            <p>Fishburners</p>
+            <p>608 Harris St Ultimo</p>
             <p>Sydney Australia</p>
             <p>Ph: +61420925975</p>
             <p>http://polycademy.com</p>
