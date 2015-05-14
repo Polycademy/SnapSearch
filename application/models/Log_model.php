@@ -2,7 +2,6 @@
 
 class Log_model extends CI_Model{
 
-    protected $purl;
     protected $errors;
 
     public function __construct(){
@@ -10,8 +9,6 @@ class Log_model extends CI_Model{
         parent::__construct();
 
         $this->load->library('form_validation', false, 'validator');
-
-        $this->purl = new \Purl\Url;
 
     }
 
@@ -69,6 +66,30 @@ class Log_model extends CI_Model{
         //date of the log is not the same as the date of the snapshot
         $data['date'] = date('Y-m-d H:i:s');
 
+        //create the canonicalUrl
+        $canonicalise = preg_match('~
+            # protocol
+            ^(?:(?:https?)://)
+            # auth
+            (?:\S+(?::\S*)?@)?
+            # ip or domain
+            (
+                (?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))
+                |
+                (?:(?:[a-z\x{00a1}-\x{ffff}0-9]-*)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]-*)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,}))
+            )
+            # port
+            (?::\d{2,5})?
+            # resource path
+            (?:/\S*)?$
+        ~xiu', $data['url'], $matches);
+
+        if ($canonicalise) {
+            $data['canonicalUrl'] = $matches[1];
+        } else {
+            $data['canonicalUrl'] = $data['url'];
+        }
+
         $query = $this->db->insert('log', $data);
 
         if(!$query){
@@ -120,6 +141,7 @@ class Log_model extends CI_Model{
                     'date'          => $row->date,
                     'type'          => $row->type,
                     'url'           => $row->url,
+                    'canonicalUrl'  => $row->canonicalUrl,
                     'responseTime'  => $row->responseTime,
                 );
 
@@ -276,44 +298,27 @@ class Log_model extends CI_Model{
 
         $cut_off_date = new DateTime($cut_off_date);
 
-        $this->db->select('url');
+        // now that we have the canonicalUrl, we're going to just count by canonicalUrl
+        // SELECT canonicalUrl AS url, count(1) AS count FROM log WHERE date > "2000-04-14 09:09:09" AND userId = 1 AND type = 'uncached' GROUP BY crc32(canonicalUrl) ORDER BY null;
+        $this->db->select('canonicalUrl AS url, COUNT(1) AS count', false);
         $this->db->from('log');
         $this->db->where('date >', $cut_off_date->format('Y-m-d H:i:s'));
         $this->db->where('userId', $user_id);
         if($type){
             $this->db->where('type', $type);
         }
+        $this->db->group_by('crc32(canonicalUrl)');
+        $this->db->order_by('null', null, false); // needs to be false escaping, otherwise it tries escaping null, which makes MySQL think it's a column
 
         $query = $this->db->get();
 
         if($query->num_rows() > 0){
 
-            $domain_count = [];
-
-            foreach($query->result() as $row){
-
-                $this->purl->setUrl($row->url);
-
-                $subdomain = $this->purl->subdomain;
-                $domain = $this->purl->registerableDomain;
-
-                if($subdomain){
-                    $domain_id = $subdomain . '.' . $domain;
-                }else{
-                    $domain_id = $domain;
-                }
-
-                //if it already exists, increment the count
-                //if not then setup the count
-                if(isset($domain_count[$domain_id])){
-                    $domain_count[$domain_id]++;
-                }else{
-                    $domain_count[$domain_id] = 1;
-                }
-
+            foreach($query->result() as $row) {
+                $data[$row->url] = $row->count;
             }
 
-            return $domain_count;
+            return $data;
 
         }else{
 
