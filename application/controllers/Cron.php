@@ -204,7 +204,7 @@ class Cron extends CI_Controller{
 
 						$this->Email_model->send_email(
 							'enquiry@snapsearch.io',
-							[$user['email']],
+							[$user['email'], 'enquiry@snapsearch.io'],
 							'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 							$email
 						);
@@ -273,7 +273,7 @@ class Cron extends CI_Controller{
 							//send the email
 							$this->Email_model->send_email(
 								'enquiry@snapsearch.io',
-								[$user['email']],
+								[$user['email'], 'enquiry@snapsearch.io'],
 								'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 								$email
 							);
@@ -310,10 +310,21 @@ class Cron extends CI_Controller{
 
 							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created invoice\n";
 
-							//['invoiceNumber', 'invoiceFile']
+							//should return ['invoiceNumber', 'invoiceFile']
 							$invoice_data = $this->Invoices_model->create($payment_history, true);
-							$invoice_number = $invoice_data['invoiceNumber'];
-							$invoice_file = $invoice_data['invoiceFile'];
+
+							// if invoice data didn't get saved, we just set the invoice_number to be a error message, and we don't send an invoice attachment, however we still save the payment history, and this is important!
+							if ($invoice_data) {
+
+								$invoice_number = $invoice_data['invoiceNumber'];
+								$invoice_file = $invoice_data['invoiceFile'];
+
+							} else {
+
+								$invoice_number = "Invoice Creation Failed";
+								$invoice_file = false;
+
+							}
 
 							//store a record to the invoice number in the payment history
 							$payment_history['invoiceNumber'] = $invoice_number;
@@ -330,17 +341,33 @@ class Cron extends CI_Controller{
 
 							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending invoice email\n";
 
-							//send the email
-							$this->Email_model->send_email(
-								'enquiry@snapsearch.io',
-								[$user['email']],
-								'SnapSearch Monthly Invoice for ' . $today->format('F') . ' ' . $today->format('Y'),
-								$email,
-								null,
-								[
-									'SnapSearch Invoice for ' . $today->format('F') . ' ' . $today->format('Y') . '.pdf'	=> $invoice_file
-								]
-							);
+							if ($invoice_file) {
+
+								//send the email with the invoice attached
+								$this->Email_model->send_email(
+									'enquiry@snapsearch.io',
+									[$user['email'], 'enquiry@snapsearch.io'],
+									'SnapSearch Monthly Invoice for ' 
+										. $today->format('F') . ' ' 
+										. $today->format('Y'),
+									$email,
+									null,
+									[
+										'SnapSearch Invoice for ' . $today->format('F') . ' ' . $today->format('Y') . '.pdf'	=> $invoice_file
+									]
+								);
+
+							} else {
+
+								//send the email with no invoice attached
+								$this->Email_model->send_email(
+									'enquiry@snapsearch.io',
+									[$user['email'], 'enquiry@snapsearch.io'],
+									'SnapSearch Monthly Invoice for ' . $today->format('F') . ' ' . $today->format('Y'),
+									$email
+								);
+
+							}
 
 						}
 
