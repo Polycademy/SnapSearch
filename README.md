@@ -15,7 +15,7 @@ In > 14.04 -> `sudo php5enmod mcrypt && sudo service php5-fpm restart`
 
 Make sure the `session_save_path()` is writable!
 
-If SlimerJS doesn't start, make sure firefox is installed
+If SlimerJS doesn't start, make sure firefox is installed: `sudo apt-get install firefox`.
 
 easy_install supervisor
 easy_install httpie
@@ -30,6 +30,10 @@ mv composer.phar /usr/local/bin/composer
 Robot Service (can be modified inside supervisord.conf in robot_scripts, but make sure to update the NGINX configuration to load balance more than 4 robot services):
 
 Change index.php development to production if necessary.
+
+Change the the SlimerJS download to either 32bit or 64bit depending on your architecture.
+
+You need WebServerConfiguration. And setup NGINX from there.
 
 FOR PHP:
 Setup firewall once server is up!
@@ -121,3 +125,10 @@ Regular progress reports against the planned milestones are important records. T
 Any material changes to the purpose of your R&D project, or the hypothesis being investigated, should be documented.
 
 Development first began on mhas's repository: https://github.com/mhas16/ajax_seo/commit/0fba85b81005bad72d01cc069b03877c62f23067
+
+Testing
+-------
+
+```
+http --verbose POST https://snapsearch.io/api/v1/robot url=http://localhost:1337/ --auth EMAIL:KEY
+```
