@@ -57,6 +57,30 @@ class Cron extends CI_Controller{
 
 	}
 
+	public function backup() {
+	
+		$database = $_ENV['secrets']['database_name'];
+		$username = $_ENV['secrets']['database_user'];
+		$password = $_ENV['secrets']['database_pass'];
+
+		$command = "mysqldump -u $username -p$password $database | gzip | aws s3 cp - s3://snapsearch/mysql_backup/`date +\%d\%m\%y`.sql.gz --acl authenticated-read --sse --expires `date --date='next year' +\%Y-\%m-\%d` 2>&1";
+
+		exec(
+			$command,
+			$output,
+			$exit
+		);
+
+		$today = new DateTime;
+
+		if ($exit == 0) {
+			echo $today->format('Y-m-d H:i:s') . ' - Successful backup' . "\n";
+		} else {
+			echo $today->format('Y-m-d H:i:s') . ' - Unsuccessful backup, error: ' . implode("\n", $output)  . "\n";
+		}
+
+	}
+
 	/**
 	 * This function will be ran from the Cron service. Make sure this is done well and no bugs!
 	 */
