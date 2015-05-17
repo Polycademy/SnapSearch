@@ -98,7 +98,10 @@ class Billing extends CI_Controller{
 			'code'		=> $code,
 		);
 
-		Template::compose(false, $output, 'json');
+		// we cannot use the Template::compose function, as that converts all string-like integers into integers
+		// including "0000" which is a possible card hint
+		header('Content-type: application/json');
+		echo json_encode($output);
 
 	}
 
@@ -141,7 +144,10 @@ class Billing extends CI_Controller{
 			'code'		=> $code,
 		);
 		
-		Template::compose(false, $output, 'json');
+		// we cannot use the Template::compose function, as that converts all string-like integers into integers
+		// including "0000" which is a possible card hint
+		header('Content-type: application/json');
+		echo json_encode($output);
 
 	}
 
@@ -313,7 +319,7 @@ class Billing extends CI_Controller{
 			}else{
 
 				$query = $this->Billing_model->delete($id);
-				$content = $id;
+				$content = (int) $id;
 				$code = 'success';
 
 			}

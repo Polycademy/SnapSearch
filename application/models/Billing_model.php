@@ -104,7 +104,7 @@ class Billing_model extends CI_Model{
 		
 		}
 
-		return $this->db->insert_id();
+		return (int) $this->db->insert_id();
 
 	}
 
@@ -117,13 +117,13 @@ class Billing_model extends CI_Model{
 			$row = $query->row();
 
 			$data = array(
-				'id'				=> $row->id,
-				'userId'			=> $row->userId,
-				'cardHint'			=> "{$row->cardHint}",
-				'customerToken'		=> $row->customerToken,
-				'active'			=> $row->active,
-				'cardInvalid'		=> $row->cardInvalid,
-				'cardInvalidReason'	=> $row->cardInvalidReason,
+				'id'				=> (int) $row->id,
+				'userId'			=> (int) $row->userId,
+				'cardHint'			=> (string) $row->cardHint,
+				'customerToken'		=> (string) $row->customerToken,
+				'active'			=> (int) $row->active,
+				'cardInvalid'		=> (int) $row->cardInvalid,
+				'cardInvalidReason'	=> (string) $row->cardInvalidReason,
 			);
 
 			return $data;
@@ -165,13 +165,13 @@ class Billing_model extends CI_Model{
 			foreach($query->result() as $row){
 
 				$data[] = array(
-					'id'				=> $row->id,
-					'userId'			=> $row->userId,
-					'cardHint'			=> "{$row->cardHint}",
-					'customerToken'		=> $row->customerToken,
-					'active'			=> $row->active,
-					'cardInvalid'		=> $row->cardInvalid,
-					'cardInvalidReason'	=> $row->cardInvalidReason,
+					'id'				=> (int) $row->id,
+					'userId'			=> (int) $row->userId,
+					'cardHint'			=> (string) $row->cardHint,
+					'customerToken'		=> (string) $row->customerToken,
+					'active'			=> (int) $row->active,
+					'cardInvalid'		=> (int) $row->cardInvalid,
+					'cardInvalidReason'	=> (string) $row->cardInvalidReason,
 				);
 
 			}
