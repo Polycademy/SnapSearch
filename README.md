@@ -20,6 +20,8 @@ If SlimerJS doesn't start, make sure firefox is installed: `sudo apt-get install
 easy_install supervisor
 easy_install httpie
 
+The easy_install of httpie seems to stop working once you install pip and awscli. Workaround, `sudo apt-get install httpie`.
+
 npm install -g bower
 npm install -g grunt-cli
 
@@ -58,10 +60,10 @@ ssh -L LOCALPORT:127.0.0.1:REMOTEPORT USER@IP
 
 Building App.js (swapping for cache busting):
 
-browserify -t debowerify -t deglobalify -t brfs -e js/app/App.js -o js/compiled/CompiledApp.js
 browserify -t debowerify -t deglobalify -t brfs -e js/app/App.js -o js/compiled/App.js
-browserify -t debowerify -t deglobalify -t brfs -e js/app/Common.js -o js/compiled/CompiledCommon.js
 browserify -t debowerify -t deglobalify -t brfs -e js/app/Common.js -o js/compiled/Common.js
+minify js/compiled/App.js
+minify js/compiled/Common.js
 
 Improvements
 ------------
