@@ -258,7 +258,7 @@ module.exports = [
 
         var getHistoryStats = function (userAccount) {
 
-            var domainDistinctionDuration = 'P1Y';
+            var domainDistinctionDuration = 'P30D';
 
             //right now we're only utilising the beginning
             $scope.domainDistinctionDate = {
