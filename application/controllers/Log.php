@@ -85,7 +85,7 @@ class Log extends CI_Controller{
 
                 if(!$date){
                     $date = new DateTime;
-                    $date->sub(new DateInterval('P1Y'));
+                    $date->sub(new DateInterval('P30D'));
                     $date = $date->format('Y-m-d H:i:s');
                 }
                 $query = $this->Log_model->read_by_domain($user_id, $date, $type);
