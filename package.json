@@ -8,6 +8,7 @@
     "debowerify": "~0.6.0",
     "deglobalify": "~0.2.0",
     "brfs": "~1.0.0",
-    "insert-css": "~0.1.1"
+    "insert-css": "~0.1.1",
+    "minifier": "~0.6.2"
   }
 }
