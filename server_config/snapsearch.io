@@ -116,6 +116,11 @@ server {
     rewrite ^/(.*)$ /index.php?/$1 last;
   }
 
+  # prevent access to special directories
+  location ~* ^/(?:secrets|application|robot_scripts|server_config|startup_scripts|system|vendor|components|node_modules|bin|Vagrantfile) {
+    deny all;
+  }
+
   # Fallback on front controller pattern if it cannot find files or directories matching the uri
   location / {
     try_files $uri $uri/ /index.php;
@@ -200,6 +205,11 @@ server {
   # Send all requests that are not going to a file, directory or symlink to front controllers
   if (!-e $request_filename) {
     rewrite ^/(.*)$ /index.php?/$1 last;
+  }
+
+  # prevent access to special directories
+  location ~* ^/(?:secrets|application|robot_scripts|server_config|startup_scripts|system|vendor|components|node_modules|bin|Vagrantfile) {
+    deny all;
   }
 
   # Fallback on front controller pattern if it cannot find files or directories matching the uri
