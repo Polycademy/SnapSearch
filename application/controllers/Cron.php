@@ -81,6 +81,45 @@ class Cron extends CI_Controller{
 
 	}
 
+	public function purge_sessions () {
+
+		// This is a total hack. But yea... can't do anything until SnapSearch-II
+		// Session files are stored in var/lib/php5/0fea6a13c52b4d47/25368f24b045ca84
+		// 0fea6a13c52b4d47/25368f24b045ca84 is created from md5('cache')
+		// 'cache' is hardcoded by the tedivm cache library
+
+		$today = new \DateTime;
+
+		$polyauth_config = $this->config->item('polyauth');
+
+		if (!empty($polyauth_config['session_save_path'])) {
+			$save_path = $polyauth_config['session_save_path'];
+		} else {
+			$save_path = session_save_path();
+		}
+
+		$save_path = rtrim($save_path, '/') .  "/0fea6a13c52b4d47/25368f24b045ca84/";
+
+		$dir = new \RecursiveDirectoryIterator($save_path, \FilesystemIterator::SKIP_DOTS);
+
+		// recurses on the children before recursing on the directory
+		foreach (new \RecursiveIteratorIterator($dir, \RecursiveIteratorIterator::CHILD_FIRST) as $filename => $file) {
+
+			if ($file->isFile()) {
+				include ($filename);
+				$expiration_date = new \DateTime();
+				$expiration_date->setTimestamp($expiration);
+				if ($expiration_date < $today) {
+					unlink($filename);
+				}
+			} elseif ($file->isDir()) {
+				rmdir ($filename);
+			}
+		
+		}
+
+	}
+
 	/**
 	 * This function will be ran from the Cron service. Make sure this is done well and no bugs!
 	 */

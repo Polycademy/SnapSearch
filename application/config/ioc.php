@@ -97,7 +97,7 @@ $ioc['PolyAuth\Authentication\CookieStrategy'] = $ioc->share(function($c){
 		new PolyAuth\Sessions\SessionManager(
 			$c['PolyAuth\Options'], 
 			$c['PolyAuth\Language'], 
-			new PolyAuth\Sessions\Persistence\FileSystemPersistence
+			new PolyAuth\Sessions\Persistence\FileSystemPersistence(null, null, $c['PolyAuth\Options'])
 		)
 	);
 });

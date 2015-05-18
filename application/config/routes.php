@@ -68,9 +68,12 @@ Pigeon::map(function($r){
 		//php index.php cli cron monthly_tracking
 		$r->route('cron/monthly_tracking', 'cron#monthly_tracking');
 
-		//Monthly backup
+		//Weekly backup
 		//php index.php cli cron backup
 		$r->route('cron/backup', 'cron#backup');
+
+		//Weekly session purge
+		$r->route('cron/purge_sessions', 'cron#purge_sessions');
 
 		$r->route('cron/test', 'cron#test');
 		
