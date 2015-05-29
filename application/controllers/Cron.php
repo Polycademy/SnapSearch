@@ -102,6 +102,9 @@ class Cron extends CI_Controller{
 
 		$dir = new \RecursiveDirectoryIterator($save_path, \FilesystemIterator::SKIP_DOTS);
 
+		$file_count = 0;
+		$dir_count = 0;
+
 		// recurses on the children before recursing on the directory
 		foreach (new \RecursiveIteratorIterator($dir, \RecursiveIteratorIterator::CHILD_FIRST) as $filename => $file) {
 
@@ -110,13 +113,17 @@ class Cron extends CI_Controller{
 				$expiration_date = new \DateTime();
 				$expiration_date->setTimestamp($expiration);
 				if ($expiration_date < $today) {
+					$file_count++;
 					unlink($filename);
 				}
 			} elseif ($file->isDir()) {
+				$dir_count++;
 				rmdir ($filename);
 			}
 		
 		}
+
+		echo $today->format('Y-m-d H:i:s') . " - Purged sessions with $file_count files and $dir_count directories.\n";
 
 	}
 
