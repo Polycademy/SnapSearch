@@ -56,8 +56,6 @@ class Robot extends CI_Controller{
 
 		}else{
 
-			$this->update_api_requests();
-
 			$user_id = $this->user['id'];
 
 			$start_time = (integer) round(microtime(true));
@@ -69,7 +67,9 @@ class Robot extends CI_Controller{
 				//only update the api usage if it wasn't a cached response, which means the value is identical to false
 				//if the cache value is null, then it was in test mode
 				if(isset($query['cache']) AND $query['cache'] === false){
-					$this->update_api_usage();
+					$this->update_api_count('usages');
+				} else {
+					$this->update_api_count('usages', 'requests');
 				}
 
 				$this->update_log($parameters, $query, $end_time - $start_time);
@@ -124,51 +124,63 @@ class Robot extends CI_Controller{
 
 	}
 
-	protected function update_api_requests(){
+	protected function update_api_count ($usages = null, $requests = null) {
 
-		$api_requests = $this->user['apiRequests'] + 1;
+		if (!$usages && !$requests) {
+			return;
+		}
 
-		$this->Accounts_model->update($this->user['id'], [
-			'apiRequests'	=> $api_requests,
-		]);
+		// support atomic concurrent increments to the apiRequests summary counter
+		// also update the user in-memory cache state
 
-	}
+		if ($usages) {
+			$this->Robot_model->update_api_usages($this->user['id']);
+			$this->user['apiUsages'] = $this->user['apiUsages'] + 1;
+		}
 
-	protected function update_api_usage(){
-
-		$api_usage = $this->user['apiUsage'] + 1;
+		if ($requests) {
+			$this->Robot_model->update_api_requests($this->user['id'])
+			$this->user['apiRequests'] = $this->user['apiRequests'] + 1;
+		}
 
 		// if apiUsage is greater than 90% of the apiLimit, we need to send an email at this point
 		$usage_percentage = ($api_usage / $this->user['apiLimit']) * 100;
+
 		if (!$this->user['apiUsageNotification'] && $usage_percentage > 90) {
+
+			// the FOR UPDATE modifier allows a blocking select inside a transaction
+			// it will not let other concurrent selects return until its data has been updated
+			$select_sql = "SELECT apiUsageNotification FROM user_accounts WHERE id = ? FOR UPDATE";
+			$update_sql = "UPDATE user_accounts SET apiUsageNotification = 1 WHERE id = ?";
 			
-			// send email
-			// now we need to create the template
-			// and setup cron to wipe the apiEmailNotification
-			$email = $this->Email_model->prepare_email('email/usage_notification_email', [
-				'usage'			=> $api_usage,
-				'limit'			=> $this->user['apiLimit'],
-				'percentage'	=> intval(round($usage_percentage)),
-				'username'		=> $this->user['username'],
-			]);
+			$this->db->trans_start();
+			$query = $this->db->query($select_sql, array($this->user['id']));
+			$this->db->query($update_sql, array($this->user['id']));
+			$this->db->trans_complete();
 
-			$this->Email_model->send_email(
-				'enquiry@snapsearch.io',
-				[$this->user['email']],
-				'SnapSearch Usage Notification',
-				$email
-			);
+			$current_api_usage_notification = $query->row()->apiUsageNotification;
 
-			$this->Accounts_model->update($this->user['id'], [
-				'apiUsage'				=> $api_usage,
-				'apiUsageNotification'	=> 1
-			]);
+			// now we know what the real current_api_usage_notification is
+			if (!intval($current_api_usage_notification)) {
 
-		} else {
+				// send email
+				// now we need to create the template
+				// and setup cron to wipe the apiEmailNotification
+				$email = $this->Email_model->prepare_email('email/usage_notification_email', [
+					'usage'			=> $api_usage,
+					'limit'			=> $this->user['apiLimit'],
+					'percentage'	=> intval(round($usage_percentage)),
+					'username'		=> $this->user['username'],
+				]);
 
-			$this->Accounts_model->update($this->user['id'], [
-				'apiUsage'	=> $api_usage,
-			]);
+				$this->Email_model->send_email(
+					'enquiry@snapsearch.io',
+					[$this->user['email']],
+					'SnapSearch Usage Notification',
+					$email
+				);
+
+			}
 
 		}
 

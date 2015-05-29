@@ -564,6 +564,32 @@ class Robot_model extends CI_Model{
 
 	}
 
+	public function update_api_requests ($user_id) {
+
+		$sql = "UPDATE user_accounts SET apiRequests = apiRequests + 1 WHERE id = ?";
+		$this->db->query($sql, array($user_id));
+
+		if ($this->db->affected_rows() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public function update_api_usages ($user_id) {
+
+		$sql = "UPDATE user_accounts SET apiUsage = apiUsage + 1 WHERE id = ?";
+		$query = $this->db->query($sql, array($user_id));
+
+		if ($this->db->affected_rows() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
 	protected function is_redirect($status){
 
 		//shim for null status https://github.com/laurentj/slimerjs/issues/167
