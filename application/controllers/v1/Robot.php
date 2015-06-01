@@ -67,9 +67,9 @@ class Robot extends CI_Controller{
 				//only update the api usage if it wasn't a cached response, which means the value is identical to false
 				//if the cache value is null, then it was in test mode
 				if(isset($query['cache']) AND $query['cache'] === false){
-					$this->update_api_count('usages');
+					$this->update_api_count('usages', 'requests'); // if uncached, then usage + request
 				} else {
-					$this->update_api_count('usages', 'requests');
+					$this->update_api_count(null, 'requests'); // if cached or test, then just request
 				}
 
 				$this->update_log($parameters, $query, $end_time - $start_time);
@@ -135,16 +135,16 @@ class Robot extends CI_Controller{
 
 		if ($usages) {
 			$this->Robot_model->update_api_usages($this->user['id']);
-			$this->user['apiUsages'] = $this->user['apiUsages'] + 1;
+			$this->user['apiUsage'] = $this->user['apiUsage'] + 1;
 		}
 
 		if ($requests) {
-			$this->Robot_model->update_api_requests($this->user['id'])
+			$this->Robot_model->update_api_requests($this->user['id']);
 			$this->user['apiRequests'] = $this->user['apiRequests'] + 1;
 		}
 
 		// if apiUsage is greater than 90% of the apiLimit, we need to send an email at this point
-		$usage_percentage = ($api_usage / $this->user['apiLimit']) * 100;
+		$usage_percentage = ($this->user['apiUsage'] / $this->user['apiLimit']) * 100;
 
 		if (!$this->user['apiUsageNotification'] && $usage_percentage > 90) {
 

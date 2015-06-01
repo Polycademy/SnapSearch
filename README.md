@@ -134,3 +134,11 @@ Testing
 ```
 http --verbose POST https://snapsearch.io/api/v1/robot url=http://localhost:1337/ --auth EMAIL:KEY
 ```
+
+Concurrent Testing:
+
+Set X to number of jobs. Y to number of concurrent jobs. Parallel jobs is still limited to your number of cores.
+
+```
+seq X | parallel -n0 -jY "curl -s -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"http://httpbin.org/ip\"}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot"
+```

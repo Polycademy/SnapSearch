@@ -117,8 +117,13 @@ class Cron extends CI_Controller{
 					unlink($filename);
 				}
 			} elseif ($file->isDir()) {
-				$dir_count++;
-				rmdir ($filename);
+				// will only remove the directory if it has no children
+				// returns false when it cannot delete
+				switch (rmdir($filename)) {
+					case true:
+						$dir_count++;
+						break;
+				}
 			}
 		
 		}
