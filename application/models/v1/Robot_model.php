@@ -148,7 +148,7 @@ class Robot_model extends CI_Model{
 			[
 				'field'	=> 'cachetime',
 				'label'	=> 'Cache time (cachetime)',
-				'rules'	=> 'greater_than_equal_to[1]|less_than_equal_to[200]',
+				'rules'	=> 'greater_than_equal_to[1]|less_than_equal_to[720]',
 			],
 			[
 				'field'	=> 'refresh',
