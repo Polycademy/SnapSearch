@@ -255,39 +255,47 @@ class Robot_model extends CI_Model{
 		}
 		unset($parameters['refresh']);
 
+		//canonicalise the parameters, so we get the same parameter checksum for the same content, and not for different ordering
+		ksort($parameters);
+
 		//we need a checksum of the parameters to compare with the cache's checksum
 		$parameters_checksum = md5(json_encode($parameters));
 
+		// if cache == true, we try to read the cache
+		// if cache == false, we skip trying to read the cache
+		// also we don't cache the generated snapshot either
+		// it's as if the cache never existed
+		// also pass in the refresh parameter to make the read_cache function realise there's no need to call amazon s3
+		if ($parameters['cache']) {
+			$cache = $this->read_cache($user_id, $parameters_checksum, $parameters['cachetime'], $refresh);
+		} else {
+			$cache = false;
+		}
+
+		// initialise these to false
+		// if the cache did not exist at all
+		// then we cannot update
 		$existing_cache_id = false;
 		$existing_cache_name = false;
 
-		$cache = $this->read_cache($user_id, $parameters_checksum);
+		// a simpler solution would be making parameterChecksum a unique key, and always using UPSERT
+		// but this is not available now.
 		if($cache){
 
-			//we can update the cache when it's invalid
-			//but also it can still be used if we run against an error
-			$existing_cache_id = $cache['id'];
-			$existing_cache_name = $cache['snapshot'];
+			// if the cache is fresh, and refresh == false
+			// then we just return the cache, and end execution
+			if ($cache['status'] == 'fresh' AND !$refresh) {
 
-			// regardless of refresh, we still need to check the cache, to see if we need to replace the file inside the cache
-			// if the user passed cache=false, we never hit the cache at all, but we never replace the cache either
-			//if refresh was false (it is by default), we continue as normal
-			//if refresh was true, then we ignore the part, and continue to fetch a new snapshot
-			//a permanent solution would be to make the parametersChecksum a unique key, unfortunately this was done in the beginning
-			if(!$refresh && $parameters['cache']){
-
-				//valid date is the current time minus $cache_time in hours
-				$current_date = new DateTime();
-				$valid_date = $current_date->sub(new DateInterval('PT' . $parameters['cachetime'] . 'H'))->format('Y-m-d H:i:s');
-
-				//the cache's date of entry has to be more recent or equal to the valid date
-				if(strtotime($cache['date']) >= strtotime($valid_date)){
-					$response_array = json_decode($cache['snapshotData'], true);
-					$response_array['cache'] = true;
-					return $response_array;
-				}
+				$response_array = json_decode($cache['data']['snapshotData'], true);
+				$response_array['cache'] = true;
+				return $response_array;
 
 			}
+
+			// if the cache expired or refresh == true
+			// then can update the existing cache
+			$existing_cache_id = $cache['data']['id'];
+			$existing_cache_name = $cache['data']['snapshot'];
 
 		}
 
@@ -405,16 +413,13 @@ class Robot_model extends CI_Model{
 
 	}
 
-	public function read_cache($user_id, $parameters_checksum){
+	public function read_cache($user_id, $parameters_checksum, $parameters_cachetime, $refresh){
 
-		//get the snapshot record for the relevant user and url
-		$query = $this->db->get_where(
-			'snapshots', 
-			array(
-				'userId' 				=> $user_id, 
-				'parametersChecksum'	=> $parameters_checksum,
-			)
-		);
+		// get the snapshot record where it has a particular user id, and a particular checksum
+		$this->db->where('userId', $user_id);
+		$this->db->where('parametersChecksum', $parameters_checksum);
+
+		$query = $this->db->get('snapshots');
 
 		if($query->num_rows() > 0){
 			
@@ -428,17 +433,46 @@ class Robot_model extends CI_Model{
 				'parametersChecksum'	=> $row->parametersChecksum
 			];
 
-			$snapshot_file = new File($data['snapshot'], $this->filesystem);
+			// database stores the time where snapshot was created
+			// this looks for where sql_time >= (current_time - cachetime_period)
+			$valid_timestamp = (new DateTime())->sub(new DateInterval('PT' . $parameters_cachetime . 'H'))->getTimeStamp();
 
-			if(!$snapshot_file->exists()){
-				$this->delete_cache($data['id']);
-				return false;
+			if (strtotime($data['date']) >= $valid_timestamp) {
+				// fresh
+
+				// do this section ONLY if refresh == false
+				// if we are refreshing, there's no need to acquire the actual snapshot data
+				// because we don't use the actual snapshot data at all
+				// we have enough information from our own database to return
+				if (!$refresh) {
+
+					$snapshot_file = new File($data['snapshot'], $this->filesystem);
+
+					if(!$snapshot_file->exists()){
+						$this->delete_cache($data['id']);
+						return false;
+					}
+
+					$snapshot_data = bzdecompress($snapshot_file->getContent());
+					$data['snapshotData'] = $snapshot_data;
+
+				}
+
+				return [
+					'status'	=> 'fresh',
+					'data'		=> $data,
+				];
+
+
+			} else {
+				//expired
+
+				return [
+					'status' 	=> 'expired',
+					'data' 		=> $data,
+				];
+
 			}
-
-			$snapshot_data = bzdecompress($snapshot_file->getContent());
-			$data['snapshotData'] = $snapshot_data;
-
-			return $data;
 			
 		}else{
 		
