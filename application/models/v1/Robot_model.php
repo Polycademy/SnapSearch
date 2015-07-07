@@ -261,30 +261,27 @@ class Robot_model extends CI_Model{
 		//we need a checksum of the parameters to compare with the cache's checksum
 		$parameters_checksum = md5(json_encode($parameters));
 
+		// this will be the date that is assigned to snapshots 
+		// it corresponds to starting the snapshot creation process 
+		// this allows a more accurate comparison of snapshot event order
+		$snapshot_generation_datetime = date('Y-m-d H:i:s');
+
 		// if cache == true, we try to read the cache
 		// if cache == false, we skip trying to read the cache
 		// also we don't cache the generated snapshot either
 		// it's as if the cache never existed
 		// also pass in the refresh parameter to make the read_cache function realise there's no need to call amazon s3
-		if ($parameters['cache']) {
-			$cache = $this->read_cache($user_id, $parameters_checksum, $parameters['cachetime'], $refresh);
-		} else {
-			$cache = false;
-		}
+		// also pass in the snapshot generation datetime to see if the cache has expired
+		if ($parameters['cache'] AND !$refresh) {
+			
+			$cache = $this->read_cache(
+				$user_id, 
+				$parameters_checksum, 
+				$parameters['cachetime'], 
+				$snapshot_generation_datetime
+			);
 
-		// initialise these to false
-		// if the cache did not exist at all
-		// then we cannot update
-		$existing_cache_id = false;
-		$existing_cache_name = false;
-
-		// a simpler solution would be making parameterChecksum a unique key, and always using UPSERT
-		// but this is not available now.
-		if($cache){
-
-			// if the cache is fresh, and refresh == false
-			// then we just return the cache, and end execution
-			if ($cache['status'] == 'fresh' AND !$refresh) {
+			if ($cache AND $cache['status'] == 'fresh') {
 
 				$response_array = json_decode($cache['data']['snapshotData'], true);
 				$response_array['cache'] = true;
@@ -292,12 +289,122 @@ class Robot_model extends CI_Model{
 
 			}
 
-			// if the cache expired or refresh == true
-			// then can update the existing cache
-			$existing_cache_id = $cache['data']['id'];
-			$existing_cache_name = $cache['data']['snapshot'];
+			// the cache may be false or expired
+
+		} else {
+
+			$cache = false;
 
 		}
+
+
+		// OK so we have the cache now.
+		// We need to check if the cache is recent enough to send it over.
+		// If it's not, we proceed to regenerate the snapshot and run an upsert.
+
+
+		// REMOVED due to upsert
+		// initialise these to false
+		// if the cache did not exist at all
+		// then we cannot update
+		// $existing_cache_id = false;
+		// $existing_cache_name = false;
+		// REMOVED
+
+		// REMOVED due to simplification
+		// a simpler solution would be making parameterChecksum a unique key, and always using UPSERT
+		// but this is not available now.
+		// if($cache){
+		// REMOVED
+
+			// if the cache is fresh, and refresh == false
+			// then we just return the cache, and end execution
+			// if ($cache AND $cache['status'] == 'fresh' AND !$refresh) {
+
+			// 	$response_array = json_decode($cache['data']['snapshotData'], true);
+			// 	$response_array['cache'] = true;
+			// 	return $response_array;
+
+			// }
+
+			// REMOVED due to upsert
+			// if the cache expired or refresh == true
+			// then can update the existing cache
+			// $existing_cache_id = $cache['data']['id'];
+			// $existing_cache_name = $cache['data']['snapshot'];
+			// REMOVED
+
+		// REMOVED due to simplification
+		// }
+		// REMOVED
+
+		// acquire a lock if expired, if or refresh is true
+		// if we can't acquire the lock, return the stale data
+		// the regen_lock is equivalent to an exclusive write lock
+		// test this! I don't know if this works, and if it's "0" or 0
+		// we only do this if parameters['cache'] is true
+		if ($parameters['cache']) {
+
+			$regen_lock = $this->db->query("SELECT GET_LOCK('snapsearch_$parameters_checksum', 0)");
+			if ($regen_lock->row(0) == 0) {
+
+				// if the lock is not free
+				// if stale data exists, return stale data, else try to acquire the lock
+				// any refresh requests would have its cache being false, so it would never read from the cache
+				if ($cache) {
+
+					// return stale cache
+					$response_array = json_decode($cache['data']['snapshotData'], true);
+					$response_array['cache'] = true;
+					return $response_array;
+				
+				} else {
+
+					// we need to wait for the cache to finish regenerating, max time of 33 seconds, since totaltimeout is limited to 30 seconds
+					$regen_lock = $this->db->query("SELECT GET_LOCK('snapsearch_$parameters_checksum', 33)");
+					if ($regen_lock->row(0) == 1) {
+						// got the lock, so we can reread the cache, release the lock, and return the response
+
+						// if the refresh is true, we don't bother with the cache at all
+						if (!$refresh) {
+
+							$cache = $this->read_cache(
+								$user_id, 
+								$parameters_checksum, 
+								$parameters['cachetime'], 
+								$snapshot_generation_datetime
+							);
+
+							// rereading the cache might fail, because the the regeneration thread might have failed
+							// if it failed, we proceed to try and regenerate the cache ourselves
+
+							// it really can't be expired at this point, but we might as well check
+							if ($cache AND $cache['status'] == 'fresh') {
+
+								$this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
+								$response_array = json_decode($cache['data']['snapshotData'], true);
+								$response_array['cache'] = true;
+								return $response_array;
+
+							}
+
+						}
+
+					} else {
+
+						// lock acquisition timed out, this is when we fail
+						log_message('error', 'Snapsearch PHP application timed out in acquiring a lock to regenerate the cache.');
+						$this->errors = array(
+							'system_error'	=> 'Robot service timed out in acquiring a lock to regenerate the cache. Try again later.',
+						);
+						return false;
+
+					}
+				}
+			}
+
+		}
+
 
 		//cache has not been hit, proceed to the robot
 		try{
@@ -324,6 +431,7 @@ class Robot_model extends CI_Model{
 			$this->errors = array(
 				'system_error'	=> 'Robot service is a bit broken. Try again later.',
 			);
+			if ($parameters['cache']) $this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
 			return false;
 
 		}catch(CurlException $e){
@@ -332,6 +440,7 @@ class Robot_model extends CI_Model{
 			$this->errors = array(
 				'system_error'	=> 'Curl failed. Try again later.'
 			);
+			if ($parameters['cache']) $this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
 			return false;
 
 		}
@@ -343,6 +452,7 @@ class Robot_model extends CI_Model{
 					'url'	=> 'Robot could not open url: ' . $parameters['url'],
 				],
 			);
+			if ($parameters['cache']) $this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
 			return false;
 
 		}
@@ -379,6 +489,7 @@ class Robot_model extends CI_Model{
 				$this->errors = array(
 					'system_error'	=> 'Curl failed. Try again later.'
 				);
+				if ($parameters['cache']) $this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
 				return false;
 
 			}
@@ -401,11 +512,25 @@ class Robot_model extends CI_Model{
 
 			$response_string = json_encode($response_array);
 
-			if($existing_cache_id){
-				$this->update_cache($existing_cache_id, $existing_cache_name, $response_string);
-			}else{
-				$this->insert_cache($user_id, $parameters['url'], $response_string, $parameters_checksum);
-			}
+			// upsert will use parameters checksum as the unique key
+			// updating will only occur if the current generation datetime is more recent or the same as the one in the table
+			$this->upsert_cache(
+				$user_id, 
+				$parameters['url'], 
+				$response_string, 
+				$parameters_checksum, 
+				$snapshot_generation_datetime
+			);
+
+			$this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
+
+			// REMOVED due to upsert
+			// if($existing_cache_id){
+			// 	$this->update_cache($existing_cache_id, $existing_cache_name, $response_string);
+			// }else{
+			// 	$this->insert_cache($user_id, $parameters['url'], $response_string, $parameters_checksum);
+			// }
+			// REMOVED
 
 		}
 
@@ -413,11 +538,14 @@ class Robot_model extends CI_Model{
 
 	}
 
-	public function read_cache($user_id, $parameters_checksum, $parameters_cachetime, $refresh){
+	// never run read_cache when refresh=true
+	public function read_cache($user_id, $parameters_checksum, $parameters_cachetime, $generation_datetime){
 
-		// get the snapshot record where it has a particular user id, and a particular checksum
+		// get the snapshot record where it has a particular user id, and a particular checksum, and that it is most recent snapshot
 		$this->db->where('userId', $user_id);
 		$this->db->where('parametersChecksum', $parameters_checksum);
+		// $this->db->order_by('date', 'DESC');
+		// $this->db->limit(1);
 
 		$query = $this->db->get('snapshots');
 
@@ -435,7 +563,7 @@ class Robot_model extends CI_Model{
 
 			// database stores the time where snapshot was created
 			// this looks for where sql_time >= (current_time - cachetime_period)
-			$valid_timestamp = (new DateTime())->sub(new DateInterval('PT' . $parameters_cachetime . 'H'))->getTimeStamp();
+			$valid_timestamp = (new DateTime($generation_datetime))->sub(new DateInterval('PT' . $parameters_cachetime . 'H'))->getTimeStamp();
 
 			if (strtotime($data['date']) >= $valid_timestamp) {
 				// fresh
@@ -444,7 +572,7 @@ class Robot_model extends CI_Model{
 				// if we are refreshing, there's no need to acquire the actual snapshot data
 				// because we don't use the actual snapshot data at all
 				// we have enough information from our own database to return
-				if (!$refresh) {
+				// if (!$refresh) {
 
 					$snapshot_file = new File($data['snapshot'], $this->filesystem);
 
@@ -456,7 +584,7 @@ class Robot_model extends CI_Model{
 					$snapshot_data = bzdecompress($snapshot_file->getContent());
 					$data['snapshotData'] = $snapshot_data;
 
-				}
+				// }
 
 				return [
 					'status'	=> 'fresh',
@@ -481,6 +609,67 @@ class Robot_model extends CI_Model{
 		}
 
 	}
+
+	public function upsert_cache($user_id, $url, $snapshot_data, $parameters_checksum, $generation_datetime) {
+
+		//get a unique filename first
+		$snapshot_name = uniqid('snapshot', true);
+
+		//compress the data
+		$snapshot_data = bzcompress($snapshot_data, 9);
+
+		//setup the file object
+		$snapshot_file = new File($snapshot_name, $this->filesystem);
+
+		//write the snapshot data, and potentially overwrite it
+		$s3_query = $snapshot_file->setContent($snapshot_data, [
+			'ContentType'	=> 'application/x-bzip2',
+			'StorageClass'	=> 'REDUCED_REDUNDANCY'
+		]);
+
+		if($s3_query){
+
+			// proceed with upsert
+			// what's weird is that during an update, the only things that should need to be updated is snapshot name and date, the rest of the parameters don't really need to be updated
+			$upsert_query =
+				"INSERT INTO 
+				 snapshots (
+				 	userId, 
+				 	url, 
+				 	date, 
+				 	snapshot, 
+				 	parametersChecksum
+				 ) 
+				 VALUES (
+				 	?, 
+				 	?, 
+				 	?, 
+				 	?, 
+				 	?
+				 ) 
+				 ON DUPLICATE KEY UPDATE 
+				 	userId = IF(date <= VALUES(date), VALUES(userId), userId), 
+				 	url = IF(date <= VALUES(date), VALUES(url), url), 
+				 	snapshot = IF(date <= VALUES(date), VALUES(snapshot), snapshot), 
+				 	parametersChecksum = IF(date <= VALUES(date), VALUES(parametersChecksum), parametersChecksum), 
+				 	date = IF(date <= VALUES(date), VALUES(date), date),  		
+				 ";
+
+
+			$this->db->query($upsert_query, array(
+				$user_id, 
+				$url, 
+				$generation_datetime, 
+				$snapshot_name, 
+				$parameters_checksum
+			)); 
+
+		}
+
+		return true;
+
+	}
+
 
 	public function insert_cache($user_id, $url, $snapshot_data, $parameters_checksum){
 
