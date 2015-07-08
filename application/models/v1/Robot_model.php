@@ -496,15 +496,42 @@ class Robot_model extends CI_Model{
 
 		}
 
-		//recalculating the content-length headers if they exist
+		//recalculating the content-length headers based on content-type if they exist
 		//this is because the content-length that came from the server could be different from the final resolve true length due to asynchronous content
-		//this assumes the content is UTF8, which is a good guess, but may give the wrong results if the website doesn't use UTF8
 		if(isset($response_array['headers'])){
+
+			$content_charset_used = false;
+			$content_charset = null;
+			$content_length_used = false;
+
 			foreach($response_array['headers'] as $key => $header){
-				if(strtolower($header['name']) == 'content-length'){
-					$response_array['headers'][$key]['value'] = mb_strlen($response_array['html'], 'utf8');
+				if (strtolower($header['name']) == 'content-type') {
+					if (preg_match('/;\s*?charset\s*?=\s*?(\S+)/i', $header['value'], $matches)) {
+						$content_charset_used = true;
+						$content_charset = $matches[1];
+					}
+				}
+				if (strtolower($header['name']) == 'content-length') {
+					$content_length_used = true;
 				}
 			}
+
+			if ($content_charset_used AND $content_length_used) {
+
+				// check if charset is valid charset, and detect it
+				// silence the warning if it's gibberish
+				if ($length = @mb_strlen($response_array['html'], $content_charset) !== false) {
+					$response_array['headers'][$key]['value'] = $length;
+				} else {
+					// if it was indeed gibberish, then just count it based on utf-8
+					$response_array['headers'][$key]['value'] = mb_strlen($response_array['html'], 'utf8');
+				}
+				
+			} elseif ($content_length_used) {
+				// no charset, so we're just going to guess that it's utf8
+				$response_array['headers'][$key]['value'] = mb_strlen($response_array['html'], 'utf8');
+			}
+
 		}
 		
 		//only cache the result if the cache option was true, subsequent requests would never request for cached data that had their cache parameter as false, because matching checksums would require the request's parameters to also have cache being false, which would prevent us from requesting from the cache
