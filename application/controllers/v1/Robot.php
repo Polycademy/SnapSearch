@@ -167,7 +167,7 @@ class Robot extends CI_Controller{
 				// now we need to create the template
 				// and setup cron to wipe the apiEmailNotification
 				$email = $this->Email_model->prepare_email('email/usage_notification_email', [
-					'usage'			=> $api_usage,
+					'usage'			=> $this->user['apiUsage'],
 					'limit'			=> $this->user['apiLimit'],
 					'percentage'	=> intval(round($usage_percentage)),
 					'username'		=> $this->user['username'],
