@@ -232,6 +232,32 @@ class Robot_model extends CI_Model{
 
 		}
 
+		// default filtering
+
+		// default javascriptenabled of true
+		if(isset($parameters['javascriptenabled'])){
+			$parameters['javascriptenabled'] = filter_var($parameters['javascriptenabled'], FILTER_VALIDATE_BOOLEAN);
+		}else{
+			$parameters['javascriptenabled'] = true;
+		}
+
+		// default loadimages parameter of false
+		if(isset($parameters['loadimages'])){
+			$parameters['loadimages'] = filter_var($parameters['loadimages'], FILTER_VALIDATE_BOOLEAN);
+		}else{
+			$parameters['loadimages'] = false;
+		}
+
+		// default imgformat of png
+		if(!isset($parameters['imgformat'])) $parameters['imgformat'] = 'png';
+
+		// default screenshot parameter of false
+		if(isset($parameters['screenshot'])){
+			$parameters['screenshot'] = filter_var($parameters['screenshot'], FILTER_VALIDATE_BOOLEAN);
+		}else{
+			$parameters['screenshot'] = false;
+		}
+
 		//default navigate parameter of false, meaning we don't follow redirects
 		if(isset($parameters['navigate'])){
 			$parameters['navigate'] = filter_var($parameters['navigate'], FILTER_VALIDATE_BOOLEAN);
@@ -239,12 +265,21 @@ class Robot_model extends CI_Model{
 			$parameters['navigate'] = false;
 		}
 
-		//default cache parameters of true and 24 hours
+		//default meta parameter of true, so we do use meta parameters if they exist
+		if(isset($parameters['meta'])){
+			$parameters['meta'] = filter_var($parameters['meta'], FILTER_VALIDATE_BOOLEAN);
+		}else{
+			$parameters['meta'] = true
+		}
+
+		//default cache parameter of true
 		if(isset($parameters['cache'])){
 			$parameters['cache'] = filter_var($parameters['cache'], FILTER_VALIDATE_BOOLEAN);
 		}else{
 			$parameters['cache'] = true;
 		}
+
+		//default cachetime parameter of 24 hours
 		if(!isset($parameters['cachetime'])) $parameters['cachetime'] = 24;
 
 		//default refresh parameter of false, remove it from the parameters array to prevent it from being hashed
@@ -253,7 +288,7 @@ class Robot_model extends CI_Model{
 		} else {
 			$refresh = false;
 		}
-		unset($parameters['refresh']);
+		unset($parameters['refresh']);		
 
 		//canonicalise the parameters, so we get the same parameter checksum for the same content, and not for different ordering
 		ksort($parameters);
@@ -281,6 +316,8 @@ class Robot_model extends CI_Model{
 				$snapshot_generation_datetime
 			);
 
+			// OK so we have the cache now.
+			// We need to check if the cache is recent enough to send it over.
 			if ($cache AND $cache['status'] == 'fresh') {
 
 				$response_array = json_decode($cache['data']['snapshotData'], true);
@@ -297,114 +334,69 @@ class Robot_model extends CI_Model{
 
 		}
 
+		// we need to integrate refresh request logic, which we haven't done yet
+		// would a refresh request wait upon a regenerating thread?
+		// yes, because refresh requests need to be serialized, or else it might finish updating prior to the regenerating thread
+		// so yes, it does acquire a write lock
 
-		// OK so we have the cache now.
-		// We need to check if the cache is recent enough to send it over.
-		// If it's not, we proceed to regenerate the snapshot and run an upsert.
-
-
-		// REMOVED due to upsert
-		// initialise these to false
-		// if the cache did not exist at all
-		// then we cannot update
-		// $existing_cache_id = false;
-		// $existing_cache_name = false;
-		// REMOVED
-
-		// REMOVED due to simplification
-		// a simpler solution would be making parameterChecksum a unique key, and always using UPSERT
-		// but this is not available now.
-		// if($cache){
-		// REMOVED
-
-			// if the cache is fresh, and refresh == false
-			// then we just return the cache, and end execution
-			// if ($cache AND $cache['status'] == 'fresh' AND !$refresh) {
-
-			// 	$response_array = json_decode($cache['data']['snapshotData'], true);
-			// 	$response_array['cache'] = true;
-			// 	return $response_array;
-
-			// }
-
-			// REMOVED due to upsert
-			// if the cache expired or refresh == true
-			// then can update the existing cache
-			// $existing_cache_id = $cache['data']['id'];
-			// $existing_cache_name = $cache['data']['snapshot'];
-			// REMOVED
-
-		// REMOVED due to simplification
-		// }
-		// REMOVED
-
-		// acquire a lock if expired, if or refresh is true
-		// if we can't acquire the lock, return the stale data
-		// the regen_lock is equivalent to an exclusive write lock
-		// test this! I don't know if this works, and if it's "0" or 0
-		// we only do this if parameters['cache'] is true
+		// we are going to use a mutex and event to synchronise cache stampede
 		if ($parameters['cache']) {
+			
+			// this is a nested/countable mutex
+			$mutex_sync = new \SyncMutex("snapsearch_$parameters_checksum"); 
+			// manual event sync passes through all waiters upon firing
+			$event_sync = new \SyncEvent("snapsearch_$parameters_checksum", true); 
+			// if we know the cache is out of date, we are going to reset the event (winch it up ready to fire)
+			$event_sync->reset();
+			
+			// this is a procedure that may short return in order to continue
+			// 3 situations:
+			// 1. we've got the write lock, so we shall proceed with regeneration
+			// 2. timeout failure so we return from this function false
+			// 3. the cache has been regenerated and so it read from the cache and succeeded
+			list($type, $data) = $this->handle_cache_stampede($mutex_sync, $event_sync, $cache, 2);
 
-			$regen_lock = $this->db->query("SELECT GET_LOCK('snapsearch_$parameters_checksum', 0)");
-			if ($regen_lock->row(0) == 0) {
+			switch ($type) {
 
-				// if the lock is not free
-				// if stale data exists, return stale data, else try to acquire the lock
-				// any refresh requests would have its cache being false, so it would never read from the cache
-				if ($cache) {
+				case 'write':
+					// pass
+					break;
 
-					// return stale cache
-					$response_array = json_decode($cache['data']['snapshotData'], true);
-					$response_array['cache'] = true;
-					return $response_array;
-				
-				} else {
+				case 'read': 
 
-					// we need to wait for the cache to finish regenerating, max time of 33 seconds, since totaltimeout is limited to 30 seconds
-					$regen_lock = $this->db->query("SELECT GET_LOCK('snapsearch_$parameters_checksum', 33)");
-					if ($regen_lock->row(0) == 1) {
-						// got the lock, so we can reread the cache, release the lock, and return the response
+					return $data;
 
-						// if the refresh is true, we don't bother with the cache at all
-						if (!$refresh) {
+					break;
 
-							$cache = $this->read_cache(
-								$user_id, 
-								$parameters_checksum, 
-								$parameters['cachetime'], 
-								$snapshot_generation_datetime
-							);
+				case 'timeout':
 
-							// rereading the cache might fail, because the the regeneration thread might have failed
-							// if it failed, we proceed to try and regenerate the cache ourselves
+					log_message('error', 'Snapsearch PHP application timed out in acquiring a lock to regenerate the cache.');
 
-							// it really can't be expired at this point, but we might as well check
-							if ($cache AND $cache['status'] == 'fresh') {
+					$this->errors = array(
+						'system_error'	=> 'Robot service timed out in acquiring a lock to regenerate the cache. Try again later.',
+					);
 
-								$this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
-								$response_array = json_decode($cache['data']['snapshotData'], true);
-								$response_array['cache'] = true;
-								return $response_array;
+					return false;
 
-							}
+					break;
 
-						}
+				case 'limit': 
 
-					} else {
+					log_message('error', 'Snapsearch PHP application reached the cycle limit in cache regeneration attempts.');
 
-						// lock acquisition timed out, this is when we fail
-						log_message('error', 'Snapsearch PHP application timed out in acquiring a lock to regenerate the cache.');
-						$this->errors = array(
-							'system_error'	=> 'Robot service timed out in acquiring a lock to regenerate the cache. Try again later.',
-						);
-						return false;
+					$this->errors = array(
+						'system_error'	=> 'Robot service reached the cycle limit in cache regeneration attempts. Try again later.',
+					);
 
-					}
-				}
+					return false;
+
+					break;
+
 			}
 
-		}
 
+
+		}
 
 		//cache has not been hit, proceed to the robot
 		try{
@@ -561,6 +553,79 @@ class Robot_model extends CI_Model{
 
 		}
 
+		return $response_array;
+
+	}
+
+	protected function handle_cache_stampede($mutex_sync, $event_sync, $cache, $cycle_limit) {
+
+		// later on we need $event_sync->fire();
+
+		// if the cycle reached 0, then, we do an early return of cycle limit
+		if ($cycle_limit <= 0) {
+			return ['limit', null];
+		}
+
+		// attempt to lock the mutex in order to regenerate the cache
+		// if we succeed acquiring the lock, we just return 
+		// if we fail to acquire the lock, we will try to return a valid most recent cache even though it is stale
+		if ($mutex_sync->lock(0)) {
+
+			return ['write', null];
+
+		} else {
+
+			if ($cache) {
+
+				return ['read', $this->return_cached_response($cache)];
+			
+			} else {
+
+				// if the cache was false, this means it does not exist currently
+				// we will wait on the regenerating thread before reading
+				// time limit of 33 seconds
+				if ($event_sync->wait(33000)) {
+
+					$cache = $this->read_cache(
+						$user_id, 
+						$parameters_checksum, 
+						$parameters['cachetime'], 
+						$snapshot_generation_datetime
+					);
+
+					if ($cache AND $cache['status'] == 'fresh') {
+
+						return ['read', $this->return_cached_response($cache)];
+
+					} else {
+
+						// if the cache was false or was not fresh
+						// then the regenerating thread failed to regenerate the cache
+						// at this point, we must cycle back to regenerating with a cycle limit of 1
+						// cache will be false and the cycle will be decremented
+						return $this->handle_cache_stampede($mutex_sync, $event_sync, false, --$cycle_limit);
+
+					}
+
+				} else {
+
+					// timed out waiting for the event to fire
+					// we must return an error
+					// this should never happen
+					return ['timeout', null];
+
+				}
+
+			}
+
+		}
+
+	}
+
+	protected function return_cached_response ($cache) {
+
+		$response_array = json_decode($cache['data']['snapshotData'], true);
+		$response_array['cache'] = true;
 		return $response_array;
 
 	}
