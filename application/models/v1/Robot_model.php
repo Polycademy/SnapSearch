@@ -375,15 +375,6 @@ class Robot_model extends CI_Model{
 
 	}
 
-	// PROTECTED
-
-
-
-
-
-
-
-
 	protected function recount_content_length ($response_array) {
 
 		// this is because the content-length from the headers can be different from the javascript generated content
@@ -475,6 +466,51 @@ class Robot_model extends CI_Model{
 		}
 
 		return $response_array;
+
+	}
+
+	protected function validate_url ($url) {
+
+		// empty url!?
+		if (empty($url)) return false;
+
+		// prefix the url with http if necessary
+	    if (!preg_match("~^(?:ht)tps?://~i", $url)) {
+	        $url = "http://" . $url;
+	    }
+
+		$url_parts = parse_url($url);
+
+		// malformed url
+		if (!$url_parts OR !isset($url_parts['host'])) return false;
+
+		// check if this an ip address
+		// the regex checks for a top-level domain like (.com)
+		// it is false if you pass things like "127.0.0.1" or "localhost" as these don't have top-level domains
+		// the top-level domain needs at least one non-digit character so it does allow (.4a)
+		if (!preg_match("~^[^\s/]+\.[^.\s/]*?[^.0-9\s/]~i", $url_parts['host'])) {
+
+			// ok so it might be an ip address
+			// remove any kind of `[]` for ipv6 because urls may be "[1080:0:0:0:8:800:200C:417A]""
+			$url_parts['host'] = trim($url_parts['host'], "[]");
+
+			// we're going to prevent local, private and reserved addresses
+			// this also fails for "localhost" as it's not an ip address
+			// return true if it's an ip address that works out
+			return !!(filter_var(
+				$url_parts['host'], 
+				FILTER_VALIDATE_IP, 
+				FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+			));
+		
+		}
+
+		// at this point we're pretty sure it's an actual domain, so we can return true
+
+		// we still need to firewall the process using this url from accessing local, private and reserved addresses
+		// because DNS resolution can still result in resolving to disallowed addresses 
+
+		return true;
 
 	}
 
@@ -581,44 +617,8 @@ class Robot_model extends CI_Model{
 		if(!isset($parameters['url'])){
 			$validation_errors['url'] = 'Url (url) is necessary.';
 		}else{
-			//validate the url because valid_url sucks
-			$url_parts = parse_url($parameters['url']);
-			if($url_parts){
-				if(
-					!isset($url_parts['scheme']) 
-					OR !isset($url_parts['host']) 
-					OR ($url_parts['scheme'] != 'http' AND $url_parts['scheme'] != 'https') 
-				){
-
-					// we have a problem here
-					// it currently allows http://127.0.0.1 and http://localhost and DNS that resolves to localhost
-					// we need to prevent these kinds of URLs
-
-					/*
-					we can do something like:
-
-					$user_ip = '127.0.0.1';
-					filter_var(
-					    $user_ip, 
-					    FILTER_VALIDATE_IP, 
-					    FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE |  FILTER_FLAG_NO_RES_RANGE
-					)
-
-Hey I've got a process that I want to allow arbitrary outgoing network access EXCEPT for in the case of trying to access local, reserved or private IP address.
-So basically I give it URLs or IP addresses
-And those urls can resolve to any address.
-I want to allow outgoing network access.
-But I want to prevent it if it tries to access any of the local, reserved, or private IP address.
-Do you know how to do this?
-
-http://unix.stackexchange.com/questions/68956/block-network-access-of-a-process
-
-					 */
-
-					$validation_errors['url'] = 'Url (url) must be a valid url containing http or https as the host and a proper host domain.';
-				}
-			}else{
-				$validation_errors['url'] = 'Url (url) is malformed.';
+			if (!$this->validate_url($url)) {
+				$validation_errors['url'] = 'Url (url) must be a valid url containing http or https as the host and a proper host domain.';
 			}
 		}
 
