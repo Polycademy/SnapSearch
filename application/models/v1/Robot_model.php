@@ -67,6 +67,419 @@ class Robot_model extends CI_Model{
 			'test'
 		), $input_parameters, null, true);
 
+		// validate our input data
+		if (!empty($validation_errors = $this->validate_robot_request($parameters))) {
+
+			$this->errors = array(
+				'validation_error'	=> $validation_errors
+			);
+			return false;
+
+		}
+
+		// check if the request is a test request
+		if ($this->check_test_mode($parameters)) {
+
+			return [
+				'cache' 			=> null,
+				'callbackResult'	=> '',
+				'date'				=> time(),
+				'headers'			=> [],
+				'html'				=> '',
+				'message'			=> 'You are in test mode. Your request was received!',
+				'pageErrors'		=> [],
+				'screensot'			=> '',
+				'status'			=> 200
+			];
+
+		}
+
+		// check if the request will use cache
+		$using_cache = $this->check_cache_request($parameters);
+
+		// check if the request is a refresh request
+		$refresh = $this->check_refresh_request($parameters);
+
+		// filter the parameters to defaults
+		$parameters = $this->default_parameters_filtering($parameters);
+
+		// canonicalise parameter order for checksum generation
+		ksort($parameters); 
+
+		// checksum to compare snapshots
+		$parameters_checksum = md5(json_encode($parameters));
+		
+		// generation datetime as the event ordinal
+		$snapshot_generation_datetime = date('Y-m-d H:i:s');
+
+		// we only try to read the cache if the cache is to be considered, and this wasn't a refresh request
+		$cache = false;
+		if ($using_cache AND !$refresh) {
+			
+			$cache = $this->read_cache(
+				$user_id, 
+				$parameters_checksum, 
+				$parameters['cachetime'], 
+				$snapshot_generation_datetime
+			);
+
+			// check if the cache is available and recent
+			if ($cache AND $cache['status'] == 'fresh') {
+
+				$response_array = json_decode($cache['data']['snapshotData'], true);
+				$response_array['cache'] = true;
+				return $response_array;
+
+			} else {
+
+				// if it's not recent, make it false
+				$cache = false;
+			
+			}
+
+		}
+
+		// we are going to use a mutex and event to deal with cache stampede
+		$mutex_sync = null;
+		$event_sync = null;
+
+		if ($using_cache) {
+
+			$snapshot_identifier = "snapsearch_$parameters_checksum";
+
+			// this is a nested/countable mutex
+			$mutex_sync = new \SyncMutex($snapshot_identifier); 
+
+			// if it's a refresh request, we want to a get a write lock, but we're not going to try and read from cache
+			if (!$refresh) {
+
+				// manual event sync passes through all waiters upon firing
+				// if we know the cache is out of date, we are going to reset the event (winch it up ready to fire)
+				$event_sync = new \SyncEvent($snapshot_identifier, true); 
+				$event_sync->reset();
+
+				list($type, $data) = $this->handle_cache_stampede($mutex_sync, $event_sync, $cache, $snapshot_identifier, 2);
+
+			} else {
+
+				list($type, $data) = $this->handle_refresh_cache_stampede($mutex_sync);
+			
+			}
+
+			switch ($type) {
+
+				case 'write': // got the write lock, proceed to regeneration
+					// pass
+				break;
+
+				case 'read': // got the cached response, returning the cache
+
+					$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+
+					return $data;
+
+				break;
+
+				case 'timeout': // could not acquire write lock or did not receive an event firing
+
+					log_message('error', "Snapsearch PHP application timed out in acquiring a lock to regenerate $snapshot_identifier.");
+
+					$this->errors = array(
+						'system_error'	=> 'Robot service timed out in acquiring a lock to regenerate the cache. Try again later.',
+					);
+
+					$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+
+					return false;
+
+				break;
+
+				case 'limit': // exhausted cycle limit when trying to regenerate the cache
+
+					log_message('error', "Snapsearch PHP application reached the cycle limit in regenerating $snapshot_identifier.");
+
+					$this->errors = array(
+						'system_error'	=> 'Robot service reached the cycle limit in cache regeneration attempts. Try again later.',
+					);
+
+					$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+
+					return false;
+
+				break;
+
+			}
+
+		}
+
+		// cache has not been hit, proceed to the robot
+		try{
+
+			$request = $this->client->post(
+				$this->robot_uri, 
+				array(
+					'Content-Type'	=> 'application/json'
+				),
+				json_encode($parameters)
+			);
+
+			// decode the returned json into an array
+			$response = $request->send();
+			$response_array = $response->json();
+			
+			// this is not a cached response
+			$response_array['cache'] = false;
+
+		}catch(BadResponseException $e){
+
+			// a bad response exception can come from 400 or 500 errors, this should not happen
+			log_message('error', 'Snapsearch PHP application received a 400/500 from Robot\'s load balancer or robot itself.');
+			$this->errors = array(
+				'system_error'	=> 'Robot service is a bit broken. Try again later.',
+			);
+
+			$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+
+			return false;
+
+		}catch(CurlException $e){
+
+			log_message('error', 'Snapsearch PHP application received a curl error when contacting the robot load balancer. See: ' . $e->getMessage());
+			$this->errors = array(
+				'system_error'	=> 'Curl failed. Try again later.'
+			);
+
+			$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+
+			return false;
+
+		}
+
+		if($response_array['message'] == 'Failed'){
+
+			$this->errors = [
+				'validation_error'	=> [ 'url'	=> 'Robot could not open url: ' . $parameters['url'] ],
+			];
+
+			$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+
+			return false;
+
+		}
+
+		// if we need to handle a redirect, and our handling fails, then we return false
+		if (!$response_array = $this->handle_redirect_shim($parameters['url'], $response_array)) {
+
+			$this->errors = [
+				'system_error'	=> 'Curl failed. Try again later.'
+			];
+
+			$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+
+			return false;
+
+		}
+
+		// recalculating the content-length header based on content-type character set if they exist
+		$response_array = $this->recount_content_length($response_array);
+		
+		// only cache the result if the cache option was true
+		if($using_cache){
+
+			$response_string = json_encode($response_array);
+
+			// upsert will use parameters checksum as the unique key
+			// updating occurs if the current generation datetime is more recent or the same as the one in the database
+			$this->upsert_cache(
+				$user_id, 
+				$parameters['url'], 
+				$response_string, 
+				$parameters_checksum, 
+				$snapshot_generation_datetime
+			);
+
+			$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+
+		}
+
+		return $response_array;
+
+	}
+
+	public function purge_cache($allowed_length = false, $user_id = false){
+
+		$cutoff_date = false;
+		try{
+			if($allowed_length){
+				$current_date = new DateTime;
+				$allowed_length = new DateInterval($allowed_length);
+				$cutoff_date = $current_date->sub($allowed_length)->format('Y-m-d H:i:s');
+			}
+		}catch(Exception $e){
+			return $e->getMessage();
+		}
+
+		if($cutoff_date){
+			$this->db->where('date <', $cutoff_date);
+		}
+
+		if(is_int($user_id)){
+			$this->db->where('userId', $user_id);
+		}
+
+		$query = $this->db->get('snapshots');
+
+		if($query->num_rows() > 0){
+			
+			foreach($query->result() as $row){
+
+				$this->delete_cache($row->id, $row->snapshot);
+
+			}
+			
+		}
+
+		return true;
+
+	}
+
+	public function update_api_requests ($user_id) {
+
+		$sql = "UPDATE user_accounts SET apiRequests = apiRequests + 1 WHERE id = ?";
+		$this->db->query($sql, array($user_id));
+
+		if ($this->db->affected_rows() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public function update_api_usages ($user_id) {
+
+		$sql = "UPDATE user_accounts SET apiUsage = apiUsage + 1 WHERE id = ?";
+		$query = $this->db->query($sql, array($user_id));
+
+		if ($this->db->affected_rows() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public function get_errors(){
+
+		return $this->errors;
+
+	}
+
+	// PROTECTED
+
+
+
+
+
+
+
+
+	protected function recount_content_length ($response_array) {
+
+		// this is because the content-length from the headers can be different from the javascript generated content
+		// this also has to deal with different character sets which may need multi-byte counting
+		if(isset($response_array['headers'])){
+
+			$content_charset_used = false;
+			$content_charset = null;
+			$content_length_used = false;
+			$content_length_key = null;
+
+			foreach($response_array['headers'] as $key => $header){
+
+				if (strtolower($header['name']) == 'content-type') {
+					if (preg_match('/;\s*?charset\s*?=\s*?(\S+)/i', $header['value'], $matches)) {
+						$content_charset_used = true;
+						$content_charset = $matches[1];
+					}
+					continue;
+				}
+
+				if (strtolower($header['name']) == 'content-length') {
+					$content_length_used = true;
+					$content_length_key = $key;
+					continue;
+				}
+
+			}
+
+			if ($content_length_used AND $content_charset_used) {
+
+				// check if charset is valid charset, and detect it
+				// silence the warning if it's gibberish
+				if ($length = @mb_strlen($response_array['html'], $content_charset) !== false) {
+					$response_array['headers'][$content_length_key]['value'] = $length;
+				} else {
+					// if it was indeed gibberish, then just count it based on utf-8
+					$response_array['headers'][$content_length_key]['value'] = mb_strlen($response_array['html'], 'utf8');
+				}
+				
+			} else if ($content_length_used) {
+				
+				// no charset, so we're just going to guess that it's utf8
+				$response_array['headers'][$content_length_key]['value'] = mb_strlen($response_array['html'], 'utf8');
+			
+			}
+
+		}
+
+		return $response_array;
+
+	}
+
+	protected function handle_redirect_shim ($url, $response_array) {
+
+		//SHIM: this is a shim for supporting the scraping of redirected pages, this is because slimerjs currently does not support acquiring the headers or body of a redirection request
+		if($this->is_redirect($response_array['status'])){
+
+			try{
+
+				//we don't want to follow redirects in this case
+				$request = $this->client->get($url, [
+                    'Accept-Encoding'   => 'gzip, deflate, identity',
+				], [
+					'allow_redirects'	=> false,
+                    'exceptions'        => false
+				]);
+
+				$response = $request->send();
+
+				//shim the headers as [['name' => 'Header Name', 'value' => 'Header Value']]
+				$response_array['headers'] = [];
+				foreach($response->getHeaders() as $header_key => $header_value){
+					$response_array['headers'][] = [
+						'name'	=> (string) $header_key,
+						'value'	=> (string) $header_value,
+					];
+				}
+
+				//shim the body
+				$response_array['html'] = $response->getBody(true);
+
+			}catch(CurlException $e){
+
+				return false;
+
+			}
+
+		}
+
+		return $response_array;
+
+	}
+
+	protected function validate_robot_request ($parameters) {
+
 		$this->validator->set_data($parameters);
 
 		$this->validator->set_rules([
@@ -174,8 +587,34 @@ class Robot_model extends CI_Model{
 				if(
 					!isset($url_parts['scheme']) 
 					OR !isset($url_parts['host']) 
-					OR ($url_parts['scheme'] != 'http' AND $url_parts['scheme'] != 'https')
+					OR ($url_parts['scheme'] != 'http' AND $url_parts['scheme'] != 'https') 
 				){
+
+					// we have a problem here
+					// it currently allows http://127.0.0.1 and http://localhost and DNS that resolves to localhost
+					// we need to prevent these kinds of URLs
+
+					/*
+					we can do something like:
+
+					$user_ip = '127.0.0.1';
+					filter_var(
+					    $user_ip, 
+					    FILTER_VALIDATE_IP, 
+					    FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE |  FILTER_FLAG_NO_RES_RANGE
+					)
+
+Hey I've got a process that I want to allow arbitrary outgoing network access EXCEPT for in the case of trying to access local, reserved or private IP address.
+So basically I give it URLs or IP addresses
+And those urls can resolve to any address.
+I want to allow outgoing network access.
+But I want to prevent it if it tries to access any of the local, reserved, or private IP address.
+Do you know how to do this?
+
+http://unix.stackexchange.com/questions/68956/block-network-access-of-a-process
+
+					 */
+
 					$validation_errors['url'] = 'Url (url) must be a valid url containing http or https as the host and a proper host domain.';
 				}
 			}else{
@@ -195,44 +634,47 @@ class Robot_model extends CI_Model{
 			$validation_errors = array_merge($validation_errors, $this->validator->error_array());
 		}
 
-		if(!empty($validation_errors)){
+		return $validation_errors;
 
-			$this->errors = array(
-				'validation_error'	=> $validation_errors
-			);
+	}
 
-			return false;
+	protected function check_test_mode ($parameters) {
 
-		}
-
-		//is it in test mode?
 		if(isset($parameters['test'])){
-			$test_mode = filter_var($parameters['test'], FILTER_VALIDATE_BOOLEAN);
+			return filter_var($parameters['test'], FILTER_VALIDATE_BOOLEAN);
+		} else {
+			return false;
+		}
+
+	}
+
+	protected function check_refresh_request ($parameters) {
+
+		if(isset($parameters['refresh'])) {
+			return filter_var($parameters['refresh'], FILTER_VALIDATE_BOOLEAN);
+		} else {
+			return false;
+		}
+
+	}
+
+	protected function check_cache_request ($parameters) {
+
+		//default cache parameter of true
+		if(isset($parameters['cache'])){
+			return filter_var($parameters['cache'], FILTER_VALIDATE_BOOLEAN);
 		}else{
-			$test_mode = false;
+			return true;
 		}
+
+	}
+
+	protected function default_parameters_filtering ($parameters) {
+
+		// remove unnecessary parameters not relevant to snapshot uniqueness
 		unset($parameters['test']);
-
-		//if test mode is true, just respond with a message, as test mode has succeeded!
-		if($test_mode){
-
-			$response_array = [
-				'cache' 			=> null,
-				'callbackResult'	=> '',
-				'date'				=> time(),
-				'headers'			=> [],
-				'html'				=> '',
-				'message'			=> 'You are in test mode. Your request was received!',
-				'pageErrors'		=> [],
-				'screensot'			=> '',
-				'status'			=> 200
-			];
-
-			return $response_array;
-
-		}
-
-		// default filtering
+		unset($parameters['refresh']);
+		unset($parameters['cache']);
 
 		// default javascriptenabled of true
 		if(isset($parameters['javascriptenabled'])){
@@ -269,297 +711,46 @@ class Robot_model extends CI_Model{
 		if(isset($parameters['meta'])){
 			$parameters['meta'] = filter_var($parameters['meta'], FILTER_VALIDATE_BOOLEAN);
 		}else{
-			$parameters['meta'] = true
-		}
-
-		//default cache parameter of true
-		if(isset($parameters['cache'])){
-			$parameters['cache'] = filter_var($parameters['cache'], FILTER_VALIDATE_BOOLEAN);
-		}else{
-			$parameters['cache'] = true;
+			$parameters['meta'] = true;
 		}
 
 		//default cachetime parameter of 24 hours
 		if(!isset($parameters['cachetime'])) $parameters['cachetime'] = 24;
 
-		//default refresh parameter of false, remove it from the parameters array to prevent it from being hashed
-		if(isset($parameters['refresh'])) {
-			$refresh = filter_var($parameters['refresh'], FILTER_VALIDATE_BOOLEAN);
-		} else {
-			$refresh = false;
-		}
-		unset($parameters['refresh']);		
-
-		//canonicalise the parameters, so we get the same parameter checksum for the same content, and not for different ordering
-		ksort($parameters);
-
-		//we need a checksum of the parameters to compare with the cache's checksum
-		$parameters_checksum = md5(json_encode($parameters));
-
-		// this will be the date that is assigned to snapshots 
-		// it corresponds to starting the snapshot creation process 
-		// this allows a more accurate comparison of snapshot event order
-		$snapshot_generation_datetime = date('Y-m-d H:i:s');
-
-		// if cache == true, we try to read the cache
-		// if cache == false, we skip trying to read the cache
-		// also we don't cache the generated snapshot either
-		// it's as if the cache never existed
-		// also pass in the refresh parameter to make the read_cache function realise there's no need to call amazon s3
-		// also pass in the snapshot generation datetime to see if the cache has expired
-		if ($parameters['cache'] AND !$refresh) {
-			
-			$cache = $this->read_cache(
-				$user_id, 
-				$parameters_checksum, 
-				$parameters['cachetime'], 
-				$snapshot_generation_datetime
-			);
-
-			// OK so we have the cache now.
-			// We need to check if the cache is recent enough to send it over.
-			if ($cache AND $cache['status'] == 'fresh') {
-
-				$response_array = json_decode($cache['data']['snapshotData'], true);
-				$response_array['cache'] = true;
-				return $response_array;
-
-			}
-
-			// the cache may be false or expired
-
-		} else {
-
-			$cache = false;
-
-		}
-
-		// we need to integrate refresh request logic, which we haven't done yet
-		// would a refresh request wait upon a regenerating thread?
-		// yes, because refresh requests need to be serialized, or else it might finish updating prior to the regenerating thread
-		// so yes, it does acquire a write lock
-
-		// we are going to use a mutex and event to synchronise cache stampede
-		if ($parameters['cache']) {
-			
-			// this is a nested/countable mutex
-			$mutex_sync = new \SyncMutex("snapsearch_$parameters_checksum"); 
-			// manual event sync passes through all waiters upon firing
-			$event_sync = new \SyncEvent("snapsearch_$parameters_checksum", true); 
-			// if we know the cache is out of date, we are going to reset the event (winch it up ready to fire)
-			$event_sync->reset();
-			
-			// this is a procedure that may short return in order to continue
-			// 3 situations:
-			// 1. we've got the write lock, so we shall proceed with regeneration
-			// 2. timeout failure so we return from this function false
-			// 3. the cache has been regenerated and so it read from the cache and succeeded
-			list($type, $data) = $this->handle_cache_stampede($mutex_sync, $event_sync, $cache, 2);
-
-			switch ($type) {
-
-				case 'write':
-					// pass
-					break;
-
-				case 'read': 
-
-					return $data;
-
-					break;
-
-				case 'timeout':
-
-					log_message('error', 'Snapsearch PHP application timed out in acquiring a lock to regenerate the cache.');
-
-					$this->errors = array(
-						'system_error'	=> 'Robot service timed out in acquiring a lock to regenerate the cache. Try again later.',
-					);
-
-					return false;
-
-					break;
-
-				case 'limit': 
-
-					log_message('error', 'Snapsearch PHP application reached the cycle limit in cache regeneration attempts.');
-
-					$this->errors = array(
-						'system_error'	=> 'Robot service reached the cycle limit in cache regeneration attempts. Try again later.',
-					);
-
-					return false;
-
-					break;
-
-			}
-
-
-
-		}
-
-		//cache has not been hit, proceed to the robot
-		try{
-
-			$request = $this->client->post(
-				$this->robot_uri, 
-				array(
-					'Content-Type'	=> 'application/json'
-				),
-				json_encode($parameters)
-			);
-
-			//decode the returned json into an array
-			$response = $request->send();
-			$response_array = $response->json();
-			
-			//this is not a cached response
-			$response_array['cache'] = false;
-
-		}catch(BadResponseException $e){
-
-			//a bad response exception can come from 400 or 500 errors, this should not happen
-			log_message('error', 'Snapsearch PHP application received a 400/500 from Robot\'s load balancer or robot itself.');
-			$this->errors = array(
-				'system_error'	=> 'Robot service is a bit broken. Try again later.',
-			);
-			if ($parameters['cache']) $this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
-			return false;
-
-		}catch(CurlException $e){
-
-			log_message('error', 'Snapsearch PHP application received a curl error when contacting the robot load balancer. See: ' . $e->getMessage());
-			$this->errors = array(
-				'system_error'	=> 'Curl failed. Try again later.'
-			);
-			if ($parameters['cache']) $this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
-			return false;
-
-		}
-
-		if($response_array['message'] == 'Failed'){
-
-			$this->errors = array(
-				'validation_error'	=> [
-					'url'	=> 'Robot could not open url: ' . $parameters['url'],
-				],
-			);
-			if ($parameters['cache']) $this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
-			return false;
-
-		}
-
-		//SHIM: this is a shim for supporting the scraping of redirected pages, this is because slimerjs currently does not support acquiring the headers or body of a redirection
-		if($this->is_redirect($response_array['status'])){
-
-			try{
-
-				//we don't want to follow redirects in this case
-				$request = $this->client->get($parameters['url'], [
-                    'Accept-Encoding'   => 'gzip, deflate, identity',
-				], [
-					'allow_redirects'	=> false,
-                    'exceptions'        => false
-				]);
-
-				$response = $request->send();
-
-				//shim the headers as [['name' => 'Header Name', 'value' => 'Header Value']]
-				$response_array['headers'] = [];
-				foreach($response->getHeaders() as $header_key => $header_value){
-					$response_array['headers'][] = [
-						'name'	=> (string) $header_key,
-						'value'	=> (string) $header_value,
-					];
-				}
-
-				//shim the body
-				$response_array['html'] = $response->getBody(true);
-
-			}catch(CurlException $e){
-
-				$this->errors = array(
-					'system_error'	=> 'Curl failed. Try again later.'
-				);
-				if ($parameters['cache']) $this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
-				return false;
-
-			}
-
-		}
-
-		//recalculating the content-length headers based on content-type if they exist
-		//this is because the content-length that came from the server could be different from the final resolve true length due to asynchronous content
-		if(isset($response_array['headers'])){
-
-			$content_charset_used = false;
-			$content_charset = null;
-			$content_length_used = false;
-
-			foreach($response_array['headers'] as $key => $header){
-				if (strtolower($header['name']) == 'content-type') {
-					if (preg_match('/;\s*?charset\s*?=\s*?(\S+)/i', $header['value'], $matches)) {
-						$content_charset_used = true;
-						$content_charset = $matches[1];
-					}
-				}
-				if (strtolower($header['name']) == 'content-length') {
-					$content_length_used = true;
-				}
-			}
-
-			if ($content_charset_used AND $content_length_used) {
-
-				// check if charset is valid charset, and detect it
-				// silence the warning if it's gibberish
-				if ($length = @mb_strlen($response_array['html'], $content_charset) !== false) {
-					$response_array['headers'][$key]['value'] = $length;
-				} else {
-					// if it was indeed gibberish, then just count it based on utf-8
-					$response_array['headers'][$key]['value'] = mb_strlen($response_array['html'], 'utf8');
-				}
-				
-			} elseif ($content_length_used) {
-				// no charset, so we're just going to guess that it's utf8
-				$response_array['headers'][$key]['value'] = mb_strlen($response_array['html'], 'utf8');
-			}
-
-		}
-		
-		//only cache the result if the cache option was true, subsequent requests would never request for cached data that had their cache parameter as false, because matching checksums would require the request's parameters to also have cache being false, which would prevent us from requesting from the cache
-		if($parameters['cache']){
-
-			$response_string = json_encode($response_array);
-
-			// upsert will use parameters checksum as the unique key
-			// updating will only occur if the current generation datetime is more recent or the same as the one in the table
-			$this->upsert_cache(
-				$user_id, 
-				$parameters['url'], 
-				$response_string, 
-				$parameters_checksum, 
-				$snapshot_generation_datetime
-			);
-
-			$this->db->query("DO RELEASE_LOCK('snapsearch_$parameters_checksum')");
-
-			// REMOVED due to upsert
-			// if($existing_cache_id){
-			// 	$this->update_cache($existing_cache_id, $existing_cache_name, $response_string);
-			// }else{
-			// 	$this->insert_cache($user_id, $parameters['url'], $response_string, $parameters_checksum);
-			// }
-			// REMOVED
-
-		}
-
-		return $response_array;
+		return $parameters;
 
 	}
 
-	protected function handle_cache_stampede($mutex_sync, $event_sync, $cache, $cycle_limit) {
+	protected function release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh) {
 
-		// later on we need $event_sync->fire();
+		if ($using_cache) {
+			if (!$refresh) {
+				$mutex_sync->unlock(true);
+				$event_sync->fire();
+			} else {
+				$mutex_sync->unlock(true);
+			}
+		}
+
+		return true;
+
+	}
+
+	protected function handle_refresh_cache_stampede ($mutex_sync) {
+
+		if ($mutex_sync->lock(33000)) {
+
+			return ['write', null];
+
+		} else {
+
+			return ['timeout', null];
+
+		}
+
+	}
+
+	protected function handle_cache_stampede($mutex_sync, $event_sync, $cache, $snapshot_identifier, $cycle_limit) {
 
 		// if the cycle reached 0, then, we do an early return of cycle limit
 		if ($cycle_limit <= 0) {
@@ -599,11 +790,13 @@ class Robot_model extends CI_Model{
 
 					} else {
 
+						log_message('error', "Snapsearch PHP application had to cycle once for regenerating $snapshot_identifier.");
+
 						// if the cache was false or was not fresh
 						// then the regenerating thread failed to regenerate the cache
 						// at this point, we must cycle back to regenerating with a cycle limit of 1
 						// cache will be false and the cycle will be decremented
-						return $this->handle_cache_stampede($mutex_sync, $event_sync, false, --$cycle_limit);
+						return $this->handle_cache_stampede($mutex_sync, $event_sync, false, $snapshot_identifier, --$cycle_limit);
 
 					}
 
@@ -630,14 +823,11 @@ class Robot_model extends CI_Model{
 
 	}
 
-	// never run read_cache when refresh=true
-	public function read_cache($user_id, $parameters_checksum, $parameters_cachetime, $generation_datetime){
+	protected function read_cache($user_id, $parameters_checksum, $parameters_cachetime, $generation_datetime){
 
-		// get the snapshot record where it has a particular user id, and a particular checksum, and that it is most recent snapshot
+		// get the snapshot record where it has a particular user id, and a particular checksum
 		$this->db->where('userId', $user_id);
 		$this->db->where('parametersChecksum', $parameters_checksum);
-		// $this->db->order_by('date', 'DESC');
-		// $this->db->limit(1);
 
 		$query = $this->db->get('snapshots');
 
@@ -657,26 +847,17 @@ class Robot_model extends CI_Model{
 			// this looks for where sql_time >= (current_time - cachetime_period)
 			$valid_timestamp = (new DateTime($generation_datetime))->sub(new DateInterval('PT' . $parameters_cachetime . 'H'))->getTimeStamp();
 
-			if (strtotime($data['date']) >= $valid_timestamp) {
-				// fresh
+			if (strtotime($data['date']) >= $valid_timestamp) { // fresh
+				
+				$snapshot_file = new File($data['snapshot'], $this->filesystem);
 
-				// do this section ONLY if refresh == false
-				// if we are refreshing, there's no need to acquire the actual snapshot data
-				// because we don't use the actual snapshot data at all
-				// we have enough information from our own database to return
-				// if (!$refresh) {
+				if(!$snapshot_file->exists()){
+					$this->delete_cache($data['id']);
+					return false;
+				}
 
-					$snapshot_file = new File($data['snapshot'], $this->filesystem);
-
-					if(!$snapshot_file->exists()){
-						$this->delete_cache($data['id']);
-						return false;
-					}
-
-					$snapshot_data = bzdecompress($snapshot_file->getContent());
-					$data['snapshotData'] = $snapshot_data;
-
-				// }
+				$snapshot_data = bzdecompress($snapshot_file->getContent());
+				$data['snapshotData'] = $snapshot_data;
 
 				return [
 					'status'	=> 'fresh',
@@ -684,8 +865,7 @@ class Robot_model extends CI_Model{
 				];
 
 
-			} else {
-				//expired
+			} else { //expired
 
 				return [
 					'status' 	=> 'expired',
@@ -702,7 +882,7 @@ class Robot_model extends CI_Model{
 
 	}
 
-	public function upsert_cache($user_id, $url, $snapshot_data, $parameters_checksum, $generation_datetime) {
+	protected function upsert_cache($user_id, $url, $snapshot_data, $parameters_checksum, $generation_datetime) {
 
 		//get a unique filename first
 		$snapshot_name = uniqid('snapshot', true);
@@ -762,66 +942,7 @@ class Robot_model extends CI_Model{
 
 	}
 
-
-	public function insert_cache($user_id, $url, $snapshot_data, $parameters_checksum){
-
-		//get a unique filename first
-		$snapshot_name = uniqid('snapshot', true);
-
-		//compress the data
-		$snapshot_data = bzcompress($snapshot_data, 9);
-
-		//setup the file object
-		$snapshot_file = new File($snapshot_name, $this->filesystem);
-
-		//write the snapshot data, and potentially overwrite it
-		$s3_query = $snapshot_file->setContent($snapshot_data, [
-			'ContentType'	=> 'application/x-bzip2',
-			'StorageClass'	=> 'REDUCED_REDUNDANCY'
-		]);
-
-		if($s3_query){
-
-			//insert the snapshot filename to the database
-			$this->db->insert('snapshots', array(
-				'userId'				=> $user_id,
-				'url'					=> $url,
-				'date'					=> date('Y-m-d H:i:s'),
-				'snapshot'				=> $snapshot_name,
-				'parametersChecksum'	=> $parameters_checksum,
-			));
-
-		}
-
-		return true;
-
-	}
-
-	public function update_cache($id, $snapshot_name, $snapshot_data){
-
-		//update the date timestamp for this cached data
-		$this->db->where('id', $id);
-		$query = $this->db->update('snapshots', array(
-			'date'	=> date('Y-m-d H:i:s'),
-		));
-
-		//compress the snapshot
-		$snapshot_data = bzcompress($snapshot_data, 9);
-
-		//setup the file object
-		$snapshot_file = new File($snapshot_name, $this->filesystem);
-
-		//update the cached file
-		$snapshot_file->setContent($snapshot_data, [
-			'ContentType'	=> 'application/x-bzip2',
-			'StorageClass'	=> 'REDUCED_REDUNDANCY'
-		]);
-
-		return true;
-
-	}
-
-	public function delete_cache($id, $snapshot_name = false){
+	protected function delete_cache($id, $snapshot_name = false){
 
 		$query = $this->db->delete('snapshots', array('id' => $id));
 
@@ -833,75 +954,6 @@ class Robot_model extends CI_Model{
 		}
 
 		return true;
-
-	}
-
-	public function purge_cache($allowed_length = false, $user_id = false){
-
-		$cutoff_date = false;
-		try{
-			if($allowed_length){
-				$current_date = new DateTime;
-				$allowed_length = new DateInterval($allowed_length);
-				$cutoff_date = $current_date->sub($allowed_length)->format('Y-m-d H:i:s');
-			}
-		}catch(Exception $e){
-			return $e->getMessage();
-		}
-
-		if($cutoff_date){
-			$this->db->where('date <', $cutoff_date);
-		}
-
-		if(is_int($user_id)){
-			$this->db->where('userId', $user_id);
-		}
-
-		$query = $this->db->get('snapshots');
-
-		if($query->num_rows() > 0){
-			
-			foreach($query->result() as $row){
-
-				$this->delete_cache($row->id, $row->snapshot);
-
-			}
-			
-		}
-
-		return true;
-
-	}
-
-	public function get_errors(){
-
-		return $this->errors;
-
-	}
-
-	public function update_api_requests ($user_id) {
-
-		$sql = "UPDATE user_accounts SET apiRequests = apiRequests + 1 WHERE id = ?";
-		$this->db->query($sql, array($user_id));
-
-		if ($this->db->affected_rows() > 0) {
-			return true;
-		} else {
-			return false;
-		}
-
-	}
-
-	public function update_api_usages ($user_id) {
-
-		$sql = "UPDATE user_accounts SET apiUsage = apiUsage + 1 WHERE id = ?";
-		$query = $this->db->query($sql, array($user_id));
-
-		if ($this->db->affected_rows() > 0) {
-			return true;
-		} else {
-			return false;
-		}
 
 	}
 
