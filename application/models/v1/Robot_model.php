@@ -484,6 +484,12 @@ class Robot_model extends CI_Model{
 		// malformed url
 		if (!$url_parts OR !isset($url_parts['host'])) return false;
 
+		// remove any whitespace
+		$url_parts['host'] = trim($url_parts['host']);
+
+		// remove any kind of `[]` for ipv6 because urls may be "[1080:0:0:0:8:800:200C:417A]""
+		$url_parts['host'] = trim($url_parts['host'], "[]");
+
 		// check if this an ip address
 		// the regex checks for a top-level domain like (.com)
 		// it is false if you pass things like "127.0.0.1" or "localhost" as these don't have top-level domains
@@ -491,8 +497,13 @@ class Robot_model extends CI_Model{
 		if (!preg_match("~^[^\s/]+\.[^.\s/]*?[^.0-9\s/]~i", $url_parts['host'])) {
 
 			// ok so it might be an ip address
-			// remove any kind of `[]` for ipv6 because urls may be "[1080:0:0:0:8:800:200C:417A]""
-			$url_parts['host'] = trim($url_parts['host'], "[]");
+
+			// we need to check for loopback addresses, these aren't well supported by filter_var
+			// if they are loopbacks, we need to return false
+			if (preg_match(
+				"~^localhost$|^127(?:\.[0-9]+){0,2}\.[0-9]+$|^(?:0*\:)*?:?0*1$~i", 
+				$url_parts['host'])
+			) return false;
 
 			// we're going to prevent local, private and reserved addresses
 			// this also fails for "localhost" as it's not an ip address
