@@ -377,49 +377,16 @@ class Robot_model extends CI_Model{
 
 	protected function recount_content_length ($response_array) {
 
-		// this is because the content-length from the headers can be different from the javascript generated content
-		// this also has to deal with different character sets which may need multi-byte counting
+		// content-length from the headers can be different from the javascript generated content
 		if(isset($response_array['headers'])){
 
-			$content_charset_used = false;
-			$content_charset = null;
-			$content_length_used = false;
-			$content_length_key = null;
-
-			foreach($response_array['headers'] as $key => $header){
-
-				if (strtolower($header['name']) == 'content-type') {
-					if (preg_match('/;\s*?charset\s*?=\s*?(\S+)/i', $header['value'], $matches)) {
-						$content_charset_used = true;
-						$content_charset = $matches[1];
-					}
-					continue;
-				}
+			foreach($response_array['headers'] as &$header){
 
 				if (strtolower($header['name']) == 'content-length') {
-					$content_length_used = true;
-					$content_length_key = $key;
-					continue;
+					$header['value'] = strlen($response_array['html']);
+					break;
 				}
 
-			}
-
-			if ($content_length_used AND $content_charset_used) {
-
-				// check if charset is valid charset, and detect it
-				// silence the warning if it's gibberish
-				if ($length = @mb_strlen($response_array['html'], $content_charset) !== false) {
-					$response_array['headers'][$content_length_key]['value'] = $length;
-				} else {
-					// if it was indeed gibberish, then just count it based on utf-8
-					$response_array['headers'][$content_length_key]['value'] = mb_strlen($response_array['html'], 'utf8');
-				}
-				
-			} else if ($content_length_used) {
-				
-				// no charset, so we're just going to guess that it's utf8
-				$response_array['headers'][$content_length_key]['value'] = mb_strlen($response_array['html'], 'utf8');
-			
 			}
 
 		}
