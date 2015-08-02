@@ -119,8 +119,7 @@ class Robot_model extends CI_Model{
 			$cache = $this->read_cache(
 				$user_id, 
 				$parameters_checksum, 
-				$parameters['cachetime'], 
-				$snapshot_generation_datetime
+				$parameters['cachetime']
 			);
 
 			// check if the cache is available and recent
@@ -140,29 +139,28 @@ class Robot_model extends CI_Model{
 		}
 
 		// we are going to use a mutex and event to deal with cache stampede
-		$mutex_sync = null;
-		$event_sync = null;
+		$lock = false;
 
 		if ($using_cache) {
 
-			$snapshot_identifier = "snapsearch_$parameters_checksum";
-
-			// this is a nested/countable mutex
-			$mutex_sync = new \SyncMutex($snapshot_identifier); 
+			// setup the snapshot lock
+			$lock = $this->setup_lock($parameters_checksum);
 
 			// if it's a refresh request, we want to a get a write lock, but we're not going to try and read from cache
-			if (!$refresh) {
+			if ($refresh) {
 
-				// manual event sync passes through all waiters upon firing
-				// if we know the cache is out of date, we are going to reset the event (winch it up ready to fire)
-				$event_sync = new \SyncEvent($snapshot_identifier, true); 
-				$event_sync->reset();
-
-				list($type, $data) = $this->handle_cache_stampede($mutex_sync, $event_sync, $cache, $snapshot_identifier, 2);
+				list ($type, $data) = $this->handle_refresh_cache_stampede ($lock);
 
 			} else {
 
-				list($type, $data) = $this->handle_refresh_cache_stampede($mutex_sync);
+				list ($type, $data) = $this->handle_cache_stampede (
+					$lock, 
+					$cache, 
+					$user_id, 
+					$parameters_checksum, 
+					$parameters['cachetime'], 
+					2
+				);
 			
 			}
 
@@ -174,7 +172,7 @@ class Robot_model extends CI_Model{
 
 				case 'read': // got the cached response, returning the cache
 
-					$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+					$this->release_and_close_lock ($lock);
 
 					return $data;
 
@@ -188,7 +186,7 @@ class Robot_model extends CI_Model{
 						'system_error'	=> 'Robot service timed out in acquiring a lock to regenerate the cache. Try again later.',
 					);
 
-					$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+					$this->release_and_close_lock ($lock);
 
 					return false;
 
@@ -202,7 +200,7 @@ class Robot_model extends CI_Model{
 						'system_error'	=> 'Robot service reached the cycle limit in cache regeneration attempts. Try again later.',
 					);
 
-					$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+					$this->release_and_close_lock ($lock);
 
 					return false;
 
@@ -238,7 +236,7 @@ class Robot_model extends CI_Model{
 				'system_error'	=> 'Robot service is a bit broken. Try again later.',
 			);
 
-			$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+			$this->release_and_close_lock ($lock);
 
 			return false;
 
@@ -249,7 +247,7 @@ class Robot_model extends CI_Model{
 				'system_error'	=> 'Curl failed. Try again later.'
 			);
 
-			$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+			$this->release_and_close_lock ($lock);
 
 			return false;
 
@@ -261,7 +259,7 @@ class Robot_model extends CI_Model{
 				'validation_error'	=> [ 'url'	=> 'Robot could not open url: ' . $parameters['url'] ],
 			];
 
-			$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+			$this->release_and_close_lock ($lock);
 
 			return false;
 
@@ -274,7 +272,7 @@ class Robot_model extends CI_Model{
 				'system_error'	=> 'Curl failed. Try again later.'
 			];
 
-			$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+			$this->release_and_close_lock ($lock);
 
 			return false;
 
@@ -298,13 +296,14 @@ class Robot_model extends CI_Model{
 				$snapshot_generation_datetime
 			);
 
-			$this->release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh);
+			$this->release_and_close_lock ($lock);
 
 		}
 
 		return $response_array;
 
 	}
+
 
 	public function purge_cache($allowed_length = false, $user_id = false){
 
@@ -372,123 +371,6 @@ class Robot_model extends CI_Model{
 	public function get_errors(){
 
 		return $this->errors;
-
-	}
-
-	protected function recount_content_length ($response_array) {
-
-		// content-length from the headers can be different from the javascript generated content
-		if(isset($response_array['headers'])){
-
-			foreach($response_array['headers'] as &$header){
-
-				if (strtolower($header['name']) == 'content-length') {
-					$header['value'] = strlen($response_array['html']);
-					break;
-				}
-
-			}
-
-		}
-
-		return $response_array;
-
-	}
-
-	protected function handle_redirect_shim ($url, $response_array) {
-
-		//SHIM: this is a shim for supporting the scraping of redirected pages, this is because slimerjs currently does not support acquiring the headers or body of a redirection request
-		if($this->is_redirect($response_array['status'])){
-
-			try{
-
-				//we don't want to follow redirects in this case
-				$request = $this->client->get($url, [
-                    'Accept-Encoding'   => 'gzip, deflate, identity',
-				], [
-					'allow_redirects'	=> false,
-                    'exceptions'        => false
-				]);
-
-				$response = $request->send();
-
-				//shim the headers as [['name' => 'Header Name', 'value' => 'Header Value']]
-				$response_array['headers'] = [];
-				foreach($response->getHeaders() as $header_key => $header_value){
-					$response_array['headers'][] = [
-						'name'	=> (string) $header_key,
-						'value'	=> (string) $header_value,
-					];
-				}
-
-				//shim the body
-				$response_array['html'] = $response->getBody(true);
-
-			}catch(CurlException $e){
-
-				return false;
-
-			}
-
-		}
-
-		return $response_array;
-
-	}
-
-	protected function validate_url ($url) {
-
-		// empty url!?
-		if (empty($url)) return false;
-
-		// prefix the url with http if necessary
-	    if (!preg_match("~^(?:ht)tps?://~i", $url)) {
-	        $url = "http://" . $url;
-	    }
-
-		$url_parts = parse_url($url);
-
-		// malformed url
-		if (!$url_parts OR !isset($url_parts['host'])) return false;
-
-		// remove any whitespace
-		$url_parts['host'] = trim($url_parts['host']);
-
-		// remove any kind of `[]` for ipv6 because urls may be "[1080:0:0:0:8:800:200C:417A]""
-		$url_parts['host'] = trim($url_parts['host'], "[]");
-
-		// check if this an ip address
-		// the regex checks for a top-level domain like (.com)
-		// it is false if you pass things like "127.0.0.1" or "localhost" as these don't have top-level domains
-		// the top-level domain needs at least one non-digit character so it does allow (.4a)
-		if (!preg_match("~^[^\s/]+\.[^.\s/]*?[^.0-9\s/]~i", $url_parts['host'])) {
-
-			// ok so it might be an ip address
-
-			// we need to check for loopback addresses, these aren't well supported by filter_var
-			// if they are loopbacks, we need to return false
-			if (preg_match(
-				"~^localhost$|^127(?:\.[0-9]+){0,2}\.[0-9]+$|^(?:0*\:)*?:?0*1$~i", 
-				$url_parts['host'])
-			) return false;
-
-			// we're going to prevent local, private and reserved addresses
-			// this also fails for "localhost" as it's not an ip address
-			// return true if it's an ip address that works out
-			return !!(filter_var(
-				$url_parts['host'], 
-				FILTER_VALIDATE_IP, 
-				FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
-			));
-		
-		}
-
-		// at this point we're pretty sure it's an actual domain, so we can return true
-
-		// we still need to firewall the process using this url from accessing local, private and reserved addresses
-		// because DNS resolution can still result in resolving to disallowed addresses 
-
-		return true;
 
 	}
 
@@ -616,20 +498,66 @@ class Robot_model extends CI_Model{
 
 	}
 
+	protected function validate_url ($url) {
+
+		// empty url!?
+		if (empty($url)) return false;
+
+		// prefix the url with http if necessary
+	    if (!preg_match("~^(?:ht)tps?://~i", $url)) {
+	        $url = "http://" . $url;
+	    }
+
+		$url_parts = parse_url($url);
+
+		// malformed url
+		if (!$url_parts OR !isset($url_parts['host'])) return false;
+
+		// remove any whitespace
+		$url_parts['host'] = trim($url_parts['host']);
+
+		// remove any kind of `[]` for ipv6 because urls may be "[1080:0:0:0:8:800:200C:417A]""
+		$url_parts['host'] = trim($url_parts['host'], "[]");
+
+		// check if this an ip address
+		// the regex checks for a top-level domain like (.com)
+		// it is false if you pass things like "127.0.0.1" or "localhost" as these don't have top-level domains
+		// the top-level domain needs at least one non-digit character so it does allow (.4a)
+		if (!preg_match("~^[^\s/]+\.[^.\s/]*?[^.0-9\s/]~i", $url_parts['host'])) {
+
+			// ok so it might be an ip address
+
+			// we need to check for loopback addresses, these aren't well supported by filter_var
+			// if they are loopbacks, we need to return false
+			if (preg_match(
+				"~^localhost$|^127(?:\.[0-9]+){0,2}\.[0-9]+$|^(?:0*\:)*?:?0*1$~i", 
+				$url_parts['host'])
+			) return false;
+
+			// we're going to prevent local, private and reserved addresses
+			// this also fails for "localhost" as it's not an ip address
+			// return true if it's an ip address that works out
+			return !!(filter_var(
+				$url_parts['host'], 
+				FILTER_VALIDATE_IP, 
+				FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+			));
+		
+		}
+
+		// at this point we're pretty sure it's an actual domain, so we can return true
+
+		// we still need to firewall the process using this url from accessing local, private and reserved addresses
+		// because DNS resolution can still result in resolving to disallowed addresses 
+
+		return true;
+
+	}
+
 	protected function check_test_mode ($parameters) {
 
 		if(isset($parameters['test'])){
 			return filter_var($parameters['test'], FILTER_VALIDATE_BOOLEAN);
-		} else {
-			return false;
-		}
-
-	}
-
-	protected function check_refresh_request ($parameters) {
-
-		if(isset($parameters['refresh'])) {
-			return filter_var($parameters['refresh'], FILTER_VALIDATE_BOOLEAN);
 		} else {
 			return false;
 		}
@@ -643,6 +571,16 @@ class Robot_model extends CI_Model{
 			return filter_var($parameters['cache'], FILTER_VALIDATE_BOOLEAN);
 		}else{
 			return true;
+		}
+
+	}
+
+	protected function check_refresh_request ($parameters) {
+
+		if(isset($parameters['refresh'])) {
+			return filter_var($parameters['refresh'], FILTER_VALIDATE_BOOLEAN);
+		} else {
+			return false;
 		}
 
 	}
@@ -699,109 +637,7 @@ class Robot_model extends CI_Model{
 
 	}
 
-	protected function release_locks_and_fire_events ($mutex_sync, $event_sync, $using_cache, $refresh) {
-
-		if ($using_cache) {
-			if (!$refresh) {
-				$mutex_sync->unlock(true);
-				$event_sync->fire();
-			} else {
-				$mutex_sync->unlock(true);
-			}
-		}
-
-		return true;
-
-	}
-
-	protected function handle_refresh_cache_stampede ($mutex_sync) {
-
-		if ($mutex_sync->lock(33000)) {
-
-			return ['write', null];
-
-		} else {
-
-			return ['timeout', null];
-
-		}
-
-	}
-
-	protected function handle_cache_stampede($mutex_sync, $event_sync, $cache, $snapshot_identifier, $cycle_limit) {
-
-		// if the cycle reached 0, then, we do an early return of cycle limit
-		if ($cycle_limit <= 0) {
-			return ['limit', null];
-		}
-
-		// attempt to lock the mutex in order to regenerate the cache
-		// if we succeed acquiring the lock, we just return 
-		// if we fail to acquire the lock, we will try to return a valid most recent cache even though it is stale
-		if ($mutex_sync->lock(0)) {
-
-			return ['write', null];
-
-		} else {
-
-			if ($cache) {
-
-				return ['read', $this->return_cached_response($cache)];
-			
-			} else {
-
-				// if the cache was false, this means it does not exist currently
-				// we will wait on the regenerating thread before reading
-				// time limit of 33 seconds
-				if ($event_sync->wait(33000)) {
-
-					$cache = $this->read_cache(
-						$user_id, 
-						$parameters_checksum, 
-						$parameters['cachetime'], 
-						$snapshot_generation_datetime
-					);
-
-					if ($cache AND $cache['status'] == 'fresh') {
-
-						return ['read', $this->return_cached_response($cache)];
-
-					} else {
-
-						log_message('error', "Snapsearch PHP application had to cycle once for regenerating $snapshot_identifier.");
-
-						// if the cache was false or was not fresh
-						// then the regenerating thread failed to regenerate the cache
-						// at this point, we must cycle back to regenerating with a cycle limit of 1
-						// cache will be false and the cycle will be decremented
-						return $this->handle_cache_stampede($mutex_sync, $event_sync, false, $snapshot_identifier, --$cycle_limit);
-
-					}
-
-				} else {
-
-					// timed out waiting for the event to fire
-					// we must return an error
-					// this should never happen
-					return ['timeout', null];
-
-				}
-
-			}
-
-		}
-
-	}
-
-	protected function return_cached_response ($cache) {
-
-		$response_array = json_decode($cache['data']['snapshotData'], true);
-		$response_array['cache'] = true;
-		return $response_array;
-
-	}
-
-	protected function read_cache($user_id, $parameters_checksum, $parameters_cachetime, $generation_datetime){
+	protected function read_cache($user_id, $parameters_checksum, $parameters_cachetime){
 
 		// get the snapshot record where it has a particular user id, and a particular checksum
 		$this->db->where('userId', $user_id);
@@ -823,7 +659,7 @@ class Robot_model extends CI_Model{
 
 			// database stores the time where snapshot was created
 			// this looks for where sql_time >= (current_time - cachetime_period)
-			$valid_timestamp = (new DateTime($generation_datetime))->sub(new DateInterval('PT' . $parameters_cachetime . 'H'))->getTimeStamp();
+			$valid_timestamp = (new DateTime())->sub(new DateInterval('PT' . $parameters_cachetime . 'H'))->getTimeStamp();
 
 			if (strtotime($data['date']) >= $valid_timestamp) { // fresh
 				
@@ -860,6 +696,237 @@ class Robot_model extends CI_Model{
 
 	}
 
+	protected function return_cached_response ($cache) {
+
+		$response_array = json_decode($cache['data']['snapshotData'], true);
+		$response_array['cache'] = true;
+		return $response_array;
+
+	}
+
+	protected function setup_lock ($identifier) {
+
+		$lock = fopen ("/run/lock/snapsearch_$identifier.lock", 'w+');
+		return $lock;
+
+	}
+
+	protected function acquire_lock ($lock, $type, $timeout) {
+
+		if ($timeout < 1) {
+
+			$got_lock = flock ($lock, $type | LOCK_NB);
+
+		} else {
+
+			$count = 0;
+			$got_lock = true;
+
+			// this is a total hack, and can result in resource starvation
+			// it's all because php's flock doesn't support timeouts
+			while (!flock($lock, $type, $would_block)) {
+			    if ($would_block AND $count++ < $timeout) {
+			        sleep(1);
+			    } else {
+			        $got_lock = false;
+			        break;
+			    }
+			}
+
+		}
+
+		return $got_lock;
+
+	}
+
+	protected function release_lock ($lock) {
+
+		if ($lock) {
+			return flock($lock, LOCK_UN);
+		} else {
+			return true;
+		}
+
+	}
+
+	protected function release_and_close_lock ($lock) {
+
+		if ($lock) {
+			flock ($lock, LOCK_UN);
+			fclose ($lock);
+		}
+		return true;
+
+	}
+
+	protected function handle_refresh_cache_stampede ($lock) {
+
+		if ($this->acquire_lock($lock, LOCK_EX, 25)) {
+
+			return ['write', null];
+
+		} else {
+
+			return ['timeout', null];
+
+		}
+
+	}
+
+	protected function handle_cache_stampede ($lock, $cache, $user_id, $parameters_checksum, $parameters_cachetime, $cycle_limit) {
+
+		// if the cycle reached 0, then, we do an early return of cycle limit
+		if ($cycle_limit <= 0) {
+			return ['limit', null];
+		}
+
+		// attempt to lock the mutex in order to regenerate the cache
+		// if we succeed acquiring the lock, we just return 
+		// if we fail to acquire the lock, we will try to return a valid most recent cache even though it is stale
+		if ($this->acquire_lock($lock, LOCK_EX, 0)) {
+
+			return ['write', null];
+
+		} else {
+
+			if ($cache) {
+
+				return ['read', $this->return_cached_response($cache)];
+			
+			} else {
+
+				// if the cache was false, this means it does not exist currently
+				// we will wait on the regenerating thread before reading
+				// time limit of 25 seconds
+				if ($this->acquire_lock ($lock, LOCK_SH, 25)) {
+
+					// if we have acquire the shared lock, this means another thread has regenerated, we can immediately release our shared lock, in order to allow at least one thread to acquire another write lock
+					$this->release_lock ($lock);
+
+					$cache = $this->read_cache(
+						$user_id, 
+						$parameters_checksum, 
+						$parameters_cachetime
+					);
+
+					if ($cache AND $cache['status'] == 'fresh') {
+
+						return ['read', $this->return_cached_response($cache)];
+
+					} else {
+
+						log_message('error', "Snapsearch PHP application had to cycle once for regenerating $snapshot_identifier.");
+
+						// if the cache was false or was not fresh
+						// then the regenerating thread failed to regenerate the cache
+						// at this point, we must cycle back to regenerating with a cycle limit of 1
+						// cache will be false and the cycle will be decremented
+						return $this->handle_cache_stampede(
+							$lock, 
+							false, 
+							$user_id, 
+							$parameters_checksum, 
+							$parameters_cachetime, 
+							--$cycle_limit
+						);
+
+					}
+
+				} else {
+
+					// timed out waiting for the event to fire
+					// we must return an error
+					// this should never happen
+					return ['timeout', null];
+
+				}
+
+			}
+
+		}
+
+	}
+
+	protected function recount_content_length ($response_array) {
+
+		// content-length from the headers can be different from the javascript generated content
+		if(isset($response_array['headers'])){
+
+			foreach($response_array['headers'] as &$header){
+
+				if (strtolower($header['name']) == 'content-length') {
+					$header['value'] = strlen($response_array['html']);
+					break;
+				}
+
+			}
+
+		}
+
+		return $response_array;
+
+	}
+
+	protected function handle_redirect_shim ($url, $response_array) {
+
+		//SHIM: this is a shim for supporting the scraping of redirected pages, this is because slimerjs currently does not support acquiring the headers or body of a redirection request
+		if($this->is_redirect($response_array['status'])){
+
+			try{
+
+				//we don't want to follow redirects in this case
+				$request = $this->client->get($url, [
+                    'Accept-Encoding'   => 'gzip, deflate, identity',
+				], [
+					'allow_redirects'	=> false,
+                    'exceptions'        => false
+				]);
+
+				$response = $request->send();
+
+				//shim the headers as [['name' => 'Header Name', 'value' => 'Header Value']]
+				$response_array['headers'] = [];
+				foreach($response->getHeaders() as $header_key => $header_value){
+					$response_array['headers'][] = [
+						'name'	=> (string) $header_key,
+						'value'	=> (string) $header_value,
+					];
+				}
+
+				//shim the body
+				$response_array['html'] = $response->getBody(true);
+
+			}catch(CurlException $e){
+
+				return false;
+
+			}
+
+		}
+
+		return $response_array;
+
+	}
+
+	protected function is_redirect($status){
+
+		//shim for null status https://github.com/laurentj/slimerjs/issues/167
+		if(is_null($status)){
+			return true;
+		}
+
+		return in_array((string) $status, [
+			'301',
+			'302',
+			'303',
+			'305',
+			'306',
+			'307',
+			'308'
+		]);
+
+	}
+
 	protected function upsert_cache($user_id, $url, $snapshot_data, $parameters_checksum, $generation_datetime) {
 
 		//get a unique filename first
@@ -880,7 +947,6 @@ class Robot_model extends CI_Model{
 		if($s3_query){
 
 			// proceed with upsert
-			// what's weird is that during an update, the only things that should need to be updated is snapshot name and date, the rest of the parameters don't really need to be updated
 			$upsert_query =
 				"INSERT INTO 
 				 snapshots (
@@ -890,21 +956,14 @@ class Robot_model extends CI_Model{
 				 	snapshot, 
 				 	parametersChecksum
 				 ) 
-				 VALUES (
-				 	?, 
-				 	?, 
-				 	?, 
-				 	?, 
-				 	?
-				 ) 
+				 VALUES (?,	?, ?, ?, ?) 
 				 ON DUPLICATE KEY UPDATE 
-				 	userId = IF(date <= VALUES(date), VALUES(userId), userId), 
-				 	url = IF(date <= VALUES(date), VALUES(url), url), 
-				 	snapshot = IF(date <= VALUES(date), VALUES(snapshot), snapshot), 
-				 	parametersChecksum = IF(date <= VALUES(date), VALUES(parametersChecksum), parametersChecksum), 
-				 	date = IF(date <= VALUES(date), VALUES(date), date),  		
+				 	userId = VALUES(userId), 
+				 	url = VALUES(url), 
+				 	snapshot = VALUES(snapshot), 
+				 	parametersChecksum = VALUES(parametersChecksum), 
+				 	date = VALUES(date),  		
 				 ";
-
 
 			$this->db->query($upsert_query, array(
 				$user_id, 
@@ -932,25 +991,6 @@ class Robot_model extends CI_Model{
 		}
 
 		return true;
-
-	}
-
-	protected function is_redirect($status){
-
-		//shim for null status https://github.com/laurentj/slimerjs/issues/167
-		if(is_null($status)){
-			return true;
-		}
-
-		return in_array((string) $status, [
-			'301',
-			'302',
-			'303',
-			'305',
-			'306',
-			'307',
-			'308'
-		]);
 
 	}
 

@@ -3,7 +3,6 @@
     "description": "SnapSearch is SEO for Javascript Applications.",
     "license": "proprietary",
     "require":{
-        "ext-sync": "1.0.1",
 		"pimple/pimple": "1.0.2",
 		"polycademy/citemplating": "1.0.7",
 		"jamierumbelow/pigeon": "0.2.0",
