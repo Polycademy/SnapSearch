@@ -2,7 +2,10 @@ Vagrant.configure("2") do |config|
 
     config.vm.box = "Saberce/ubuntu-trusty-64"
 
+    config.vm.boot_timeout = 50
+
     config.ssh.forward_agent = true
+    config.ssh.insert_key = false
 
     config.vm.network "forwarded_port", guest: 80, host: 8080
     config.vm.network "forwarded_port", guest: 443, host: 8081
