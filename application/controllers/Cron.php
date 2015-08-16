@@ -47,6 +47,39 @@ class Cron extends CI_Controller{
 
 	}
 
+	public function purge_lockfiles ($allowed_length = false) {
+
+		$path = $this->config->item('lockfiles_path');
+
+
+		if ($allowed_length === false) {
+
+			$command = "find $path -name '*.lock' -type -f -delete";
+
+		} else {
+
+			// allowed_length is integer in terms of number of days
+			$allowed_length = intval($allowed_length);
+
+			$command = "find $path -name '*.lock' -type f -mtime +$allowed_length -delete";
+
+		}
+
+		exec ($command, $output, $exit);
+
+		$today = new DateTime;
+		$output = $today->format('Y-m-d H:i:s') . ' - ';
+
+		if ($exit == 0) {
+			$output .= "Successfully purged lockfiles staler than $allowed_length days " . "\n";
+		} else {
+			$output .= "Unsuccessful purging of lockfiles staler than $allowed_length: " . implode("\n", $output)  . "\n";
+		}
+
+		echo $output;
+		
+	}
+
 	public function test(){
 		
 		$this->load->model('Log_model');

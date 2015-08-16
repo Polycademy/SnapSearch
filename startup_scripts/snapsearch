@@ -10,6 +10,9 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # Every month purge the cache of items that are older than 720 hours which is the maximum cache time
 0 0 1 * * www-data /usr/bin/env php PROJECT_DIR/index.php cli cron purge_cache PT721H >> PROJECT_DIR/startup_scripts/cron_purge.log 2>&1
 
+# Every month purge expired lockfiles for the snapshot cache that have not been changed for 45 days.
+0 0 1 * * www-data /usr/bin/env php PROJECT_DIR/index.php cli cron purge_lockfiles 45 >> PROJECT_DIR/startup_scripts/cron_purge.log 2>&1
+
 # Every sunday export the database and send it to Amazon S3 (this needs to use the user that has the AWS credentials configured)
 0 0 * * 0 root /usr/bin/env php PROJECT_DIR/index.php cli cron backup >> PROJECT_DIR/startup_scripts/cron_backup.log 2>&1 && chown www-data:www-data PROJECT_DIR/startup_scripts/cron_backup.log
 

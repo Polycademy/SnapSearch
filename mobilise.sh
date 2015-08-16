@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Mobilise will mobilise all the dependencies of this project in one go!
 # Everything will be installed relative to this file (this repo) and then moved/symlinked to the correct place
@@ -95,7 +95,7 @@ echo "Migrating the database relies on a proper configuration of the database in
 read -p "$(tput bold)$(tput setaf 2)Migrate the database to latest?. [Y/n]: $(tput sgr0)" -n 1 -r DATABASE_MIGRATION
 echo
 if [[ $DATABASE_MIGRATION =~ ^[Y]$ ]]; then
-	php index.php cli migrate latest
+	php index.php cli migrate latest	
 fi
 
 # Setting up supervisor upstart script to run this project's robots
@@ -108,6 +108,17 @@ echo "Confirming robot script path in the Supervisor startup script"
 sudo perl -pi -e "s/chdir .*/chdir $ESCAPED_ROBOT_PATH/g" /etc/init/supervisord.conf
 echo "Restarting Supervisord"
 sudo service supervisord restart
+
+# Setting up the lockfile directory
+mkdir -p snapshots/lockfiles
+if ! mountpoint -q "snapshots/lockfiles"; then
+	mount -t tmpfs -o size=1M,nr_inodes=400k,mode=755,nodev,nosuid,noexec tmpfs snapshots/lockfiles
+	MOUNTING_PATH=$(readlink -f snapshots/lockfiles)
+	ESCAPED_MOUNTING_PATH="${MOUNTING_PATH//\//\\/}"
+	MOUNTING=$(cat /etc/mtab | grep "$MOUNTING_PATH" | head -n 1)
+	sed -i "/$ESCAPED_MOUNTING_PATH/d" /etc/fstab
+	echo $MOUNTING >> /etc/fstab
+fi
 
 # Setting up NGINX server configuration
 echo "Setting up NGINX configuration"
