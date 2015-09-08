@@ -29,7 +29,7 @@ COMPOSER:
 curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 
-Robot Service (can be modified inside supervisord.conf in robot_scripts, but make sure to update the NGINX configuration to load balance more than 4 robot services):
+Robot Service (can be modified inside supervisord.conf in robot_scripts, but make sure to update the NGINX configuration to load balance the robot services):
 
 Change index.php development to production if necessary.
 
@@ -37,8 +37,7 @@ Change the the SlimerJS download to either 32bit or 64bit depending on your arch
 
 You need WebServerConfiguration. And setup NGINX from there.
 
-FOR PHP:
-Setup firewall once server is up!
+Setup firewall:
 
 apt-get install ufw
 ufw default deny incoming
@@ -64,6 +63,10 @@ browserify -t debowerify -t deglobalify -t brfs -e js/app/App.js -o js/compiled/
 browserify -t debowerify -t deglobalify -t brfs -e js/app/Common.js -o js/compiled/Common.js
 minify js/compiled/App.js
 minify js/compiled/Common.js
+
+Change to `rlimit_files = 4096` for `/etc/php5/fpm/pool.d/www.conf`, this allows 4096 open lock files for each PHP worker process if there's 3 workers, that's 12288 lock files that can be open at the same time. This one of the upper limits for concurrent connections to SnapSearch. The real limit is much higher, because concurrent connections don't all open lock files at the same time. And there's probably a smaller limit due to other architectural parts of SnapSearch.
+
+See all upstart jobs: `initctl list`
 
 Improvements
 ------------

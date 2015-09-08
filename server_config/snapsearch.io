@@ -2,10 +2,10 @@
 upstream robot_slimer {
 
   least_conn;
-  server 127.0.0.1:8500;
-  server 127.0.0.1:8501;
-  #server 127.0.0.1:8502;
-  #server 127.0.0.1:8503;
+  server 10.0.0.2:8500;
+  server 10.0.0.2:8501;
+  #server 10.0.0.2:8502;
+  #server 10.0.0.2:8503;
   
 }
 
