@@ -2,10 +2,11 @@
 upstream robot_slimer {
 
   least_conn;
-  server 10.0.0.2:8500;
-  server 10.0.0.2:8501;
-  #server 10.0.0.2:8502;
-  #server 10.0.0.2:8503;
+  # change this to the robot ips
+  server ROBOT_IP:8500;
+  server ROBOT_IP:8501;
+  #server ROBOT_IP:8502;
+  #server ROBOT_IP:8503;
   
 }
 
@@ -150,7 +151,7 @@ server {
   server_name dev.snapsearch.io;
 
   # Path for static files
-  root /www/SnapSearch;
+  root /;
 
   # Index search file to serve if in a directory
   index index.php index.html index.htm;

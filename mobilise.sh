@@ -78,10 +78,6 @@ if [[ $DOWNLOAD_SECRETS =~ ^[Y]$ ]]; then
 	rm -r secrets/snapsearch
 fi
 
-# How many robots do you want to start?
-# Prompt for robot numbers, note that port starts at 8500
-# Along with port numbers
-
 # Should create the database if it's not available
 echo "Creating database for snapsearch"
 read -p "$(tput bold)$(tput setaf 2)Enter username for mysql to setup database, followed by enter, or just hit enter to ignore: $(tput sgr0)" -r MYSQL_USER
@@ -98,18 +94,7 @@ if [[ $DATABASE_MIGRATION =~ ^[Y]$ ]]; then
 	php index.php cli migrate latest	
 fi
 
-# Setting up supervisor upstart script to run this project's robots
-echo "Setting up Supervisor Upstart Script"
-ROBOT_PATH="`pwd`/robot_scripts"
-ESCAPED_ROBOT_PATH="${ROBOT_PATH//\//\\/}"
-echo "Copying Supervisor startup script to /etc/init"
-sudo cp startup_scripts/supervisord.conf /etc/init/supervisord.conf
-echo "Confirming robot script path in the Supervisor startup script"
-sudo perl -pi -e "s/chdir .*/chdir $ESCAPED_ROBOT_PATH/g" /etc/init/supervisord.conf
-echo "Restarting Supervisord"
-sudo service supervisord restart
-
-# Setting up the lockfile directory
+# Setting up the lockfile directory for synchronising cache refreshes
 mkdir -p snapshots/lockfiles
 if ! mountpoint -q "snapshots/lockfiles"; then
 	mount -t tmpfs -o size=1M,nr_inodes=400k,mode=755,nodev,nosuid,noexec tmpfs snapshots/lockfiles
@@ -120,13 +105,63 @@ if ! mountpoint -q "snapshots/lockfiles"; then
 	echo $MOUNTING >> /etc/fstab
 fi
 
+# IP Configuration for Robots
+
+ROBOT_SUBNET="10.0.0.0"
+ROBOT_CIDR="/24"
+ROBOT_VETH0="10.0.0.1"
+ROBOT_VETH1="10.0.0.2" 
+ROBOT_GATEWAY=$ROBOT_VETH0
+
+# Setup the network namespace for the robots
+echo "Setting up Network Namespaces"
+echo "Copying Robot Namespace startup script to /etc/init"
+sudo cp startup_scripts/robots-namespace.conf /etc/init/robots-namespace.conf
+echo "Confirming IP configuration for network namespace"
+sudo perl -pi -e \
+	"s/env SUBNET=.*/env SUBNET=\"${ROBOT_SUBNET}${ROBOT_CIDR}\"/g" \
+	/etc/init/robots-namespace.conf
+sudo perl -pi -e \
+	"s/env VETH0_AND_SUBNET=.*/env VETH0_AND_SUBNET=\"${ROBOT_VETH0}${ROBOT_CIDR}\"/g" \
+	/etc/init/robots-namespace.conf
+sudo perl -pi -e \
+	"s/env VETH1_AND_SUBNET=.*/env VETH1_AND_SUBNET=\"${ROBOT_VETH1}${ROBOT_CIDR}\"/g" \
+	/etc/init/robots-namespace.conf
+sudo perl -pi -e \
+	"s/env GATEWAY=.*/env GATEWAY=\"${ROBOT_GATEWAY}\"/g" \
+	/etc/init/robots-namespace.conf
+sudo service robots-namespace restart
+
+# Setting up supervisor upstart script to run the robots
+echo "Setting up Supervisor Upstart Script for supervising the Robots"
+ROBOT_PATH="`pwd`/robot_scripts"
+ESCAPED_ROBOT_PATH="${ROBOT_PATH//\//\\/}"
+echo "Copying Supervisor startup script to /etc/init"
+sudo cp startup_scripts/supervisord.conf /etc/init/supervisord.conf
+echo "Confirming robot script path in the Supervisor startup script"
+sudo perl -pi -e \
+	"s/chdir .*/chdir ${ESCAPED_ROBOT_PATH}/g" \
+	/etc/init/supervisord.conf
+echo "Confirming robot ip address in the Supervisor startup script"
+sudo perl -pi -e \
+	"s/env ROBOT_IP=.*/env ROBOT_IP=\"${ROBOT_VETH1}\"/g" \
+	/etc/init/supervisord.conf
+echo "Restarting Supervisord"
+sudo service supervisord restart
+
 # Setting up NGINX server configuration
 echo "Setting up NGINX configuration"
 ESCAPED_PROJECT_DIR="${PROJECT_DIR//\//\\/}"
 echo "Copying snapsearch.io site config to NGINX sites-enabled"
 sudo cp server_config/snapsearch.io /etc/nginx/sites-enabled/snapsearch.io
 echo "Confirming root path in snapsearch.io site config"
-sudo perl -pi -e "s/root .*/root $ESCAPED_PROJECT_DIR;/g" /etc/nginx/sites-enabled/snapsearch.io
+sudo perl -pi -e \
+	"s/root .*/root ${ESCAPED_PROJECT_DIR};/g" \
+	/etc/nginx/sites-enabled/snapsearch.io
+echo "Confirming robot ip address in snapsearch.io site config"
+sudo perl -pi -e \
+	"s/server ROBOT_IP:(\d+);/server ${ROBOT_VETH1}:\1;/g" \
+	/etc/nginx/sites-enabled/snapsearch.io
 echo "Copying SSL certificate and key to NGINX ssl directory"
 sudo mkdir -p /etc/nginx/ssl
 sudo cp -f --remove-destination secrets/snapsearch.io.pem /etc/nginx/ssl/snapsearch.io.pem
