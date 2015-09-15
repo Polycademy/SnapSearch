@@ -71,9 +71,9 @@ class Cron extends CI_Controller{
 		$output = $today->format('Y-m-d H:i:s') . ' - ';
 
 		if ($exit == 0) {
-			$output .= "Successfully purged lockfiles staler than $allowed_length days " . "\n";
+			$output .= "Successfully purged lockfiles older than $allowed_length days " . "\n";
 		} else {
-			$output .= "Unsuccessful purging of lockfiles staler than $allowed_length: " . implode("\n", $output)  . "\n";
+			$output .= "Unsuccessful purging of lockfiles older than $allowed_length: " . implode("\n", $output)  . "\n";
 		}
 
 		echo $output;
