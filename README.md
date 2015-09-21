@@ -9,6 +9,14 @@ MySQL config:
 https://www.digitalocean.com/community/articles/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-12-04
 PHP FPM config:
 http://arstechnica.com/information-technology/2012/12/web-served-part-3-bolting-on-php-with-php-fpm/
+
+```
+; inside /etc/php5/fpm/pool.d/www.conf
+listen.owner = www-data
+listen.group = www-data
+listen.mode = 0660
+```
+
 PHP FPM mcrypt fix:
 In < 14.04 -> http://askubuntu.com/a/360657
 In > 14.04 -> `sudo php5enmod mcrypt && sudo service php5-fpm restart`
