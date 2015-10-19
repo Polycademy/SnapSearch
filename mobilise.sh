@@ -158,7 +158,7 @@ echo "Confirming root path in snapsearch.io site config"
 sudo perl -pi -e \
 	"s/root .*/root ${ESCAPED_PROJECT_DIR};/g" \
 	/etc/nginx/sites-enabled/snapsearch.io
-echo "Confirming robot ip address in snapsearch.io site config"
+echo "Confirming upstream robot ip address in snapsearch.io site config"
 sudo perl -pi -e \
 	"s/server ROBOT_IP:(\d+);/server ${ROBOT_VETH1}:\1;/g" \
 	/etc/nginx/sites-enabled/snapsearch.io
