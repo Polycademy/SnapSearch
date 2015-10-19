@@ -20,4 +20,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 0 0 * * 0 www-data /usr/bin/env php PROJECT_DIR/index.php cli cron purge_sessions >> PROJECT_DIR/startup_scripts/cron_session.log 2>&1
 
 # Every minute check if PHP5-FPM needs to be restarted
-* * * * * root /usr/bin/env bash PROJECT_DIR/startup_scripts/restart-fpm.sh >> PROJECT_DIR/startup_scripts/fpm-restart.log 2>&1 && chown www-data:www-data PROJECT_DIR/startup_scripts/fpm-restart.log
+* * * * * root /usr/bin/env bash PROJECT_DIR/startup_scripts/restart-fpm.sh >> PROJECT_DIR/startup_scripts/restart-fpm.log 2>&1 && chown www-data:www-data PROJECT_DIR/startup_scripts/restart-fpm.log
