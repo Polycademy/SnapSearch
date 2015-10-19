@@ -5,7 +5,7 @@
 # it needs to run as root
 # repeat this every minute from cron!
 
-if ! curl -sSfI https://snapsearch.io/ > /dev/null 2>&1 ; then        
+if ! curl -sSfI https://snapsearch.io/ --resolve 'snapsearch.io:443:127.0.0.1' --connect-timeout 6 --max-time 15 > /dev/null 2>&1 ; then        
     # server has failed
     echo "PHP-FPM failed at $(date)"
     service php5-fpm restart
