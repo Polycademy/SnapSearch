@@ -53,9 +53,14 @@ composer dump-autoload --optimize </dev/null
 read -p "$(tput bold)$(tput setaf 2)Setup SlimerJS? [Y/n]: $(tput sgr0)" -n 1 -r DOWNLOAD_SLIMERJS
 echo
 if [[ $DOWNLOAD_SLIMERJS =~ ^[Y]$ ]]; then
-	echo "Downloading SlimerJS 0.9.0"
-	curl http://download.slimerjs.org/releases/0.9.1/slimerjs-0.9.1-linux-i686.tar.bz2 -o slimerjs.tar.bz2
-	# If you want to use 64bit make sure to download http://download.slimerjs.org/releases/0.9.1/slimerjs-0.9.1-linux-x86_64.tar.bz2
+	echo "Downloading SlimerJS 0.9.6"
+	if [ $(uname -m) == 'x86_64' ]; then
+		# 64 bit
+		curl http://download.slimerjs.org/releases/0.9.6/slimerjs-0.9.6-linux-x86_64.tar.bz2 -o slimerjs.tar.bz2
+	else
+		# 32 bit
+		curl http://download.slimerjs.org/releases/0.9.6/slimerjs-0.9.6-linux-i686.tar.bz2 -o slimerjs.tar.bz2
+	fi
 	echo "Uncompressing and extracting SlimerJS into ./slimerjs"
 	mkdir -p slimerjs && tar xjvf slimerjs.tar.bz2 -C slimerjs --strip-components 1
 	rm slimerjs.tar.bz2
@@ -114,23 +119,29 @@ ROBOT_VETH1="10.0.0.2"
 ROBOT_GATEWAY=$ROBOT_VETH0
 
 # Setup the network namespace for the robots
+ESCAPED_ROBOT_CIDR="${ROBOT_CIDR//\//\\/}"
+ROBOT_NAMESPACE_LOG_FILE="${PROJECT_DIR}/startup_scripts/robots-namespace.log"
+ESCAPED_ROBOT_NAMESPACE_LOG_FILE="${ROBOT_NAMESPACE_LOG_FILE//\//\\/}"
 echo "Setting up Network Namespaces"
 echo "Copying Robot Namespace startup script to /etc/init"
 sudo cp startup_scripts/robots-namespace.conf /etc/init/robots-namespace.conf
 echo "Confirming IP configuration for network namespace"
 sudo perl -pi -e \
-	"s/env SUBNET=.*/env SUBNET=\"${ROBOT_SUBNET}${ROBOT_CIDR}\"/g" \
+	"s/env SUBNET=.*/env SUBNET=\"${ROBOT_SUBNET}${ESCAPED_ROBOT_CIDR}\"/g" \
 	/etc/init/robots-namespace.conf
 sudo perl -pi -e \
-	"s/env VETH0_AND_SUBNET=.*/env VETH0_AND_SUBNET=\"${ROBOT_VETH0}${ROBOT_CIDR}\"/g" \
+	"s/env VETH0_AND_SUBNET=.*/env VETH0_AND_SUBNET=\"${ROBOT_VETH0}${ESCAPED_ROBOT_CIDR}\"/g" \
 	/etc/init/robots-namespace.conf
 sudo perl -pi -e \
-	"s/env VETH1_AND_SUBNET=.*/env VETH1_AND_SUBNET=\"${ROBOT_VETH1}${ROBOT_CIDR}\"/g" \
+	"s/env VETH1_AND_SUBNET=.*/env VETH1_AND_SUBNET=\"${ROBOT_VETH1}${ESCAPED_ROBOT_CIDR}\"/g" \
 	/etc/init/robots-namespace.conf
 sudo perl -pi -e \
 	"s/env GATEWAY=.*/env GATEWAY=\"${ROBOT_GATEWAY}\"/g" \
 	/etc/init/robots-namespace.conf
-sudo service robots-namespace restart
+sudo perl -pi -e \
+	"s/ROBOTS_NAMESPACE_LOG_FILE/${ESCAPED_ROBOT_NAMESPACE_LOG_FILE}/g" \
+	/etc/init/robots-namespace.conf
+sudo service robots-namespace start
 
 # Setting up supervisor upstart script to run the robots
 echo "Setting up Supervisor Upstart Script for supervising the Robots"
