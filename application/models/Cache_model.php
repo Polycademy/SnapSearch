@@ -1,9 +1,7 @@
 <?php
 
-use Aws\S3\S3Client;
-
 use Gaufrette\Filesystem;
-use Gaufrette\Adapter\AwsS3 as AwsS3Adapter;
+use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\File;
 
 class Cache_model extends CI_Model{
@@ -15,19 +13,7 @@ class Cache_model extends CI_Model{
 
         parent::__construct();
 
-        //using amazon s3 to store the snapshot cache, it will be stored in the snapsearch bucket, and if the bucket doesn't exist, it will create it
-        $this->filesystem = new Filesystem(
-            new AwsS3Adapter(
-                S3Client::factory([
-                    'key'       => $_ENV['secrets']['s3_api_key'],
-                    'secret'    => $_ENV['secrets']['s3_api_secret'],
-                ]),
-                'snapsearch',
-                [
-                    'create'    => true
-                ]
-            )
-        );
+        $this->filesystem = new Filesystem (new LocalAdapter (FCPATH . '/snapshots/cache', true, 755));
 
         $this->load->library('form_validation', false, 'validator');
 
@@ -35,7 +21,7 @@ class Cache_model extends CI_Model{
 
     public function read($id, $user_id = false){
 
-        $this->db->select('userId, snapshot');
+        $this->db->select('userId, parametersChecksum');
         $this->db->from('snapshots');
         $this->db->where('id', $id);
         if($user_id){
@@ -48,7 +34,7 @@ class Cache_model extends CI_Model{
 
             $row = $query->row();
 
-            $snapshot_file = new File($row->snapshot, $this->filesystem);
+            $snapshot_file = new File($row->parametersChecksum, $this->filesystem);
 
             if($snapshot_file->exists()){
 
@@ -73,7 +59,7 @@ class Cache_model extends CI_Model{
 
     public function delete($id, $user_id = false){
 
-        $this->db->select('userId, snapshot');
+        $this->db->select('userId, parametersChecksum');
         $this->db->from('snapshots');
         $this->db->where('id', $id);
         if($user_id){
@@ -92,7 +78,7 @@ class Cache_model extends CI_Model{
 
             //delete it off the filesystem
             $row = $query->row();
-            $snapshot_file = new File($row->snapshot, $this->filesystem);
+            $snapshot_file = new File($row->parametersChecksum, $this->filesystem);
 
             if($snapshot_file->exists()){
 
@@ -146,7 +132,6 @@ class Cache_model extends CI_Model{
                     'userId'                => $row->userId,
                     'url'                   => $row->url,
                     'date'                  => $row->date,
-                    'snapshot'              => $row->snapshot,
                     'parametersChecksum'    => $row->parametersChecksum,
                 ];
 
