@@ -51,7 +51,6 @@ class Cron extends CI_Controller{
 
 		$path = $this->config->item('lockfiles_path');
 
-
 		if ($allowed_length === false) {
 
 			$command = "find $path -name '*.lock' -type -f -delete";
