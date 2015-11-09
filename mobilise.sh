@@ -141,6 +141,15 @@ sudo perl -pi -e \
 sudo perl -pi -e \
 	"s/ROBOTS_NAMESPACE_LOG_FILE/${ESCAPED_ROBOT_NAMESPACE_LOG_FILE}/g" \
 	/etc/init/robots-namespace.conf
+# allowing access to the configured domain name servers
+# we're not using network namespace specific nameservers, so we just use the global one
+# load command output into nameservers array
+nameservers=($(cat /etc/resolv.conf | grep nameserver | sed -e 's/nameserver \(.*\)/\1/'))
+for i in "${nameservers[@]}"; do 
+	# we need to add the $i to the DELETE portion and the ADD portion of robots-namespace.conf
+	sed -i "/# add DNS delete below/aip netns exec robots iptables -D OUTPUT -d ${i} -j ACCEPT 2>\/dev\/null || true" /etc/init/robots-namespace.conf
+	sed -i "/# add DNS append below/aip netns exec robots iptables -A OUTPUT -d ${i} -j ACCEPT" /etc/init/robots-namespace.conf
+done
 sudo service robots-namespace start
 
 # Setting up supervisor upstart script to run the robots
