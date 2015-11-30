@@ -18,6 +18,7 @@ secrets/*
 !secrets/*.gitkeep
 *.log
 *.pid
+*.sock
 slimerjs/*
 invoices/*
 !invoices/.gitkeep
