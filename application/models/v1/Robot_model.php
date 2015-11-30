@@ -770,9 +770,16 @@ class Robot_model extends CI_Model{
             $count = 0;
             $got_lock = true;
 
-            // this is a total hack, and can result in resource starvation
-            // it's all because php's flock doesn't support timeouts
-            while (!flock($lock, $type, $would_block)) {
+            // this optimistic method is flawed because continuous retries can 
+            // result in resource starvation
+            // it would be better for all threads to enter into a queue
+            // but it is not possible under shared-nothing PHP
+            
+            // the trick is in the combination of LOCK_NB and $blocking
+            // the $blocking variable is assigned by reference
+            // it returns 1 when the flock is blocked from acquiring a lock
+            // with LOCK_NB, the flock returns immediately instead of waiting indefinitely
+            while (!flock($lock, $type | LOCK_NB, $would_block)) {
                 if ($would_block AND $count++ < $timeout) {
                     sleep(1);
                 } else {
