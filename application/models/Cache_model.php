@@ -4,7 +4,7 @@ use Gaufrette\Filesystem;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\File;
 
-class Cache_model extends CI_Model{
+class Cache_model extends CI_Model {
 
     protected $filesystem;
     protected $errors;
