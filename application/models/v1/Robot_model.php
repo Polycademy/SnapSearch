@@ -491,7 +491,7 @@ class Robot_model extends CI_Model{
         if(!isset($parameters['url'])){
             $validation_errors['url'] = 'Url (url) is necessary.';
         }else{
-            if (!$this->validate_url($url)) {
+            if (!$this->validate_url($parameters['url'])) {
                 $validation_errors['url'] = 'Url (url) must be a valid url containing http or https as the host and a proper host domain.';
             }
         }
