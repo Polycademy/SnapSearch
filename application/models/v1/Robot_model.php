@@ -997,7 +997,7 @@ class Robot_model extends CI_Model{
         $snapshot_file = new File($parameters_checksum, $this->filesystem);
         $file_status = $snapshot_file->setContent(bzcompress($snapshot_data, 9));
 
-        if($file_status){
+        if($file_status !== false){
 
             // Updating id = LAST_INSERT_ID (id) in the update clause fixes last_insert_id to be 
             // meaningful for both inserts and updates
