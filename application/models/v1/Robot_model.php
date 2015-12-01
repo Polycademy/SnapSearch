@@ -496,6 +496,11 @@ class Robot_model extends CI_Model{
             }
         }
 
+        // if there is a custom user agent, we need to make sure it has SnapSearch in it
+        if (isset($parameters['useragent']) AND strpos($parameters['useragent'], 'SnapSearch') === false) {
+            $validation_errors['useragent'] = 'User Agent (useragent) must contain the substring \'SnapSearch\'.';
+        }
+
         if(isset($parameters['maxtimeout']) AND isset($parameters['initialwait'])){
             //initialwait has to be lower than maxtimeout
             if($parameters['initialwait'] >= $parameters['maxtimeout']){
