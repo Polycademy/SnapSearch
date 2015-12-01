@@ -1009,7 +1009,7 @@ class Robot_model extends CI_Model{
                     date, 
                     parametersChecksum
                  ) 
-                 VALUES (?, ?, ?, ?, ?) 
+                 VALUES (?, ?, ?, ?) 
                  ON DUPLICATE KEY UPDATE 
                     id = LAST_INSERT_ID(id), 
                     userId = VALUES(userId), 
