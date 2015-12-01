@@ -65,12 +65,14 @@ SSH tunnelling, then you can access the database!
 
 ssh -L LOCALPORT:127.0.0.1:REMOTEPORT USER@IP
 
-Building App.js (swapping for cache busting):
+Building App.js and Common.js (swapping for cache busting):
 
-browserify -t debowerify -t deglobalify -t brfs -e js/app/App.js -o js/compiled/App.js
-browserify -t debowerify -t deglobalify -t brfs -e js/app/Common.js -o js/compiled/Common.js
-minify js/compiled/App.js
-minify js/compiled/Common.js
+```
+./node_modules/.bin/browserify -t debowerify -t deglobalify -t brfs -e js/app/App.js -o js/compiled/App.js
+./node_modules/.bin/browserify -t debowerify -t deglobalify -t brfs -e js/app/Common.js -o js/compiled/Common.js
+./node_modules/.bin/minify js/compiled/App.js
+./node_modules/.bin/minify js/compiled/Common.js
+```
 
 Change to `rlimit_files = 4096` for `/etc/php5/fpm/pool.d/www.conf`, this allows 4096 open lock files for each PHP worker process if there's 3 workers, that's 12288 lock files that can be open at the same time. This one of the upper limits for concurrent connections to SnapSearch. The real limit is much higher, because concurrent connections don't all open lock files at the same time. And there's probably a smaller limit due to other architectural parts of SnapSearch.
 
