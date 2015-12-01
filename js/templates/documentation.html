@@ -58,8 +58,8 @@
                                                 <accordion-heading><i class="glyphicon glyphicon-chevron-right"></i> useragent</accordion-heading>
                                                 <dl class="dl-horizontal api-parameter-properties">
                                                     <dt>Default:</dt><dd>Mozilla/5.0 ({OPERATINGSYSTEM}) Gecko/{VERSION} Firefox/{VERSION} SnapSearch</dd>
-                                                    <dt>Possible Values:</dt><dd>Any textual string</dd>
-                                                    <dt>Description:</dt><dd>Customise the user agent. Warning: setting this user agent to something that does not include "SnapSearch" can cause an infinite interception loop.</dd>
+                                                    <dt>Possible Values:</dt><dd>Any textual string containing 'SnapSearch'</dd>
+                                                    <dt>Description:</dt><dd>Customise the user agent. If this user agent did not include 'SnapSearch', an infinite interception loop may occur.</dd>
                                                 </dl>
                                             </accordion-group>
                                             <accordion-group>
