@@ -699,8 +699,8 @@ class Robot_model extends CI_Model{
                 'parametersChecksum'    => $query->row()->parametersChecksum
             ];
 
-            $snapshot_file = new File($data['parametersChecksum'], $this->filesystem);
-            
+            $snapshot_file = new File($parameters_checksum, $this->filesystem);
+
             // if the generation datetime is >= (current time - cache time period)
             // then we have a recent snapshot
             // otherwise we have an old snapshot
@@ -726,7 +726,7 @@ class Robot_model extends CI_Model{
             }
             
             // if it doesn't exist, delete it
-            $this->delete_cache($data['parametersChecksum']);      
+            $this->delete_cache($parameters_checksum);      
             
         }
 
@@ -762,7 +762,7 @@ class Robot_model extends CI_Model{
      */
     protected function setup_lock ($checksum) {
 
-        $lock = fopen ("{$this->lockpath}/ss_{$checksum}.lock", 'w+');
+        $lock = fopen ("{$this->lockpath}/{$checksum}.lock", 'w+');
         return $lock;
 
     }
@@ -1018,12 +1018,12 @@ class Robot_model extends CI_Model{
                     parametersChecksum = VALUES(parametersChecksum)
                  ";
 
-            $this->db->query($upsert_query, array(
+            $this->db->query($upsert_query, [
                 $user_id, 
                 $url, 
                 $generation_datetime, 
                 $parameters_checksum
-            )); 
+            ]);
 
             // returns the last insert/update id
             return $this->db->insert_id();
@@ -1036,7 +1036,7 @@ class Robot_model extends CI_Model{
 
     protected function delete_cache($parameter_checksum){
 
-        $query = $this->db->delete('snapshots', array('parametersChecksum' => $parameter_checksum));
+        $query = $this->db->delete('snapshots', ['parametersChecksum' => $parameter_checksum]);
         $snapshot_file = new File($parameter_checksum, $this->filesystem);
         if ($snapshot_file->exists()) $snapshot_file->delete();
         return true;
