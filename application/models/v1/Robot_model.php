@@ -109,12 +109,13 @@ class Robot_model extends CI_Model{
         // 2. this isn't a refresh request
         $cache = false;
         if ($using_cache AND !$refresh) {
-            
+
             // we may get a fresh or expired snapshot
             // save this cache for later
             $cache = $this->read_cache($user_id, $parameters_checksum, $parameters['cachetime']);
 
             list($status, $snapshot) = $cache;
+
             if ($status == 'fresh') {
                 return $this->return_cached_response($snapshot);
             }
@@ -276,6 +277,7 @@ class Robot_model extends CI_Model{
         // recalculating the content-length header based on content-type character set if they exist
         $response_array = $this->recount_content_length($response_array);
         
+
         // only cache the result if the cache option was true
         if ($using_cache) {
 
@@ -317,7 +319,6 @@ class Robot_model extends CI_Model{
         return $response_array;
 
     }
-
 
     public function purge_cache($allowed_length = false, $user_id = false){
 
