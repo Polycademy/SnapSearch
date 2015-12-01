@@ -112,7 +112,7 @@ class Robot_model extends CI_Model{
 
             // we may get a fresh or expired snapshot
             // save this cache for later
-            $cache = $this->read_cache($user_id, $parameters_checksum, $parameters['cachetime']);
+            $cache = $this->read_cache($parameters_checksum, $parameters['cachetime']);
 
             list($status, $snapshot) = $cache;
 
@@ -150,7 +150,6 @@ class Robot_model extends CI_Model{
                 list ($type, $snapshot) = $this->handle_cache_stampede (
                     $lock, 
                     $cache, 
-                    $user_id, 
                     $parameters_checksum, 
                     $parameters['cachetime'], 
                     2
@@ -663,7 +662,7 @@ class Robot_model extends CI_Model{
     }
 
     /**
-     * Looks up for a cached snapshot indexed by user id and checksum.
+     * Looks up for a cached snapshot indexed by a unique checksum.
      * 
      * If it finds a cache record in the database (regardless of freshness), 
      * it will return the decompressed and decoded contents as part of the 
@@ -680,15 +679,13 @@ class Robot_model extends CI_Model{
      *     'snapshotData'       => ...
      * ]
      * 
-     * @param  int    $user_id
      * @param  string $parameters_checksum
      * @param  int    $parameters_cachetime
      * 
      * @return array
      */
-    protected function read_cache($user_id, $parameters_checksum, $parameters_cachetime){
+    protected function read_cache($parameters_checksum, $parameters_cachetime){
 
-        $this->db->where('userId', $user_id);
         $this->db->where('parametersChecksum', $parameters_checksum);
 
         $query = $this->db->get('snapshots');
@@ -842,7 +839,6 @@ class Robot_model extends CI_Model{
     protected function handle_cache_stampede (
         $lock, 
         $cache, 
-        $user_id, 
         $parameters_checksum, 
         $parameters_cachetime, 
         $cycle_limit
@@ -877,7 +873,6 @@ class Robot_model extends CI_Model{
                 $this->release_and_close_lock ($lock);
 
                 list ($status, $snapshot) = $this->read_cache(
-                    $user_id, 
                     $parameters_checksum, 
                     $parameters_cachetime
                 );
@@ -897,7 +892,6 @@ class Robot_model extends CI_Model{
                     return $this->handle_cache_stampede(
                         $lock, 
                         ['null', null], 
-                        $user_id, 
                         $parameters_checksum, 
                         $parameters_cachetime, 
                         --$cycle_limit
