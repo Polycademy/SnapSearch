@@ -604,6 +604,11 @@ class Robot_model extends CI_Model{
 
     }
 
+    /**
+     * Canonicalisation the parameters that have multiple true/false variants. This ensures an equivalence 
+     * of requests between requests having different syntactical payloads but the same semantics.
+     * The parameters will also be key sorted in another function afterwards.
+     */
     protected function default_parameters_filtering ($parameters) {
 
         // remove unnecessary parameters not relevant to snapshot uniqueness
