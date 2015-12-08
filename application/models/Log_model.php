@@ -16,6 +16,7 @@ class Log_model extends CI_Model{
 
         $data = elements(array(
             'userId',
+            'date',
             'type',
             'url',
             'responseTime',
@@ -28,6 +29,11 @@ class Log_model extends CI_Model{
                 'field' => 'userId',
                 'label' => 'User ID',
                 'rules' => 'required|integer',
+            ),
+            array(
+                'field' => 'date',
+                'label' => 'Date',
+                'rules' => 'valid_date',
             ),
             array(
                 'field' => 'type',
@@ -63,8 +69,9 @@ class Log_model extends CI_Model{
 
         }
 
-        //date of the log is not the same as the date of the snapshot
-        $data['date'] = date('Y-m-d H:i:s');
+        if (!isset($data['date']) OR empty($data['date'])) {
+            $data['date'] = date('Y-m-d H:i:s');
+        }
 
         //create the canonicalUrl
         $canonicalise = preg_match('~

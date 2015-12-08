@@ -73,6 +73,8 @@ class Robot extends CI_Controller{
 				}
 
 				$this->update_log($parameters, $query, $end_time - $start_time);
+				unset($query['generationDatetime']);
+				// generationDatetime is only for logs and diagnostics, so we remove it 
 
 				$content = $query; //assign query
 				$code = 'success'; //assign code
@@ -203,6 +205,7 @@ class Robot extends CI_Controller{
 
 		$this->Log_model->create([
             'userId'		=> $this->user['id'],
+            'date'			=> $query['generationDatetime'],
             'type'			=> $type,
             'url'			=> $parameters['url'],
             'responseTime'	=> $response_time,

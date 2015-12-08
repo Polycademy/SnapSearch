@@ -69,16 +69,17 @@ class Robot_model extends CI_Model{
         if ($this->check_test_mode($parameters)) {
 
             return [
-                'id'                => null, 
-                'cache'             => null,
-                'callbackResult'    => '',
-                'date'              => time(),
-                'headers'           => [],
-                'html'              => '',
-                'message'           => 'You are in test mode. Your request was received!',
-                'pageErrors'        => [],
-                'screensot'         => '',
-                'status'            => 200
+                'id'                 => null, 
+                'cache'              => null,
+                'callbackResult'     => '',
+                'date'               => time(),
+                'generationDatetime' => date('Y-m-d H:i:s'), 
+                'headers'            => [],
+                'html'               => '',
+                'message'            => 'You are in test mode. Your request was received!',
+                'pageErrors'         => [],
+                'screensot'          => '',
+                'status'             => 200
             ];
 
         }
@@ -117,7 +118,7 @@ class Robot_model extends CI_Model{
             list($status, $snapshot) = $cache;
 
             if ($status == 'fresh') {
-                return $this->return_cached_response($snapshot);
+                return $this->return_cached_response($snapshot, $snapshot_generation_datetime);
             }
 
         }
@@ -167,7 +168,7 @@ class Robot_model extends CI_Model{
 
                     $this->release_and_close_lock ($lock);
 
-                    return $this->return_cached_response($snapshot);
+                    return $this->return_cached_response($snapshot, $snapshot_generation_datetime);
 
                 break;
 
@@ -314,6 +315,7 @@ class Robot_model extends CI_Model{
 
         // this is not a cached response
         $response_array['cache'] = false;
+        $response_array['generationDatetime'] = $snapshot_generation_datetime;
 
         return $response_array;
 
@@ -741,14 +743,17 @@ class Robot_model extends CI_Model{
      * 1. ['cache'] = true
      * 2. ['id'] = <snapshot id>
      * 
-     * @param  array $snapshot
+     * @param  array  $snapshot
+     * @param  string $generation_datetime
      * @return array
      */
-    protected function return_cached_response ($snapshot) {
+    protected function return_cached_response ($snapshot, $generation_datetime) {
 
         $response_array = $snapshot['snapshotData'];
         $response_array['cache'] = true;
         $response_array['id'] = $snapshot['id'];
+        $response_array['generationDatetime'] = $generation_datetime;
+
         return $response_array;
 
     }
