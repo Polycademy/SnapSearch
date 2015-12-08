@@ -25,8 +25,8 @@ class Robot_model extends CI_Model{
         $this->client = new Client;
         $this->client->setUserAgent('Snapsearch', true);
 
-        $this->lockpath = FCPATH . '/snapshots/lockfiles';
-        $this->filesystem = new Filesystem (new LocalAdapter (FCPATH . '/snapshots/cache', true, 755));
+        $this->lockpath = FCPATH . 'snapshots/lockfiles';
+        $this->filesystem = new Filesystem (new LocalAdapter (FCPATH . 'snapshots/cache', true, 755));
 
         $this->load->library('form_validation', false, 'validator');
 
@@ -131,6 +131,18 @@ class Robot_model extends CI_Model{
 
             // setup the snapshot lock
             $lock = $this->setup_lock($parameters_checksum);
+
+            if (!$lock) {
+
+                log_message('error', "Snapsearch PHP application could not open a lockfile (possible permission error on the filesystem) to regenerate $parameters_checksum.");
+
+                $this->errors = array(
+                    'system_error'  => 'Robot service could not open a lockfile to regenerate the cache. Try again later.',
+                );
+
+                return false;
+
+            }
 
             // if this thread acquires the write lock, it becomes the primary thread
             // if this thread waits for a read lock, it becomes a secondary thread
