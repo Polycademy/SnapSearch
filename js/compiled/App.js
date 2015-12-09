@@ -1,482 +1,482 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-
-},{}],2:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
- * EventEmitter v4.2.7 - git.io/ee
- * Oliver Caldwell
- * MIT license
+ * EventEmitter v4.2.11 - git.io/ee
+ * Unlicense - http://unlicense.org/
+ * Oliver Caldwell - http://oli.me.uk/
  * @preserve
  */
 
-(function () {
-	'use strict';
+;(function () {
+    'use strict';
 
-	/**
-	 * Class for managing events.
-	 * Can be extended to provide event functionality in other classes.
-	 *
-	 * @class EventEmitter Manages event registering and emitting.
-	 */
-	function EventEmitter() {}
+    /**
+     * Class for managing events.
+     * Can be extended to provide event functionality in other classes.
+     *
+     * @class EventEmitter Manages event registering and emitting.
+     */
+    function EventEmitter() {}
 
-	// Shortcuts to improve speed and size
-	var proto = EventEmitter.prototype;
-	var exports = this;
-	var originalGlobalValue = exports.EventEmitter;
+    // Shortcuts to improve speed and size
+    var proto = EventEmitter.prototype;
+    var exports = this;
+    var originalGlobalValue = exports.EventEmitter;
 
-	/**
-	 * Finds the index of the listener for the event in it's storage array.
-	 *
-	 * @param {Function[]} listeners Array of listeners to search through.
-	 * @param {Function} listener Method to look for.
-	 * @return {Number} Index of the specified listener, -1 if not found
-	 * @api private
-	 */
-	function indexOfListener(listeners, listener) {
-		var i = listeners.length;
-		while (i--) {
-			if (listeners[i].listener === listener) {
-				return i;
-			}
-		}
+    /**
+     * Finds the index of the listener for the event in its storage array.
+     *
+     * @param {Function[]} listeners Array of listeners to search through.
+     * @param {Function} listener Method to look for.
+     * @return {Number} Index of the specified listener, -1 if not found
+     * @api private
+     */
+    function indexOfListener(listeners, listener) {
+        var i = listeners.length;
+        while (i--) {
+            if (listeners[i].listener === listener) {
+                return i;
+            }
+        }
 
-		return -1;
-	}
+        return -1;
+    }
 
-	/**
-	 * Alias a method while keeping the context correct, to allow for overwriting of target method.
-	 *
-	 * @param {String} name The name of the target method.
-	 * @return {Function} The aliased method
-	 * @api private
-	 */
-	function alias(name) {
-		return function aliasClosure() {
-			return this[name].apply(this, arguments);
-		};
-	}
+    /**
+     * Alias a method while keeping the context correct, to allow for overwriting of target method.
+     *
+     * @param {String} name The name of the target method.
+     * @return {Function} The aliased method
+     * @api private
+     */
+    function alias(name) {
+        return function aliasClosure() {
+            return this[name].apply(this, arguments);
+        };
+    }
 
-	/**
-	 * Returns the listener array for the specified event.
-	 * Will initialise the event object and listener arrays if required.
-	 * Will return an object if you use a regex search. The object contains keys for each matched event. So /ba[rz]/ might return an object containing bar and baz. But only if you have either defined them with defineEvent or added some listeners to them.
-	 * Each property in the object response is an array of listener functions.
-	 *
-	 * @param {String|RegExp} evt Name of the event to return the listeners from.
-	 * @return {Function[]|Object} All listener functions for the event.
-	 */
-	proto.getListeners = function getListeners(evt) {
-		var events = this._getEvents();
-		var response;
-		var key;
+    /**
+     * Returns the listener array for the specified event.
+     * Will initialise the event object and listener arrays if required.
+     * Will return an object if you use a regex search. The object contains keys for each matched event. So /ba[rz]/ might return an object containing bar and baz. But only if you have either defined them with defineEvent or added some listeners to them.
+     * Each property in the object response is an array of listener functions.
+     *
+     * @param {String|RegExp} evt Name of the event to return the listeners from.
+     * @return {Function[]|Object} All listener functions for the event.
+     */
+    proto.getListeners = function getListeners(evt) {
+        var events = this._getEvents();
+        var response;
+        var key;
 
-		// Return a concatenated array of all matching events if
-		// the selector is a regular expression.
-		if (evt instanceof RegExp) {
-			response = {};
-			for (key in events) {
-				if (events.hasOwnProperty(key) && evt.test(key)) {
-					response[key] = events[key];
-				}
-			}
-		}
-		else {
-			response = events[evt] || (events[evt] = []);
-		}
+        // Return a concatenated array of all matching events if
+        // the selector is a regular expression.
+        if (evt instanceof RegExp) {
+            response = {};
+            for (key in events) {
+                if (events.hasOwnProperty(key) && evt.test(key)) {
+                    response[key] = events[key];
+                }
+            }
+        }
+        else {
+            response = events[evt] || (events[evt] = []);
+        }
 
-		return response;
-	};
+        return response;
+    };
 
-	/**
-	 * Takes a list of listener objects and flattens it into a list of listener functions.
-	 *
-	 * @param {Object[]} listeners Raw listener objects.
-	 * @return {Function[]} Just the listener functions.
-	 */
-	proto.flattenListeners = function flattenListeners(listeners) {
-		var flatListeners = [];
-		var i;
+    /**
+     * Takes a list of listener objects and flattens it into a list of listener functions.
+     *
+     * @param {Object[]} listeners Raw listener objects.
+     * @return {Function[]} Just the listener functions.
+     */
+    proto.flattenListeners = function flattenListeners(listeners) {
+        var flatListeners = [];
+        var i;
 
-		for (i = 0; i < listeners.length; i += 1) {
-			flatListeners.push(listeners[i].listener);
-		}
+        for (i = 0; i < listeners.length; i += 1) {
+            flatListeners.push(listeners[i].listener);
+        }
 
-		return flatListeners;
-	};
+        return flatListeners;
+    };
 
-	/**
-	 * Fetches the requested listeners via getListeners but will always return the results inside an object. This is mainly for internal use but others may find it useful.
-	 *
-	 * @param {String|RegExp} evt Name of the event to return the listeners from.
-	 * @return {Object} All listener functions for an event in an object.
-	 */
-	proto.getListenersAsObject = function getListenersAsObject(evt) {
-		var listeners = this.getListeners(evt);
-		var response;
+    /**
+     * Fetches the requested listeners via getListeners but will always return the results inside an object. This is mainly for internal use but others may find it useful.
+     *
+     * @param {String|RegExp} evt Name of the event to return the listeners from.
+     * @return {Object} All listener functions for an event in an object.
+     */
+    proto.getListenersAsObject = function getListenersAsObject(evt) {
+        var listeners = this.getListeners(evt);
+        var response;
 
-		if (listeners instanceof Array) {
-			response = {};
-			response[evt] = listeners;
-		}
+        if (listeners instanceof Array) {
+            response = {};
+            response[evt] = listeners;
+        }
 
-		return response || listeners;
-	};
+        return response || listeners;
+    };
 
-	/**
-	 * Adds a listener function to the specified event.
-	 * The listener will not be added if it is a duplicate.
-	 * If the listener returns true then it will be removed after it is called.
-	 * If you pass a regular expression as the event name then the listener will be added to all events that match it.
-	 *
-	 * @param {String|RegExp} evt Name of the event to attach the listener to.
-	 * @param {Function} listener Method to be called when the event is emitted. If the function returns true then it will be removed after calling.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.addListener = function addListener(evt, listener) {
-		var listeners = this.getListenersAsObject(evt);
-		var listenerIsWrapped = typeof listener === 'object';
-		var key;
+    /**
+     * Adds a listener function to the specified event.
+     * The listener will not be added if it is a duplicate.
+     * If the listener returns true then it will be removed after it is called.
+     * If you pass a regular expression as the event name then the listener will be added to all events that match it.
+     *
+     * @param {String|RegExp} evt Name of the event to attach the listener to.
+     * @param {Function} listener Method to be called when the event is emitted. If the function returns true then it will be removed after calling.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.addListener = function addListener(evt, listener) {
+        var listeners = this.getListenersAsObject(evt);
+        var listenerIsWrapped = typeof listener === 'object';
+        var key;
 
-		for (key in listeners) {
-			if (listeners.hasOwnProperty(key) && indexOfListener(listeners[key], listener) === -1) {
-				listeners[key].push(listenerIsWrapped ? listener : {
-					listener: listener,
-					once: false
-				});
-			}
-		}
+        for (key in listeners) {
+            if (listeners.hasOwnProperty(key) && indexOfListener(listeners[key], listener) === -1) {
+                listeners[key].push(listenerIsWrapped ? listener : {
+                    listener: listener,
+                    once: false
+                });
+            }
+        }
 
-		return this;
-	};
+        return this;
+    };
 
-	/**
-	 * Alias of addListener
-	 */
-	proto.on = alias('addListener');
+    /**
+     * Alias of addListener
+     */
+    proto.on = alias('addListener');
 
-	/**
-	 * Semi-alias of addListener. It will add a listener that will be
-	 * automatically removed after it's first execution.
-	 *
-	 * @param {String|RegExp} evt Name of the event to attach the listener to.
-	 * @param {Function} listener Method to be called when the event is emitted. If the function returns true then it will be removed after calling.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.addOnceListener = function addOnceListener(evt, listener) {
-		return this.addListener(evt, {
-			listener: listener,
-			once: true
-		});
-	};
+    /**
+     * Semi-alias of addListener. It will add a listener that will be
+     * automatically removed after its first execution.
+     *
+     * @param {String|RegExp} evt Name of the event to attach the listener to.
+     * @param {Function} listener Method to be called when the event is emitted. If the function returns true then it will be removed after calling.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.addOnceListener = function addOnceListener(evt, listener) {
+        return this.addListener(evt, {
+            listener: listener,
+            once: true
+        });
+    };
 
-	/**
-	 * Alias of addOnceListener.
-	 */
-	proto.once = alias('addOnceListener');
+    /**
+     * Alias of addOnceListener.
+     */
+    proto.once = alias('addOnceListener');
 
-	/**
-	 * Defines an event name. This is required if you want to use a regex to add a listener to multiple events at once. If you don't do this then how do you expect it to know what event to add to? Should it just add to every possible match for a regex? No. That is scary and bad.
-	 * You need to tell it what event names should be matched by a regex.
-	 *
-	 * @param {String} evt Name of the event to create.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.defineEvent = function defineEvent(evt) {
-		this.getListeners(evt);
-		return this;
-	};
+    /**
+     * Defines an event name. This is required if you want to use a regex to add a listener to multiple events at once. If you don't do this then how do you expect it to know what event to add to? Should it just add to every possible match for a regex? No. That is scary and bad.
+     * You need to tell it what event names should be matched by a regex.
+     *
+     * @param {String} evt Name of the event to create.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.defineEvent = function defineEvent(evt) {
+        this.getListeners(evt);
+        return this;
+    };
 
-	/**
-	 * Uses defineEvent to define multiple events.
-	 *
-	 * @param {String[]} evts An array of event names to define.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.defineEvents = function defineEvents(evts) {
-		for (var i = 0; i < evts.length; i += 1) {
-			this.defineEvent(evts[i]);
-		}
-		return this;
-	};
+    /**
+     * Uses defineEvent to define multiple events.
+     *
+     * @param {String[]} evts An array of event names to define.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.defineEvents = function defineEvents(evts) {
+        for (var i = 0; i < evts.length; i += 1) {
+            this.defineEvent(evts[i]);
+        }
+        return this;
+    };
 
-	/**
-	 * Removes a listener function from the specified event.
-	 * When passed a regular expression as the event name, it will remove the listener from all events that match it.
-	 *
-	 * @param {String|RegExp} evt Name of the event to remove the listener from.
-	 * @param {Function} listener Method to remove from the event.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.removeListener = function removeListener(evt, listener) {
-		var listeners = this.getListenersAsObject(evt);
-		var index;
-		var key;
+    /**
+     * Removes a listener function from the specified event.
+     * When passed a regular expression as the event name, it will remove the listener from all events that match it.
+     *
+     * @param {String|RegExp} evt Name of the event to remove the listener from.
+     * @param {Function} listener Method to remove from the event.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.removeListener = function removeListener(evt, listener) {
+        var listeners = this.getListenersAsObject(evt);
+        var index;
+        var key;
 
-		for (key in listeners) {
-			if (listeners.hasOwnProperty(key)) {
-				index = indexOfListener(listeners[key], listener);
+        for (key in listeners) {
+            if (listeners.hasOwnProperty(key)) {
+                index = indexOfListener(listeners[key], listener);
 
-				if (index !== -1) {
-					listeners[key].splice(index, 1);
-				}
-			}
-		}
+                if (index !== -1) {
+                    listeners[key].splice(index, 1);
+                }
+            }
+        }
 
-		return this;
-	};
+        return this;
+    };
 
-	/**
-	 * Alias of removeListener
-	 */
-	proto.off = alias('removeListener');
+    /**
+     * Alias of removeListener
+     */
+    proto.off = alias('removeListener');
 
-	/**
-	 * Adds listeners in bulk using the manipulateListeners method.
-	 * If you pass an object as the second argument you can add to multiple events at once. The object should contain key value pairs of events and listeners or listener arrays. You can also pass it an event name and an array of listeners to be added.
-	 * You can also pass it a regular expression to add the array of listeners to all events that match it.
-	 * Yeah, this function does quite a bit. That's probably a bad thing.
-	 *
-	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to add to multiple events at once.
-	 * @param {Function[]} [listeners] An optional array of listener functions to add.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.addListeners = function addListeners(evt, listeners) {
-		// Pass through to manipulateListeners
-		return this.manipulateListeners(false, evt, listeners);
-	};
+    /**
+     * Adds listeners in bulk using the manipulateListeners method.
+     * If you pass an object as the second argument you can add to multiple events at once. The object should contain key value pairs of events and listeners or listener arrays. You can also pass it an event name and an array of listeners to be added.
+     * You can also pass it a regular expression to add the array of listeners to all events that match it.
+     * Yeah, this function does quite a bit. That's probably a bad thing.
+     *
+     * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to add to multiple events at once.
+     * @param {Function[]} [listeners] An optional array of listener functions to add.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.addListeners = function addListeners(evt, listeners) {
+        // Pass through to manipulateListeners
+        return this.manipulateListeners(false, evt, listeners);
+    };
 
-	/**
-	 * Removes listeners in bulk using the manipulateListeners method.
-	 * If you pass an object as the second argument you can remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
-	 * You can also pass it an event name and an array of listeners to be removed.
-	 * You can also pass it a regular expression to remove the listeners from all events that match it.
-	 *
-	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to remove from multiple events at once.
-	 * @param {Function[]} [listeners] An optional array of listener functions to remove.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.removeListeners = function removeListeners(evt, listeners) {
-		// Pass through to manipulateListeners
-		return this.manipulateListeners(true, evt, listeners);
-	};
+    /**
+     * Removes listeners in bulk using the manipulateListeners method.
+     * If you pass an object as the second argument you can remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+     * You can also pass it an event name and an array of listeners to be removed.
+     * You can also pass it a regular expression to remove the listeners from all events that match it.
+     *
+     * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to remove from multiple events at once.
+     * @param {Function[]} [listeners] An optional array of listener functions to remove.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.removeListeners = function removeListeners(evt, listeners) {
+        // Pass through to manipulateListeners
+        return this.manipulateListeners(true, evt, listeners);
+    };
 
-	/**
-	 * Edits listeners in bulk. The addListeners and removeListeners methods both use this to do their job. You should really use those instead, this is a little lower level.
-	 * The first argument will determine if the listeners are removed (true) or added (false).
-	 * If you pass an object as the second argument you can add/remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
-	 * You can also pass it an event name and an array of listeners to be added/removed.
-	 * You can also pass it a regular expression to manipulate the listeners of all events that match it.
-	 *
-	 * @param {Boolean} remove True if you want to remove listeners, false if you want to add.
-	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to add/remove from multiple events at once.
-	 * @param {Function[]} [listeners] An optional array of listener functions to add/remove.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.manipulateListeners = function manipulateListeners(remove, evt, listeners) {
-		var i;
-		var value;
-		var single = remove ? this.removeListener : this.addListener;
-		var multiple = remove ? this.removeListeners : this.addListeners;
+    /**
+     * Edits listeners in bulk. The addListeners and removeListeners methods both use this to do their job. You should really use those instead, this is a little lower level.
+     * The first argument will determine if the listeners are removed (true) or added (false).
+     * If you pass an object as the second argument you can add/remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+     * You can also pass it an event name and an array of listeners to be added/removed.
+     * You can also pass it a regular expression to manipulate the listeners of all events that match it.
+     *
+     * @param {Boolean} remove True if you want to remove listeners, false if you want to add.
+     * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to add/remove from multiple events at once.
+     * @param {Function[]} [listeners] An optional array of listener functions to add/remove.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.manipulateListeners = function manipulateListeners(remove, evt, listeners) {
+        var i;
+        var value;
+        var single = remove ? this.removeListener : this.addListener;
+        var multiple = remove ? this.removeListeners : this.addListeners;
 
-		// If evt is an object then pass each of it's properties to this method
-		if (typeof evt === 'object' && !(evt instanceof RegExp)) {
-			for (i in evt) {
-				if (evt.hasOwnProperty(i) && (value = evt[i])) {
-					// Pass the single listener straight through to the singular method
-					if (typeof value === 'function') {
-						single.call(this, i, value);
-					}
-					else {
-						// Otherwise pass back to the multiple function
-						multiple.call(this, i, value);
-					}
-				}
-			}
-		}
-		else {
-			// So evt must be a string
-			// And listeners must be an array of listeners
-			// Loop over it and pass each one to the multiple method
-			i = listeners.length;
-			while (i--) {
-				single.call(this, evt, listeners[i]);
-			}
-		}
+        // If evt is an object then pass each of its properties to this method
+        if (typeof evt === 'object' && !(evt instanceof RegExp)) {
+            for (i in evt) {
+                if (evt.hasOwnProperty(i) && (value = evt[i])) {
+                    // Pass the single listener straight through to the singular method
+                    if (typeof value === 'function') {
+                        single.call(this, i, value);
+                    }
+                    else {
+                        // Otherwise pass back to the multiple function
+                        multiple.call(this, i, value);
+                    }
+                }
+            }
+        }
+        else {
+            // So evt must be a string
+            // And listeners must be an array of listeners
+            // Loop over it and pass each one to the multiple method
+            i = listeners.length;
+            while (i--) {
+                single.call(this, evt, listeners[i]);
+            }
+        }
 
-		return this;
-	};
+        return this;
+    };
 
-	/**
-	 * Removes all listeners from a specified event.
-	 * If you do not specify an event then all listeners will be removed.
-	 * That means every event will be emptied.
-	 * You can also pass a regex to remove all events that match it.
-	 *
-	 * @param {String|RegExp} [evt] Optional name of the event to remove all listeners for. Will remove from every event if not passed.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.removeEvent = function removeEvent(evt) {
-		var type = typeof evt;
-		var events = this._getEvents();
-		var key;
+    /**
+     * Removes all listeners from a specified event.
+     * If you do not specify an event then all listeners will be removed.
+     * That means every event will be emptied.
+     * You can also pass a regex to remove all events that match it.
+     *
+     * @param {String|RegExp} [evt] Optional name of the event to remove all listeners for. Will remove from every event if not passed.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.removeEvent = function removeEvent(evt) {
+        var type = typeof evt;
+        var events = this._getEvents();
+        var key;
 
-		// Remove different things depending on the state of evt
-		if (type === 'string') {
-			// Remove all listeners for the specified event
-			delete events[evt];
-		}
-		else if (evt instanceof RegExp) {
-			// Remove all events matching the regex.
-			for (key in events) {
-				if (events.hasOwnProperty(key) && evt.test(key)) {
-					delete events[key];
-				}
-			}
-		}
-		else {
-			// Remove all listeners in all events
-			delete this._events;
-		}
+        // Remove different things depending on the state of evt
+        if (type === 'string') {
+            // Remove all listeners for the specified event
+            delete events[evt];
+        }
+        else if (evt instanceof RegExp) {
+            // Remove all events matching the regex.
+            for (key in events) {
+                if (events.hasOwnProperty(key) && evt.test(key)) {
+                    delete events[key];
+                }
+            }
+        }
+        else {
+            // Remove all listeners in all events
+            delete this._events;
+        }
 
-		return this;
-	};
+        return this;
+    };
 
-	/**
-	 * Alias of removeEvent.
-	 *
-	 * Added to mirror the node API.
-	 */
-	proto.removeAllListeners = alias('removeEvent');
+    /**
+     * Alias of removeEvent.
+     *
+     * Added to mirror the node API.
+     */
+    proto.removeAllListeners = alias('removeEvent');
 
-	/**
-	 * Emits an event of your choice.
-	 * When emitted, every listener attached to that event will be executed.
-	 * If you pass the optional argument array then those arguments will be passed to every listener upon execution.
-	 * Because it uses `apply`, your array of arguments will be passed as if you wrote them out separately.
-	 * So they will not arrive within the array on the other side, they will be separate.
-	 * You can also pass a regular expression to emit to all events that match it.
-	 *
-	 * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
-	 * @param {Array} [args] Optional array of arguments to be passed to each listener.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.emitEvent = function emitEvent(evt, args) {
-		var listeners = this.getListenersAsObject(evt);
-		var listener;
-		var i;
-		var key;
-		var response;
+    /**
+     * Emits an event of your choice.
+     * When emitted, every listener attached to that event will be executed.
+     * If you pass the optional argument array then those arguments will be passed to every listener upon execution.
+     * Because it uses `apply`, your array of arguments will be passed as if you wrote them out separately.
+     * So they will not arrive within the array on the other side, they will be separate.
+     * You can also pass a regular expression to emit to all events that match it.
+     *
+     * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
+     * @param {Array} [args] Optional array of arguments to be passed to each listener.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.emitEvent = function emitEvent(evt, args) {
+        var listenersMap = this.getListenersAsObject(evt);
+        var listeners;
+        var listener;
+        var i;
+        var key;
+        var response;
 
-		for (key in listeners) {
-			if (listeners.hasOwnProperty(key)) {
-				i = listeners[key].length;
+        for (key in listenersMap) {
+            if (listenersMap.hasOwnProperty(key)) {
+                listeners = listenersMap[key].slice(0);
+                i = listeners.length;
 
-				while (i--) {
-					// If the listener returns true then it shall be removed from the event
-					// The function is executed either with a basic call or an apply if there is an args array
-					listener = listeners[key][i];
+                while (i--) {
+                    // If the listener returns true then it shall be removed from the event
+                    // The function is executed either with a basic call or an apply if there is an args array
+                    listener = listeners[i];
 
-					if (listener.once === true) {
-						this.removeListener(evt, listener.listener);
-					}
+                    if (listener.once === true) {
+                        this.removeListener(evt, listener.listener);
+                    }
 
-					response = listener.listener.apply(this, args || []);
+                    response = listener.listener.apply(this, args || []);
 
-					if (response === this._getOnceReturnValue()) {
-						this.removeListener(evt, listener.listener);
-					}
-				}
-			}
-		}
+                    if (response === this._getOnceReturnValue()) {
+                        this.removeListener(evt, listener.listener);
+                    }
+                }
+            }
+        }
 
-		return this;
-	};
+        return this;
+    };
 
-	/**
-	 * Alias of emitEvent
-	 */
-	proto.trigger = alias('emitEvent');
+    /**
+     * Alias of emitEvent
+     */
+    proto.trigger = alias('emitEvent');
 
-	/**
-	 * Subtly different from emitEvent in that it will pass its arguments on to the listeners, as opposed to taking a single array of arguments to pass on.
-	 * As with emitEvent, you can pass a regex in place of the event name to emit to all events that match it.
-	 *
-	 * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
-	 * @param {...*} Optional additional arguments to be passed to each listener.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.emit = function emit(evt) {
-		var args = Array.prototype.slice.call(arguments, 1);
-		return this.emitEvent(evt, args);
-	};
+    /**
+     * Subtly different from emitEvent in that it will pass its arguments on to the listeners, as opposed to taking a single array of arguments to pass on.
+     * As with emitEvent, you can pass a regex in place of the event name to emit to all events that match it.
+     *
+     * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
+     * @param {...*} Optional additional arguments to be passed to each listener.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.emit = function emit(evt) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        return this.emitEvent(evt, args);
+    };
 
-	/**
-	 * Sets the current value to check against when executing listeners. If a
-	 * listeners return value matches the one set here then it will be removed
-	 * after execution. This value defaults to true.
-	 *
-	 * @param {*} value The new value to check for when executing listeners.
-	 * @return {Object} Current instance of EventEmitter for chaining.
-	 */
-	proto.setOnceReturnValue = function setOnceReturnValue(value) {
-		this._onceReturnValue = value;
-		return this;
-	};
+    /**
+     * Sets the current value to check against when executing listeners. If a
+     * listeners return value matches the one set here then it will be removed
+     * after execution. This value defaults to true.
+     *
+     * @param {*} value The new value to check for when executing listeners.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     */
+    proto.setOnceReturnValue = function setOnceReturnValue(value) {
+        this._onceReturnValue = value;
+        return this;
+    };
 
-	/**
-	 * Fetches the current value to check against when executing listeners. If
-	 * the listeners return value matches this one then it should be removed
-	 * automatically. It will return true by default.
-	 *
-	 * @return {*|Boolean} The current value to check for or the default, true.
-	 * @api private
-	 */
-	proto._getOnceReturnValue = function _getOnceReturnValue() {
-		if (this.hasOwnProperty('_onceReturnValue')) {
-			return this._onceReturnValue;
-		}
-		else {
-			return true;
-		}
-	};
+    /**
+     * Fetches the current value to check against when executing listeners. If
+     * the listeners return value matches this one then it should be removed
+     * automatically. It will return true by default.
+     *
+     * @return {*|Boolean} The current value to check for or the default, true.
+     * @api private
+     */
+    proto._getOnceReturnValue = function _getOnceReturnValue() {
+        if (this.hasOwnProperty('_onceReturnValue')) {
+            return this._onceReturnValue;
+        }
+        else {
+            return true;
+        }
+    };
 
-	/**
-	 * Fetches the events object and creates one if required.
-	 *
-	 * @return {Object} The events storage object.
-	 * @api private
-	 */
-	proto._getEvents = function _getEvents() {
-		return this._events || (this._events = {});
-	};
+    /**
+     * Fetches the events object and creates one if required.
+     *
+     * @return {Object} The events storage object.
+     * @api private
+     */
+    proto._getEvents = function _getEvents() {
+        return this._events || (this._events = {});
+    };
 
-	/**
-	 * Reverts the global {@link EventEmitter} to its previous value and returns a reference to this version.
-	 *
-	 * @return {Function} Non conflicting EventEmitter class.
-	 */
-	EventEmitter.noConflict = function noConflict() {
-		exports.EventEmitter = originalGlobalValue;
-		return EventEmitter;
-	};
+    /**
+     * Reverts the global {@link EventEmitter} to its previous value and returns a reference to this version.
+     *
+     * @return {Function} Non conflicting EventEmitter class.
+     */
+    EventEmitter.noConflict = function noConflict() {
+        exports.EventEmitter = originalGlobalValue;
+        return EventEmitter;
+    };
 
-	// Expose the class either via AMD, CommonJS or the global object
-	if (typeof define === 'function' && define.amd) {
-		define(function () {
-			return EventEmitter;
-		});
-	}
-	else if (typeof module === 'object' && module.exports){
-		module.exports = EventEmitter;
-	}
-	else {
-		this.EventEmitter = EventEmitter;
-	}
+    // Expose the class either via AMD, CommonJS or the global object
+    if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return EventEmitter;
+        });
+    }
+    else if (typeof module === 'object' && module.exports){
+        module.exports = EventEmitter;
+    }
+    else {
+        exports.EventEmitter = EventEmitter;
+    }
 }.call(this));
 
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 /*!
- * eventie v1.0.5
+ * eventie v1.0.6
  * event binding helper
  *   eventie.bind( elem, 'click', myFn )
  *   eventie.unbind( elem, 'click', myFn )
@@ -556,9 +556,9 @@ if ( typeof define === 'function' && define.amd ) {
   window.eventie = eventie;
 }
 
-})( this );
+})( window );
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /*!
  * imagesLoaded v3.1.4
  * JavaScript is all like "You images are done yet or what?"
@@ -890,7 +890,7 @@ function makeArray( obj ) {
 
 });
 
-},{"./..\\eventEmitter\\EventEmitter.js":2,"./..\\eventie\\eventie.js":3}],5:[function(require,module,exports){
+},{"./..\\eventEmitter\\EventEmitter.js":1,"./..\\eventie\\eventie.js":2}],4:[function(require,module,exports){
 //! moment.js
 //! version : 2.5.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -3292,7 +3292,7 @@ function makeArray( obj ) {
     }
 }).call(this);
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3336,7 +3336,7 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"./Router":7,"./Run":8,"./controllers/Controllers":10,"./directives/Directives":33,"./elements/Elements":43,"./filters/Filters":81,"./modules/Modules":83,"./services/Services":93}],7:[function(require,module,exports){
+},{"./Router":6,"./Run":7,"./controllers/Controllers":9,"./directives/Directives":32,"./elements/Elements":42,"./filters/Filters":80,"./modules/Modules":82,"./services/Services":92}],6:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3364,7 +3364,7 @@ module.exports = [
                 'home',
                 {
                     url: '/',
-                    template: "<div class=\"introduction panel panel_lego panel_transition_white_dark\">\n    <div class=\"container\">\n        <div class=\"panel-body\">\n            <div class=\"row\">\n                <div class=\"col-md-6\">\n                    <div class=\"page-header\">\n                        <h1>SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>\n                        <h3>Make your sites crawlable with SnapSearch!</h3>\n                        <button class=\"call-to-action btn btn-primary\" type=\"button\" ng-click=\"modal.signUp()\">\n                            <h4 class=\"call-to-action-text\">Get Started for Free<br /><small>No Credit Card Required</small></h4>\n                        </button>\n                    </div>\n                </div>\n                <div class=\"col-md-6\">\n                    <div class=\"code-group clearfix\" ng-controller=\"CodeGroupCtrl\">\n                        <ul class=\"nav nav-tabs\">\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'php'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('php')\">PHP</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'ruby'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('ruby')\">Ruby</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'node.js'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('node.js')\">Node.js</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'python'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('python')\">Python</button>\n                            </li>\n                        </ul>\n                        <div class=\"tab-content clearfix\" ng-switch=\"activeCode\">\n                            <div class=\"tab-panel\" ng-switch-when=\"php\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">composer require snapsearch/snapsearch-client-php</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"php\">// Inside your Front Controller\n// For StackPHP or HTTPKernel frameworks, check the source repository examples\n\n$client = new SnapSearchClientPHPClient('email', 'key');\n$detector = new SnapSearchClientPHPDetector;\n$interceptor = new SnapSearchClientPHPInterceptor(\n    $client, \n    $detector\n);\n\n$response = $interceptor-&gt;intercept();\n\nif($response){\n\n    header(' ', true, $response['status']);\n\n    foreach($response['headers'] as $header){\n        if($header['name'] == 'Location'){\n            header($header['name'] . ': ' . $header['value']);\n        }\n    }\n\n    echo $response['html'];\n\n}else{\n\n    //continue with normal operations...\n\n}</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>                                </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"ruby\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">gem install snapsearch-client-ruby</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"ruby\"># Inside your Rack config.ru\n\nrequire 'bundler/setup'\nrequire 'rack/snap_search'\n\nuse Rack::SnapSearch do |config|\n    \n    # Required: The email to authenticate with.\n    config.email = 'user@example.com'\n    \n    # Required: The key to authenticate with.\n    config.key = 'API_KEY_HERE'\n    \nend\n\n# ...continue with Rack configuration</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>\n                            </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"node.js\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">npm install snapsearch-client-node</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"javascript\">// Express integration\nvar express = require('express');\nvar snapsearch = require('snapsearch-client-nodejs');\n\nvar app = express();\n\napp.use(snapsearch.connect(\n    new snapsearch.Interceptor(\n        new snapsearch.Client('EMAIL', 'KEY'),\n        new snapsearch.Detector()\n    )\n);\n\napp.listen(1337);</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>\n                            </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"python\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">pip install snapsearch-client-python</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"python\"># Inside your Front Controller or Entry Point\n\n# Django\n\nimport os\nos.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"hello_world.settings\")\n\nfrom django.core.wsgi import get_wsgi_application\napplication = get_wsgi_application()\n\n# API credentials\napi_email = \"<email>\"\napi_key = \"<key>\"\n\n# initialize the interceptor\nfrom SnapSearch import Client, Detector, Interceptor\ninterceptor = Interceptor(\n    Client(api_email, api_key), \n    Detector()\n)\n\n# deploy the interceptor\nfrom SnapSearch.wsgi import InterceptorMiddleware\napplication = InterceptorMiddleware(\n    application, \n    interceptor\n)\n\n# Flask\n\nfrom flask import Flask\napp = Flask(__name__)\n\n@app.route('/')\ndef hello_world():\n    return \"Hello World!\\r\\n\"\n\nif __name__ == '__main__':\n    # API credentials\n    api_email = \"<email>\"  # change this to the registered email\n    api_key = \"<key>\"  # change this to the real api credential\n\n    # initialize the interceptor\n    from SnapSearch import Client, Detector, Interceptor\n    interceptor = Interceptor(\n        Client(api_email, api_key), \n        Detector()\n    )\n\n    # deploy the interceptor\n    from SnapSearch.wsgi import InterceptorMiddleware\n    app.wsgi_app = InterceptorMiddleware(\n        app.wsgi_app, \n        interceptor\n    )\n\n    # start servicing\n    app.run(host=\"0.0.0.0\", port=5000)\n\n# CGI\n\n#!/usr/bin/env python\n\nimport cgi\nimport sys\n\ndef hello_world():\n    msg = b\"Hello World!\"\n    sys.stdout.write(b\"Status: 200 OK\\r\\n\")\n    sys.stdout.write(b\"Content-Type: text/html; charset=utf-8\\r\\n\")\n    sys.stdout.write(b\"Content-Length: \")\n    sys.stdout.write(bytes(len(msg)))\n    sys.stdout.write(b\"\\r\\n\\r\\n\")\n    sys.stdout.write(msg)\n    sys.stdout.write(b\"\\r\\n\")\n    return 0\n\nif __name__ == '__main__':\n    # API credentials\n    api_email = \"<email>\"  # change this to the registered email\n    api_key = \"<key>\"  # change this to the real api credential\n\n    # initialize the interceptor\n    from SnapSearch import Client, Detector, Interceptor\n    interceptor = Interceptor(\n        Client(api_email, api_key), \n        Detector()\n    )\n\n    # deploy the interceptor\n    from SnapSearch.cgi import InterceptorController\n    InterceptorController(interceptor).start()\n\n    # start servicing\n    sys.exit(hello_world())\n</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"demo panel panel_white panel_transition_white_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Try our Demo</h2>\n        </div>\n        <div class=\"panel-body\">\n            <form class=\"demo-form\" ng-controller=\"DemoCtrl\" name=\"demoForm\">\n                <div \n                    class=\"form-group\" \n                    ng-class=\"{\n                        'has-error': demoForm.url.$invalid && demoForm.url.$dirty\n                    }\"\n                >\n                    <div class=\"input-group input-group-lg\">\n                        <input \n                            class=\"form-control\" \n                            type=\"url\" \n                            name=\"url\" \n                            ng-model=\"demo.url\" \n                            required \n                            placeholder-switch=\"demoUrls\" \n                            placeholder-delay=\"2000\" \n                        />\n                        <span class=\"input-group-btn\">\n                            <button \n                                class=\"btn btn-primary\" \n                                type=\"submit\" \n                                ng-disabled=\"demoForm.$invalid\" \n                                ng-click=\"submit(demo)\" \n                            >\n                                Scrape\n                            </button>\n                        </span>\n                    </div>\n                </div>\n                <div class=\"form-errors\" ng-show=\"formErrors\">\n                    <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                    <ul class=\"form-errors-list\">\n                        <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                    </ul>\n                </div>\n                <div class=\"demo-output\" ng-switch=\"requestingDemoService\">\n                    <p class=\"demo-explanation\" ng-switch-when=\"never\">Try this on a single page application like https://snapsearch.io/. You'll see the difference between how \"javascriptless\" search engine robots view your application without SnapSearch, and how they view your application with SnapSearch. Although our robots are able to follow redirects, this demo does not. Please make sure the URL is the direct URL to your site. Otherwise you may get a redirect message, or nothing at all.</p>\n                    <img class=\"demo-loading\" ng-switch-when=\"started\" src=\"assets/img/loading.gif\" />\n                    <div class=\"demo-response row\" ng-switch-when=\"finished\" ng-show=\"formSuccess\">\n                        <div class=\"col-sm-6\">\n                            <h4 class=\"demo-response-title\">Source Code without SnapSearch</h4>\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withoutSnapSearch.length}} <span class=\"text-muted\">(this one should be lower!)</span></span>\n                        </div>\n                        <div class=\"col-sm-6\">\n                            <h4 class=\"demo-response-title\">Source Code with SnapSearch</h4>\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withSnapSearch}}</code></pre>\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withSnapSearch.length}} <span class=\"text-muted\">(this one should be higher!)</span></span>\n                        </div>\n                    </div>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n<div class=\"problem-solution panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Why use SnapSearch?</h2>\n        </div>\n        <div class=\"panel-body\">\n            <h3 class=\"problem-title\">The Problem</h3>\n            <div class=\"problem row\">\n                <div class=\"col-md-6\">\n                    <img src=\"assets/img/user_coding.png\" />\n                    <div class=\"problem-explanation\">\n                        <p>You’ve coded up a javascript enhanced or single page application using the latest HTML5 technologies. Using a modern browser, you can see all the asynchronous or animated content appear.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-6\">\n                    <img src=\"assets/img/spider_reading.png\" />\n                    <div class=\"problem-explanation\">\n                        <p>Search engines however see nothing. This is because search engine robots are simple HTTP clients that cannot execute advanced javascript. They do not execute AJAX, and thus cannot load asynchronous resources, nor can they activate javascript events that make your application dynamic and user friendly.</p>\n                    </div>\n                </div>\n            </div>\n            <h3 class=\"solution-title\">Our Solution</h3>\n            <div class=\"solution row\">\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/globe.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">Client initiates an HTTP Request. This client can be search engine robot or a social network crawler such as Facebook or Twitter.</p>\n                        <p class=\"response-pipe\">The client will now receive the true full representation of your site’s content even though it cannot execute javascript.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/application.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">Your application using our supplied middleware detects whether the client cannot execute javascript. The middleware then initiates a snapshot request to SnapSearch. The request contains the client request URL, authentication credentials and custom API parameters.</p>\n                        <p class=\"response-pipe\">Once the response is received, it outputs your page’s status code, HTML content and any HTTP response headers.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/cloud_service.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">SnapSearch receives the request and commands our load balanced browser workers to scrape your site based on the client request URL while executing your javascript. Your content will be cached for future requests.</p>\n                        <p class=\"response-pipe\">A response is constructed containing the resulting status code, HTML content, headers and optionally a screenshot of your resource. This is returned to your application’s middleware.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/cache.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">A cache of the content is securely and safely stored on Amazon S3. All cached content are distinguished by a parameter checksum, so the same URL with different API parameters will be stored independently.</p>\n                        <p class=\"response-pipe\">If a resource has been cached before, SnapSearch will return the cached content. All cached content have adjustable cache lifetime.</p>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"features panel panel_yellow panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Features</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"row\" equalise-heights=\".features .feature-object\">\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">On Demand</h3>\n                    <img class=\"feature-image\" src=\"assets/img/snapsearch_bolt.png\" />\n                    <p class=\"feature-explanation\">Snapshots are created on the fly as you request it from the API. Resources are cached for a default time of 24 hrs.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Real Browser Workers</h3>\n                    <img class=\"feature-image\" src=\"assets/img/firefox.png\" />\n                    <p class=\"feature-explanation\">Our scrapers are powered by nightly versions of Mozilla Firefox. We’re able to run cutting edge HTML5 techniques. Our scrapers evolve as the web evolves.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Google Approved</h3>\n                    <img class=\"feature-image\" src=\"assets/img/google.png\" />\n                    <p class=\"feature-explanation\">SnapSearch complies with the AJAX Crawling Specification by Google. SnapSearch responds with the same content as a normal user would see, so you’re not in violation of cloaking rules.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Powerful Middleware</h3>\n                    <img class=\"feature-image\" src=\"assets/img/middleware.png\" />\n                    <p class=\"feature-explanation\">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect more than 200 robots. They can be configured to support custom clients.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Flexibility</h3>\n                    <img class=\"feature-image\" src=\"assets/img/flexibility.png\" />\n                    <p class=\"feature-explanation\">The API supports image snapshots, soft 404s, following redirects, custom headers and status code, cache time settings, width and height of the scraper (useful for infinite scrolling), and custom javascript callbacks that are evaled on the page.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Pay for What You Use</h3>\n                    <img class=\"feature-image\" src=\"assets/img/tiger_face.png\" />\n                    <p class=\"feature-explanation\">You only pay for each usage of the API that initiates a fresh snapshot. There is no minimum monthly fee. Requests hitting the cache is free, and storage of the cache is free.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Load Balanced</h3>\n                    <img class=\"feature-image\" src=\"assets/img/load_balanced.png\" />\n                    <p class=\"feature-explanation\">SnapSearch was built as a fault-tolerant load balanced service. We can handle small and big sites. Scrapers are horizontally scaled according to the number of users.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Analytics</h3>\n                    <img class=\"feature-image\" src=\"assets/img/analytics.png\" />\n                    <p class=\"feature-explanation\">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"framework-support panel panel_white panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">We’re 100% framework agnostic!</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"framework-logos row\">\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/sails_logo.png\" />\n                    <a href=\"http://sailsjs.org/\">Sails.js</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/angular_logo.png\" />\n                    <a href=\"http://angularjs.org/\">AngularJS</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/js_logo.png\" />\n                    <a href=\"http://http://www.html5rocks.com/\">HTML5 Javascript</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/jquery_logo.png\" />\n                    <a href=\"http://jquery.com/\">jQuery</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/backbone_logo.png\" />\n                    <a href=\"http://backbonejs.org/\">Backbone</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/ember_logo.png\" />\n                    <a href=\"http://emberjs.com/\">ember</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/knockout_logo.png\" />\n                    <a href=\"http://knockoutjs.com/\">Knockout</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/meteor_logo.png\" />\n                    <a href=\"https://www.meteor.com/\">Meteor</a>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"introduction panel panel_lego panel_transition_white_dark\">\n    <div class=\"container\">\n        <div class=\"panel-body\">\n            <div class=\"row\">\n                <div class=\"col-md-6\">\n                    <div class=\"page-header\">\n                        <h1>SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications</h1>\n                        <h3>Make your sites crawlable with SnapSearch!</h3>\n                        <button class=\"call-to-action btn btn-primary\" type=\"button\" ng-click=\"modal.signUp()\">\n                            <h4 class=\"call-to-action-text\">Get Started for Free<br /><small>No Credit Card Required</small></h4>\n                        </button>\n                    </div>\n                </div>\n                <div class=\"col-md-6\">\n                    <div class=\"code-group clearfix\" ng-controller=\"CodeGroupCtrl\">\n                        <ul class=\"nav nav-tabs\">\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'php'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('php')\">PHP</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'ruby'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('ruby')\">Ruby</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'node.js'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('node.js')\">Node.js</button>\n                            </li>\n                            <li class=\"tab\" ng-class=\"{'active': activeCode == 'python'}\">\n                                <button class=\"btn\" ng-click=\"changeCode('python')\">Python</button>\n                            </li>\n                        </ul>\n                        <div class=\"tab-content clearfix\" ng-switch=\"activeCode\">\n                            <div class=\"tab-panel\" ng-switch-when=\"php\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">composer require snapsearch/snapsearch-client-php</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"php\">// Inside your Front Controller\n// For StackPHP or HTTPKernel frameworks, check the source repository examples\n\n$client = new SnapSearchClientPHPClient('email', 'key');\n$detector = new SnapSearchClientPHPDetector;\n$interceptor = new SnapSearchClientPHPInterceptor(\n    $client, \n    $detector\n);\n\n$response = $interceptor-&gt;intercept();\n\nif($response){\n\n    header(' ', true, $response['status']);\n\n    foreach($response['headers'] as $header){\n        if($header['name'] == 'Location'){\n            header($header['name'] . ': ' . $header['value']);\n        }\n    }\n\n    echo $response['html'];\n\n}else{\n\n    //continue with normal operations...\n\n}</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>                                </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"ruby\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">gem install snapsearch-client-ruby</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"ruby\"># Inside your Rack config.ru\n\nrequire 'bundler/setup'\nrequire 'rack/snap_search'\n\nuse Rack::SnapSearch do |config|\n    \n    # Required: The email to authenticate with.\n    config.email = 'user@example.com'\n    \n    # Required: The key to authenticate with.\n    config.key = 'API_KEY_HERE'\n    \nend\n\n# ...continue with Rack configuration</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>\n                            </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"node.js\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">npm install snapsearch-client-node</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"javascript\">// Express integration\nvar express = require('express');\nvar snapsearch = require('snapsearch-client-nodejs');\n\nvar app = express();\n\napp.use(snapsearch.connect(\n    new snapsearch.Interceptor(\n        new snapsearch.Client('EMAIL', 'KEY'),\n        new snapsearch.Detector()\n    )\n);\n\napp.listen(1337);</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>\n                            </div>\n                            <div class=\"tab-panel\" ng-switch-when=\"python\">\n                                <p>Installation:</p>\n                                <syntax syntax-language=\"bash\">pip install snapsearch-client-python</syntax>\n                                <p>Usage:</p>\n                                <syntax class=\"code-usage\" syntax-language=\"python\"># Inside your Front Controller or Entry Point\n\n# Django\n\nimport os\nos.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"hello_world.settings\")\n\nfrom django.core.wsgi import get_wsgi_application\napplication = get_wsgi_application()\n\n# API credentials\napi_email = \"<email>\"\napi_key = \"<key>\"\n\n# initialize the interceptor\nfrom SnapSearch import Client, Detector, Interceptor\ninterceptor = Interceptor(\n    Client(api_email, api_key), \n    Detector()\n)\n\n# deploy the interceptor\nfrom SnapSearch.wsgi import InterceptorMiddleware\napplication = InterceptorMiddleware(\n    application, \n    interceptor\n)\n\n# Flask\n\nfrom flask import Flask\napp = Flask(__name__)\n\n@app.route('/')\ndef hello_world():\n    return \"Hello World!\\r\\n\"\n\nif __name__ == '__main__':\n    # API credentials\n    api_email = \"<email>\"  # change this to the registered email\n    api_key = \"<key>\"  # change this to the real api credential\n\n    # initialize the interceptor\n    from SnapSearch import Client, Detector, Interceptor\n    interceptor = Interceptor(\n        Client(api_email, api_key), \n        Detector()\n    )\n\n    # deploy the interceptor\n    from SnapSearch.wsgi import InterceptorMiddleware\n    app.wsgi_app = InterceptorMiddleware(\n        app.wsgi_app, \n        interceptor\n    )\n\n    # start servicing\n    app.run(host=\"0.0.0.0\", port=5000)\n\n# CGI\n\n#!/usr/bin/env python\n\nimport cgi\nimport sys\n\ndef hello_world():\n    msg = b\"Hello World!\"\n    sys.stdout.write(b\"Status: 200 OK\\r\\n\")\n    sys.stdout.write(b\"Content-Type: text/html; charset=utf-8\\r\\n\")\n    sys.stdout.write(b\"Content-Length: \")\n    sys.stdout.write(bytes(len(msg)))\n    sys.stdout.write(b\"\\r\\n\\r\\n\")\n    sys.stdout.write(msg)\n    sys.stdout.write(b\"\\r\\n\")\n    return 0\n\nif __name__ == '__main__':\n    # API credentials\n    api_email = \"<email>\"  # change this to the registered email\n    api_key = \"<key>\"  # change this to the real api credential\n\n    # initialize the interceptor\n    from SnapSearch import Client, Detector, Interceptor\n    interceptor = Interceptor(\n        Client(api_email, api_key), \n        Detector()\n    )\n\n    # deploy the interceptor\n    from SnapSearch.cgi import InterceptorController\n    InterceptorController(interceptor).start()\n\n    # start servicing\n    sys.exit(hello_world())\n</syntax>\n                                <a class=\"btn btn-primary btn-fork pull-right\" href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\" target=\"_blank\">\n                                    <img src=\"assets/img/github_mark.png\" />\n                                    Examples and Source on Github\n                                </a>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"demo panel panel_white panel_transition_white_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Try our Demo</h2>\n        </div>\n        <div class=\"panel-body\">\n            <form class=\"demo-form\" ng-controller=\"DemoCtrl\" name=\"demoForm\">\n                <div \n                    class=\"form-group\" \n                    ng-class=\"{\n                        'has-error': demoForm.url.$invalid && demoForm.url.$dirty\n                    }\"\n                >\n                    <div class=\"input-group input-group-lg\">\n                        <input \n                            class=\"form-control\" \n                            type=\"url\" \n                            name=\"url\" \n                            ng-model=\"demo.url\" \n                            required \n                            placeholder-switch=\"demoUrls\" \n                            placeholder-delay=\"2000\" \n                        />\n                        <span class=\"input-group-btn\">\n                            <button \n                                class=\"btn btn-primary\" \n                                type=\"submit\" \n                                ng-disabled=\"demoForm.$invalid\" \n                                ng-click=\"submit(demo)\" \n                            >\n                                Scrape\n                            </button>\n                        </span>\n                    </div>\n                </div>\n                <div class=\"form-errors\" ng-show=\"formErrors\">\n                    <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n                    <ul class=\"form-errors-list\">\n                        <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n                    </ul>\n                </div>\n                <div class=\"demo-output\" ng-switch=\"requestingDemoService\">\n                    <p class=\"demo-explanation\" ng-switch-when=\"never\">Try this on a single page application like https://snapsearch.io/. You'll see the difference between how \"javascriptless\" search engine robots view your application without SnapSearch, and how they view your application with SnapSearch. Although our robots are able to follow redirects, this demo does not. Please make sure the URL is the direct URL to your site. Otherwise you may get a redirect message, or nothing at all.</p>\n                    <img class=\"demo-loading\" ng-switch-when=\"started\" src=\"assets/img/loading.gif\" />\n                    <div class=\"demo-response row\" ng-switch-when=\"finished\" ng-show=\"formSuccess\">\n                        <div class=\"col-sm-6\">\n                            <h4 class=\"demo-response-title\">Source Code without SnapSearch</h4>\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withoutSnapSearch}}</code></pre>\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withoutSnapSearch.length}} <span class=\"text-muted\">(this one should be lower!)</span></span>\n                        </div>\n                        <div class=\"col-sm-6\">\n                            <h4 class=\"demo-response-title\">Source Code with SnapSearch</h4>\n                            <pre class=\"demo-response-code\"><code>{{demoServiceResponse.withSnapSearch}}</code></pre>\n                            <span class=\"demo-response-length\">Content Length: {{demoServiceResponse.withSnapSearch.length}} <span class=\"text-muted\">(this one should be higher!)</span></span>\n                        </div>\n                    </div>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n<div class=\"problem-solution panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Why use SnapSearch?</h2>\n        </div>\n        <div class=\"panel-body\">\n            <h3 class=\"problem-title\">The Problem</h3>\n            <div class=\"problem row\">\n                <div class=\"col-md-6\">\n                    <img src=\"assets/img/user_coding.png\" />\n                    <div class=\"problem-explanation\">\n                        <p>You’ve coded up a javascript enhanced or single page application using the latest HTML5 technologies. Using a modern browser, you can see all the asynchronous or animated content appear.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-6\">\n                    <img src=\"assets/img/spider_reading.png\" />\n                    <div class=\"problem-explanation\">\n                        <p>Search engines however see nothing. This is because search engine robots are simple HTTP clients that cannot execute advanced javascript. They do not execute AJAX, and thus cannot load asynchronous resources, nor can they activate javascript events that make your application dynamic and user friendly.</p>\n                    </div>\n                </div>\n            </div>\n            <h3 class=\"solution-title\">Our Solution</h3>\n            <div class=\"solution row\">\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/globe.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">Client initiates an HTTP Request. This client can be search engine robot or a social network crawler such as Facebook or Twitter.</p>\n                        <p class=\"response-pipe\">The client will now receive the true full representation of your site’s content even though it cannot execute javascript.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/application.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">Your application using our supplied middleware detects whether the client cannot execute javascript. The middleware then initiates a snapshot request to SnapSearch. The request contains the client request URL, authentication credentials and custom API parameters.</p>\n                        <p class=\"response-pipe\">Once the response is received, it outputs your page’s status code, HTML content and any HTTP response headers.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/cloud_service.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">SnapSearch receives the request and commands our load balanced browser workers to scrape your site based on the client request URL while executing your javascript. Your content will be cached for future requests.</p>\n                        <p class=\"response-pipe\">A response is constructed containing the resulting status code, HTML content, headers and optionally a screenshot of your resource. This is returned to your application’s middleware.</p>\n                    </div>\n                </div>\n                <div class=\"col-md-3\">\n                    <img src=\"assets/img/cache.png\" />\n                    <div class=\"solution-explanation\">\n                        <p class=\"request-pipe\">A cache of the content is securely and safely stored. All cached content are distinguished by a parameter checksum, so the same URL with different API parameters will be stored independently.</p>\n                        <p class=\"response-pipe\">If a resource has been cached before, SnapSearch will return the cached content. All cached content have adjustable cache lifetime.</p>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"features panel panel_yellow panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">Features</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"row\" equalise-heights=\".features .feature-object\">\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">On Demand</h3>\n                    <img class=\"feature-image\" src=\"assets/img/snapsearch_bolt.png\" />\n                    <p class=\"feature-explanation\">Snapshots are created on the fly as you request it from the API. Resources are cached for a default time of 24 hrs.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Real Browser Workers</h3>\n                    <img class=\"feature-image\" src=\"assets/img/firefox.png\" />\n                    <p class=\"feature-explanation\">Our scrapers are powered by nightly versions of Mozilla Firefox. We’re able to run cutting edge HTML5 techniques. Our scrapers evolve as the web evolves.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Google Approved</h3>\n                    <img class=\"feature-image\" src=\"assets/img/google.png\" />\n                    <p class=\"feature-explanation\">SnapSearch complies with the AJAX Crawling Specification by Google. SnapSearch responds with the same content as a normal user would see, so you’re not in violation of cloaking rules.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Powerful Middleware</h3>\n                    <img class=\"feature-image\" src=\"assets/img/middleware.png\" />\n                    <p class=\"feature-explanation\">Our middleware supports a variety of server setups and detection algorithms in order to determine search engine clients. Currently they can detect more than 200 robots. They can be configured to support custom clients.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Flexibility</h3>\n                    <img class=\"feature-image\" src=\"assets/img/flexibility.png\" />\n                    <p class=\"feature-explanation\">The API supports image snapshots, soft 404s, following redirects, custom headers and status code, cache time settings, width and height of the scraper (useful for infinite scrolling), and custom javascript callbacks that are evaled on the page.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Pay for What You Use</h3>\n                    <img class=\"feature-image\" src=\"assets/img/tiger_face.png\" />\n                    <p class=\"feature-explanation\">You only pay for each usage of the API that initiates a fresh snapshot. There is no minimum monthly fee. Requests hitting the cache is free, and storage of the cache is free.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Load Balanced</h3>\n                    <img class=\"feature-image\" src=\"assets/img/load_balanced.png\" />\n                    <p class=\"feature-explanation\">SnapSearch was built as a fault-tolerant load balanced service. We can handle small and big sites. Scrapers are horizontally scaled according to the number of users.</p>\n                </div>\n                <div class=\"feature-object col-sm-6 col-md-4 col-lg-3\">\n                    <h3 class=\"feature-title\">Analytics</h3>\n                    <img class=\"feature-image\" src=\"assets/img/analytics.png\" />\n                    <p class=\"feature-explanation\">Analytics shows how many requests come from your API key, and what their request parameters are. You can quickly understand your monthly usage, and proximity to the monthly limit. All cached content can be manually refreshed or deleted.</p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"framework-support panel panel_white panel_transition_white_yellow\">\n    <div class=\"container\">\n        <div class=\"panel-heading\">\n            <h2 class=\"panel-title\">We’re 100% framework agnostic!</h2>\n        </div>\n        <div class=\"panel-body\">\n            <div class=\"framework-logos row\">\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/sails_logo.png\" />\n                    <a href=\"http://sailsjs.org/\">Sails.js</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/angular_logo.png\" />\n                    <a href=\"http://angularjs.org/\">AngularJS</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/js_logo.png\" />\n                    <a href=\"http://http://www.html5rocks.com/\">HTML5 Javascript</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/jquery_logo.png\" />\n                    <a href=\"http://jquery.com/\">jQuery</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/backbone_logo.png\" />\n                    <a href=\"http://backbonejs.org/\">Backbone</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/ember_logo.png\" />\n                    <a href=\"http://emberjs.com/\">ember</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/knockout_logo.png\" />\n                    <a href=\"http://knockoutjs.com/\">Knockout</a>\n                </div>\n                <div class=\"framework-box col-xs-6 col-sm-4 col-md-3\">\n                    <img class=\"framework-logo\" src=\"assets/img/meteor_logo.png\" />\n                    <a href=\"https://www.meteor.com/\">Meteor</a>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
                     controller: 'HomeCtrl'
                 }
             )
@@ -3372,7 +3372,7 @@ module.exports = [
                 'documentation',
                 {
                     url: '/documentation',
-                    template: "<div class=\"documentation panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-body row\">\n            <div class=\"col-md-2\">\n                <nav class=\"btn-group-vertical documentation-nav\" affix affix-top=\"214\" affix-bottom=\"910\">\n                    <a class=\"btn\" scroll=\"introduction\">Introduction</a>\n                    <a class=\"btn\" scroll=\"apiUsage\">API Usage</a>\n                    <a class=\"btn\" scroll=\"middleware\">Middleware</a>\n                    <a class=\"btn\" scroll=\"notes\">Notes</a>\n                </nav>\n            </div>\n            <div class=\"col-md-10\">\n                <div class=\"documentation-box\">\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"introduction\">Introduction</h3>\n                        <p>Snapsearch is a search engine optimisation (SEO) and robot proxy for complex front-end javascript & AJAX enabled (potentially realtime) HTML5 web applications.</p>\n                        <p>Search engines like <a href=\"https://developers.google.com/webmasters/ajax-crawling/\" target=\"_blank\" title=\"Google's AJAX Crawling Specification\">Google's crawler and HTTP scrapers such as Facebook's image extraction robot cannot execute complex javascript applications</a>. This include websites using javascript frameworks such as AngularJS, EmberJS, KnockoutJS, Backbone.js, jQuery, Meteor and much more.</p>\n                        <p>Snapsearch's middleware detects and intercepts requests made by search engines, then sends its own javascript enabled scrapers to cache a snapshot of your web page. The snapshot is seamlessly and transparently passed back to the search engine through your web application. This <a href=\"https://developers.google.com/webmasters/ajax-crawling/docs/html-snapshot\" target=\"_blank\" title=\"Google's Suggested Snapshot Method for AJAX Sites\">method is supported by Google</a> so you're not in violation of any rules.</p>\n                        <p>Snapsearch powered by Mozilla Firefox instances. Theses browsers are kept up to date with the <strong>rapid 6 week release cycles from Mozilla</strong>. We'll always be able to serve the latest in HTML5 technology. This is an advantage over using something like PhantomJS which is affected by the slower and spurious QtWebKit engine development cycle.</p>\n                        <div class=\"alert alert-info\">\n                            <p><strong>Attention:</strong> Sites using hashbang URLs such as <code>http://domain/#/path...</code>, need to add a special meta tag. Please see our <a scroll=\"notes-hashbangUrls\">notes on hashbang urls</a>.</p>\n                        </div>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"apiUsage\">API Usage</h3>\n                        <p>SnapSearch's API is designed to be very simple and can be used by itself or with our provided <a scroll=\"middleware\">middleware</a>. All API endpoints are SSL encrypted and require HTTP Basic Authorization using your registered Email as the username, and the API Key as the password.</p>\n                        <p>API endpoints extend from <code>https://snapsearch.io/</code></p>\n                        <div class=\"api-endpoint\">\n                            <h4 class=\"api-title\">Robot</h3>\n                            <div class=\"row api-explanation\">\n                                <div class=\"col-md-6\">\n                                    <div class=\"api-url\">\n                                        <p><strong>Path</strong></p>\n                                        <pre><code><strong>GET/POST:</strong> api/v1/robot</code></pre>\n                                    </div>\n                                    <div class=\"api-parameters\">\n                                        <p><strong>Parameters</strong></p>\n                                        <ul class=\"api-parameters-metadata\">\n                                            <li>\n                                                <span>Format:</span>\n                                                <ul>\n                                                    <li>GET Query Parameters</li>\n                                                    <li>POST JSON Body</li>\n                                                </ul>\n                                            </li>\n                                        </ul>\n                                        <div accordion class=\"api-parameter-accordion\" close-others=\"false\">\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> url</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>null</dd>\n                                                    <dt>Possible Values:</dt><dd>Any valid URL</dd>\n                                                    <dt>Required:</dt><dd>True</dd>\n                                                    <dt>Description:</dt><dd>URL to scrape. This is the only required parameter.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> useragent</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>Mozilla/5.0 ({OPERATINGSYSTEM}) Gecko/{VERSION} Firefox/{VERSION} SnapSearch</dd>\n                                                    <dt>Possible Values:</dt><dd>Any textual string</dd>\n                                                    <dt>Description:</dt><dd>Customise the user agent. Warning: setting this user agent to something that does not include \"SnapSearch\" can cause an infinite interception loop.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> width</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>1280</dd>\n                                                    <dt>Possible Values:</dt><dd>200 <= X <= 4000</dd>\n                                                    <dt>Description:</dt><dd>Change the window width of the Robot. Can be used if you have specific requirements regarding the dimensions of the browser.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> height</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>1024</dd>\n                                                    <dt>Possible Values:</dt><dd>200 <= X <= 4000</dd>\n                                                    <dt>Description:</dt><dd>Change the window height of the Robot. Can be used if you have specific requirements regarding the dimensions of the browser. This can be useful for sites implementing infinite scrolling, so more content can be loaded on the page.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> imgformat</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>png</dd>\n                                                    <dt>Possible Values:</dt><dd>png</dd>\n                                                    <dt>Description:</dt><dd>Is used in conjunction with <code>screenshot</code> parameter. Currently only supports png format. </dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> screenshot</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>false</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Scrape a screenshot, this screenshot is rendered from the browser's dimensions. The screenshot is returned as a base 64 encoded string. It's format is determined by the <code>imgformat</code> parameter.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> navigate</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>false</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Follow redirections. In most cases you do not want to follow redirects. If you leave this false, it will return the status, headers and body of the page asking for a redirect. If you switch this to true, it will follow header, client side, javascript, and meta tag redirects.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> loadimages</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>false</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Loading images. Loading images is not required when doing content scraping, leaving this off results in faster scrapes. However if you are taking screenshots, then you should switch this to true.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> javascriptenabled</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>true</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Process javascript or not. Can be used in circumstances where you don't want to process javascript.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> totaltimeout</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>30000</dd>\n                                                    <dt>Possible Values:</dt><dd>10000 <= X <= 30000</dd>\n                                                    <dt>Description:</dt><dd>Maximum millisecond timeout for the entire request task. This determines how long before the entire request task is considered a failure. At which point the robot will cancel the task and return everything it has managed to scrape.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> maxtimeout</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>5000</dd>\n                                                    <dt>Possible Values:</dt><dd>1000 <= X <= 15000</dd>\n                                                    <dt>Description:</dt><dd>Maximum millisecond timeout for asynchronous requests. This determines how long the browser will wait for asynchronous requests to finish. This means the browser will initiate the capture of the page contents either when all asynchronous requests finish, or at the maximum timeout. Longer times will result in potentially slower scrapes, but may capture more content if your site produces many slow asynchronous requests. If you set it too long, the client search engine robot may timeout. Play with this setting to the most optimal scraping speed.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> initialwait</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>1000</dd>\n                                                    <dt>Possible Values:</dt><dd>1000 <= X <= 15000</dd>\n                                                    <dt>Description:</dt><dd>Initial millisecond wait before checking asynchronous requests. This determines how long the browser will wait before it starts to check for when the asynchronous requests finish. The <code>maxtimeout</code> only begins onces the <code>initialwait</code> finishes. This is intended to allow delayed asynchronous requests or for pages which don't have asynchronous requests but have DOM mutations. The number has to be lower than <code>maxtimeout</code></dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> callback</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>null</dd>\n                                                    <dt>Possible Values:</dt><dd>Any javascript executable string</dd>\n                                                    <dt>Description:</dt><dd>This javascript string is evaled on the page after all asynchronous requests have finished but prior to the capture of the page contents. This allows you to execute DOM mutations or capture specific content. <strong>You can assume this string is executed in the context of an anonymous function.</strong> Therefore this code is valid: <code>return 'hello world';</code>. You must return a string. Objects should be serialized into JSON. DOM node objects cannot be serialized and returned, you must first convert them to textual strings. These returned values will be stored in the <code>callbackResult</code> property in the response.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> meta</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>true</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Scrape for custom meta tags or not. You can use custom meta tags to change the status code or add custom headers to the scraped snapshot. This is intended for soft 404 techniques. It will look for meta tags such as <code>&lt;meta name=&quot;snapsearch-status&quot; content=&quot;404&quot; /&gt;</code> and <code>&lt;meta name=&quot;snapsearch-header&quot; content=&quot;Content-Type:text/html&quot; /&gt;</code></dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> cache</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>true</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Allow caching of the snapshot or not. This determines two things. The first is whether the snapshot can be acquired from the cache. The second is whether the snapshot should be cached. If this is left as true, snapshots can be returned from the cache if it exists in the cache and they will be cached if it is a fresh snapshot. If this is switched to false, snapshots will always be fresh and the result will not be cached.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> cachetime</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>24</dd>\n                                                    <dt>Possible Values:</dt><dd>1 <= X <= 720</dd>\n                                                    <dt>Description:</dt><dd>Cache time in hours. This determines how long until the snapshots expire. A shorter cache time will result in more up to date snapshots, but it will use up more of your usage cap. Longer cache time will result in less up to date snapshots, but it will conserve your usage cap. This figure will depend on how often your pages change, and what proportion of those pages are changing compared to the rest of the website.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> refresh</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>false</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Refresh forces a new snapshot. Unlike the cache parameter, this will allow the new snapshot to be stored in the cache. (If cache is set to false, there is no need to set refresh to true.) Using this parameter allows you to set a long cachetime and manually refresh the snapshots depending on changes in your website.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> test</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>false</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>If you're in development mode or on localhost, set this to true, and it will only validate your request parameters, but not attempt to actually scrape anything.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                        </div>\n                                    </div>\n                                </div>\n                                <div class=\"col-md-6\">\n                                    <div class=\"api-description\">\n                                        <p><strong>Description</strong></p>\n                                        <p>This Robot endpoint allows you command our robots to scrape anything on the web. Requests must come with HTTP Basic authorization. Responses can be raw uncompressed text or gzip compressed output depending on your <code>Accept</code> headers. Cached snapshots are indexed by a checksum of your request parameters. Therefore different request parameters using the same url will have different cached snapshots.</p>\n                                    </div>\n                                    <div class=\"api-request\">\n                                        <p><strong>Example Request</strong></p>\n                                        <syntax class=\"api-code\" syntax-language=\"http\">POST /api/v1/robot HTTP/1.1\nAccept: application/json\nAccept-Encoding: gzip, deflate, compress\nAuthorization: Basic RGVtbzpEZW1vUGFzc3dvcmRLZXk=\nContent-Type: application/json; charset=utf-8\nHost: snapsearch.io\n\n{\n    \"url\": \"http://google.com\"\n}</syntax>\n                                    </div>\n                                </div>\n                            </div>\n                            <div class=\"api-responses\">\n                                <div class=\"api-response\">\n                                    <p><strong>Successful Response</strong></p>\n                                    <syntax class=\"api-code\" syntax-language=\"http\">HTTP/1.1 200 OK\nAccess-Control-Allow-Origin: *\nCache-Control: no-cache\nConnection: keep-alive\nContent-Encoding: gzip\nContent-Type: application/json\nTransfer-Encoding: chunked\nVary: Accept-Encoding\n\n{\n    \"code\": \"success\",\n    \"content\": {\n        \"cache\"             =&gt; true/false,\n        \"callbackResult\"    =&gt; \"\",\n        \"date\"              =&gt; 1390382314,\n        \"headers\"           =&gt; [\n            {\n                \"name\"  =&gt; \"Content-Type\",\n                \"value\" =&gt; \"text/html\"\n            }\n        ],\n        \"html\"              =&gt; \"&lt;html&gt;&lt;/html&gt;\",\n        \"message\"           =&gt; \"Success/Failed/Validation Errors\",\n        \"pageErrors\"        =&gt; [\n            {\n                \"error\"   =&gt; \"Error: document.querySelector(...) is null\",\n                \"trace\"   =&gt; [\n                    {\n                        \"file\"      =&gt; \"filename\",\n                        \"function\"  =&gt; \"anonymous\",\n                        \"line\"      =&gt; \"41\",\n                        \"sourceURL\" =&gt; \"urltofile\"\n                    }\n                ]\n            }\n        ],\n        \"screenshot\"        =&gt; \"BASE64 ENCODED IMAGE CONTENT\",\n        \"status\"            =&gt; 200\n    }\n}</syntax>\n                                </div>\n                                <div class=\"api-response\">\n                                <p><strong>Failed Validation Error Response</strong></p>\n                                    <syntax class=\"api-code\" syntax-language=\"http\">HTTP/1.1 400 Bad Request\nCache-Control: no-cache\nConnection: keep-alive\nContent-Type: application/json\nTransfer-Encoding: chunked\n\n{\n    \"code\": \"validation_error\",\n    \"content\": [\n        \"&lt;request parameter name&gt;\": \"&lt;request parameter error message&gt;\"\n    ]\n}</syntax>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"middleware\">Middleware</h3>\n                        <p>SnapSearch officially supports and provides PHP, Ruby, Node.js and Python middleware. All middleware are framework agnostic, and should be able to work within a middleware framework or without.</p>\n                        <ul>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\">PHP</a></li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\">Ruby</a></li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\">Node.js</a></li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\">Python</a></li>\n                        </ul>\n                        <p>These libraries first automatically detect if an HTTP request comes from a search engine or robot. If it is indeed a search engine, it sends an HTTP POST request to <code>https://snapsearch.io/api/v1/robot</code> passing in parameters configuring how SnapSearch's robot should extract your content. SnapSearch will then send a HTTP GET request to the same URL and return the HTTP response (status code, headers and content) as a JSON response to the library. The client library then returns that data back to your application. You will have to select which data to present to the search engine. It is recommended to return the status code and content but not all of the headers, due to potential header mismatch with content encoding. However if you have specific headers that are important, then first test if it works with a simple HTTP client before deploying it.</p>\n                        <p>All of the middleware are open source, and we welcome pull requests for patches or new middleware implementations. Check out our <a href=\"https://github.com/SnapSearch/\">Github organisation</a> for more.</p>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"notes\">Notes</h3>\n                        <h4 class=\"documentation-sub-title\" anchor=\"notes-hashbangUrls\">Hashbang Urls</h4>\n                        <p>Make sure you are using hash bang urls and not just hash urls. This fits with <a href=\"https://developers.google.com/webmasters/ajax-crawling/docs/specification\" target=\"_blank\">Google's AJAX Crawling Scheme</a>. It makes it easier to identify what is a hash, and what is meant to be path. Remember hash fragments are never passed to the server. The middleware needs to know the full HTTP url or else it won't know where to scrape. This means you will need to rely on the search engine robots to convert hash bang urls to query fragment urls. <strong>This meta tag will need to be on every page: <code>&lt;meta name=&quot;fragment&quot; content=&quot;!&quot; /&gt;</code></strong>. If you are using HTML 5 push state urls, the meta tag is still a good practice as it allows search engines following the AJAX specification to know that your site is a single page application.</p>\n                        <h4 class=\"documentation-sub-title\">Dealing with non-HTML resources</h4>\n                        <p>You need to make sure that non-HTML resources are not intercepted by SnapSearch. Non-HTML resources refer to:</p>\n                        <ul>\n                            <li>Static files that are served through your application and not through an HTTP server such as NGINX or Apache.</li>\n                            <li>Downloads that served through an application level controller.</li>\n                            <li>Text data interchange formats that are not meant to be used for the end user's browser. For example: JSON, XML, RSS... etc.</li>\n                            <li>API resources that don't display the front end site, but are there for interaction between machines.</li>\n                            <li>Any connections that do not go through the HTTP protocol.</li>\n                        </ul>\n                        <p>You can prevent SnapSearch from intercepting these non-HTML resources by:</p>\n                        <ul>\n                            <li>Setup an array of whitelisted or blacklisted regular expression routes which will be matched against the request URL. SnapSearch will not intercept any routes that are not on the whitelist or any routes that are on the blacklist. This is done programmatically via the supplied middleware.</li>\n                            <li>SnapSearch middleware can optionally check if the URL path has an invalid file extension. Some extensions are valid for HTML resources such as <code>.html</code>, but others such as <code>.js</code> are not. Our middleware has an option to switch on this detection and it will ignore requests that go to invalid extensions. It is left as false by default.</li>\n                            <li>In MVC style applications that do not serve binary files, you may have a single controller which is responsible for displaying the front end code. If you execute our middleware inside these particular controllers, then you will not have any problems with non-HTML resources, since it can only intercept requests that go to the front end.</li>\n                        </ul>\n                        <h4 class=\"documentation-sub-title\">SSL issues</h4>\n                        <p>SnapSearch is not currently able to scrape sites that have invalid SSL certificates. We are currently working on this problem.</p>\n                        <h4 class=\"documentation-sub-title\">Flash Support</h4>\n                        <p>Our robots can support flash. At this moment the flash plugin is not installed. However we are going to be adding this feature soon. Note that flash movies will not appear on any screenshots.</p>\n                        <h4 class=\"documentation-sub-title\">Supporting JS disabled Browsers</h4>\n                        <p>It's not possible to detect if the HTTP client supports Javascript on the first page load. Therefore you have to know the user agents beforehand. A workaround involves the HTML Meta Refresh tag. You set an HTML meta refresh tag which will refresh the browser and point it to the same url but with query parameter indicating to the server that the client doesn't run javascript. This meta refresh tag can be then be cancelled using javascript. Another approach would be to use the Noscript tag and place the meta refresh tag there. None of these methods are guaranteed to work. but if you're interested check out: <a href=\"http://stackoverflow.com/q/3252743/582917\" target=\"_blank\">http://stackoverflow.com/q/3252743/582917</a></p>\n                        <h4 class=\"documentation-sub-title\">Ensuring Analytics Works with Snapsearch</h4>\n                        <p>When Snapsearch visits your site, it will come with a UserAgent containing \"SnapSearch\". You can however configure this to your own liking. Use this user agent in order to filter out our requests when using web analytics.</p>\n                        <h4 class=\"documentation-sub-title\">Soft 404s</h4>\n                        <p>Soft 404s should be avoided. The final representation to the search engine should be exactly the same as normal user with a normal browser would see. However you can achieve this by using the special meta tags and switching <code>meta</code> request parameter to true. Here are some example custom meta tags: <code>&lt;meta name=&quot;snapsearch-status&quot; content=&quot;404&quot; /&gt;</code> and <code>&lt;meta name=&quot;snapsearch-header&quot; content=&quot;Content-Type:text/html&quot; /&gt;</code></p>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
+                    template: "<div class=\"documentation panel panel_lego panel_transition_yellow_dark\">\n    <div class=\"container\">\n        <div class=\"panel-body row\">\n            <div class=\"col-md-2\">\n                <nav class=\"btn-group-vertical documentation-nav\" affix affix-top=\"214\" affix-bottom=\"910\">\n                    <a class=\"btn\" scroll=\"introduction\">Introduction</a>\n                    <a class=\"btn\" scroll=\"apiUsage\">API Usage</a>\n                    <a class=\"btn\" scroll=\"middleware\">Middleware</a>\n                    <a class=\"btn\" scroll=\"notes\">Notes</a>\n                </nav>\n            </div>\n            <div class=\"col-md-10\">\n                <div class=\"documentation-box\">\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"introduction\">Introduction</h3>\n                        <p>Snapsearch is a search engine optimisation (SEO) and robot proxy for complex front-end javascript & AJAX enabled (potentially realtime) HTML5 web applications.</p>\n                        <p>Search engines like <a href=\"https://developers.google.com/webmasters/ajax-crawling/\" target=\"_blank\" title=\"Google's AJAX Crawling Specification\">Google's crawler and HTTP scrapers such as Facebook's image extraction robot cannot execute complex javascript applications</a>. This include websites using javascript frameworks such as AngularJS, EmberJS, KnockoutJS, Backbone.js, jQuery, Meteor and much more.</p>\n                        <p>Snapsearch's middleware detects and intercepts requests made by search engines, then sends its own javascript enabled scrapers to cache a snapshot of your web page. The snapshot is seamlessly and transparently passed back to the search engine through your web application. This <a href=\"https://developers.google.com/webmasters/ajax-crawling/docs/html-snapshot\" target=\"_blank\" title=\"Google's Suggested Snapshot Method for AJAX Sites\">method is supported by Google</a> so you're not in violation of any rules.</p>\n                        <p>Snapsearch powered by Mozilla Firefox instances. Theses browsers are kept up to date with the <strong>rapid 6 week release cycles from Mozilla</strong>. We'll always be able to serve the latest in HTML5 technology. This is an advantage over using something like PhantomJS which is affected by the slower and spurious QtWebKit engine development cycle.</p>\n                        <div class=\"alert alert-info\">\n                            <p><strong>Attention:</strong> Sites using hashbang URLs such as <code>http://domain/#/path...</code>, need to add a special meta tag. Please see our <a scroll=\"notes-hashbangUrls\">notes on hashbang urls</a>.</p>\n                        </div>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"apiUsage\">API Usage</h3>\n                        <p>SnapSearch's API is designed to be very simple and can be used by itself or with our provided <a scroll=\"middleware\">middleware</a>. All API endpoints are SSL encrypted and require HTTP Basic Authorization using your registered Email as the username, and the API Key as the password.</p>\n                        <p>API endpoints extend from <code>https://snapsearch.io/</code></p>\n                        <div class=\"api-endpoint\">\n                            <h4 class=\"api-title\">Robot</h3>\n                            <div class=\"row api-explanation\">\n                                <div class=\"col-md-6\">\n                                    <div class=\"api-url\">\n                                        <p><strong>Path</strong></p>\n                                        <pre><code><strong>GET/POST:</strong> api/v1/robot</code></pre>\n                                    </div>\n                                    <div class=\"api-parameters\">\n                                        <p><strong>Parameters</strong></p>\n                                        <ul class=\"api-parameters-metadata\">\n                                            <li>\n                                                <span>Format:</span>\n                                                <ul>\n                                                    <li>GET Query Parameters</li>\n                                                    <li>POST JSON Body</li>\n                                                </ul>\n                                            </li>\n                                        </ul>\n                                        <div accordion class=\"api-parameter-accordion\" close-others=\"false\">\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> url</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>null</dd>\n                                                    <dt>Possible Values:</dt><dd>Any valid URL</dd>\n                                                    <dt>Required:</dt><dd>True</dd>\n                                                    <dt>Description:</dt><dd>URL to scrape. This is the only required parameter.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> useragent</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>Mozilla/5.0 ({OPERATINGSYSTEM}) Gecko/{VERSION} Firefox/{VERSION} SnapSearch</dd>\n                                                    <dt>Possible Values:</dt><dd>Any textual string containing 'SnapSearch'</dd>\n                                                    <dt>Description:</dt><dd>Customise the user agent. If this user agent did not include 'SnapSearch', an infinite interception loop may occur.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> width</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>1280</dd>\n                                                    <dt>Possible Values:</dt><dd>200 <= X <= 4000</dd>\n                                                    <dt>Description:</dt><dd>Change the window width of the Robot. Can be used if you have specific requirements regarding the dimensions of the browser.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> height</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>1024</dd>\n                                                    <dt>Possible Values:</dt><dd>200 <= X <= 4000</dd>\n                                                    <dt>Description:</dt><dd>Change the window height of the Robot. Can be used if you have specific requirements regarding the dimensions of the browser. This can be useful for sites implementing infinite scrolling, so more content can be loaded on the page.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> imgformat</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>png</dd>\n                                                    <dt>Possible Values:</dt><dd>png</dd>\n                                                    <dt>Description:</dt><dd>Is used in conjunction with <code>screenshot</code> parameter. Currently only supports png format. </dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> screenshot</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>false</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Scrape a screenshot, this screenshot is rendered from the browser's dimensions. The screenshot is returned as a base 64 encoded string. It's format is determined by the <code>imgformat</code> parameter.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> navigate</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>false</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Follow redirections. In most cases you do not want to follow redirects. If you leave this false, it will return the status, headers and body of the page asking for a redirect. If you switch this to true, it will follow header, client side, javascript, and meta tag redirects.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> loadimages</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>false</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Loading images. Loading images is not required when doing content scraping, leaving this off results in faster scrapes. However if you are taking screenshots, then you should switch this to true.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> javascriptenabled</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>true</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Process javascript or not. Can be used in circumstances where you don't want to process javascript.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> totaltimeout</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>30000</dd>\n                                                    <dt>Possible Values:</dt><dd>10000 <= X <= 30000</dd>\n                                                    <dt>Description:</dt><dd>Maximum millisecond timeout for the entire request task. This determines how long before the entire request task is considered a failure. At which point the robot will cancel the task and return everything it has managed to scrape.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> maxtimeout</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>5000</dd>\n                                                    <dt>Possible Values:</dt><dd>1000 <= X <= 15000</dd>\n                                                    <dt>Description:</dt><dd>Maximum millisecond timeout for asynchronous requests. This determines how long the browser will wait for asynchronous requests to finish. This means the browser will initiate the capture of the page contents either when all asynchronous requests finish, or at the maximum timeout. Longer times will result in potentially slower scrapes, but may capture more content if your site produces many slow asynchronous requests. If you set it too long, the client search engine robot may timeout. Play with this setting to the most optimal scraping speed.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> initialwait</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>1000</dd>\n                                                    <dt>Possible Values:</dt><dd>1000 <= X <= 15000</dd>\n                                                    <dt>Description:</dt><dd>Initial millisecond wait before checking asynchronous requests. This determines how long the browser will wait before it starts to check for when the asynchronous requests finish. The <code>maxtimeout</code> only begins onces the <code>initialwait</code> finishes. This is intended to allow delayed asynchronous requests or for pages which don't have asynchronous requests but have DOM mutations. The number has to be lower than <code>maxtimeout</code></dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> callback</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>null</dd>\n                                                    <dt>Possible Values:</dt><dd>Any javascript executable string</dd>\n                                                    <dt>Description:</dt><dd>This javascript string is evaled on the page after all asynchronous requests have finished but prior to the capture of the page contents. This allows you to execute DOM mutations or capture specific content. <strong>You can assume this string is executed in the context of an anonymous function.</strong> Therefore this code is valid: <code>return 'hello world';</code>. You must return a string. Objects should be serialized into JSON. DOM node objects cannot be serialized and returned, you must first convert them to textual strings. These returned values will be stored in the <code>callbackResult</code> property in the response.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> meta</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>true</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Scrape for custom meta tags or not. You can use custom meta tags to change the status code or add custom headers to the scraped snapshot. This is intended for soft 404 techniques. It will look for meta tags such as <code>&lt;meta name=&quot;snapsearch-status&quot; content=&quot;404&quot; /&gt;</code> and <code>&lt;meta name=&quot;snapsearch-header&quot; content=&quot;Content-Type:text/html&quot; /&gt;</code></dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> cache</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>true</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Allow caching of the snapshot or not. This determines two things. The first is whether the snapshot can be acquired from the cache. The second is whether the snapshot should be cached. If this is left as true, snapshots can be returned from the cache if it exists in the cache and they will be cached if it is a fresh snapshot. If this is switched to false, snapshots will always be fresh and the result will not be cached.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> cachetime</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>24</dd>\n                                                    <dt>Possible Values:</dt><dd>1 <= X <= 720</dd>\n                                                    <dt>Description:</dt><dd>Cache time in hours. This determines how long until the snapshots expire. A shorter cache time will result in more up to date snapshots, but it will use up more of your usage cap. Longer cache time will result in less up to date snapshots, but it will conserve your usage cap. This figure will depend on how often your pages change, and what proportion of those pages are changing compared to the rest of the website.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> refresh</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>false</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>Refresh forces a new snapshot. Unlike the cache parameter, this will allow the new snapshot to be stored in the cache. (If cache is set to false, there is no need to set refresh to true.) Using this parameter allows you to set a long cachetime and manually refresh the snapshots depending on changes in your website.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                            <accordion-group>\n                                                <accordion-heading><i class=\"glyphicon glyphicon-chevron-right\"></i> test</accordion-heading>\n                                                <dl class=\"dl-horizontal api-parameter-properties\">\n                                                    <dt>Default:</dt><dd>false</dd>\n                                                    <dt>Possible Values:</dt><dd>true|false</dd>\n                                                    <dt>Description:</dt><dd>If you're in development mode or on localhost, set this to true, and it will only validate your request parameters, but not attempt to actually scrape anything.</dd>\n                                                </dl>\n                                            </accordion-group>\n                                        </div>\n                                    </div>\n                                </div>\n                                <div class=\"col-md-6\">\n                                    <div class=\"api-description\">\n                                        <p><strong>Description</strong></p>\n                                        <p>This Robot endpoint allows you command our robots to scrape anything on the web. Requests must come with HTTP Basic authorization. Responses can be raw uncompressed text or gzip compressed output depending on your <code>Accept</code> headers. Cached snapshots are indexed by a checksum of your request parameters. Therefore different request parameters using the same url will have different cached snapshots.</p>\n                                    </div>\n                                    <div class=\"api-request\">\n                                        <p><strong>Example Request</strong></p>\n                                        <syntax class=\"api-code\" syntax-language=\"http\">POST /api/v1/robot HTTP/1.1\nAccept: application/json\nAccept-Encoding: gzip, deflate, compress\nAuthorization: Basic RGVtbzpEZW1vUGFzc3dvcmRLZXk=\nContent-Type: application/json; charset=utf-8\nHost: snapsearch.io\n\n{\n    \"url\": \"http://google.com\"\n}</syntax>\n                                    </div>\n                                </div>\n                            </div>\n                            <div class=\"api-responses\">\n                                <div class=\"api-response\">\n                                    <p><strong>Successful Response</strong></p>\n                                    <syntax class=\"api-code\" syntax-language=\"http\">HTTP/1.1 200 OK\nAccess-Control-Allow-Origin: *\nCache-Control: no-cache\nConnection: keep-alive\nContent-Encoding: gzip\nContent-Type: application/json\nTransfer-Encoding: chunked\nVary: Accept-Encoding\n\n{\n    \"code\": \"success\",\n    \"content\": {\n        \"cache\"             =&gt; true/false,\n        \"callbackResult\"    =&gt; \"\",\n        \"date\"              =&gt; 1390382314,\n        \"headers\"           =&gt; [\n            {\n                \"name\"  =&gt; \"Content-Type\",\n                \"value\" =&gt; \"text/html\"\n            }\n        ],\n        \"html\"              =&gt; \"&lt;html&gt;&lt;/html&gt;\",\n        \"message\"           =&gt; \"Success/Failed/Validation Errors\",\n        \"pageErrors\"        =&gt; [\n            {\n                \"error\"   =&gt; \"Error: document.querySelector(...) is null\",\n                \"trace\"   =&gt; [\n                    {\n                        \"file\"      =&gt; \"filename\",\n                        \"function\"  =&gt; \"anonymous\",\n                        \"line\"      =&gt; \"41\",\n                        \"sourceURL\" =&gt; \"urltofile\"\n                    }\n                ]\n            }\n        ],\n        \"screenshot\"        =&gt; \"BASE64 ENCODED IMAGE CONTENT\",\n        \"status\"            =&gt; 200\n    }\n}</syntax>\n                                </div>\n                                <div class=\"api-response\">\n                                <p><strong>Failed Validation Error Response</strong></p>\n                                    <syntax class=\"api-code\" syntax-language=\"http\">HTTP/1.1 400 Bad Request\nCache-Control: no-cache\nConnection: keep-alive\nContent-Type: application/json\nTransfer-Encoding: chunked\n\n{\n    \"code\": \"validation_error\",\n    \"content\": [\n        \"&lt;request parameter name&gt;\": \"&lt;request parameter error message&gt;\"\n    ]\n}</syntax>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"middleware\">Middleware</h3>\n                        <p>SnapSearch officially supports and provides PHP, Ruby, Node.js and Python middleware. All middleware are framework agnostic, and should be able to work within a middleware framework or without.</p>\n                        <ul>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-PHP\">PHP</a></li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Ruby\">Ruby</a></li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Node\">Node.js</a></li>\n                            <li><a href=\"https://github.com/SnapSearch/SnapSearch-Client-Python\">Python</a></li>\n                        </ul>\n                        <p>These libraries first automatically detect if an HTTP request comes from a search engine or robot. If it is indeed a search engine, it sends an HTTP POST request to <code>https://snapsearch.io/api/v1/robot</code> passing in parameters configuring how SnapSearch's robot should extract your content. SnapSearch will then send a HTTP GET request to the same URL and return the HTTP response (status code, headers and content) as a JSON response to the library. The client library then returns that data back to your application. You will have to select which data to present to the search engine. It is recommended to return the status code and content but not all of the headers, due to potential header mismatch with content encoding. However if you have specific headers that are important, then first test if it works with a simple HTTP client before deploying it.</p>\n                        <p>All of the middleware are open source, and we welcome pull requests for patches or new middleware implementations. Check out our <a href=\"https://github.com/SnapSearch/\">Github organisation</a> for more.</p>\n                    </div>\n                    <div class=\"documentation-information\">\n                        <h3 class=\"documentation-title\" anchor=\"notes\">Notes</h3>\n                        <h4 class=\"documentation-sub-title\" anchor=\"notes-hashbangUrls\">Hashbang Urls</h4>\n                        <p>Make sure you are using hash bang urls and not just hash urls. This fits with <a href=\"https://developers.google.com/webmasters/ajax-crawling/docs/specification\" target=\"_blank\">Google's AJAX Crawling Scheme</a>. It makes it easier to identify what is a hash, and what is meant to be path. Remember hash fragments are never passed to the server. The middleware needs to know the full HTTP url or else it won't know where to scrape. This means you will need to rely on the search engine robots to convert hash bang urls to query fragment urls. <strong>This meta tag will need to be on every page: <code>&lt;meta name=&quot;fragment&quot; content=&quot;!&quot; /&gt;</code></strong>. If you are using HTML 5 push state urls, the meta tag is still a good practice as it allows search engines following the AJAX specification to know that your site is a single page application.</p>\n                        <h4 class=\"documentation-sub-title\">Dealing with non-HTML resources</h4>\n                        <p>You need to make sure that non-HTML resources are not intercepted by SnapSearch. Non-HTML resources refer to:</p>\n                        <ul>\n                            <li>Static files that are served through your application and not through an HTTP server such as NGINX or Apache.</li>\n                            <li>Downloads that served through an application level controller.</li>\n                            <li>Text data interchange formats that are not meant to be used for the end user's browser. For example: JSON, XML, RSS... etc.</li>\n                            <li>API resources that don't display the front end site, but are there for interaction between machines.</li>\n                            <li>Any connections that do not go through the HTTP protocol.</li>\n                        </ul>\n                        <p>You can prevent SnapSearch from intercepting these non-HTML resources by:</p>\n                        <ul>\n                            <li>Setup an array of whitelisted or blacklisted regular expression routes which will be matched against the request URL. SnapSearch will not intercept any routes that are not on the whitelist or any routes that are on the blacklist. This is done programmatically via the supplied middleware.</li>\n                            <li>SnapSearch middleware can optionally check if the URL path has an invalid file extension. Some extensions are valid for HTML resources such as <code>.html</code>, but others such as <code>.js</code> are not. Our middleware has an option to switch on this detection and it will ignore requests that go to invalid extensions. It is left as false by default.</li>\n                            <li>In MVC style applications that do not serve binary files, you may have a single controller which is responsible for displaying the front end code. If you execute our middleware inside these particular controllers, then you will not have any problems with non-HTML resources, since it can only intercept requests that go to the front end.</li>\n                        </ul>\n                        <h4 class=\"documentation-sub-title\">SSL issues</h4>\n                        <p>SnapSearch is not currently able to scrape sites that have invalid SSL certificates. We are currently working on this problem.</p>\n                        <h4 class=\"documentation-sub-title\">Flash Support</h4>\n                        <p>Our robots can support flash. At this moment the flash plugin is not installed. However we are going to be adding this feature soon. Note that flash movies will not appear on any screenshots.</p>\n                        <h4 class=\"documentation-sub-title\">Supporting JS disabled Browsers</h4>\n                        <p>It's not possible to detect if the HTTP client supports Javascript on the first page load. Therefore you have to know the user agents beforehand. A workaround involves the HTML Meta Refresh tag. You set an HTML meta refresh tag which will refresh the browser and point it to the same url but with query parameter indicating to the server that the client doesn't run javascript. This meta refresh tag can be then be cancelled using javascript. Another approach would be to use the Noscript tag and place the meta refresh tag there. None of these methods are guaranteed to work. but if you're interested check out: <a href=\"http://stackoverflow.com/q/3252743/582917\" target=\"_blank\">http://stackoverflow.com/q/3252743/582917</a></p>\n                        <h4 class=\"documentation-sub-title\">Ensuring Analytics Works with Snapsearch</h4>\n                        <p>When Snapsearch visits your site, it will come with a UserAgent containing \"SnapSearch\". You can however configure this to your own liking. Use this user agent in order to filter out our requests when using web analytics.</p>\n                        <h4 class=\"documentation-sub-title\">Soft 404s</h4>\n                        <p>Soft 404s should be avoided. The final representation to the search engine should be exactly the same as normal user with a normal browser would see. However you can achieve this by using the special meta tags and switching <code>meta</code> request parameter to true. Here are some example custom meta tags: <code>&lt;meta name=&quot;snapsearch-status&quot; content=&quot;404&quot; /&gt;</code> and <code>&lt;meta name=&quot;snapsearch-header&quot; content=&quot;Content-Type:text/html&quot; /&gt;</code></p>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
                     controller: 'DocumentationCtrl'
                 }
             )
@@ -3459,7 +3459,7 @@ module.exports = [
 
     }
 ];
-},{"fs":1}],8:[function(require,module,exports){
+},{"fs":94}],7:[function(require,module,exports){
 'use strict';
 
 var settings = require('./Settings');
@@ -3494,7 +3494,7 @@ module.exports = [
 
     }
 ];
-},{"./Settings":9}],9:[function(require,module,exports){
+},{"./Settings":8}],8:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -3506,7 +3506,7 @@ module.exports = {
     },
     apiKeys: {}
 };
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3540,7 +3540,7 @@ angular.module('App.Controllers', [])
     .controller('PrivacyCtrl', require('./privacy/PrivacyCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./administrative/ConfirmForgottenPasswordCtrl":11,"./common/AppCtrl":12,"./common/HeaderCtrl":14,"./control_panel/ControlAccountCtrl":18,"./control_panel/ControlBillingCtrl":19,"./control_panel/ControlCacheCtrl":20,"./control_panel/ControlCrawlingCtrl":21,"./control_panel/ControlPanelCtrl":22,"./control_panel/ControlPaymentsCtrl":23,"./documentation/DocumentationCtrl":25,"./home/CodeGroupCtrl":26,"./home/DemoCtrl":27,"./home/HomeCtrl":28,"./pricing/CostCalculatorCtrl":29,"./pricing/PricingCtrl":30,"./privacy/PrivacyCtrl":31,"./terms/TermsCtrl":32}],11:[function(require,module,exports){
+},{"./administrative/ConfirmForgottenPasswordCtrl":10,"./common/AppCtrl":11,"./common/HeaderCtrl":13,"./control_panel/ControlAccountCtrl":17,"./control_panel/ControlBillingCtrl":18,"./control_panel/ControlCacheCtrl":19,"./control_panel/ControlCrawlingCtrl":20,"./control_panel/ControlPanelCtrl":21,"./control_panel/ControlPaymentsCtrl":22,"./documentation/DocumentationCtrl":24,"./home/CodeGroupCtrl":25,"./home/DemoCtrl":26,"./home/HomeCtrl":27,"./pricing/CostCalculatorCtrl":28,"./pricing/PricingCtrl":29,"./privacy/PrivacyCtrl":30,"./terms/TermsCtrl":31}],10:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3590,7 +3590,7 @@ module.exports = ['$scope', '$state', '$stateParams', '$timeout', 'Restangular',
     };
 
 }];
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3646,7 +3646,7 @@ module.exports = ['$scope', '$modal', '$state', 'BusyLoopServ', 'UserSystemServ'
     };
 
 }];
-},{"./LogInModalCtrl":15,"./SignUpModalCtrl":16,"fs":1}],13:[function(require,module,exports){
+},{"./LogInModalCtrl":14,"./SignUpModalCtrl":15,"fs":94}],12:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3687,7 +3687,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'Restangular', functio
     };
 
 }];
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3698,7 +3698,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'Restangular', functio
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3753,7 +3753,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', '$modal', 'UserSystemS
     };
 
 }];
-},{"./ForgottenPasswordModalCtrl":13,"fs":1}],16:[function(require,module,exports){
+},{"./ForgottenPasswordModalCtrl":12,"fs":94}],15:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3794,7 +3794,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', func
     };
 
 }];
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3838,7 +3838,7 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'userId', 'Restangular
     };
 
 }];
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3907,7 +3907,7 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', function ($scope, U
     }
 
 }];
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -4012,7 +4012,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
     }
 
 }];
-},{"./CardCreateModalCtrl":17,"fs":1}],20:[function(require,module,exports){
+},{"./CardCreateModalCtrl":16,"fs":94}],19:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -4173,7 +4173,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
     }
 
 }];
-},{"./SnapshotModalCtrl":24,"fs":1}],21:[function(require,module,exports){
+},{"./SnapshotModalCtrl":23,"fs":94}],20:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4588,7 +4588,7 @@ module.exports = [
         }
 
 }];
-},{"../../Settings":9}],22:[function(require,module,exports){
+},{"../../Settings":8}],21:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4629,7 +4629,7 @@ module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'Cal
     }, true);
 
 }];
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4723,7 +4723,7 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', 'CalculateServ', fu
     }
 
 }];
-},{"../../Settings":9}],24:[function(require,module,exports){
+},{"../../Settings":8}],23:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4751,7 +4751,7 @@ module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', funct
     };
 
 }];
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4762,7 +4762,7 @@ module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', funct
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4780,7 +4780,7 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4838,7 +4838,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
     };
 
 }];
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4849,7 +4849,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4896,7 +4896,7 @@ module.exports = ['$scope', 'CalculateServ', function ($scope, CalculateServ) {
     });
 
 }];
-},{"../../Settings":9}],30:[function(require,module,exports){
+},{"../../Settings":8}],29:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4912,7 +4912,7 @@ module.exports = ['$scope', function ($scope) {
     $scope.freeUsageCap = settings.meta.freeUsageCap;
 
 }];
-},{"../../Settings":9}],31:[function(require,module,exports){
+},{"../../Settings":8}],30:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4921,7 +4921,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4930,7 +4930,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4948,7 +4948,7 @@ module.exports = angular.module('App.Directives')
     .directive('maxValid', require('./maxValid'))
     .directive('jsonChecker', require('./jsonChecker'))
     .directive('placeholderSwitch', require('./placeholderSwitch'));
-},{"./affix":34,"./anchor":35,"./equaliseHeights":36,"./jsonChecker":37,"./maxValid":38,"./minValid":39,"./passwordMatch":40,"./placeholderSwitch":41,"./scroll":42}],34:[function(require,module,exports){
+},{"./affix":33,"./anchor":34,"./equaliseHeights":35,"./jsonChecker":36,"./maxValid":37,"./minValid":38,"./passwordMatch":39,"./placeholderSwitch":40,"./scroll":41}],33:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5037,7 +5037,7 @@ module.exports = ['$window', '$document', function ($window, $document) {
     };
 
 }];
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -5117,7 +5117,7 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],36:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":3}],35:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -5159,7 +5159,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":4}],37:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":3}],36:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5199,7 +5199,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5239,7 +5239,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5279,7 +5279,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5320,7 +5320,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5376,7 +5376,7 @@ module.exports = ['$interval', function ($interval) {
     };
 
 }];
-},{}],42:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5401,7 +5401,7 @@ module.exports = ['$anchorScroll', '$location', function ($anchorScroll, $locati
     };
 
 }];
-},{}],43:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5414,7 +5414,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./chatTab":44,"./syntaxHighlight":80}],44:[function(require,module,exports){
+},{"./chatTab":43,"./syntaxHighlight":79}],43:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -5450,7 +5450,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":1,"insert-css":95}],45:[function(require,module,exports){
+},{"fs":94,"insert-css":95}],44:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -6141,7 +6141,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],46:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -6178,7 +6178,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":45,"./languages/apache.js":47,"./languages/bash.js":48,"./languages/clojure.js":49,"./languages/coffeescript.js":50,"./languages/cpp.js":51,"./languages/cs.js":52,"./languages/css.js":53,"./languages/diff.js":54,"./languages/erlang.js":55,"./languages/go.js":56,"./languages/haml.js":57,"./languages/haskell.js":58,"./languages/http.js":59,"./languages/ini.js":60,"./languages/java.js":61,"./languages/javascript.js":62,"./languages/json.js":63,"./languages/lisp.js":64,"./languages/lua.js":65,"./languages/makefile.js":66,"./languages/markdown.js":67,"./languages/nginx.js":68,"./languages/objectivec.js":69,"./languages/perl.js":70,"./languages/php.js":71,"./languages/python.js":72,"./languages/r.js":73,"./languages/ruby.js":74,"./languages/rust.js":75,"./languages/scala.js":76,"./languages/scss.js":77,"./languages/sql.js":78,"./languages/xml.js":79}],47:[function(require,module,exports){
+},{"./highlight":44,"./languages/apache.js":46,"./languages/bash.js":47,"./languages/clojure.js":48,"./languages/coffeescript.js":49,"./languages/cpp.js":50,"./languages/cs.js":51,"./languages/css.js":52,"./languages/diff.js":53,"./languages/erlang.js":54,"./languages/go.js":55,"./languages/haml.js":56,"./languages/haskell.js":57,"./languages/http.js":58,"./languages/ini.js":59,"./languages/java.js":60,"./languages/javascript.js":61,"./languages/json.js":62,"./languages/lisp.js":63,"./languages/lua.js":64,"./languages/makefile.js":65,"./languages/markdown.js":66,"./languages/nginx.js":67,"./languages/objectivec.js":68,"./languages/perl.js":69,"./languages/php.js":70,"./languages/python.js":71,"./languages/r.js":72,"./languages/ruby.js":73,"./languages/rust.js":74,"./languages/scala.js":75,"./languages/scss.js":76,"./languages/sql.js":77,"./languages/xml.js":78}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -6224,7 +6224,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -6287,7 +6287,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -6385,7 +6385,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],50:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -6516,7 +6516,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -6580,7 +6580,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -6653,7 +6653,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -6757,7 +6757,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -6797,7 +6797,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -6952,7 +6952,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -6991,7 +6991,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -7113,7 +7113,7 @@ function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -7239,7 +7239,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -7273,7 +7273,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -7303,7 +7303,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -7358,7 +7358,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -7430,7 +7430,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -7468,7 +7468,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -7544,7 +7544,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -7601,7 +7601,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -7646,7 +7646,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -7748,7 +7748,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -7829,7 +7829,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -7914,7 +7914,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -8063,7 +8063,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -8172,7 +8172,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -8256,7 +8256,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -8326,7 +8326,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -8485,7 +8485,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],75:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -8534,7 +8534,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],76:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -8593,7 +8593,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],77:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -8710,7 +8710,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],78:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -8813,7 +8813,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],79:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -8917,7 +8917,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],80:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -8995,7 +8995,7 @@ module.exports = ['$sce', function ($sce) {
     };
 
 }];
-},{"./lib/hljs/index":46,"fs":1,"insert-css":95}],81:[function(require,module,exports){
+},{"./lib/hljs/index":45,"fs":94,"insert-css":95}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9005,7 +9005,7 @@ angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters')
     .filter('booleanStyle', require('./booleanStyle'));
-},{"./booleanStyle":82}],82:[function(require,module,exports){
+},{"./booleanStyle":81}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9049,7 +9049,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],83:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9060,7 +9060,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":84}],84:[function(require,module,exports){
+},{"./UserSystem":83}],83:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9071,7 +9071,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":85,"./UserSystemServ":86}],85:[function(require,module,exports){
+},{"./UserSystemRun":84,"./UserSystemServ":85}],84:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9091,7 +9091,7 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],86:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9256,7 +9256,7 @@ module.exports = function () {
     ];
 
 };
-},{}],87:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9279,14 +9279,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     }, true);
 
 }];
-},{}],88:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],89:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 'use strict';
 
 module.exports = ['$timeout', function ($timeout) {
@@ -9318,7 +9318,7 @@ module.exports = ['$timeout', function ($timeout) {
     };
 
 }];
-},{}],90:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9355,7 +9355,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],91:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 'use strict';
 
 var moment = require("./..\\..\\..\\components\\moment\\moment.js");
@@ -9365,7 +9365,7 @@ module.exports = [function () {
     return moment;
 
 }];
-},{"./..\\..\\..\\components\\moment\\moment.js":5}],92:[function(require,module,exports){
+},{"./..\\..\\..\\components\\moment\\moment.js":4}],91:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9379,7 +9379,7 @@ module.exports = ['RestangularProvider', 'BaseUrlConst', function (RestangularPr
     RestangularProvider.setBaseUrl(BaseUrlConst + '/api');
 
 }];
-},{}],93:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9400,7 +9400,7 @@ module.exports = angular.module('App.Services')
     .service('CalculateServ', require('./CalculateServ'))
     .factory('MomentServ', require('./MomentServ'))
     .factory('BusyLoopServ', require('./BusyLoopServ'));
-},{"./AuthenticationStateRun":87,"./BaseUrlConst":88,"./BusyLoopServ":89,"./CalculateServ":90,"./MomentServ":91,"./RestangularConfig":92,"./UserSystemConfig":94}],94:[function(require,module,exports){
+},{"./AuthenticationStateRun":86,"./BaseUrlConst":87,"./BusyLoopServ":88,"./CalculateServ":89,"./MomentServ":90,"./RestangularConfig":91,"./UserSystemConfig":93}],93:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9412,6 +9412,8 @@ module.exports = ['UserSystemServProvider', function (UserSystemServProvider) {
     UserSystemServProvider.setSessionResource('session');
 
 }];
+},{}],94:[function(require,module,exports){
+
 },{}],95:[function(require,module,exports){
 var inserted = {};
 
@@ -9432,4 +9434,4 @@ module.exports = function (css) {
     head.appendChild(elem);
 };
 
-},{}]},{},[6])
+},{}]},{},[5]);

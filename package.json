@@ -4,10 +4,10 @@
   "description": "SnapSearch is Search Engine Optimisation for Javascript, HTML 5 and Single Page Applications",
   "author": "Roger Qiu <roger.qiu@polycademy.com>",
   "devDependencies": {
-    "browserify": "~3.30.1",
+    "browserify": "~12.0.1",
+    "brfs": "~1.0.0",
     "debowerify": "~0.6.0",
     "deglobalify": "~0.2.0",
-    "brfs": "~1.0.0",
     "insert-css": "~0.1.1",
     "minifier": "~0.6.2"
   }
