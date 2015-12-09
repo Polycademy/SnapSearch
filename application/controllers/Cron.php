@@ -53,7 +53,7 @@ class Cron extends CI_Controller{
 
 		if ($allowed_length === false) {
 
-			$command = "find $path -name '*.lock' -type -f -delete";
+			$command = "find $path -name '*.lock' -type f -delete";
 
 		} else {
 
@@ -70,9 +70,17 @@ class Cron extends CI_Controller{
 		$output = $today->format('Y-m-d H:i:s') . ' - ';
 
 		if ($exit == 0) {
-			$output .= "Successfully purged lockfiles older than $allowed_length days " . "\n";
+			if (!empty($allowed_length)) {
+				$output .= "Successfully purged lockfiles older than $allowed_length days " . "\n";
+			}else{
+				$output .= "Successfully purged all lockfiles " . "\n";
+			}
 		} else {
-			$output .= "Unsuccessful purging of lockfiles older than $allowed_length: " . implode("\n", $output)  . "\n";
+			if (!empty($allowed_length)) {
+				$output .= "Unsuccessful purging of lockfiles older than $allowed_length: " . implode("\n", $output)  . "\n";
+			} else {
+				$output .= "Unsuccessful purging of all lockfiles: " . implode("\n", $output)  . "\n";
+			}
 		}
 
 		echo $output;
