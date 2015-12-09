@@ -102,7 +102,7 @@ fi
 # Setting up the lockfile directory for synchronising cache refreshes
 mkdir -p snapshots/lockfiles
 if ! mountpoint -q "snapshots/lockfiles"; then
-	mount -t tmpfs -o size=1M,nr_inodes=400k,mode=755,nodev,nosuid,noexec tmpfs snapshots/lockfiles
+	mount -t tmpfs -o size=1M,nr_inodes=400k,mode=755,nodev,nosuid,noexec,uid=www-data,gid=www-data tmpfs snapshots/lockfiles
 	MOUNTING_PATH=$(readlink -f snapshots/lockfiles)
 	ESCAPED_MOUNTING_PATH="${MOUNTING_PATH//\//\\/}"
 	MOUNTING=$(cat /etc/mtab | grep "$MOUNTING_PATH" | head -n 1)
