@@ -19,8 +19,7 @@ var redirectingStatusCodes = [
     '305',
     '306',
     '307',
-    '308',
-    'null' //shim for null status https://github.com/laurentj/slimerjs/issues/167
+    '308'
 ];
 
 //this needs to be placed in a module
