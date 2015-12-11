@@ -64,7 +64,7 @@ class Cron extends CI_Controller{
 
 		}
 
-		exec ($command, $output, $exit);
+		exec ($command, $command_output, $exit);
 
 		$today = new DateTime;
 		$output = $today->format('Y-m-d H:i:s') . ' - ';
@@ -77,9 +77,9 @@ class Cron extends CI_Controller{
 			}
 		} else {
 			if (!empty($allowed_length)) {
-				$output .= "Unsuccessful purging of lockfiles older than $allowed_length: " . implode("\n", $output)  . "\n";
+				$output .= "Unsuccessful purging of lockfiles older than $allowed_length: " . implode("\n", $command_output)  . "\n";
 			} else {
-				$output .= "Unsuccessful purging of all lockfiles: " . implode("\n", $output)  . "\n";
+				$output .= "Unsuccessful purging of all lockfiles: " . implode("\n", $command_output)  . "\n";
 			}
 		}
 
@@ -107,7 +107,7 @@ class Cron extends CI_Controller{
 
 		exec(
 			$command,
-			$output,
+			$command_output,
 			$exit
 		);
 
@@ -116,7 +116,7 @@ class Cron extends CI_Controller{
 		if ($exit == 0) {
 			echo $today->format('Y-m-d H:i:s') . ' - Successful backup' . "\n";
 		} else {
-			echo $today->format('Y-m-d H:i:s') . ' - Unsuccessful backup, error: ' . implode("\n", $output)  . "\n";
+			echo $today->format('Y-m-d H:i:s') . ' - Unsuccessful backup, error: ' . implode("\n", $command_output)  . "\n";
 		}
 
 	}
