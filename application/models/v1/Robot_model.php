@@ -133,7 +133,7 @@ class Robot_model extends CI_Model{
             // setup the snapshot lock
             $lock = $this->setup_lock($parameters_checksum);
 
-            if (!$lock) {
+            if (!is_resource($lock)) {
 
                 log_message('error', "Snapsearch PHP application could not open a lockfile (possible permission error on the filesystem) to regenerate $parameters_checksum.");
 
@@ -822,7 +822,7 @@ class Robot_model extends CI_Model{
 
     protected function release_lock ($lock) {
 
-        if ($lock) {
+        if (is_resource($lock)) {
             return flock($lock, LOCK_UN);
         } else {
             return true;
@@ -832,7 +832,10 @@ class Robot_model extends CI_Model{
 
     protected function release_and_close_lock ($lock) {
 
-        if ($lock) {
+        // it's possible for the $lock to already be early release and closed (such as in handle_cache_stampede)
+        // we need to check if it hasn't been closed already
+        // is_resource will return FALSE if the stream is already closed
+        if (is_resource($lock)) {
             flock ($lock, LOCK_UN);
             fclose ($lock);
         }
