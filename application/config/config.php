@@ -438,7 +438,7 @@ $config['proxy_ips'] = '';
 /*
 Lockfiles path for the snapshot cache
 */
-$config['lockfiles_path'] = $FCPATH . 'snapshots/lockfiles/';
+$config['lockfiles_path'] = FCPATH . 'snapshots/lockfiles/';
 
 
 /* End of file config.php */
