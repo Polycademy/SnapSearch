@@ -11,6 +11,9 @@ class Migration_make_parameterschecksum_unique extends CI_Migration {
         $this->db->query('LOCK TABLES snapshots WRITE, snapshots s1 WRITE, snapshots s2 READ');
 
         // deletes duplicates, but keeps the most recent row with the highest id
+        // we can't use dates, because there's a possibility that there may be equal dates
+        // resulting in duplicate rows
+        // however there cannot be identical ids
         $this->db->query(
             'DELETE s1 
              FROM snapshots s1, snapshots s2 
