@@ -4,8 +4,11 @@ class Migration_make_parameterschecksum_unique extends CI_Migration {
 
     public function up(){
 
-        // lock table
-        $this->db->query('LOCK TABLES snapshots WRITE');
+        // clear any previous locks
+        $this->db->query('UNLOCK TABLES');
+
+        // lock table, mysql requires locking the aliases as well, how weird
+        $this->db->query('LOCK TABLES snapshots WRITE, snapshots s1 WRITE, snapshots s2 READ');
 
         // deletes duplicates, but keeps the most recent row with the highest id
         $this->db->query(
