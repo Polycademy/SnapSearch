@@ -141,9 +141,9 @@ class Cache_model extends CI_Model {
 
         }else{
 
-            $this->errors = array(
+            $this->errors = [
                 'error' => 'No cached snapshots found.'
-            );
+            ];
 
             return false;
 
@@ -171,9 +171,9 @@ class Cache_model extends CI_Model {
 
         }else{
 
-            $this->errors = array(
+            $this->errors = [
                 'error' => 'Could not count the cached snapshots.'
-            );
+            ];
 
             return false;
         
