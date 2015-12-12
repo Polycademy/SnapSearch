@@ -230,7 +230,11 @@ class Robot_model extends CI_Model{
                 array(
                     'Content-Type'  => 'application/json'
                 ),
-                $encoded_parameters
+                $encoded_parameters, 
+                [
+                    'timeout'           => 40,
+                    'connect_timeout'   => 5
+                ]
             );
 
             // decode the returned json into an array
@@ -811,7 +815,7 @@ class Robot_model extends CI_Model{
      * @param  float    $sleep_by_micro Microsecond sleep period, by default 0.01 of a second
      * @return boolean
      */
-    protected function acquire_lock ($lockfile, $locktype, $timeout_micro, $sleep_by_micro = 10000) {
+    protected function acquire_lock ($lockfile, $locktype, $timeout_micro, $sleep_by_micro = 50000) {
 
         if (!is_resource($lockfile)) {
             throw new \InvalidArgumentException ('The $lockfile was not a file resource or the resource was closed.');
@@ -908,7 +912,7 @@ class Robot_model extends CI_Model{
             // there was no cache available, so we have to 
             // wait for the primary thread to complete regeneration
             // time limit of 25 seconds, sleeping by 0.01 seconds
-            if ($this->acquire_lock ($lock, LOCK_SH, 25000000, 10000)) {
+            if ($this->acquire_lock ($lock, LOCK_SH, 25000000, 50000)) {
 
                 // if we have acquire the shared lock, this means another thread has regenerated, we can immediately early release our shared lock, in order to allow at least one thread to acquire another write lock
                 $this->release_and_close_lock ($lock);

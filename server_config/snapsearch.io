@@ -231,7 +231,9 @@ server {
     # double the possible response size to 2MB
     fastcgi_buffers 64 32k;
     # reading timeout at 60s, this is useless if the max_execution_time isn't at least 60s
-    fastcgi_read_timeout 60s;
+    fastcgi_read_timeout 80s;
+    fastcgi_connect_timeout 75s;
+    fastcgi_send_timeout 80s;
     # note that http clients are usually 30s max timeout
     # but it's better to allow the server to finish processing
 
