@@ -24,7 +24,6 @@ hash mysql 2>/dev/null || { echo >&2 "mysql needs to be installed, so aborting";
 hash composer 2>/dev/null || { echo >&2 "composer needs to be installed, so aborting"; exit 1; }
 hash npm 2>/dev/null || { echo >&2 "npm needs to be installed, so aborting"; exit 1; }
 hash bower 2>/dev/null || { echo >&2 "bower needs to be installed, so aborting"; exit 1; }
-hash grunt 2>/dev/null || { echo >&2 "grunt-cli (grunt) needs to be installed, so aborting"; exit 1; }
 
 # Find the project's directory from this file
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -34,11 +33,9 @@ cd $PROJECT_DIR
 # Need something to run change index.php's environment to production
 # perl -pi -e "s/((?:[a-z][a-z]+)\(\'ENVIRONMENT\', isset\(\$_SERVER\[\'CI_ENV\'\]\) \? \$_SERVER\[\'CI_ENV\'\] : \'development\'\).)/define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'production');/g" index.php
 # Perhaps it's better to use NGINX or the server module to provide this?
-# Eventually mobilise.sh needs to run grunt in order to actually build the final product
 
 # Install all the dependencies
 # Composer and NPM should already be available on PATH
-# Bower and Grunt-Cli will be required however
 # Their STDIN is redirected to /dev/null, this is because it can affect the STDIN of this bash script
 echo "Installing dependencies from Composer, NPM and Bower"
 composer install --no-dev </dev/null
