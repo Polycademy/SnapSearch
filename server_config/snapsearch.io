@@ -52,10 +52,10 @@ server {
 # Production Environment
 server {
 
-  listen 80 deferred;
-  listen [::]:80 deferred;
-  listen 443 deferred ssl;
-  listen [::]:443 deferred ssl;
+  listen 80;
+  listen [::]:80;
+  listen 443 ssl;
+  listen [::]:443 ssl;
 
   # The host name to respond to
   server_name snapsearch.io;
