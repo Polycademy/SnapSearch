@@ -911,8 +911,8 @@ class Robot_model extends CI_Model{
 
             // there was no cache available, so we have to 
             // wait for the primary thread to complete regeneration
-            // time limit of 25 seconds, sleeping by 0.01 seconds
-            if ($this->acquire_lock ($lock, LOCK_SH, 25000000, 50000)) {
+            // time limit of 28 seconds, sleeping by 0.05 seconds
+            if ($this->acquire_lock ($lock, LOCK_SH, 28000000, 50000)) {
 
                 // if we have acquire the shared lock, this means another thread has regenerated, we can immediately early release our shared lock, in order to allow at least one thread to acquire another write lock
                 $this->release_and_close_lock ($lock);
