@@ -194,6 +194,10 @@ sudo cp -f --remove-destination secrets/dev.snapsearch.io.crt /etc/nginx/ssl/dev
 sudo cp -f --remove-destination secrets/dev.snapsearch.io.key /etc/nginx/ssl/dev.snapsearch.io.key
 sudo service nginx reload
 
+# Restarting FPM
+echo "Restarting FPM"
+sudo service php5-fpm restart
+
 # Setting up Cron Tasks
 echo "Setting up SnapSearch billing as a crontab"
 ESCAPED_PROJECT_DIR="${PROJECT_DIR//\//\\/}"
