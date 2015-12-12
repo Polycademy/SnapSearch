@@ -152,7 +152,7 @@ for i in "${nameservers[@]}"; do
 	sed -i "/# add DNS delete below/aip netns exec robots iptables -D OUTPUT -d ${i} -j ACCEPT 2>\/dev\/null || true" /etc/init/robots-namespace.conf
 	sed -i "/# add DNS append below/aip netns exec robots iptables -A OUTPUT -d ${i} -j ACCEPT" /etc/init/robots-namespace.conf
 	# store the specified DNS into the network namespace specific resolv.conf
-	echo $i >> /etc/netns/robots/resolv.conf
+	echo "nameserver ${i}" >> /etc/netns/robots/resolv.conf
 done
 sudo service robots-namespace start
 
