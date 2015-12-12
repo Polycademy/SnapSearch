@@ -77,6 +77,24 @@ ufw allow git
 echo "y" | ufw enable
 ```
 
+Install `awscli` and setup the necessary credentials on root. Root is important, as root can only backup things. We can also do this on the normal user. But we are only using root here in our VM. Single user root only!
+
+```
+aws configure
+```
+
+Fill in the access key id and secret access key according to the secrets exported by keys.php. Everything else just leave as default.
+
+If you then `cat /home/root/.aws/credentials`, you should see:
+
+```
+[default]
+aws_access_key_id = ....
+aws_secret_access_key = ....
+```
+
+Should migrate this to `mobilise.sh` later.
+
 Building App.js and Common.js (swapping for cache busting):
 
 ```
@@ -149,4 +167,10 @@ Set X to number of jobs. Y to number of concurrent jobs. Parallel jobs is still 
 
 ```
 seq X | parallel -n0 -jY "curl -s -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"http://httpbin.org/ip\"}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot"
+```
+
+Test cron commands:
+
+```
+sudo -u root/www-data [command]
 ```
