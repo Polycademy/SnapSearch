@@ -35,7 +35,7 @@ class Cron extends CI_Controller{
 		$output = $today->format('Y-m-d H:i:s') . ' - ';
 
 		if($query === true){
-			$output .= "Purged cache using length: $allowed_length";
+			$output .= "Purged cache using length: " . (($allowed_length === false) ? "infinity" : $allowed_length);
 			if($user_id){
 				$output .= " and user id: $user_id";
 			}
