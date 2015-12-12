@@ -142,7 +142,8 @@ sudo perl -pi -e \
 # we're not using network namespace specific nameservers, so we just use the global one
 # load command output into nameservers array
 echo "Setting up DNS access to the Network Namespace"
-nameservers=($(cat /etc/resolv.conf | grep nameserver | sed -e 's/nameserver \(.*\)/\1/'))
+# we currently only support IPV4, so we must not capture any IPv6 DNS addresses
+nameservers=($(cat /etc/resolv.conf | grep nameserver | grep -P -o '(?<= )([\d\.]+(?:\n|$))'))
 for i in "${nameservers[@]}"; do 
 	# we need to add the $i to the DELETE portion and the ADD portion of robots-namespace.conf
 	sed -i "/# add DNS delete below/aip netns exec robots iptables -D OUTPUT -d ${i} -j ACCEPT 2>\/dev\/null || true" /etc/init/robots-namespace.conf
