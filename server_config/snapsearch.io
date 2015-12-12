@@ -226,6 +226,15 @@ server {
     fastcgi_index index.php;
     fastcgi_intercept_errors on;
     fastcgi_hide_header x-powered-by;
+
+    # overwrite the default 32 32K set by buffers.conf
+    # double the possible response size to 2MB
+    fastcgi_buffers 64 32k;
+    # reading timeout at 60s, this is useless if the max_execution_time isn't at least 60s
+    fastcgi_read_timeout 60s;
+    # note that http clients are usually 30s max timeout
+    # but it's better to allow the server to finish processing
+
   }
   
 }
