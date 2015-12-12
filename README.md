@@ -5,21 +5,13 @@
 Run all of the below as root user. Setup SSH first, to login as root. Assume OS is 64bit Ubuntu 14.04.
 
 ```
+# if not root already
 sudo -i
 ```
 
 ---
 
-Setup SSH keys first. Copy your public identity to `~/.ssh/authorized_keys`. Check that /etc/ssh/sshd_config has `authorized_keys` set. Check these are set:
-
-```
-RSAAuthentication yes
-PubkeyAuthentication yes
-AuthorizedKeysFile      %h/.ssh/authorized_keys
-PermitEmptyPasswords no
-ChallengeResponseAuthentication no
-PasswordAuthentication yes
-```
+Setup SSH keys first, DO will set the key for you. And SSHD should already be ready to go.
 
 Re-ssh into the machine to verify that it works.
 
