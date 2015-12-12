@@ -2,7 +2,7 @@
 
 ## Installation Process ##
 
-Run all of the below as root user. Setup SSH first, to login as root. Assume OS is 64bit Ubuntu 14.04.
+Run all of the below as root user. Setup SSH first, to login as root. Assume OS is 64bit Ubuntu 14.04, choose the default kernel.
 
 ```
 # if not root already
@@ -29,9 +29,10 @@ cd /www
 First bring in the dependencies.
 
 ```sh
-sudo add-apt-repository ppa:chris-lea/node.js
-sudo apt-get update
-sudo apt-get install -y \
+apt-get update
+apt-get upgrade -y
+apt-get dist-upgrade -y
+apt-get install -y \
     python-software-properties \
     python \
     g++ \
@@ -53,6 +54,7 @@ sudo apt-get install -y \
     php5-cli \
     php5-curl \
     nodejs \
+    node \
     cron \
     libmysqlclient-dev \
     libpcre3-dev \
@@ -63,21 +65,32 @@ sudo apt-get install -y \
     firefox \
     ufw \
     htop \
-    pstree \
     tree \
-    multitail
+    multitail \
+    npm \
+    nodejs-legacy \
+    parallel
 
 easy_install supervisor
 easy_install httpie
-# sudo apt-get install httpie
 
 pip install awscli
 
 npm install -g bower
 
+cd /www
+
 curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 chmod 776 /usr/local/bin/composer
+
+cd - 
+```
+
+Restart to confirm the machine is still working:
+
+```
+shutdown -r now
 ```
 
 ---
@@ -85,7 +98,6 @@ chmod 776 /usr/local/bin/composer
 Setup the firewall:
 
 ```sh
-apt-get install ufw
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow ssh
@@ -105,9 +117,9 @@ echo "y" | ufw enable
 Now we configure MysQL, make sure to enter `root` for username, and for password, see your `keys.php`. Make sure to have no anonymous user, allow remote root login, remove test database, reload privilege tables.
 
 ```
-sudo mysql_install_db
-sudo /usr/bin/mysql_secure_installation
-sudo service mysql restart
+mysql_install_db
+/usr/bin/mysql_secure_installation
+service mysql restart
 ```
 
 ---
@@ -119,7 +131,7 @@ Now we configure awscli, set the key and password to your values in `keys.php`, 
 aws configure
 ```
 
-If you then `cat /home/root/.aws/credentials`, you should see:
+If you then `cat /root/.aws/credentials`, you should see:
 
 ```
 [default]
@@ -134,7 +146,8 @@ Now we configure PHP-FPM:
 Go into `/etc/php5/fpm/php.ini`, make these changes:
 
 * post_max_size = 8M
-* max_execution_time = 80
+* max_execution_time = 90
+* default_socket_timeout = 80
 * curl.cainfo = /etc/ssl/certs/ca-certificates.crt
 
 Go into `/etc/php5/cli/php.ini`, make these changes:
@@ -143,18 +156,23 @@ Go into `/etc/php5/cli/php.ini`, make these changes:
 
 Go into `/etc/php5/fpm/pool.d/www.conf`, make these changes:
 
+* user = www-data
+* group = www-data
 * listen.owner = www-data
 * listen.group = www-data
 * listen.mode = 0660
 * listen = /var/run/php5-fpm.sock
 * pm = dynamic
-* pm.max_children = 2
-* pm.start_servers = 2
-* pm.min_spare_servers = 2
-* pm.max_spare_servers = 2
+* pm.max_children = 12
+* pm.start_servers = 12
+* pm.min_spare_servers = 12
+* pm.max_spare_servers = 12
 * rlimit_files = 4096
 * chdir = /
 * catch_workers_output = yes
+* pm.max_requests = 100
+* request_terminate_timeout = 100s
+* pm.process_idle_timeout = 10s;
 
 The `rlimit_files = 4096` for `/etc/php5/fpm/pool.d/www.conf`, allows 4096 open lock files for each PHP worker process if there's 3 workers, that's 12288 lock files that can be open at the same time. This one of the upper limits for concurrent connections to SnapSearch. The real limit is much higher, because concurrent connections don't all open lock files at the same time. And there's probably a smaller limit due to other architectural parts of SnapSearch.
 
@@ -182,7 +200,7 @@ cd -
 Now we configure `curl` (also enter for any particular user that will be using curl too).
 
 ```
-echo "cacert = /etc/ssl/certs/ca-certificates.crt" > /home/root/.curlrc
+echo "cacert = /etc/ssl/certs/ca-certificates.crt" > /root/.curlrc
 ```
 
 ---
@@ -222,7 +240,7 @@ Now we bring in the application.
 
 ```
 cd /www
-git clone https://CMCDragonkai@bitbucket.org/SnapSearch/snapsearch.git
+git clone https://CMCDragonkai@bitbucket.org/snapsearch/snapsearch.git
 # setup the remote?
 ```
 
@@ -231,30 +249,34 @@ git clone https://CMCDragonkai@bitbucket.org/SnapSearch/snapsearch.git
 Now we configure NGINX.
 
 ```
-cd /www
+{
+    cd /www
 
-git clone https://github.com/Polycademy/WebserverConfiguration.git
-NGINX_ROOT="/etc/nginx"
-cp WebServerConfiguration/servers/nginx/nginx.conf NGINX_ROOT/nginx.conf
-cp WebServerConfiguration/servers/nginx/mime.types NGINX_ROOT/mime.types
-cp WebServerConfiguration/servers/nginx/fastcgi_params NGINX_ROOT/fastcgi_params
-cp -r WebServerConfiguration/servers/nginx/conf.d/* NGINX_ROOT/conf.d/
+    git clone https://github.com/Polycademy/WebserverConfiguration.git
+    NGINX_ROOT="/etc/nginx"
+    cp WebserverConfiguration/servers/nginx/configuration/nginx.conf $NGINX_ROOT/nginx.conf
+    cp WebserverConfiguration/servers/nginx/configuration/mime.types $NGINX_ROOT/mime.types
+    cp WebserverConfiguration/servers/nginx/configuration/fastcgi_params $NGINX_ROOT/fastcgi_params
+    cp -r WebserverConfiguration/servers/nginx/configuration/conf.d/* $NGINX_ROOT/conf.d/
 
-cd -
+    cd -
+
+    service nginx restart
+}
 ```
 
 ---
+
+Change index.php to production. Go to `/www/snapsearch/index.php`, and change the constant. Do this before hitting `./mobilise.sh`!
 
 Now we mobilise (hit yes to everything!):
 
 ```
-cd /www/SnapSearch
+cd /www/snapsearch
 ./mobilise.sh
 ```
 
----
-
-Change index.php to production. Go to `/www/SnapSearch/index.php`, and change the constant.
+Note that here is where `bower` might break, so you need to run the command manually. Also composer too.
 
 ---
 
@@ -359,4 +381,16 @@ Test cron commands:
 
 ```
 sudo -u root/www-data [command]
+```
+
+```
+curl -s -k -H 'Content-Type: application/json' -X POST -d '{"url":"http://httpbin.org/ip"}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot --resolve 'snapsearch.io:443:127.0.0.1'
+```
+
+```
+seq 12 | parallel -n0 -j12 "curl -s -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"https://www.the-newshub.com/environment/successful-dog-ivf-receives-a-mixed-reaction\", \"refresh\": true}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot" --resolve 'snapsearch.io:443:127.0.0.1'
+```
+
+```
+seq 12 | parallel -n0 -j12 "curl -s -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"https://snapsearch.io\", \"refresh\": true, \"cache\":false}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot" --resolve 'snapsearch.io:443:127.0.0.1'
 ```
