@@ -1,67 +1,98 @@
-SnapSearch
-==========
+# SnapSearch #
 
-Installing:
+## Installation Process ##
+
+Run all of the below as root user. Setup SSH first, to login as root. Assume OS is 64bit Ubuntu 14.04.
 
 ```
-sudo apt-get install -y python-software-properties python g++
+sudo -i
+```
+
+---
+
+Setup SSH keys first. Copy your public identity to `~/.ssh/authorized_keys`. Check that /etc/ssh/sshd_config has `authorized_keys` set. Check these are set:
+
+```
+RSAAuthentication yes
+PubkeyAuthentication yes
+AuthorizedKeysFile      %h/.ssh/authorized_keys
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+PasswordAuthentication yes
+```
+
+Re-ssh into the machine to verify that it works.
+
+---
+
+Create project folder:
+
+```
+mkdir -p /www
+cd /www
+```
+
+---
+
+First bring in the dependencies.
+
+```sh
 sudo add-apt-repository ppa:chris-lea/node.js
 sudo apt-get update
-sudo apt-get install -y make libc6 libstdc++6 libgcc1 xvfb git python-setuptools python-pip curl nginx php5-fpm mysql-server php5-mysql php5-json php5-mcrypt php5-cli php5-curl nodejs cron
-```
+sudo apt-get install -y \
+    python-software-properties \
+    python \
+    g++ \
+    make \
+    libc6 \
+    libstdc++6 \
+    libgcc1 \
+    xvfb \
+    git \
+    python-setuptools \
+    python-pip \
+    curl \
+    nginx \
+    php5-fpm \
+    mysql-server \
+    php5-mysql \
+    php5-json \
+    php5-mcrypt \
+    php5-cli \
+    php5-curl \
+    nodejs \
+    cron \
+    libmysqlclient-dev \
+    libpcre3-dev \
+    libtool \
+    automake \
+    autoconf \
+    autogen \
+    firefox \
+    ufw \
+    htop \
+    pstree \
+    tree \
+    multitail
 
-MySQL config: 
-https://www.digitalocean.com/community/articles/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-12-04
-PHP FPM config:
-http://arstechnica.com/information-technology/2012/12/web-served-part-3-bolting-on-php-with-php-fpm/
-
-```
-; inside /etc/php5/fpm/pool.d/www.conf
-listen.owner = www-data
-listen.group = www-data
-listen.mode = 0660
-```
-
-PHP FPM mcrypt fix:
-
-In < 14.04 -> http://askubuntu.com/a/360657
-
-In > 14.04 -> `sudo php5enmod mcrypt && sudo service php5-fpm restart`
-
-Make sure the `session_save_path()` is writable!
-
-If SlimerJS doesn't start, make sure firefox is installed: `sudo apt-get install firefox`.
-
-```
 easy_install supervisor
 easy_install httpie
-```
+# sudo apt-get install httpie
 
-The easy_install of httpie seems to stop working once you install pip and awscli. Workaround, `sudo apt-get install httpie`.
+pip install awscli
 
-```
 npm install -g bower
-npm install -g grunt-cli
-```
 
-COMPOSER:
-
-```
 curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
+chmod 776 /usr/local/bin/composer
 ```
 
-Robot Service (can be modified inside supervisord.conf in robot_scripts, but make sure to update the NGINX configuration to load balance the robot services):
+---
 
-Change index.php development to production if necessary.
+Setup the firewall:
 
-Change the the SlimerJS download to either 32bit or 64bit depending on your architecture.
-
-You need WebServerConfiguration. And setup NGINX from there.
-
-Setup firewall:
-
-```
+```sh
 apt-get install ufw
 ufw default deny incoming
 ufw default allow outgoing
@@ -77,13 +108,24 @@ ufw allow git
 echo "y" | ufw enable
 ```
 
-Install `awscli` and setup the necessary credentials on root. Root is important, as root can only backup things. We can also do this on the normal user. But we are only using root here in our VM. Single user root only!
+---
+
+Now we configure MysQL, make sure to enter `root` for username, and for password, see your `keys.php`. Make sure to have no anonymous user, allow remote root login, remove test database, reload privilege tables.
 
 ```
+sudo mysql_install_db
+sudo /usr/bin/mysql_secure_installation
+sudo service mysql restart
+```
+
+---
+
+Now we configure awscli, set the key and password to your values in `keys.php`, and leave the rest default (setup on any users requiring AWS access, but especially root).
+
+```
+# Configure your AWS
 aws configure
 ```
-
-Fill in the access key id and secret access key according to the secrets exported by keys.php. Everything else just leave as default.
 
 If you then `cat /home/root/.aws/credentials`, you should see:
 
@@ -93,7 +135,162 @@ aws_access_key_id = ....
 aws_secret_access_key = ....
 ```
 
-Should migrate this to `mobilise.sh` later.
+---
+
+Now we configure PHP-FPM:
+
+Go into `/etc/php5/fpm/php.ini`, make these changes:
+
+* post_max_size = 8M
+* max_execution_time = 80
+* curl.cainfo = /etc/ssl/certs/ca-certificates.crt
+
+Go into `/etc/php5/cli/php.ini`, make these changes:
+
+* curl.cainfo = /etc/ssl/certs/ca-certificates.crt
+
+Go into `/etc/php5/fpm/pool.d/www.conf`, make these changes:
+
+* listen.owner = www-data
+* listen.group = www-data
+* listen.mode = 0660
+* listen = /var/run/php5-fpm.sock
+* pm = dynamic
+* pm.max_children = 2
+* pm.start_servers = 2
+* pm.min_spare_servers = 2
+* pm.max_spare_servers = 2
+* rlimit_files = 4096
+* chdir = /
+* catch_workers_output = yes
+
+The `rlimit_files = 4096` for `/etc/php5/fpm/pool.d/www.conf`, allows 4096 open lock files for each PHP worker process if there's 3 workers, that's 12288 lock files that can be open at the same time. This one of the upper limits for concurrent connections to SnapSearch. The real limit is much higher, because concurrent connections don't all open lock files at the same time. And there's probably a smaller limit due to other architectural parts of SnapSearch.
+
+Go into `/etc/php5/fpm/php-fpm.conf`, make these changes:
+
+* error_log = /var/log/php5-fpm.log
+* log_level = debug
+
+Run `sudo service php5-fpm restart`.
+
+---
+
+Now we configure the certificates.
+
+```
+cd /usr/local/share/ca-certificates
+curl http://curl.haxx.se/ca/cacert.pem -o cacert.crt
+update-ca-certificates
+update-ca-certificates --fresh
+cd -
+```
+
+---
+
+Now we configure `curl` (also enter for any particular user that will be using curl too).
+
+```
+echo "cacert = /etc/ssl/certs/ca-certificates.crt" > /home/root/.curlrc
+```
+
+---
+
+Now we compile and install the mysql preg plugin:
+
+```sh
+cd /www
+
+git clone https://github.com/mysqludf/lib_mysqludf_preg.git
+cd lib_mysqludf_preg
+aclocal
+automake --add-missing
+./configure 
+make
+make install
+make MYSQL="mysql -p" installdb
+make test
+
+sudo service mysql restart
+
+cd -
+```
+
+---
+
+Now we fix PHP mcrypt:
+
+```
+sudo php5enmod mcrypt && sudo service php5-fpm restart
+php -m | grep mcrypt
+```
+
+---
+
+Now we bring in the application.
+
+```
+cd /www
+git clone https://CMCDragonkai@bitbucket.org/SnapSearch/snapsearch.git
+# setup the remote?
+```
+
+---
+
+Now we configure NGINX.
+
+```
+cd /www
+
+git clone https://github.com/Polycademy/WebserverConfiguration.git
+NGINX_ROOT="/etc/nginx"
+cp WebServerConfiguration/servers/nginx/nginx.conf NGINX_ROOT/nginx.conf
+cp WebServerConfiguration/servers/nginx/mime.types NGINX_ROOT/mime.types
+cp WebServerConfiguration/servers/nginx/fastcgi_params NGINX_ROOT/fastcgi_params
+cp -r WebServerConfiguration/servers/nginx/conf.d/* NGINX_ROOT/conf.d/
+
+cd -
+```
+
+---
+
+Now we mobilise (hit yes to everything!):
+
+```
+cd /www/SnapSearch
+./mobilise.sh
+```
+
+---
+
+Change index.php to production. Go to `/www/SnapSearch/index.php`, and change the constant.
+
+---
+
+Prepare to migrate MySQL data if necessary. Export old mysql data, and import into the new MySQL data.
+
+---
+
+Final checks:
+
+* Make sure the `session_save_path()` is writable! It should be in `/var/lib/php5`.
+* If SlimerJS doesn't start, make sure you have the right bit architecture.
+* If you have 2 CPUs, make 2 robots and 2 PHP workers, then change the NGINX configuration to use the newest robots.
+* Check if you switched DNS to the current IP.
+* See all upstart jobs: `initctl list`
+
+---
+
+Reboot.
+
+```
+sudo shutdown -r now
+```
+
+---
+
+Test if the system works, see testing.
+
+## Development ##
 
 Building App.js and Common.js (swapping for cache busting):
 
@@ -104,12 +301,7 @@ Building App.js and Common.js (swapping for cache busting):
 ./node_modules/.bin/minify js/compiled/Common.js
 ```
 
-Change to `rlimit_files = 4096` for `/etc/php5/fpm/pool.d/www.conf`, this allows 4096 open lock files for each PHP worker process if there's 3 workers, that's 12288 lock files that can be open at the same time. This one of the upper limits for concurrent connections to SnapSearch. The real limit is much higher, because concurrent connections don't all open lock files at the same time. And there's probably a smaller limit due to other architectural parts of SnapSearch.
-
-See all upstart jobs: `initctl list`
-
-Recommendations
----------------
+## Recommendations ##
 
 How to deal with 404s:
 
@@ -126,8 +318,7 @@ When an object is missing based on a dynamic page that uses ids. The server side
 On the client side, your object checking logic will check if the object exists, and if it doesn't it'll show a dynamic 404 state on the page. However by this time, a 200 status code has already been returned from the server side.
 In this case, a human client will see a 404 page easily and not be bothered by the 200 status code. However for machine clients such as search engines, this is a big problem. The solution to this, is to implement the object checking logic, OR use snapsearch's meta tag commands.
 
-Planning Documents
-------------------
+## Planning Documents ##
 
 Here we need to discuss SnapSearch's core scripting technology in terms of:
 
@@ -154,11 +345,10 @@ Any material changes to the purpose of your R&D project, or the hypothesis being
 
 Development first began on mhas's repository: https://github.com/mhas16/ajax_seo/commit/0fba85b81005bad72d01cc069b03877c62f23067
 
-Testing
--------
+## Testing ##
 
 ```
-http --verbose POST https://snapsearch.io/api/v1/robot url=http://localhost:1337/ --auth EMAIL:KEY
+http --verbose POST https://snapsearch.io/api/v1/robot url=https://snapsearch-demo.herokuapp.com/ --auth EMAIL:KEY
 ```
 
 Concurrent Testing:
@@ -167,6 +357,10 @@ Set X to number of jobs. Y to number of concurrent jobs. Parallel jobs is still 
 
 ```
 seq X | parallel -n0 -jY "curl -s -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"http://httpbin.org/ip\"}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot"
+```
+
+```
+seq 4 | parallel -n0 -j4 "curl -s -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"https://snapsearch-demo.herokuapp.com/\", \"refresh\": true}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot"
 ```
 
 Test cron commands:
