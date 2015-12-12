@@ -785,38 +785,63 @@ class Robot_model extends CI_Model{
 
     }
 
-    protected function acquire_lock ($lock, $type, $timeout) {
+    /**
+     * Acquires a lock using flock, provide it a file stream, the 
+     * lock type, a timeout in microseconds, and a sleep_by in microseconds.
+     * PHP's flock does not currently have a timeout or queuing mechanism.
+     * So we have to hack a optimistic method of continuously sleeping 
+     * and retrying to acquire the lock until we reach a timeout.
+     * Doing this in microseconds is a good idea, as seconds are too 
+     * granular and can allow a new thread to cheat the queue.
+     * There's no actual queue of locks being implemented here, so 
+     * it is fundamentally non-deterministic when multiple threads 
+     * try to acquire a lock with a timeout.
+     * This means a possible failure is resource starvation.
+     * For example, if there's too many concurrent threads competing for 
+     * a lock, then this implementation may allow the second thread to be 
+     * starved and allow the third thread to acquire the lock.
+     * The trick here is in the combination of LOCK_NB and $blocking.
+     * The $blocking variable is assigned by reference, it returns 1 
+     * when the flock is blocked from acquiring a lock. With LOCK_NB 
+     * the flock returns immediately instead of waiting indefinitely.
+     * 
+     * @param  resource $lockfile       Lock file resource that is opened.
+     * @param  constant $locktype       LOCK_EX or LOCK_SH
+     * @param  integer  $timeout_micro  In microseconds, where 1 second = 1,000,000 microseconds
+     * @param  float    $sleep_by_micro Microsecond sleep period, by default 0.01 of a second
+     * @return boolean
+     */
+    protected function acquire_lock ($lockfile, $locktype, $timeout_micro, $sleep_by_micro = 10000) {
 
-        if ($timeout < 1) {
+        if (!is_resource($lockfile)) {
+            throw new \InvalidArgumentException ('The $lockfile was not a file resource or the resource was closed.');
+        }
 
-            $got_lock = flock ($lock, $type | LOCK_NB);
+        if ($sleep_by_micro < 1) {
+            throw new \InvalidArgumentException ('The $sleep_by_micro cannot be less than 1, or else an infinite loop.');
+        }
+
+        if ($timeout_micro < 1) {
+
+            $locked = flock ($lockfile, $locktype | LOCK_NB);
 
         } else {
 
-            $count = 0;
-            $got_lock = true;
+            $count_micro = 0;
+            $locked = true;
 
-            // this optimistic method is flawed because continuous retries can 
-            // result in resource starvation
-            // it would be better for all threads to enter into a queue
-            // but it is not possible under shared-nothing PHP
-            
-            // the trick is in the combination of LOCK_NB and $blocking
-            // the $blocking variable is assigned by reference
-            // it returns 1 when the flock is blocked from acquiring a lock
-            // with LOCK_NB, the flock returns immediately instead of waiting indefinitely
-            while (!flock($lock, $type | LOCK_NB, $would_block)) {
-                if ($would_block AND $count++ < $timeout) {
-                    sleep(1);
+            while (!flock($lockfile, $locktype | LOCK_NB, $blocking)) {
+                if ($blocking AND (($count_micro += $sleep_by_micro) <= $timeout_micro)) {
+                    usleep($sleep_by_micro);
                 } else {
-                    $got_lock = false;
+                    $locked = false;
                     break;
                 }
             }
 
         }
 
-        return $got_lock;
+        return $locked;
 
     }
 
@@ -882,8 +907,8 @@ class Robot_model extends CI_Model{
 
             // there was no cache available, so we have to 
             // wait for the primary thread to complete regeneration
-            // time limit of 25 seconds
-            if ($this->acquire_lock ($lock, LOCK_SH, 25)) {
+            // time limit of 25 seconds, sleeping by 0.01 seconds
+            if ($this->acquire_lock ($lock, LOCK_SH, 25000000, 10000)) {
 
                 // if we have acquire the shared lock, this means another thread has regenerated, we can immediately early release our shared lock, in order to allow at least one thread to acquire another write lock
                 $this->release_and_close_lock ($lock);
