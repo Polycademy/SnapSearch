@@ -159,16 +159,29 @@ class Cron extends CI_Controller{
 			} elseif ($file->isDir()) {
 				// will only remove the directory if it has no children
 				// returns false when it cannot delete
-				switch (rmdir($filename)) {
-					case true:
-						$dir_count++;
-						break;
+				if (!$this->contains_children($filename) AND rmdir($filename)) {
+					$dir_count++;
 				}
 			}
 		
 		}
 
 		echo $today->format('Y-m-d H:i:s') . " - Purged sessions with $file_count files and $dir_count directories.\n";
+
+	}
+
+	protected function contains_children ($dir) {
+
+		// stops when it meets the first file
+	    $result = false;
+
+	    if($dh = opendir($dir)) {
+	        while(!$result && ($file = readdir($dh)) !== false) {
+	            $result = $file !== "." && $file !== "..";
+	        }
+	        closedir($dh);
+	    }
+	    return $result;
 
 	}
 
