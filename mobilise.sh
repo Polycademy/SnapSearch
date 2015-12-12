@@ -141,6 +141,7 @@ sudo perl -pi -e \
 # allowing access to the configured domain name servers
 # we're not using network namespace specific nameservers, so we just use the global one
 # load command output into nameservers array
+echo "Setting up DNS access to the Network Namespace"
 nameservers=($(cat /etc/resolv.conf | grep nameserver | sed -e 's/nameserver \(.*\)/\1/'))
 for i in "${nameservers[@]}"; do 
 	# we need to add the $i to the DELETE portion and the ADD portion of robots-namespace.conf
