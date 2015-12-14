@@ -361,36 +361,33 @@ Development first began on mhas's repository: https://github.com/mhas16/ajax_seo
 
 ## Testing ##
 
-```
-http --verbose POST https://snapsearch.io/api/v1/robot url=https://snapsearch-demo.herokuapp.com/ --auth EMAIL:KEY
-```
+```sh
+# set the testing url
+testing_url="https://snapsearch-demo.herokuapp.com/"
+email=""
+key=""
+njobs="" # number of jobs
+npjobs="" # number of parallel jobs executed
 
-Concurrent Testing:
+# simple test
+http --verbose POST https://snapsearch.io/api/v1/robot url=${testing_url} --auth ${email}:${key}
 
-Set X to number of jobs. Y to number of concurrent jobs. Parallel jobs is still limited to your number of cores.
+# local refresh test
+curl -k -H 'Content-Type: application/json' -X POST -d '{"url":"${testing_url}", "refresh": true}' -u ${email}:${key} https://snapsearch.io/api/v1/robot --resolve 'snapsearch.io:443:127.0.0.1'
 
-```
-seq X | parallel -n0 -jY "curl -s -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"http://httpbin.org/ip\"}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot"
-```
+# remote refresh test
+curl -k -H 'Content-Type: application/json' -X POST -d '{"url":"${testing_url}", "refresh": true}' -u ${email}:${key} https://snapsearch.io/api/v1/robot
 
-```
-seq 4 | parallel -n0 -j4 "curl -s -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"https://snapsearch-demo.herokuapp.com/\", \"refresh\": true}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot"
+# parallel local refresh test
+seq ${njobs} | parallel -n0 -j${npjobs} "curl -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"${testing_url}\", \"refresh\": true}' -u ${email}:${key} https://snapsearch.io/api/v1/robot --resolve 'snapsearch.io:443:127.0.0.1'"
+
+# parallel remote refresh test
+seq ${njobs} | parallel -n0 -j${npjobs} "curl -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"${testing_url}\", \"refresh\": true}' -u ${email}:${key} https://snapsearch.io/api/v1/robot"
 ```
 
 Test cron commands:
 
 ```
-sudo -u root/www-data [command]
-```
-
-```
-curl -s -k -H 'Content-Type: application/json' -X POST -d '{"url":"http://httpbin.org/ip"}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot --resolve 'snapsearch.io:443:127.0.0.1'
-```
-
-```
-seq 12 | parallel -n0 -j12 "curl -s -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"https://www.the-newshub.com/environment/successful-dog-ivf-receives-a-mixed-reaction\", \"refresh\": true}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot" --resolve 'snapsearch.io:443:127.0.0.1'
-```
-
-```
-seq 12 | parallel -n0 -j12 "curl -s -k -H 'Content-Type: application/json' -X POST -d '{\"url\":\"https://snapsearch.io\", \"refresh\": true, \"cache\":false}' -u EMAIL:KEY https://snapsearch.io/api/v1/robot" --resolve 'snapsearch.io:443:127.0.0.1'
+# choose root or www-data, <> is mandatory, [] is optional, <> and [] are meta syntax, not bash syntax
+sudo -u <root/www-data> [command]
 ```
