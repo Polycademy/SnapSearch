@@ -53,14 +53,14 @@ class Cron extends CI_Controller{
 
 		if ($allowed_length === false) {
 
-			$command = "find $path -name '*.lock' -type f -delete";
+			$command = "find $path -name '*.lock' -type f -delete -print 2>&1";
 
 		} else {
 
 			// allowed_length is integer in terms of number of days
 			$allowed_length = intval($allowed_length);
 
-			$command = "find $path -name '*.lock' -type f -mtime +$allowed_length -delete";
+			$command = "find $path -name '*.lock' -type f -mtime +$allowed_length -delete -print 2>&1";
 
 		}
 
@@ -70,16 +70,22 @@ class Cron extends CI_Controller{
 		$output = $today->format('Y-m-d H:i:s') . ' - ';
 
 		if ($exit == 0) {
+			if (empty($command_output)) {
+				$command_output = ['Nothing to Delete'];
+			}
 			if (!empty($allowed_length)) {
-				$output .= "Successfully purged lockfiles older than $allowed_length days " . "\n";
+				$output .= "Successfully purged lockfiles older than $allowed_length days: \n" . implode("\n", $command_output) . "\n";
 			}else{
-				$output .= "Successfully purged all lockfiles " . "\n";
+				$output .= "Successfully purged all lockfiles: \n" . implode("\n", $command_output) . "\n";
 			}
 		} else {
+			if (empty($command_output)) {
+				$command_output = ['No Output'];
+			}
 			if (!empty($allowed_length)) {
-				$output .= "Unsuccessful purging of lockfiles older than $allowed_length: " . implode("\n", $command_output)  . "\n";
+				$output .= "Unsuccessful purging of lockfiles older than $allowed_length: \n" . implode("\n", $command_output)  . "\n";
 			} else {
-				$output .= "Unsuccessful purging of all lockfiles: " . implode("\n", $command_output)  . "\n";
+				$output .= "Unsuccessful purging of all lockfiles: \n" . implode("\n", $command_output)  . "\n";
 			}
 		}
 
