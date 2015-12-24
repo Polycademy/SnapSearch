@@ -161,6 +161,13 @@ class Cache_model extends CI_Model {
 
         $query = $this->db->get();
 
+        // if the count succeeds, there will always be at least 1 row, but that row may contain 0
+        // that means, the user has no snapshots at this moment
+        // this is true even if the user doesn't actually exist in the system
+        // that is the peculiar thing about selecting a count (which is a aggregate function)
+        // this is different from selecting rows of data
+        // if the userId didn't exist, then there would no rows at all
+        // see: https://gist.github.com/79ece2107bd9aef28018
         if($query->num_rows() > 0){
 
             $row = $query->row();

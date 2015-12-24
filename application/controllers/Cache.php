@@ -85,7 +85,9 @@ class Cache extends CI_Controller{
 
             }
 
-            if($query){
+            // $query may return 0 as count contents
+            // we really should be using exceptions, not booleans here
+            if($query !== false){
 
                 $content = $query;
                 $code = 'success';
