@@ -219,7 +219,7 @@ class Robot_model extends CI_Model{
 
         // we can only get here through the write path
         // we shall regenerate the cache now
-        // we will release_and_close the lock only after saving the response to the database
+        // we will release_and_close_lock only after saving the response to the database
         // or if we hit an error during regeneration
         // or if this script exits
 
@@ -865,7 +865,7 @@ class Robot_model extends CI_Model{
         // we need to check if it hasn't been closed already
         // is_resource will return FALSE if the stream is already closed
         if (is_resource($lock)) {
-            flock ($lock, LOCK_UN);
+            flock ($lock, LOCK_UN); // this will return true even if the lockfile is already unlocked
             fclose ($lock);
         }
         return true;
@@ -915,7 +915,9 @@ class Robot_model extends CI_Model{
             if ($this->acquire_lock ($lock, LOCK_SH, 28000000, 50000)) {
 
                 // if we have acquire the shared lock, this means another thread has regenerated, we can immediately early release our shared lock, in order to allow at least one thread to acquire another write lock
-                $this->release_and_close_lock ($lock);
+                // however we do not want to close the stream, as we may need to relock it in case the snapshot 
+                // was not correctly created
+                $this->release_lock ($lock);
 
                 list ($status, $snapshot) = $this->read_cache(
                     $parameters_checksum, 
@@ -924,6 +926,8 @@ class Robot_model extends CI_Model{
 
                 if ($status == 'fresh') {
 
+                    // now that we have the snapshot, we can in fact close the lock
+                    $this->release_and_close_lock ($lock);
                     return ['read', $snapshot];
 
                 } else {
