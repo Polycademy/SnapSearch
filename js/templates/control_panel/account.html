@@ -26,6 +26,7 @@
                 <label class="control-label col-sm-3" for="accountFormEmail">Email:</label>
                 <div class="col-sm-8">
                     <input id="accountFormEmail" class="form-control" type="email" name="email" ng-model="account.email" required ng-minlength="2" ng-maxlength="100" />
+                    <span class="help-block">Remember to change your middleware credentials if updating email address</span>
                     <span class="help-block" ng-show="accountForm.email.$error.required">Required</span>
                     <span class="help-block" ng-show="accountForm.email.$error.maxlength">Email is too long</span>
                     <span class="help-block" ng-show="accountForm.email.$error.email">Email is invalid</span>
