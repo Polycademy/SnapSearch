@@ -25,7 +25,10 @@ invoices/*
 .vagrant/*
 robot_scripts/logs/*
 !robot_scripts/logs/.gitkeep
+snapshots/cache/*
+snapshots/lockfiles/*
 !snapshots/cache/.gitkeep
+!snapshots/lockfiles/.gitkeep
 
 #################
 ## Eclipse
