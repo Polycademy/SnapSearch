@@ -3,8 +3,8 @@
 class Email_model extends CI_Model{
 
 	protected $mailer;
-	protected $mandrill_user;
-	protected $mandrill_pass;
+	protected $sparkpost_user;
+	protected $sparkpost_pass;
 	protected $errors;
 
 	public function __construct(){
@@ -12,8 +12,8 @@ class Email_model extends CI_Model{
 		parent::__construct();
 
 		$this->mailer = new \PHPMailer;
-		$this->mandrill_user = $_ENV['secrets']['mandrill_api_user'];
-		$this->mandrill_pass = $_ENV['secrets']['mandrill_api_pass'];
+		$this->sparkpost_user = $_ENV['secrets']['sparkpost_api_user'];
+		$this->sparkpost_pass = $_ENV['secrets']['sparkpost_api_pass'];
 
 		$this->load->library('form_validation', false, 'validator');
 
@@ -35,11 +35,11 @@ class Email_model extends CI_Model{
 	){
 
 		$this->mailer->IsSMTP();
-		$this->mailer->Host = 'smtp.mandrillapp.com';
+		$this->mailer->Host = 'smtp.sparkpostmail.com';
 		$this->mailer->Port = 587;
 		$this->mailer->SMTPAuth = true;
-		$this->mailer->Username = $this->mandrill_user;
-		$this->mailer->Password = $this->mandrill_pass;
+		$this->mailer->Username = $this->sparkpost_user;
+		$this->mailer->Password = $this->sparkpost_pass;
 		$this->mailer->SMTPSecure = 'tls';
 
 		$this->mailer->From = $from_address;
