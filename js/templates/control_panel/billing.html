@@ -4,6 +4,18 @@
     <div class="telemetry-block">
         <h3>Billing Cards</h3>
         <button class="btn btn-primary telemetry-button" ng-click="modal.cardCreate()">Add Card</button>
+        <form action="/api/billing_stripe" method="POST">
+            <script
+                src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                data-key="pk_live_nPKTP1tMr0P4AvS0xIsSNX4o"
+                data-image="/img/documentation/checkout/marketplace.png"
+                data-locale="auto" 
+                data-currency="aud" 
+                data-panel-label="Subscribe" 
+                data-label="Add a Card via Stripe" 
+                data-allow-remember-me="false">
+            </script>
+        </form>
         <div class="table-responsive" ng-show="billingRecords">
             <table class="table table-striped table-hover">
                 <thead>

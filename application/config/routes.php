@@ -25,6 +25,7 @@ Pigeon::map(function($r){
 		//BILLING
 		$r->resources('billing');
 		$r->patch('billing/([a-zA-Z0-9\-_]+)', 'billing#update');
+		$r->resources('billing_stripe');
 
 		//PAYMENTS HISTORY
 		$r->resources('payments');
