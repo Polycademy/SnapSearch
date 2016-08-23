@@ -3,7 +3,7 @@
 use Stripe\Stripe;
 use Stripe\Customer;
 
-class Billing_Stripe extends CI_Controller{
+class Billing_stripe extends CI_Controller{
 
     protected $authenticator;
     protected $auth_response;
