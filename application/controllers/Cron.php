@@ -194,20 +194,24 @@ class Cron extends CI_Controller{
 	/**
 	 * This function will be ran from the Cron service. Make sure this is done well and no bugs!
 	 */
-	public function monthly_tracking(){
 
-		//this is in cents, not dollars
-		$charge_per_request = 0.2;
+	public function monthly_tracking () {
+
+		$charge_per_request = 0.2; // in cents
+		$minimum_charge = 500; // in cents
 		$currency = 'AUD';
 		$product_description = 'SnapSearch API Usage';
+		$grace_ending_period = 'P7D';
+		$grace_retry_period = 'P1D';
 		$today = new DateTime;
 
 		echo $today->format('Y-m-d H:i:s') . " - Started Charge Cycle\n";
 
+		$this->load->helper('date');
 		$this->load->model('Accounts_model');
 		$this->load->model('Usage_model');
 		$this->load->model('Billing_model');
-		$this->load->model('Pin_model');
+		$this->load->model('Stripe_model');
 		$this->load->model('Email_model');
 		$this->load->model('Invoices_model');
 		$this->load->model('Payments_model');
@@ -216,7 +220,7 @@ class Cron extends CI_Controller{
 		$offset = 0;
 		$limit = 200;
 		$total_number_of_users = $this->Accounts_model->count();
-		$charged_number_of_users = 0;
+		$processed_number_of_users = 0;
 
 		//divide the total number of users by the limit to get the number of iterations
 		//round to highest nearest integer so we run the query at least once
@@ -229,291 +233,632 @@ class Cron extends CI_Controller{
 		for($i = 1; $i <= $iterations; $i++){
 
 			$users = $this->Accounts_model->read_all($offset, $limit);
+
 			//increase the offset by the limit
 			$offset = $offset + $limit;
 
 			//proceed to check their API usage
 			foreach($users as $user){
 
-				//first determine if the $user is currently scheduled for a monthly checkup
-				$charge_date = new DateTime($user['chargeDate']);
-
-				//if the charge_date is after today, then we'll skip this user, as this user is not scheduled for a monthly checkup
-				//if it was equal or less than today, then we'll use this user, if it is less, then that means we missed a charge
-				if($charge_date > $today){
-					continue;
-				}
-
 				//plus one to the number of users being charged
-				$charged_number_of_users = $charged_number_of_users + 1;
-
-				//there are 2 situations in which a charge will occur, when the apiUsage - apiFreeLimit > 0 or when there is apiLeftOverCharge
-
-				$usage = $user['apiUsage'] - $user['apiFreeLimit'];
-
-				//total usage is going to be used for invoice and resetting onto the apiLeftOverUsage
-				$total_usage = $usage + $user['apiLeftOverUsage'];
-
-				$charge = 0;
-
-				if($usage > 0){
-					//usage is the number of API requests to be charged for
-					//we round to the nearest integer, since everything is charged based on cents
-					$charge += (int) round($usage * $charge_per_request);
-				}
-
-				if($user['apiLeftOverCharge'] > 0){
-					//add on the previous left over charge if there was any
-					$charge += $user['apiLeftOverCharge']; 
-				}
-
-				//track usage statistics
-				$this->Usage_model->create([
-					'userId'	=> $user['id'],
-					'date'		=> $today->format('Y-m-d H:i:s'),
-					'usage'		=> $user['apiUsage'],
-					'requests'	=> $user['apiRequests'],
-				]);
-
-				$charge_interval = new DateInterval($user['chargeInterval']);
-				$next_charge_date = $charge_date->add($charge_interval);
-
-				//clear apiUsage, apiRequests, apiLeftOverCharge and apiUsageNotification for this month and add the next month's chargeDate
-				$this->Accounts_model->update($user['id'], [
-					'apiUsage'				=> 0,
-					'apiRequests'			=> 0,
-					'apiLeftOverUsage'		=> 0,
-					'apiLeftOverCharge'		=> 0,
-					'apiUsageNotification'	=> 0,
-					'chargeDate'		=> $next_charge_date->format('Y-m-d H:i:s'),
-				]);
-
-				//$usage and $total_usage were used for calculations, but these are the real values for the logging
-				$real_current_requests = $user['apiRequests'];
-				$real_current_usage = $user['apiUsage'];
-				$real_total_usage = $user['apiUsage'] + $user['apiLeftOverUsage'];
-
-				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} {$user['email']} Current Requests: $real_current_requests Current Usage: $real_current_usage Total Usage: $real_total_usage Charge: $charge\n";
-
-				if($charge){
-
-					//if charge is less than 5 dollars, add it to the apiLeftOverCharge for the next month and skip this month
-					if($charge < 500){
-
-						echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Rollover Charge\n";
-
-						$this->Accounts_model->update($user['id'], [
-							'apiLeftOverUsage'	=> $total_usage,
-							'apiLeftOverCharge'	=> $charge,
-						]);
-
-						//skip to the next user
-						continue;
-					
-					}
-
-					//get the user's active and not invalid credit card
-					$billing_record = $this->Billing_model->read_all($user['id'], true, true);
-
-					if(!$billing_record){
-
-						//if there are no active cards to be used, we'll add this charge back to the apiLeftOverCharge, reset the apiLimit and send the billing error email
-
-						echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} No active billing record\n";
-
-						$this->Accounts_model->update($user['id'], [
-							'apiLeftOverUsage'	=> $total_usage,
-							'apiLeftOverCharge'	=> $charge,
-							'apiLimit'			=> $user['apiFreeLimit'],
-						]);
-
-						$email = $this->Email_model->prepare_email('email/billing_error_email', [
-							'month'			=> $today->format('F'),
-							'year'			=> $today->format('Y'),
-							'username'		=> $user['username'],
-							'charge_error'	=> 'No active and valid credit cards were found in the billing records.',
-						]);
-
-						echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending billing error email\n";
-
-						$this->Email_model->send_email(
-							'enquiry@snapsearch.io',
-							[$user['email'], 'enquiry@snapsearch.io'],
-							'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
-							$email
-						);
-
-					}else{
-
-						//get the first credit card
-						$billing_record = $billing_record[0];
-
-						$customer_token = $billing_record['customerToken'];
-
-						//prepare the charge the customer
-						$charge_query = $this->Pin_model->charge_customer([
-							'email'			=> $user['email'],
-							'description'	=> $product_description,
-							'amount'		=> $charge,
-							'ipAddress'		=> $user['ipAddress'],
-							'currency'		=> $currency,
-							'customerToken'	=> $customer_token,
-						]);
-
-						if(!$charge_query){
-
-							//charge was unsuccessful
-
-							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Charge Invalid\n";
-
-							//retrieve the errors, there could be system or validation errors
-							$charge_errors = $this->Pin_model->get_errors();
-							$charge_error_message = '';
-							if(isset($charge_errors['validation_error'])){
-								$charge_error_message .= implode(' | ', $charge_errors['validation_error']);
-							}elseif(isset($charge_errors['system_error'])){
-								$charge_error_message .= $charge_errors['system_error'];
-							}
-
-							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Saving left over usage and charge\n";
-
-							//update the account with the left over charge
-							//apiLimit gets reset to apiFreeLimit
-							$query = $this->Accounts_model->update($user['id'], [
-								'apiLeftOverUsage'	=> $total_usage,
-								'apiLeftOverCharge'	=> $charge,
-								'apiLimit'			=> $user['apiFreeLimit'],
-							]);
-
-							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Invalidating active card\n";
-
-							//update the billing details in order to make the current customer object invalid
-							$this->Billing_model->update($billing_record['id'], [
-								'active'			=> 0,
-								'cardInvalid'		=> 1,
-								'cardInvalidReason'	=> $charge_error_message,							
-							]);
-
-							//prepare the billing error email
-							$email = $this->Email_model->prepare_email('email/billing_error_email', [
-								'month'			=> $today->format('F'),
-								'year'			=> $today->format('Y'),
-								'username'		=> $user['username'],
-								'charge_error'	=> $charge_error_message,
-							]);
-
-							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending billing error email\n";
-
-							//send the email
-							$this->Email_model->send_email(
-								'enquiry@snapsearch.io',
-								[$user['email'], 'enquiry@snapsearch.io'],
-								'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
-								$email
-							);
-
-							//move on to the next user!
-
-						}else{
-
-							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Charge Successful\n";
-
-							$payment_history = [
-								'userId'		=> $user['id'],
-								'chargeToken'	=> $charge_query['token'],
-								'item'			=> $product_description,
-								'usageRate'		=> $total_usage,
-								'amount'		=> $charge,
-								'currency'		=> $currency,
-								'email'			=> $user['email'],
-								'country'		=> $charge_query['card']['address_country'],
-							];
-
-							//add the payment date from the charge query's date
-							$payment_date = new DateTime($charge_query['created_at']);
-							$payment_date = $payment_date->format('Y-m-d H:i:s');
-							$payment_history['date'] = $payment_date;
-
-							if(!empty($charge_query['card']['address_line1'])) $address[] = $charge_query['card']['address_line1'];
-							if(!empty($charge_query['card']['address_line2'])) $address[] = $charge_query['card']['address_line2'];
-							if(!empty($charge_query['card']['address_city'])) $address[] = $charge_query['card']['address_city'];
-							if(!empty($charge_query['card']['address_postcode'])) $address[] = $charge_query['card']['address_postcode'];
-							if(!empty($charge_query['card']['address_state'])) $address[] = $charge_query['card']['address_state'];
-
-							$payment_history['address'] = implode(' ', $address);
-
-							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created invoice\n";
-
-							//should return ['invoiceNumber', 'invoiceFile']
-							$invoice_data = $this->Invoices_model->create($payment_history, true);
-
-							// if invoice data didn't get saved, we just set the invoice_number to be a error message, and we don't send an invoice attachment, however we still save the payment history, and this is important!
-							if ($invoice_data) {
-
-								$invoice_number = $invoice_data['invoiceNumber'];
-								$invoice_file = $invoice_data['invoiceFile'];
-
-							} else {
-
-								$invoice_number = "Invoice Creation Failed";
-								$invoice_file = false;
-
-							}
-
-							//store a record to the invoice number in the payment history
-							$payment_history['invoiceNumber'] = $invoice_number;
-
-							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created payment record\n";
-
-							$this->Payments_model->create($payment_history);
-
-							$email = $this->Email_model->prepare_email('email/invoice_email', [
-								'month'			=> $today->format('F'),
-								'year'			=> $today->format('Y'),
-								'username'		=> $user['username'],
-							]);
-
-							echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending invoice email\n";
-
-							if ($invoice_file) {
-
-								//send the email with the invoice attached
-								$this->Email_model->send_email(
-									'enquiry@snapsearch.io',
-									[$user['email'], 'enquiry@snapsearch.io'],
-									'SnapSearch Monthly Invoice for ' 
-										. $today->format('F') . ' ' 
-										. $today->format('Y'),
-									$email,
-									null,
-									[
-										'SnapSearch Invoice for ' . $today->format('F') . ' ' . $today->format('Y') . '.pdf'	=> $invoice_file
-									]
-								);
-
-							} else {
-
-								//send the email with no invoice attached
-								$this->Email_model->send_email(
-									'enquiry@snapsearch.io',
-									[$user['email'], 'enquiry@snapsearch.io'],
-									'SnapSearch Monthly Invoice for ' . $today->format('F') . ' ' . $today->format('Y'),
-									$email
-								);
-
-							}
-
-						}
-
-					}
-
-				}
+				$processed_number_of_users = $processed_number_of_users + 1;
+
+				// when this returns, we go to the next user
+				$this->monthly_tracking_process_user(
+					$user,
+					$charge_per_request, 
+					$minimum_charge, 
+					$currency,
+					$product_description,
+					$grace_ending_period,
+					$grace_retry_period,
+					$today
+				);
 
 			}
 
 		}
 
-		echo $today->format('Y-m-d H:i:s') . " - Charged $charged_number_of_users Users\n";
+		echo $today->format('Y-m-d H:i:s') . " - Processed $processed_number_of_users Users\n";
+
+	}
+
+	protected function monthly_tracking_process_user (
+		$user,
+		$charge_per_request,
+		$minimum_charge, 
+		$currency,
+		$product_description,
+		$grace_ending_period,
+		$grace_retry_period,
+		$today
+	) {
+
+		$charge_date = new DateTime($user['chargeDate']);
+
+		$grace_ending_date = (is_null($user['graceEndingDate'])) ? new Datetime($user['graceEndingDate']) : NULL;
+
+		$grace_retry_date = (is_null($user['graceRetryDate'])) ? new DateTime($user['graceRetryDate']) : NULL;
+
+		$grace_period = (is_null($grace_ending_date) AND is_null($grace_retry_date)) ? false : true; 
+
+		if (!$grace_period) {
+
+			// grace is inactive
+
+			if ($charge_date <= $today) {
+
+				$action = 'charge';
+
+			} elseif ($charge_date > $today) {
+
+				// not due for a charge cycling
+				return;
+
+			}
+
+		} elseif ($grace_period) {
+
+			// grace is active
+
+			if ($charge_date <= $today AND $charge_date < $grace_retry_date) {
+
+				$action = 'charge';
+
+			} elseif ($charge_date > $today AND $grace_retry_date > $today) {
+
+				// not due for a charge cycling
+				return;
+
+			} elseif ($grace_retry_date <= $today AND $grace_retry_date <= $charge_date) {
+
+				$action = 'grace';
+
+			}
+
+		}
+
+		if ($action == 'charge') {
+
+			// there are 2 situations in which a charge will occur: 
+			// when the apiUsage - apiFreeLimit > 0 or 
+			// when there is apiLeftOverCharge
+
+			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Charging the User\n";
+
+			$usage = $user['apiUsage'] - $user['apiFreeLimit'];
+			$total_usage = $usage + $user['apiLeftOverUsage'];
+
+			$charge = 0;
+			if ($usage > 0) {
+				// nearest integer because everything is based on cents
+				$charge += (int) round($usage * $charge_per_request);
+			}
+
+			if($user['apiLeftOverCharge'] > 0){
+				$charge += $user['apiLeftOverCharge']; 
+			}
+
+			// track usage statistics
+			$this->Usage_model->create([
+				'userId'	=> $user['id'],
+				'date'		=> $today->format('Y-m-d H:i:s'),
+				'usage'		=> $user['apiUsage'],
+				'requests'	=> $user['apiRequests'],
+			]);
+
+			$charge_interval = new DateInterval($user['chargeInterval']);
+			$next_charge_date = $charge_date->add($charge_interval);
+
+			// clear all stateful billing parameters
+			// set chargeDate to the next chargeDate
+			// optimistic billing, assuming this billing succeeds
+			// if the billing fails for any reason
+			// there is a rollback transaction readding in the values
+			// this is done because if any errors occur later
+			// then we will still have moved the user to the next 
+			// charge date
+			// preferably this should be in a finally clause because
+			// this should actually be the final thing to do
+			$this->Accounts_model->update($user['id'], [
+				'apiUsage'				=> 0,
+				'apiRequests'			=> 0,
+				'apiLeftOverUsage'		=> 0,
+				'apiLeftOverCharge'		=> 0,
+				'apiUsageNotification'	=> 0,
+				'chargeDate'		    => $next_charge_date->format('Y-m-d H:i:s'),
+			]);
+
+			// these are just for the monthly_tracker log
+			$real_current_requests = $user['apiRequests'];
+			$real_current_usage = $user['apiUsage'];
+			$real_total_usage = $user['apiUsage'] + $user['apiLeftOverUsage'];
+			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} {$user['email']} Current Requests: $real_current_requests Current Usage: $real_current_usage Total Usage: $real_total_usage Charge: $charge\n";
+
+			// handle minimum charge
+			if ($charge < $minimum_charge) {
+
+				// under the minimum charge, just accumulate and skip
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Rollover Charge\n";
+
+				$this->Accounts_model->update($user['id'], [
+					'apiLeftOverUsage'	=> $total_usage,
+					'apiLeftOverCharge'	=> $charge,
+				]);
+
+				return;
+
+			}
+
+			// handle invalid or missing billing source
+			// get the user's active and not invalid credit card
+			$billing_record = $this->Billing_model->read_all($user['id'], true, true);
+			if (!$billing_record) {
+
+				// billing source is invalid or missing
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} No active billing record\n";
+
+				// terminate service
+				// and clear any grace period
+				$this->Accounts_model->update($user['id'], [
+					'apiLeftOverUsage'	=> $total_usage,
+					'apiLeftOverCharge'	=> $charge,
+					'apiLimit'			=> $user['apiFreeLimit'], 
+					'graceEndingDate'   => null,
+					'graceRetryDate'    => null,
+				]);
+
+				$email = $this->Email_model->prepare_email('email/billing_error_email', [
+					'month'			=> $today->format('F'),
+					'year'			=> $today->format('Y'),
+					'username'		=> $user['username'],
+					'charge_error'	=> 'No active and valid credit cards were found in the billing records.',
+				]);
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending billing error email\n";
+
+				$this->Email_model->send_email(
+					'enquiry@snapsearch.io',
+					[$user['email'], 'enquiry@snapsearch.io'],
+					'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+					$email
+				);
+
+				// next user
+				return;
+
+			}
+
+			// handle charge
+
+			$billing_record = $billing_record[0];
+			$customer_token = $billing_record['customerToken'];
+			$charge_query = $this->Stripe_model->charge_customer($customer_token, 
+				[
+					'amount'      => $charge,
+					'currency'    => $currency, 
+					'description' => $product_description,
+				]
+			);
+
+			if (!$charge_query) {
+
+				// unsuccessful charge
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Charge Invalid\n";
+
+				$charge_errors = $this->Stripe_model->get_errors();
+				$charge_error_message = '';
+				if(isset($charge_errors['validation_error'])){
+					$charge_error_message .= implode(' | ', $charge_errors['validation_error']);
+				}elseif(isset($charge_errors['system_error'])){
+					$charge_error_message .= $charge_errors['system_error'];
+				}
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Saving left over usage and charge\n";
+
+				// store the left over charge, but don't terminate service yet
+				$query = $this->Accounts_model->update($user['id'], [
+					'apiLeftOverUsage'	=> $total_usage,
+					'apiLeftOverCharge'	=> $charge,
+				]);
+
+				// we also don't invalidate the payment source
+
+				$grace_retry_period_human_readable = interval_to_human($grace_retry_period);
+
+				if (!$grace_period) {
+
+					// setup a new grace period
+
+					$next_grace_ending_date = $today->add($grace_ending_period);
+					$next_grace_retry_date = $today->add($grace_retry_period);
+
+					$this->Accounts_model->update($user['id'], [
+						'graceEndingDate'	=> $next_grace_ending_date,
+						'graceRetryDate'	=> $next_grace_retry_date,
+					]);
+
+					$email = $this->Email_model->prepare_email('email/billing_error_email_new_grace', [
+						'month'						=> $today->format('F'),
+						'year'						=> $today->format('Y'),
+						'username'					=> $user['username'],
+						'charge_error'	      		=> $charge_error_message, 
+						'grace_ending_date' 		=> $next_grace_ending_date->format('Y-m-d H:i:s'),
+						'grace_retry_period_human_readable' => $grace_retry_period_human_readable,
+					]);
+
+					echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending billing error email with new grace\n";
+
+					$this->Email_model->send_email(
+						'enquiry@snapsearch.io',
+						[$user['email'], 'enquiry@snapsearch.io'],
+						'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+						$email
+					);
+
+				} elseif ($grace_period) {
+
+					// continue with existing grace period
+					
+					$email = $this->Email_model->prepare_email('email/billing_error_email_continuing_grace', [
+						'month'						=> $today->format('F'),
+						'year'						=> $today->format('Y'),
+						'username'					=> $user['username'],
+						'charge_error'	      		=> $charge_error_message, 
+						'grace_ending_date' 		=> $grace_ending_date->format('Y-m-d H:i:s'),
+						'grace_retry_period_human_readable' => $grace_retry_period_human_readable,
+					]);
+
+					echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending billing error email with continuing grace\n";
+
+					$this->Email_model->send_email(
+						'enquiry@snapsearch.io',
+						[$user['email'], 'enquiry@snapsearch.io'],
+						'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+						$email
+					);
+
+				}
+
+				return;
+
+			}
+
+			// handle successful charge
+
+			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Charge Successful\n";
+
+			// create invoice with details from the charge object
+			// the charge object details come from stripe
+
+			$payment_history = [
+				'userId'		=> $user['id'],
+				'chargeToken'	=> $charge_query->id,
+				'item'			=> $product_description,
+				'usageRate'		=> $total_usage,
+				'amount'		=> $charge,
+				'currency'		=> $currency,
+				'email'			=> $user['email'],
+				'country'		=> $charge_query->source->address_country,
+			];
+
+			$payment_date = new DateTime($charge_query->created);
+			$payment_date = $payment_date->format('Y-m-d H:i:s');
+			$payment_history['date'] = $payment_date;
+
+			if(!empty($charge_query->card->address_line1)) $address[] = $charge_query->card->address_line1;
+			if(!empty($charge_query->card->address_line2)) $address[] = $charge_query->card->address_line2;
+			if(!empty($charge_query->card->address_city)) $address[] = $charge_query->card->address_city;
+			if(!empty($charge_query->card->address_state)) $address[] = $charge_query->card->address_state;
+
+			$payment_history['address'] = implode(' ', $address);
+
+			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created invoice\n";
+
+			// should return ['invoiceNumber', 'invoiceFile']
+			$invoice_data = $this->Invoices_model->create($payment_history, true);
+
+			// if invoice data didn't get saved, we just set the invoice_number to be a error message, and we don't send an invoice attachment, however we still save the payment history, and this is important!
+			if ($invoice_data) {
+
+				$invoice_number = $invoice_data['invoiceNumber'];
+				$invoice_file = $invoice_data['invoiceFile'];
+
+			} else {
+
+				$invoice_number = "Invoice Creation Failed";
+				$invoice_file = false;
+
+			}
+
+			// store a record to the invoice number in the payment history
+			$payment_history['invoiceNumber'] = $invoice_number;
+
+			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created payment record\n";
+
+			$this->Payments_model->create($payment_history);
+
+			$email = $this->Email_model->prepare_email('email/invoice_email', [
+				'month'			=> $today->format('F'),
+				'year'			=> $today->format('Y'),
+				'username'		=> $user['username'],
+			]);
+
+			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending invoice email\n";
+
+			if ($invoice_file) {
+
+				//send the email with the invoice attached
+				$this->Email_model->send_email(
+					'enquiry@snapsearch.io',
+					[$user['email'], 'enquiry@snapsearch.io'],
+					'SnapSearch Monthly Invoice for ' 
+						. $today->format('F') . ' ' 
+						. $today->format('Y'),
+					$email,
+					null,
+					[
+						'SnapSearch Invoice for ' . $today->format('F') . ' ' . $today->format('Y') . '.pdf'	=> $invoice_file
+					]
+				);
+
+			} else {
+
+				//send the email with no invoice attached
+				$this->Email_model->send_email(
+					'enquiry@snapsearch.io',
+					[$user['email'], 'enquiry@snapsearch.io'],
+					'SnapSearch Monthly Invoice for ' . $today->format('F') . ' ' . $today->format('Y'),
+					$email
+				);
+
+			}
+
+			return;
+
+		} elseif ($action == 'grace') {
+
+			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Retrying in the Grace Period for the User\n";
+
+			// charge is only derived from the api left over usage
+			$total_usage = $user['apiLeftOverUsage'];
+			$charge = $user['apiLeftOverCharge'];
+
+			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Retrying with charge: $charge\n";
+
+			// handle minimum charge for grace
+			if ($charge < $minimum_charge) {
+
+				// this can only happen if the minimum_charge changed 
+				// or that the left over charge was mutated in between 
+				// a failed charge and a grace retry
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Rollover Charge for Grace Action\n";
+
+				$this->Accounts_model->update($user['id'], [
+					'graceEndingDate' => null,
+					'graceRetryDate'  => null,
+				]);
+
+				return;
+
+			}
+
+			// handle invalid or missing billing source
+
+			// get the user's active and not invalid credit card
+			$billing_record = $this->Billing_model->read_all($user['id'], true, true);
+			
+			if (!$billing_record) {
+
+				// billing source is invalid or missing
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} No active billing record for grace retry\n";
+
+				// terminate service
+				// and clear any grace period
+				$this->Accounts_model->update($user['id'], [
+					'apiLimit'			=> $user['apiFreeLimit'], 
+					'graceEndingDate'   => null,
+					'graceRetryDate'    => null,
+				]);
+
+				$email = $this->Email_model->prepare_email('email/billing_error_email', [
+					'month'			=> $today->format('F'),
+					'year'			=> $today->format('Y'),
+					'username'		=> $user['username'],
+					'charge_error'	=> 'No active and valid credit cards were found in the billing records for the purposes of a grace retry.',
+				]);
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending billing error email\n";
+
+				$this->Email_model->send_email(
+					'enquiry@snapsearch.io',
+					[$user['email'], 'enquiry@snapsearch.io'],
+					'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+					$email
+				);
+
+				// next user
+				return;
+
+			}
+
+			// handle charge
+
+			$billing_record = $billing_record[0];
+			$customer_token = $billing_record['customerToken'];
+			$charge_query = $this->Stripe_model->charge_customer($customer_token, 
+				[
+					'amount'      => $charge,
+					'currency'    => $currency, 
+					'description' => $product_description,
+				]
+			);
+
+			if (!$charge_query) {
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Grace Charge Invalid\n";
+
+				$charge_errors = $this->Stripe_model->get_errors();
+				$charge_error_message = '';
+				if(isset($charge_errors['validation_error'])){
+					$charge_error_message .= implode(' | ', $charge_errors['validation_error']);
+				}elseif(isset($charge_errors['system_error'])){
+					$charge_error_message .= $charge_errors['system_error'];
+				}
+
+				$grace_retry_period_human_readable = interval_to_human($grace_retry_period);
+
+				// is this the final grace retry?
+
+				if ($grace_retry_date >= $grace_ending_date) {
+
+					echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Last grace retry failed!\n";
+
+					// last grace retry
+					// terminating service and grace period
+					$this->Accounts_model->update($user['id'], [
+						'apiLimit'			=> $user['apiFreeLimit'], 
+						'graceEndingDate'   => null,
+						'graceRetryDate'    => null,
+					]);
+
+					$email = $this->Email_model->prepare_email('email/billing_error_email_last_grace_retry', [
+						'month'						=> $today->format('F'),
+						'year'						=> $today->format('Y'),
+						'username'					=> $user['username'],
+						'charge_error'	      		=> $charge_error_message,
+					]);
+
+					$this->Email_model->send_email(
+						'enquiry@snapsearch.io',
+						[$user['email'], 'enquiry@snapsearch.io'],
+						'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+						$email
+					);
+
+				} elseif ($grace_retry_date < $grace_ending_date) {
+
+					// try again later
+					echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Grace retry failed!\n";
+
+					$this->Accounts_model->update($user['id'], [
+						'graceRetryDate'    => $grace_retry_date->add($grace_retry_period),
+					]);
+
+					$email = $this->Email_model->prepare_email('email/billing_error_email_grace_retry', [
+						'month'						=> $today->format('F'),
+						'year'						=> $today->format('Y'),
+						'username'					=> $user['username'],
+						'charge_error'	      		=> $charge_error_message,
+					]);
+
+					$this->Email_model->send_email(
+						'enquiry@snapsearch.io',
+						[$user['email'], 'enquiry@snapsearch.io'],
+						'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+						$email
+					);
+
+				}
+
+				return;
+
+			} else {
+
+				// successfully charged 
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Grace Retry Charge Successful\n";
+
+				$payment_history = [
+					'userId'		=> $user['id'],
+					'chargeToken'	=> $charge_query->id,
+					'item'			=> $product_description,
+					'usageRate'		=> $total_usage,
+					'amount'		=> $charge,
+					'currency'		=> $currency,
+					'email'			=> $user['email'],
+					'country'		=> $charge_query->source->address_country,
+				];
+
+				$payment_date = new DateTime($charge_query->created);
+				$payment_date = $payment_date->format('Y-m-d H:i:s');
+				$payment_history['date'] = $payment_date;
+
+				if(!empty($charge_query->card->address_line1)) $address[] = $charge_query->card->address_line1;
+				if(!empty($charge_query->card->address_line2)) $address[] = $charge_query->card->address_line2;
+				if(!empty($charge_query->card->address_city)) $address[] = $charge_query->card->address_city;
+				if(!empty($charge_query->card->address_state)) $address[] = $charge_query->card->address_state;
+
+				$payment_history['address'] = implode(' ', $address);
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created invoice\n";
+
+				// should return ['invoiceNumber', 'invoiceFile']
+				$invoice_data = $this->Invoices_model->create($payment_history, true);
+
+				if ($invoice_data) {
+
+					$invoice_number = $invoice_data['invoiceNumber'];
+					$invoice_file = $invoice_data['invoiceFile'];
+
+				} else {
+
+					$invoice_number = "Invoice Creation Failed";
+					$invoice_file = false;
+
+				}
+
+				// store a record to the invoice number in the payment history
+				$payment_history['invoiceNumber'] = $invoice_number;
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created payment record\n";
+
+				$this->Payments_model->create($payment_history);
+
+				$email = $this->Email_model->prepare_email('email/invoice_email_ending_grace', [
+					'month'			=> $today->format('F'),
+					'year'			=> $today->format('Y'),
+					'username'		=> $user['username'],
+				]);
+
+				if ($invoice_file) {
+
+					//send the email with the invoice attached
+					$this->Email_model->send_email(
+						'enquiry@snapsearch.io',
+						[$user['email'], 'enquiry@snapsearch.io'],
+						'SnapSearch Monthly Invoice for ' 
+							. $today->format('F') . ' ' 
+							. $today->format('Y'),
+						$email,
+						null,
+						[
+							'SnapSearch Invoice for ' . $today->format('F') . ' ' . $today->format('Y') . '.pdf'	=> $invoice_file
+						]
+					);
+
+				} else {
+
+					//send the email with no invoice attached
+					$this->Email_model->send_email(
+						'enquiry@snapsearch.io',
+						[$user['email'], 'enquiry@snapsearch.io'],
+						'SnapSearch Monthly Invoice for ' . $today->format('F') . ' ' . $today->format('Y'),
+						$email
+					);
+
+				}
+
+				return;
+
+			}
+
+		}
 
 	}
 

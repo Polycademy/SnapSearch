@@ -1,13 +1,16 @@
 'use strict';
 
 var fs = require('fs');
+var settings = require('../../Settings');
 
 /**
- * Control Billing Controller
+ * Control Billing Controller.
+ * Although billing system supports having multiple cards per customer.
+ * We are going to assume a 1-1 correspondence between cards and customer to simplify things.
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function ($scope, $modal, UserSystemServ, Restangular) {
+module.exports = ['$scope', 'UserSystemServ', 'ExternalScriptLoaderServ', 'Restangular', function ($scope, UserSystemServ, ExternalScriptLoaderServ, Restangular) {
 
     var userAccount;
 
@@ -39,30 +42,82 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
 
     };
 
-    $scope.modal.cardCreate = function () {
+    var stripeScriptCallback = function (stripeData) {
 
-        $modal.open({
-            template: fs.readFileSync(__dirname + '/../../../templates/control_panel/card_create_modal.html', 'utf8'),
-            controller: require('./CardCreateModalCtrl'),
-            windowClass: 'card-create-modal form-modal',
-            resolve: {
-                userId: function () {
-                    return userAccount.id
-                }
-            }
-        }).result.then(function () {
+        // although errors are being reported directly from stripe
+        // we can have billing errors from our backend trying to confirm the stripe application
+        $scope.stripeBillingBackendErrors = false;
+        $scope.stripeBillingBackendSuccess = false;
 
+        // create the billing record for the user 
+        Restangular.all('billing').post({
+            'stripeToken': stripeData.id,
+            'stripeEmail': stripeData.email,
+            'userId': userAccount.id
+        }).then(function (response) {
+
+            $scope.stripeBillingBackendSuccess = 'Created Customer';
+            // re-acquire the billing records after successful billing creation
             getBillingRecords();
+
+        }, function (response) {
+
+            // we need to display errors even if 400 or 500
+            $scope.stripeBillingBackendErrors = response.data.content;
 
         });
 
     };
 
-    $scope.deleteCard = function (id, index) {
+    var setupStripeForm = function () {
+
+        ExternalScriptLoaderServ.importScript(
+            'https://checkout.stripe.com/checkout.js', 
+            'stripeScript', 
+            function () {                
+
+                var stripeHandler = StripeCheckout.configure({
+                    key: settings.apiKeys.stripePublicKey,
+                    locale: 'auto',
+                    currency: 'aud',
+                    panelLabel: 'Subscribe',
+                    label: 'Add a Card via Stripe',
+                    allowRememberMe: false,
+                    token: stripeScriptCallback
+                });
+
+                $scope.cardCreate = function () {
+
+                    stripeHandler.open();
+
+                };
+
+                $scope.cardUpdate = function () {
+
+                    stripeHandler.open({
+                        email: userAccount.email
+                    });
+
+                };
+
+            }
+        );
+
+    };
+
+    var initialise = function (userData) {
+
+        // set this up first, as all subsequent procedures rely on this variable
+        userAccount = userData;
+        getBillingRecords();
+        setupStripeForm();
+
+    };
+
+    $scope.cardDelete = function (id) {
 
         Restangular.one('billing', id).remove().then(function (response) {
 
-            $scope.billingRecords.splice(index, 1);
             getBillingRecords();
 
         }, function (response) {
@@ -74,18 +129,11 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
 
     };
 
-    var initialise = function (userData) {
-
-        userAccount = userData;
-        getBillingRecords();
-
-    };
-
     //run every time the controller is reinstantiated
     if (UserSystemServ.getUserState() && Object.keys(UserSystemServ.getUserData()).length > 0) {
         
         initialise(UserSystemServ.getUserData());
-    
+        
     } else {
 
         $scope.$watch(UserSystemServ.getUserData, function (newUserAccount, oldUserAccount) {

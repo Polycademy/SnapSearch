@@ -3,36 +3,36 @@
     <em class="api-key">API Key: {{userAccount.sharedKey}}</em>
     <div class="telemetry-block">
         <h3>Billing Cards</h3>
-        <button class="btn btn-primary telemetry-button" ng-click="modal.cardCreate()">Add Card</button>
-        <form action="/api/billing_stripe" method="POST">
-            <script
-                src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                data-key="pk_live_nPKTP1tMr0P4AvS0xIsSNX4o"
-                data-locale="auto" 
-                data-currency="aud" 
-                data-panel-label="Subscribe" 
-                data-label="Add a Card via Stripe" 
-                data-allow-remember-me="false">
-            </script>
-        </form>
-        <div class="table-responsive" ng-show="billingRecords">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <th class="text-center">Card Number Hint</th>
-                    <th class="text-center">Active</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center">Delete</th>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="card in billingRecords">
-                        <td class="text-center">{{card.cardHint}}</td>
-                        <td class="text-center">{{card.active | booleanStyle:'Active':'Inactive'}}</td>
-                        <td class="text-center">{{card.validation}}</td>
-                        <td class="text-center"><button class="btn btn-warning" ng-click="deleteCard(card.id, $index)">delete</button></td>
-                    </tr>
-                </tbody>
-            </table>
+
+        <div class="form-success alert alert-success" ng-show="stripeBillingBackendSuccess">
+            {{formSuccess}}
         </div>
+
+        <div class="form-errors" ng-show="stripeBillingBackendErrors">
+            <em class="text-warning">Oops! Please fix up these errors:</em>
+            <ul class="form-errors-list">
+                <li class="form-errors-list-item alert alert-warning" ng-repeat="error in stripeBillingBackendErrors">{{error}}</li>
+            </ul>
+        </div>
+
+        <p>Card data and Payments are processed by <a href="https://stripe.com/" target="_blank">Stripe</a></p>
+
+        <button class="btn btn-primary telemetry-button" ng-click="cardCreate()" ng-hide="billingRecords">Add Card</button>
+        
+        <button class="btn btn-info telemetry-button" ng-click="cardUpdate()" ng-show="billingRecords">Update Card</button>
+
+        <button class="btn btn-danger telemetry-button" ng-click="cardDelete(billingRecords[0].id)" ng-show="billingRecords">Delete Card</button>
+
+        <!-- Assuming only 1 card -->
+        <div ng-show="billingRecords">
+            <ul>
+                <li>Card Number Hint: {{billingRecords[0].cardHint}}</li>
+                <li>Active: {{billingRecords[0].active | booleanStyle:'Active':'Inactive'}}</li>
+                <li>Status: {{billingRecords[0].validation}}</li>
+            </ul>
+        </div>
+
         <p class="text-center" ng-hide="billingRecords"><strong>No cards!</strong></p>
+
     </div>
 </div>

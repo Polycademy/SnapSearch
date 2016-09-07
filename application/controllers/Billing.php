@@ -17,7 +17,7 @@ class Billing extends CI_Controller{
 		parent::__construct();
 
 		$this->load->model('Billing_model');
-		$this->load->model('Pin_model');
+		$this->load->model('Stripe_model');
 
 		$ioc = $this->config->item('ioc');
 		$this->authenticator = $ioc['PolyAuth\Authenticator'];
@@ -153,7 +153,9 @@ class Billing extends CI_Controller{
 
 	public function create(){
 
+		// this will have userId, stripeToken, stripeEmail
 		$data = $this->input->json(false);
+
 		$user_id = (isset($data['userId'])) ? intval($data['userId']) : 0;
 
 		if(!$this->user->authorized([
@@ -168,19 +170,17 @@ class Billing extends CI_Controller{
 
 		}else{
 
-			//email is always the email the user is registered with
-			$data['email'] = $this->user['email'];
+			$stripe_query = $this->Stripe_model->create_customer($data);
 
-			$pin_query = $this->Pin_model->create_customer($data);
-			if($pin_query){
-				$data['customerToken'] = $pin_query;
+			if ($stripe_query) {
+				$data = array_merge($data, $stripe_query);
 				$billing_query = $this->Billing_model->create($data);
 			}
 
-			if(!$pin_query){
+			if(!$stripe_query){
 
-				$content = current($this->Pin_model->get_errors());
-				$code = key($this->Pin_model->get_errors());
+				$content = current($this->Stripe_model->get_errors());
+				$code = key($this->Stripe_model->get_errors());
 
 			}elseif(!$billing_query){
 
@@ -215,9 +215,29 @@ class Billing extends CI_Controller{
 
 	}
 
+	/**
+	 * There are 2 aspects to updating the card.
+	 * Updating the card details on Stripe (which may result in updating our own database).
+	 * Or updating the card details on the current database.
+	 * If we are fully integrating with Stripe, its best not to try to perform state replication, that is 
+	 * having 2 sources of state. Like it wouldn't be useful for us to hold the last 4 digits while 
+	 * Stripe also has the last 4 digits. If we want to improve redundancy by holding the data ourselves, 
+	 * this adds the extra complication of state replication, and having to maintain 2 branches of 
+	 * control flow, one for dealing with updating our own database and one for updating the other database 
+	 * and maintaing some lens between them.
+	 * This update handler is really about updating Stripe's details and synchronising the relevant changes 
+	 * to our database.
+	 * Also note that updating Stripe details occurs through their own form, and we just get the details 
+	 * post-hoc.
+	 * Also remember that the email and card details are associated to the stripe token, and the stripe 
+	 * token is associated to a customer as a source. So it doesn't really matter if the user updates their 
+	 * email, since that's just associated to a customer as a source. The customer doesn't really have a 
+	 * main email beyond their default source's email.
+	 */
 	public function update($id){
 
 		$data = $this->input->json(false);
+
 		$user_id = (isset($data['userId'])) ? intval($data['userId']) : 0;
 
 		if(!$this->user->authorized([
@@ -242,28 +262,25 @@ class Billing extends CI_Controller{
 				);
 			}
 
-			//email is always the email the user is registered with
-			//if the email gets updated through the accounts
-			//this subsequently needs to get updated
-			$data['email'] = $this->user['email'];
-
-			$customer_token_query = $this->Billing_model->read($id);
-			if($customer_token_query){
-				$pin_query = $this->Pin_model->update_customer($customer_token_query['customerToken'], $data);
-				if($pin_query){
+			$customer_billing_query = $this->Billing_model->read($id);
+			
+			if ($customer_billing_query) {
+				$stripe_query = $this->Stripe_model->update_customer($customer_billing_query['customerToken'], $data);
+				if ($stripe_query) {
+					$data = array_merge($data, $stripe_query);
 					$billing_query = $this->Billing_model->update($id, $data);
-				}
+				}	
 			}
-
-			if(!$customer_token_query){
+			
+			if(!$customer_billing_query){
 
 				$content = current($this->Billing_model->get_errors());
 				$code = key($this->Billing_model->get_errors());
 
-			}elseif(!$pin_query){
+			}elseif(!$stripe_query){
 
-				$content = current($this->Pin_model->get_errors());
-				$code = key($this->Pin_model->get_errors());
+				$content = current($this->Stripe_model->get_errors());
+				$code = key($this->Stripe_model->get_errors());
 
 			}elseif(!$billing_query){
 
@@ -318,6 +335,7 @@ class Billing extends CI_Controller{
 
 			}else{
 
+				$this->Stripe_model->delete_customer($query['customerToken']);
 				$query = $this->Billing_model->delete($id);
 				$content = (int) $id;
 				$code = 'success';
