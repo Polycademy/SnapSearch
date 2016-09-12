@@ -32,6 +32,16 @@ class MY_Form_validation extends CI_Form_validation{
 		return $date_object && $date_object->format($format) == $date;
 
 	}
+
+	public function valid_date_or_null ($date, $format) {
+
+		if (is_null($date)) {
+			return true;
+		}
+
+		return $this->valid_date($date, $format);
+
+	}
 	
 	public function word_limit($str, $limit){
 

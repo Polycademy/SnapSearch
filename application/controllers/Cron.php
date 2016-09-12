@@ -410,7 +410,7 @@ class Cron extends CI_Controller{
 					'graceRetryDate'    => null,
 				]);
 
-				$email = $this->Email_model->prepare_email('email/billing_error_email', [
+				$email = $this->Email_model->prepare_email('email/billing_error_source_email', [
 					'month'			=> $today->format('F'),
 					'year'			=> $today->format('Y'),
 					'username'		=> $user['username'],
@@ -422,7 +422,7 @@ class Cron extends CI_Controller{
 				$this->Email_model->send_email(
 					'enquiry@snapsearch.io',
 					[$user['email'], 'enquiry@snapsearch.io'],
-					'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+					'SnapSearch Invalid or Missing Card Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 					$email
 				);
 
@@ -477,16 +477,16 @@ class Cron extends CI_Controller{
 					$next_grace_retry_date = $today->add($grace_retry_period);
 
 					$this->Accounts_model->update($user['id'], [
-						'graceEndingDate'	=> $next_grace_ending_date,
-						'graceRetryDate'	=> $next_grace_retry_date,
+						'graceEndingDate'	=> $next_grace_ending_date->format('Y-m-d H:i:s'),
+						'graceRetryDate'	=> $next_grace_retry_date->format('Y-m-d H:i:s'),
 					]);
 
-					$email = $this->Email_model->prepare_email('email/billing_error_email_new_grace', [
-						'month'						=> $today->format('F'),
-						'year'						=> $today->format('Y'),
-						'username'					=> $user['username'],
-						'charge_error'	      		=> $charge_error_message, 
-						'grace_ending_date' 		=> $next_grace_ending_date->format('Y-m-d H:i:s'),
+					$email = $this->Email_model->prepare_email('email/billing_error_new_grace_email', [
+						'month'								=> $today->format('F'),
+						'year'								=> $today->format('Y'),
+						'username'							=> $user['username'],
+						'charge_error'	      				=> $charge_error_message, 
+						'grace_ending_date' 				=> $next_grace_ending_date->format('Y-m-d H:i:s'),
 						'grace_retry_period_human_readable' => $grace_retry_period_human_readable,
 					]);
 
@@ -495,7 +495,7 @@ class Cron extends CI_Controller{
 					$this->Email_model->send_email(
 						'enquiry@snapsearch.io',
 						[$user['email'], 'enquiry@snapsearch.io'],
-						'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+						'SnapSearch First Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 						$email
 					);
 
@@ -503,21 +503,23 @@ class Cron extends CI_Controller{
 
 					// continue with existing grace period
 					
-					$email = $this->Email_model->prepare_email('email/billing_error_email_continuing_grace', [
-						'month'						=> $today->format('F'),
-						'year'						=> $today->format('Y'),
-						'username'					=> $user['username'],
-						'charge_error'	      		=> $charge_error_message, 
-						'grace_ending_date' 		=> $grace_ending_date->format('Y-m-d H:i:s'),
-						'grace_retry_period_human_readable' => $grace_retry_period_human_readable,
-					]);
+					$email = $this->Email_model->prepare_email('email/billing_error_continuing_grace_email', 
+						[
+							'month'								=> $today->format('F'),
+							'year'								=> $today->format('Y'),
+							'username'							=> $user['username'],
+							'charge_error'	      				=> $charge_error_message, 
+							'grace_ending_date' 				=> $grace_ending_date->format('Y-m-d H:i:s'),
+							'grace_retry_period_human_readable' => $grace_retry_period_human_readable,
+						]
+					);
 
 					echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Sending billing error email with continuing grace\n";
 
 					$this->Email_model->send_email(
 						'enquiry@snapsearch.io',
 						[$user['email'], 'enquiry@snapsearch.io'],
-						'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+						'SnapSearch Continuing Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 						$email
 					);
 
@@ -666,7 +668,7 @@ class Cron extends CI_Controller{
 					'graceRetryDate'    => null,
 				]);
 
-				$email = $this->Email_model->prepare_email('email/billing_error_email', [
+				$email = $this->Email_model->prepare_email('email/billing_error_source_email', [
 					'month'			=> $today->format('F'),
 					'year'			=> $today->format('Y'),
 					'username'		=> $user['username'],
@@ -678,7 +680,7 @@ class Cron extends CI_Controller{
 				$this->Email_model->send_email(
 					'enquiry@snapsearch.io',
 					[$user['email'], 'enquiry@snapsearch.io'],
-					'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+					'SnapSearch Invalid or Missing Card Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 					$email
 				);
 
@@ -711,8 +713,6 @@ class Cron extends CI_Controller{
 					$charge_error_message .= $charge_errors['system_error'];
 				}
 
-				$grace_retry_period_human_readable = interval_to_human($grace_retry_period);
-
 				// is this the final grace retry?
 
 				if ($grace_retry_date >= $grace_ending_date) {
@@ -727,7 +727,7 @@ class Cron extends CI_Controller{
 						'graceRetryDate'    => null,
 					]);
 
-					$email = $this->Email_model->prepare_email('email/billing_error_email_last_grace_retry', [
+					$email = $this->Email_model->prepare_email('email/billing_error_last_grace_email', [
 						'month'						=> $today->format('F'),
 						'year'						=> $today->format('Y'),
 						'username'					=> $user['username'],
@@ -737,30 +737,35 @@ class Cron extends CI_Controller{
 					$this->Email_model->send_email(
 						'enquiry@snapsearch.io',
 						[$user['email'], 'enquiry@snapsearch.io'],
-						'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+						'SnapSearch Last Retry Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 						$email
 					);
 
 				} elseif ($grace_retry_date < $grace_ending_date) {
 
-					// try again later
+					// grace retry failed, try again on the next grace retry
+
 					echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Grace retry failed!\n";
 
 					$this->Accounts_model->update($user['id'], [
-						'graceRetryDate'    => $grace_retry_date->add($grace_retry_period),
+						'graceRetryDate' => $grace_retry_date->add($grace_retry_period)->format('Y-m-d H:i:s'),
 					]);
 
-					$email = $this->Email_model->prepare_email('email/billing_error_email_grace_retry', [
-						'month'						=> $today->format('F'),
-						'year'						=> $today->format('Y'),
-						'username'					=> $user['username'],
-						'charge_error'	      		=> $charge_error_message,
+					$grace_retry_period_human_readable = interval_to_human($grace_retry_period);
+
+					$email = $this->Email_model->prepare_email('email/billing_error_retry_grace_email', [
+						'month'								=> $today->format('F'),
+						'year'								=> $today->format('Y'),
+						'username'							=> $user['username'],
+						'charge_error'	      				=> $charge_error_message,
+						'grace_ending_date' 				=> $grace_ending_date->format('Y-m-d H:i:s'),
+						'grace_retry_period_human_readable' => $grace_retry_period_human_readable,
 					]);
 
 					$this->Email_model->send_email(
 						'enquiry@snapsearch.io',
 						[$user['email'], 'enquiry@snapsearch.io'],
-						'SnapSearch Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
+						'SnapSearch Retry Billing Error for ' . $today->format('F') . ' ' . $today->format('Y'),
 						$email
 					);
 

@@ -217,6 +217,8 @@ class Accounts_model extends CI_Model{
 			'apiUsageNotification',
 			'chargeInterval',
 			'chargeDate',
+			'graceEndingDate',
+			'graceRetryDate',
 		), $input_data, null, true);
 
 		$this->validator->set_data($data);
@@ -281,6 +283,16 @@ class Accounts_model extends CI_Model{
 				'field'	=> 'chargeDate',
 				'label'	=> 'Charge Date',
 				'rules'	=> 'valid_date',
+			),
+			array(
+				'field' => 'graceEndingDate',
+				'label' => 'Grace Ending Date',
+				'rules' => 'valid_date_or_null',
+			),
+			array(
+				'field' => 'graceRetryDate',
+				'label' => 'Grace Retry Date',
+				'rules' => 'valid_date_or_null',
 			),
 		));
 

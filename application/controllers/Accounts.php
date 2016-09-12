@@ -61,7 +61,9 @@ class Accounts extends CI_Controller{
 						$user['apiLeftOverUsage'],
 						$user['apiLeftOverCharge'],
 						$user['chargeInterval'],
-						$user['chargeDate']
+						$user['chargeDate'],
+						$user['graceRetryDate'],
+						$user['graceEndingDate']
 					);
 				}
 			}
@@ -118,7 +120,9 @@ class Accounts extends CI_Controller{
 					$query['apiLeftOverUsage'],
 					$query['apiLeftOverCharge'],
 					$query['chargeInterval'],
-					$query['chargeDate']
+					$query['chargeDate'],
+					$query['graceRetryDate'],
+					$query['graceEndingDate']
 				);
 			}
 
@@ -217,7 +221,9 @@ class Accounts extends CI_Controller{
 					$data['apiLeftOverUsage'],
 					$data['apiLeftOverCharge'],
 					$data['chargeInterval'],
-					$data['chargeDate']
+					$data['chargeDate'],
+					$data['graceRetryDate'],
+					$data['graceEndingDate']
 				);
 			}
 

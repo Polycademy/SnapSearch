@@ -1,6 +1,7 @@
 <?php
 
-//extending the elements functionality to allow undefined filtering
+// if $null is true, then the filtered elements will only be the items allowed
+// the items that don't exist are not set to null, they are simply undefined
 function elements($items, $array, $default = NULL, $null = false){
 
 	$return = array();

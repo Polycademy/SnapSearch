@@ -1,9 +1,10 @@
+<!-- Charge/Grace Action - Invalid or Missing Billing Source-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<title>SnapSearch Monthly Invoice for <?= $month ?> <?= $year ?></title>
+		<title>SnapSearch Invalid or Missing Card Error for <?= $month ?> <?= $year ?></title>
 		<? $this->load->view('email/email_styles'); ?>
 	</head>
 	<body>
@@ -14,7 +15,13 @@
 
 					<h4>Hi <?= $username ?>,</h4>
 
-					<p>SnapSearch has prepared your latest monthly invoice. You can login to your <a href="https://snapsearch.io/control_panel/payments">payments control panel</a> to view it. It is also attached to this email. The invoice has been automatically charged, you do not need to take any action.</p>
+					<p>SnapSearch has attempted to bill your credit card for your monthly invoice. However it met an error processing the payment. The error is:</p>
+
+					<blockquote><strong><?= $charge_error ?></strong></blockquote>
+
+					<p>Due to this error, we have downgraded your API limit to the free account limit.</p>
+
+					<p>Please review your credit card details at your <a href="https://snapsearch.io/control_panel/payments">billing control panel</a>. You need to update or delete and recreate a new valid card. Once this is resolved, you must reinstate your previous API limit in the control panel. This month's charge will be added to the next month's charge.</p>
 
 					<p>Thank you for your business.</p>
 

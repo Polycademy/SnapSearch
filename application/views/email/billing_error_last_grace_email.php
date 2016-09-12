@@ -1,10 +1,11 @@
+<!-- Grace Action - Failed Charge - Last Grace Retry -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>SnapSearch Usage Notification</title>
-        <? $this->load->view('email/email_styles.php'); ?>
+        <title>SnapSearch Last Retry Billing Error for <?= $month ?> <?= $year ?></title>
+        <? $this->load->view('email/email_styles'); ?>
     </head>
     <body>
         <!-- Wrapper/Container Table: Use a wrapper table to control the width and the background color consistently of your email. Use this approach instead of setting attributes on the body tag. -->
@@ -14,13 +15,13 @@
 
                     <h4>Hi <?= $username ?>,</h4>
 
-                    <p>You have reached <?= $percentage ?>% usage on SnapSearch.</p>
+                    <p>SnapSearch has attempted the last retry on your bill for your previous monthly invoice. However it met an error processing the payment. The error is:</p>
 
-                    <p>Your current usage count is <?= $usage ?> and the limit is <?= $limit ?>.</p>
+                    <blockquote><strong><?= $charge_error ?></strong></blockquote>
 
-                    <p>Once you have exhausted your usage count, new snapshots will no longer be created, however cached snapshots will still be accessible until their expiry date. Your usage count will reset starting your next billing cycle.</p>
+                    <p>Due to this error and the fact that this is the last retry, we have downgraded your API limit to the free account limit.</p>
 
-                    <p>You can either increase your API limit, or you can extend the expiry time using the `cachetime` parameter on the API. If you do switch the `cachetime` parameter, the old snapshots on the old `cachetime` will automatically be invalidated. You can also use the `refresh` parameter along with a long `cachetime` if you want to manually refresh the cache.</p>
+                    <p>Please review your credit card details at your <a href="https://snapsearch.io/control_panel/payments">billing control panel</a>. You need to update or delete and recreate a new valid card. Once this is resolved, you must reinstate your previous API limit in the control panel. Your previous month's charge will be persisted in case you continue SnapSearch's service.</p>
 
                     <p>Thank you for your business.</p>
 
