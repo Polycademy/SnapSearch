@@ -193,6 +193,7 @@ class Billing_model extends CI_Model{
 
 		$data = elements(array(
 			'userId',
+			'customerToken', 
 			'cardNumber',
 			'active',
 			'cardInvalid',
@@ -206,6 +207,11 @@ class Billing_model extends CI_Model{
 				'field'	=> 'userId',
 				'label'	=> 'User ID',
 				'rules'	=> 'integer',
+			),
+			array(
+				'field' => 'customerToken',
+				'label' => 'Customer Token',
+				'rules' => ''
 			),
 			array(
 				'field'	=> 'cardNumber',

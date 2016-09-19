@@ -42,30 +42,57 @@ module.exports = ['$scope', 'UserSystemServ', 'ExternalScriptLoaderServ', 'Resta
 
     };
 
-    var stripeScriptCallback = function (stripeData) {
+    var stripeScriptCallback = function (action, billingId) {
 
-        // although errors are being reported directly from stripe
-        // we can have billing errors from our backend trying to confirm the stripe application
-        $scope.stripeBillingBackendErrors = false;
-        $scope.stripeBillingBackendSuccess = false;
+        return function (stripeData) {
 
-        // create the billing record for the user 
-        Restangular.all('billing').post({
-            'stripeToken': stripeData.id,
-            'stripeEmail': stripeData.email,
-            'userId': userAccount.id
-        }).then(function (response) {
+            // although errors are being reported directly from stripe
+            // we can have billing errors from our backend trying to confirm the stripe application
+            $scope.stripeBillingBackendErrors = false;
+            $scope.stripeBillingBackendSuccess = false;
 
-            $scope.stripeBillingBackendSuccess = 'Created Customer';
-            // re-acquire the billing records after successful billing creation
-            getBillingRecords();
+            if (action === 'create') {
 
-        }, function (response) {
+                // create the billing record for the user 
+                Restangular.all('billing').post({
+                    'stripeToken': stripeData.id,
+                    'stripeEmail': stripeData.email,
+                    'userId': userAccount.id
+                }).then(function (response) {
 
-            // we need to display errors even if 400 or 500
-            $scope.stripeBillingBackendErrors = response.data.content;
+                    $scope.stripeBillingBackendSuccess = 'Created Customer';
+                    // re-acquire the billing records after successful billing creation
+                    getBillingRecords();
 
-        });
+                }, function (response) {
+
+                    // we need to display errors even if 400 or 500
+                    $scope.stripeBillingBackendErrors = response.data.content;
+
+                });
+
+            } else if (action === 'update') {
+
+                // update the first (and only) billing record for the current user 
+                Restangular.one('billing', billingId).customPUT({
+                    'stripeToken': stripeData.id,
+                    'stripeEmail': stripeData.email
+                }).then(function (response) {
+
+                    $scope.stripeBillingBackendSuccess = 'Updated Customer';
+                    // re-acquire the billing records after successful billing creation
+                    getBillingRecords();
+
+                }, function (response) {
+
+                    // we need to display errors even if 400 or 500
+                    $scope.stripeBillingBackendErrors = response.data.content;
+
+                });
+
+            }
+
+        };
 
     };
 
@@ -82,20 +109,22 @@ module.exports = ['$scope', 'UserSystemServ', 'ExternalScriptLoaderServ', 'Resta
                     currency: 'aud',
                     panelLabel: 'Subscribe',
                     label: 'Add a Card via Stripe',
-                    allowRememberMe: false,
-                    token: stripeScriptCallback
+                    allowRememberMe: false, 
+                    email: userAccount.email
                 });
 
                 $scope.cardCreate = function () {
 
-                    stripeHandler.open();
+                    stripeHandler.open({
+                        token: stripeScriptCallback('create', null)
+                    });
 
                 };
 
-                $scope.cardUpdate = function () {
+                $scope.cardUpdate = function (id) {
 
                     stripeHandler.open({
-                        email: userAccount.email
+                        token: stripeScriptCallback('update', id)
                     });
 
                 };

@@ -3336,7 +3336,7 @@ angular.element(document).ready(function(){
     angular.bootstrap(document, ['App']);
 
 });
-},{"./Router":6,"./Run":7,"./controllers/Controllers":9,"./directives/Directives":32,"./elements/Elements":42,"./filters/Filters":80,"./modules/Modules":82,"./services/Services":92}],6:[function(require,module,exports){
+},{"./Router":6,"./Run":7,"./controllers/Controllers":9,"./directives/Directives":31,"./elements/Elements":41,"./filters/Filters":79,"./modules/Modules":81,"./services/Services":92}],6:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -3420,7 +3420,7 @@ module.exports = [
                 'controlPanel.billing',
                 {
                     url: '/billing',
-                    template: "<div class=\"billing\">\n    <h2 class=\"control-title\">Billing Information</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Billing Cards</h3>\n        <button class=\"btn btn-primary telemetry-button\" ng-click=\"modal.cardCreate()\">Add Card</button>\n        <form action=\"/api/billing_stripe\" method=\"POST\">\n            <script\n                src=\"https://checkout.stripe.com/checkout.js\" class=\"stripe-button\"\n                data-key=\"pk_live_nPKTP1tMr0P4AvS0xIsSNX4o\"\n                data-locale=\"auto\" \n                data-currency=\"aud\" \n                data-panel-label=\"Subscribe\" \n                data-label=\"Add a Card via Stripe\" \n                data-allow-remember-me=\"false\">\n            </script>\n        </form>\n        <div class=\"table-responsive\" ng-show=\"billingRecords\">\n            <table class=\"table table-striped table-hover\">\n                <thead>\n                    <th class=\"text-center\">Card Number Hint</th>\n                    <th class=\"text-center\">Active</th>\n                    <th class=\"text-center\">Status</th>\n                    <th class=\"text-center\">Delete</th>\n                </thead>\n                <tbody>\n                    <tr ng-repeat=\"card in billingRecords\">\n                        <td class=\"text-center\">{{card.cardHint}}</td>\n                        <td class=\"text-center\">{{card.active | booleanStyle:'Active':'Inactive'}}</td>\n                        <td class=\"text-center\">{{card.validation}}</td>\n                        <td class=\"text-center\"><button class=\"btn btn-warning\" ng-click=\"deleteCard(card.id, $index)\">delete</button></td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n        <p class=\"text-center\" ng-hide=\"billingRecords\"><strong>No cards!</strong></p>\n    </div>\n</div>",
+                    template: "<div class=\"billing\">\n    <h2 class=\"control-title\">Billing Information</h2>\n    <em class=\"api-key\">API Key: {{userAccount.sharedKey}}</em>\n    <div class=\"telemetry-block\">\n        <h3>Billing Cards</h3>\n\n        <div class=\"form-success alert alert-success\" ng-show=\"stripeBillingBackendSuccess\">\n            {{stripeBillingBackendSuccess}}\n        </div>\n\n        <div class=\"form-errors\" ng-show=\"stripeBillingBackendErrors\">\n            <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n            <ul class=\"form-errors-list\">\n                <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in stripeBillingBackendErrors\">{{error}}</li>\n            </ul>\n        </div>\n\n        <p>Card data and Payments are processed by <a href=\"https://stripe.com/\" target=\"_blank\">Stripe</a></p>\n\n        <button class=\"btn btn-primary telemetry-button\" ng-click=\"cardCreate()\" ng-hide=\"billingRecords\">Add Card</button>\n        \n        <button class=\"btn btn-info telemetry-button\" ng-click=\"cardUpdate(billingRecords[0].id)\" ng-show=\"billingRecords\">Update Card</button>\n\n        <button class=\"btn btn-danger telemetry-button\" ng-click=\"cardDelete(billingRecords[0].id)\" ng-show=\"billingRecords\">Delete Card</button>\n\n        <!-- Assuming only 1 card -->\n        <div ng-show=\"billingRecords\">\n            <ul>\n                <li>Card Number Hint: {{billingRecords[0].cardHint}}</li>\n                <li>Active: {{billingRecords[0].active | booleanStyle:'Active':'Inactive'}}</li>\n                <li>Status: {{billingRecords[0].validation}}</li>\n            </ul>\n        </div>\n\n        <p class=\"text-center\" ng-hide=\"billingRecords\"><strong>No cards!</strong></p>\n\n    </div>\n</div>",
                     controller: 'ControlBillingCtrl'
                 }
             )
@@ -3504,7 +3504,10 @@ module.exports = {
         freeUsageCap: 1000,
         chatUrl: 'https://www.hipchat.com/gz6yae0iP'
     },
-    apiKeys: {}
+    apiKeys: {
+        stripePublicKey: 'pk_live_nPKTP1tMr0P4AvS0xIsSNX4o',
+        stripePublicTestKey: 'pk_test_lTYkoe2RnQa2vkPtrDRYLjyP'
+    }
 };
 },{}],9:[function(require,module,exports){
 'use strict';
@@ -3540,7 +3543,7 @@ angular.module('App.Controllers', [])
     .controller('PrivacyCtrl', require('./privacy/PrivacyCtrl'));
 
 module.exports = angular.module('App.Controllers');
-},{"./administrative/ConfirmForgottenPasswordCtrl":10,"./common/AppCtrl":11,"./common/HeaderCtrl":13,"./control_panel/ControlAccountCtrl":17,"./control_panel/ControlBillingCtrl":18,"./control_panel/ControlCacheCtrl":19,"./control_panel/ControlCrawlingCtrl":20,"./control_panel/ControlPanelCtrl":21,"./control_panel/ControlPaymentsCtrl":22,"./documentation/DocumentationCtrl":24,"./home/CodeGroupCtrl":25,"./home/DemoCtrl":26,"./home/HomeCtrl":27,"./pricing/CostCalculatorCtrl":28,"./pricing/PricingCtrl":29,"./privacy/PrivacyCtrl":30,"./terms/TermsCtrl":31}],10:[function(require,module,exports){
+},{"./administrative/ConfirmForgottenPasswordCtrl":10,"./common/AppCtrl":11,"./common/HeaderCtrl":13,"./control_panel/ControlAccountCtrl":16,"./control_panel/ControlBillingCtrl":17,"./control_panel/ControlCacheCtrl":18,"./control_panel/ControlCrawlingCtrl":19,"./control_panel/ControlPanelCtrl":20,"./control_panel/ControlPaymentsCtrl":21,"./documentation/DocumentationCtrl":23,"./home/CodeGroupCtrl":24,"./home/DemoCtrl":25,"./home/HomeCtrl":26,"./pricing/CostCalculatorCtrl":27,"./pricing/PricingCtrl":28,"./privacy/PrivacyCtrl":29,"./terms/TermsCtrl":30}],10:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3798,50 +3801,6 @@ module.exports = ['$scope', '$modalInstance', '$timeout', 'UserSystemServ', func
 'use strict';
 
 /**
- * Card Create Modal
- */
-module.exports = ['$scope', '$modalInstance', '$timeout', 'userId', 'Restangular', function ($scope, $modalInstance, $timeout, userId, Restangular) {
-
-    $scope.card = {};
-
-    $scope.createCard = function (card) {
-
-        $scope.formErrors = false;
-        $scope.formSuccess = false;
-
-        //we're creating a billing record for a particular user id
-        $scope.card['userId'] = userId;
-
-        Restangular.all('billing').post(card).then(function (response) {
-
-            $scope.formSuccess = 'Created Card';
-            $timeout(function () {
-                $modalInstance.close();
-            }, 1000);
-
-        }, function (response) {
-
-            if (response.status === 400) {
-                $scope.formErrors = response.data.content;
-            } else {
-                $scope.formErrors = ['System error, try again or contact us.'];
-            }
-
-        });
-
-    };
-
-    $scope.cancel = function () {
-
-        $modalInstance.dismiss();
-
-    };
-
-}];
-},{}],17:[function(require,module,exports){
-'use strict';
-
-/**
  * Control Account Controller
  *
  * @param {Object} $scope
@@ -3907,17 +3866,20 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', function ($scope, U
     }
 
 }];
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
+var settings = require('../../Settings');
 
 /**
- * Control Billing Controller
+ * Control Billing Controller.
+ * Although billing system supports having multiple cards per customer.
+ * We are going to assume a 1-1 correspondence between cards and customer to simplify things.
  *
  * @param {Object} $scope
  */
-module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function ($scope, $modal, UserSystemServ, Restangular) {
+module.exports = ['$scope', 'UserSystemServ', 'ExternalScriptLoaderServ', 'Restangular', function ($scope, UserSystemServ, ExternalScriptLoaderServ, Restangular) {
 
     var userAccount;
 
@@ -3949,30 +3911,111 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
 
     };
 
-    $scope.modal.cardCreate = function () {
+    var stripeScriptCallback = function (action, billingId) {
 
-        $modal.open({
-            template: "<div class=\"modal-header\">\n    <h2>Create a new Credit Card</h2>\n    <p>Card data and Payments are processed by <a href=\"https://pin.net.au/\" target=\"_blank\">Pin Payments</a></p>\n</div>\n<div class=\"modal-body\">\n    <form class=\"form-horizontal\" name=\"cardForm\">\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardNumber.$invalid && cardForm.cardNumber.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardNumber\">Card Number:</label>\n            <div class=\"col-sm-9\">\n                <input id=\"cardFormCardNumber\" class=\"form-control\" type=\"text\" name=\"cardNumber\" ng-model=\"card.cardNumber\" required ng-minlength=\"13\" ng-maxlength=\"16\" autocomplete=\"off\" autocapitalize=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardNumber.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardNumber.$error.minlength\">Card number is too short</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardNumber.$error.maxlength\">Card number is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardCvc.$invalid && cardForm.cardCvc.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCvc\">Card CVC:</label>\n            <div class=\"col-sm-3\">\n                <input id=\"cardFormCardCvc\" class=\"form-control\" type=\"number\" name=\"cardCvc\" ng-model=\"card.cardCvc\" required ng-minlength=\"3\" ng-maxlength=\"4\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.number\">Card CVC can only contain digits</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.minlength\">Card CVC is too short</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCvc.$error.maxlength\">Card CVC is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardExpiryMonth.$invalid && cardForm.cardExpiryMonth.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardExpiryMonth\">Card Expiry Month:</label>\n            <div class=\"col-sm-2\">\n                <input id=\"cardFormCardExpiryMonth\" class=\"form-control\" type=\"number\" name=\"cardExpiryMonth\" ng-model=\"card.cardExpiryMonth\" required ng-minlength=\"2\" ng-maxlength=\"2\" autocomplete=\"off\" placeholder=\"MM\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.number\">Expiry month can only contain digits</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.minlength\">Expiry month should be in 2 digit format</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryMonth.$error.maxlength\">Expiry month should be in 2 digit format</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardExpiryYear.$invalid && cardForm.cardExpiryYear.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardExpiryYear\">Card Expiry Year:</label>\n            <div class=\"col-sm-3\">\n                <input id=\"cardFormCardExpiryYear\" class=\"form-control\" type=\"number\" name=\"cardExpiryYear\" ng-model=\"card.cardExpiryYear\" required ng-minlength=\"4\" ng-maxlength=\"4\" autocomplete=\"off\" placeholder=\"YYYY\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.number\">Expiry year can only contain digits</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.minlength\">Expiry year should be in 4 digit format</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardExpiryYear.$error.maxlength\">Expiry year should be in 4 digit format</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardName.$invalid && cardForm.cardName.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardName\">Card Name:</label>\n            <div class=\"col-sm-9\">\n                <input id=\"cardFormCardName\" class=\"form-control\" type=\"text\" name=\"cardName\" ng-model=\"card.cardName\" required ng-minlength=\"2\" ng-maxlength=\"200\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardName.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardName.$error.minlength\">Card name is too short</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardName.$error.maxlength\">Card name is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardAddress.$invalid && cardForm.cardAddress.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardAddress\">Address:</label>\n            <div class=\"col-sm-9\">\n                <input id=\"cardFormCardAddress\" class=\"form-control\" type=\"text\" name=\"cardAddress\" ng-model=\"card.cardAddress\" required ng-minlength=\"2\" ng-maxlength=\"400\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardAddress.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardAddress.$error.minlength\">Card address is too short</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardAddress.$error.maxlength\">Card address is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardPostCode.$invalid && cardForm.cardPostCode.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardPostCode\">Post Code:</label>\n            <div class=\"col-sm-3\">\n                <input id=\"cardFormCardPostCode\" class=\"form-control\" type=\"text\" name=\"cardPostCode\" ng-model=\"card.cardPostCode\" ng-maxlength=\"100\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardPostCode.$error.maxlength\">Card post code is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardCity.$invalid && cardForm.cardCity.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCity\">City:</label>\n            <div class=\"col-sm-9\">\n                <input id=\"cardFormCardCity\" class=\"form-control\" type=\"text\" name=\"cardCity\" ng-model=\"card.cardCity\" required ng-minlength=\"2\" ng-maxlength=\"200\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCity.$error.required\">Required</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCity.$error.minlength\">Card city is too short</span>\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCity.$error.maxlength\">Card city is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardState.$invalid && cardForm.cardState.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardState\">State:</label>\n            <div class=\"col-sm-9\">\n                <input id=\"cardFormCardState\" class=\"form-control\" type=\"text\" name=\"cardState\" ng-model=\"card.cardState\" ng-maxlength=\"150\" autocomplete=\"off\" />\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardState.$error.maxlength\">Card state is too long</span>\n            </div>\n        </div>\n        <div \n            class=\"form-group\" \n            ng-class=\"{\n                'has-error': cardForm.cardCountry.$invalid && cardForm.cardCountry.$dirty\n            }\"\n        >\n            <label class=\"control-label col-sm-3\" for=\"cardFormCardCountry\">Country:</label>\n            <div class=\"col-sm-9\">\n                <select id=\"cardFormCardCountry\" name=\"cardCountry\" ng-model=\"card.cardCountry\" required>\n                    <option disabled=\"disabled\" value=\"\">Select Country</option>\n                    <option value=\"AF\">Afghanistan</option>\n                    <option value=\"AX\">Åland Islands</option>\n                    <option value=\"AL\">Albania</option>\n                    <option value=\"DZ\">Algeria</option>\n                    <option value=\"AS\">American Samoa</option>\n                    <option value=\"AD\">Andorra</option>\n                    <option value=\"AO\">Angola</option>\n                    <option value=\"AI\">Anguilla</option>\n                    <option value=\"AQ\">Antarctica</option>\n                    <option value=\"AG\">Antigua and Barbuda</option>\n                    <option value=\"AR\">Argentina</option>\n                    <option value=\"AM\">Armenia</option>\n                    <option value=\"AW\">Aruba</option>\n                    <option value=\"AU\">Australia</option>\n                    <option value=\"AT\">Austria</option>\n                    <option value=\"AZ\">Azerbaijan</option>\n                    <option value=\"BS\">Bahamas</option>\n                    <option value=\"BH\">Bahrain</option>\n                    <option value=\"BD\">Bangladesh</option>\n                    <option value=\"BB\">Barbados</option>\n                    <option value=\"BY\">Belarus</option>\n                    <option value=\"BE\">Belgium</option>\n                    <option value=\"BZ\">Belize</option>\n                    <option value=\"BJ\">Benin</option>\n                    <option value=\"BM\">Bermuda</option>\n                    <option value=\"BT\">Bhutan</option>\n                    <option value=\"BO\">Bolivia</option>\n                    <option value=\"BA\">Bosnia and Herzegovina</option>\n                    <option value=\"BW\">Botswana</option>\n                    <option value=\"BV\">Bouvet Island</option>\n                    <option value=\"BR\">Brazil</option>\n                    <option value=\"IO\">British Indian Ocean Territory</option>\n                    <option value=\"BN\">Brunei Darussalam</option>\n                    <option value=\"BG\">Bulgaria</option>\n                    <option value=\"BF\">Burkina Faso</option>\n                    <option value=\"BI\">Burundi</option>\n                    <option value=\"KH\">Cambodia</option>\n                    <option value=\"CM\">Cameroon</option>\n                    <option value=\"CA\">Canada</option>\n                    <option value=\"CV\">Cape Verde</option>\n                    <option value=\"KY\">Cayman Islands</option>\n                    <option value=\"CF\">Central African Republic</option>\n                    <option value=\"TD\">Chad</option>\n                    <option value=\"CL\">Chile</option>\n                    <option value=\"CN\">China</option>\n                    <option value=\"CX\">Christmas Island</option>\n                    <option value=\"CC\">Cocos (Keeling) Islands</option>\n                    <option value=\"CO\">Colombia</option>\n                    <option value=\"KM\">Comoros</option>\n                    <option value=\"CG\">Congo</option>\n                    <option value=\"CD\">Congo, The Democratic Republic of The</option>\n                    <option value=\"CK\">Cook Islands</option>\n                    <option value=\"CR\">Costa Rica</option>\n                    <option value=\"CI\">Cote D'ivoire</option>\n                    <option value=\"HR\">Croatia</option>\n                    <option value=\"CU\">Cuba</option>\n                    <option value=\"CY\">Cyprus</option>\n                    <option value=\"CZ\">Czech Republic</option>\n                    <option value=\"DK\">Denmark</option>\n                    <option value=\"DJ\">Djibouti</option>\n                    <option value=\"DM\">Dominica</option>\n                    <option value=\"DO\">Dominican Republic</option>\n                    <option value=\"EC\">Ecuador</option>\n                    <option value=\"EG\">Egypt</option>\n                    <option value=\"SV\">El Salvador</option>\n                    <option value=\"GQ\">Equatorial Guinea</option>\n                    <option value=\"ER\">Eritrea</option>\n                    <option value=\"EE\">Estonia</option>\n                    <option value=\"ET\">Ethiopia</option>\n                    <option value=\"FK\">Falkland Islands (Malvinas)</option>\n                    <option value=\"FO\">Faroe Islands</option>\n                    <option value=\"FJ\">Fiji</option>\n                    <option value=\"FI\">Finland</option>\n                    <option value=\"FR\">France</option>\n                    <option value=\"GF\">French Guiana</option>\n                    <option value=\"PF\">French Polynesia</option>\n                    <option value=\"TF\">French Southern Territories</option>\n                    <option value=\"GA\">Gabon</option>\n                    <option value=\"GM\">Gambia</option>\n                    <option value=\"GE\">Georgia</option>\n                    <option value=\"DE\">Germany</option>\n                    <option value=\"GH\">Ghana</option>\n                    <option value=\"GI\">Gibraltar</option>\n                    <option value=\"GR\">Greece</option>\n                    <option value=\"GL\">Greenland</option>\n                    <option value=\"GD\">Grenada</option>\n                    <option value=\"GP\">Guadeloupe</option>\n                    <option value=\"GU\">Guam</option>\n                    <option value=\"GT\">Guatemala</option>\n                    <option value=\"GG\">Guernsey</option>\n                    <option value=\"GN\">Guinea</option>\n                    <option value=\"GW\">Guinea-bissau</option>\n                    <option value=\"GY\">Guyana</option>\n                    <option value=\"HT\">Haiti</option>\n                    <option value=\"HM\">Heard Island and Mcdonald Islands</option>\n                    <option value=\"VA\">Holy See (Vatican City State)</option>\n                    <option value=\"HN\">Honduras</option>\n                    <option value=\"HK\">Hong Kong</option>\n                    <option value=\"HU\">Hungary</option>\n                    <option value=\"IS\">Iceland</option>\n                    <option value=\"IN\">India</option>\n                    <option value=\"ID\">Indonesia</option>\n                    <option value=\"IR\">Iran, Islamic Republic of</option>\n                    <option value=\"IQ\">Iraq</option>\n                    <option value=\"IE\">Ireland</option>\n                    <option value=\"IM\">Isle of Man</option>\n                    <option value=\"IL\">Israel</option>\n                    <option value=\"IT\">Italy</option>\n                    <option value=\"JM\">Jamaica</option>\n                    <option value=\"JP\">Japan</option>\n                    <option value=\"JE\">Jersey</option>\n                    <option value=\"JO\">Jordan</option>\n                    <option value=\"KZ\">Kazakhstan</option>\n                    <option value=\"KE\">Kenya</option>\n                    <option value=\"KI\">Kiribati</option>\n                    <option value=\"KP\">Korea, Democratic People's Republic of</option>\n                    <option value=\"KR\">Korea, Republic of</option>\n                    <option value=\"KW\">Kuwait</option>\n                    <option value=\"KG\">Kyrgyzstan</option>\n                    <option value=\"LA\">Lao People's Democratic Republic</option>\n                    <option value=\"LV\">Latvia</option>\n                    <option value=\"LB\">Lebanon</option>\n                    <option value=\"LS\">Lesotho</option>\n                    <option value=\"LR\">Liberia</option>\n                    <option value=\"LY\">Libyan Arab Jamahiriya</option>\n                    <option value=\"LI\">Liechtenstein</option>\n                    <option value=\"LT\">Lithuania</option>\n                    <option value=\"LU\">Luxembourg</option>\n                    <option value=\"MO\">Macao</option>\n                    <option value=\"MK\">Macedonia, The Former Yugoslav Republic of</option>\n                    <option value=\"MG\">Madagascar</option>\n                    <option value=\"MW\">Malawi</option>\n                    <option value=\"MY\">Malaysia</option>\n                    <option value=\"MV\">Maldives</option>\n                    <option value=\"ML\">Mali</option>\n                    <option value=\"MT\">Malta</option>\n                    <option value=\"MH\">Marshall Islands</option>\n                    <option value=\"MQ\">Martinique</option>\n                    <option value=\"MR\">Mauritania</option>\n                    <option value=\"MU\">Mauritius</option>\n                    <option value=\"YT\">Mayotte</option>\n                    <option value=\"MX\">Mexico</option>\n                    <option value=\"FM\">Micronesia, Federated States of</option>\n                    <option value=\"MD\">Moldova, Republic of</option>\n                    <option value=\"MC\">Monaco</option>\n                    <option value=\"MN\">Mongolia</option>\n                    <option value=\"ME\">Montenegro</option>\n                    <option value=\"MS\">Montserrat</option>\n                    <option value=\"MA\">Morocco</option>\n                    <option value=\"MZ\">Mozambique</option>\n                    <option value=\"MM\">Myanmar</option>\n                    <option value=\"NA\">Namibia</option>\n                    <option value=\"NR\">Nauru</option>\n                    <option value=\"NP\">Nepal</option>\n                    <option value=\"NL\">Netherlands</option>\n                    <option value=\"AN\">Netherlands Antilles</option>\n                    <option value=\"NC\">New Caledonia</option>\n                    <option value=\"NZ\">New Zealand</option>\n                    <option value=\"NI\">Nicaragua</option>\n                    <option value=\"NE\">Niger</option>\n                    <option value=\"NG\">Nigeria</option>\n                    <option value=\"NU\">Niue</option>\n                    <option value=\"NF\">Norfolk Island</option>\n                    <option value=\"MP\">Northern Mariana Islands</option>\n                    <option value=\"NO\">Norway</option>\n                    <option value=\"OM\">Oman</option>\n                    <option value=\"PK\">Pakistan</option>\n                    <option value=\"PW\">Palau</option>\n                    <option value=\"PS\">Palestinian Territory, Occupied</option>\n                    <option value=\"PA\">Panama</option>\n                    <option value=\"PG\">Papua New Guinea</option>\n                    <option value=\"PY\">Paraguay</option>\n                    <option value=\"PE\">Peru</option>\n                    <option value=\"PH\">Philippines</option>\n                    <option value=\"PN\">Pitcairn</option>\n                    <option value=\"PL\">Poland</option>\n                    <option value=\"PT\">Portugal</option>\n                    <option value=\"PR\">Puerto Rico</option>\n                    <option value=\"QA\">Qatar</option>\n                    <option value=\"RE\">Reunion</option>\n                    <option value=\"RO\">Romania</option>\n                    <option value=\"RU\">Russian Federation</option>\n                    <option value=\"RW\">Rwanda</option>\n                    <option value=\"SH\">Saint Helena</option>\n                    <option value=\"KN\">Saint Kitts and Nevis</option>\n                    <option value=\"LC\">Saint Lucia</option>\n                    <option value=\"PM\">Saint Pierre and Miquelon</option>\n                    <option value=\"VC\">Saint Vincent and The Grenadines</option>\n                    <option value=\"WS\">Samoa</option>\n                    <option value=\"SM\">San Marino</option>\n                    <option value=\"ST\">Sao Tome and Principe</option>\n                    <option value=\"SA\">Saudi Arabia</option>\n                    <option value=\"SN\">Senegal</option>\n                    <option value=\"RS\">Serbia</option>\n                    <option value=\"SC\">Seychelles</option>\n                    <option value=\"SL\">Sierra Leone</option>\n                    <option value=\"SG\">Singapore</option>\n                    <option value=\"SK\">Slovakia</option>\n                    <option value=\"SI\">Slovenia</option>\n                    <option value=\"SB\">Solomon Islands</option>\n                    <option value=\"SO\">Somalia</option>\n                    <option value=\"ZA\">South Africa</option>\n                    <option value=\"GS\">South Georgia and The South Sandwich Islands</option>\n                    <option value=\"ES\">Spain</option>\n                    <option value=\"LK\">Sri Lanka</option>\n                    <option value=\"SD\">Sudan</option>\n                    <option value=\"SR\">Suriname</option>\n                    <option value=\"SJ\">Svalbard and Jan Mayen</option>\n                    <option value=\"SZ\">Swaziland</option>\n                    <option value=\"SE\">Sweden</option>\n                    <option value=\"CH\">Switzerland</option>\n                    <option value=\"SY\">Syrian Arab Republic</option>\n                    <option value=\"TW\">Taiwan, Province of China</option>\n                    <option value=\"TJ\">Tajikistan</option>\n                    <option value=\"TZ\">Tanzania, United Republic of</option>\n                    <option value=\"TH\">Thailand</option>\n                    <option value=\"TL\">Timor-leste</option>\n                    <option value=\"TG\">Togo</option>\n                    <option value=\"TK\">Tokelau</option>\n                    <option value=\"TO\">Tonga</option>\n                    <option value=\"TT\">Trinidad and Tobago</option>\n                    <option value=\"TN\">Tunisia</option>\n                    <option value=\"TR\">Turkey</option>\n                    <option value=\"TM\">Turkmenistan</option>\n                    <option value=\"TC\">Turks and Caicos Islands</option>\n                    <option value=\"TV\">Tuvalu</option>\n                    <option value=\"UG\">Uganda</option>\n                    <option value=\"UA\">Ukraine</option>\n                    <option value=\"AE\">United Arab Emirates</option>\n                    <option value=\"GB\">United Kingdom</option>\n                    <option value=\"US\">United States</option>\n                    <option value=\"UM\">United States Minor Outlying Islands</option>\n                    <option value=\"UY\">Uruguay</option>\n                    <option value=\"UZ\">Uzbekistan</option>\n                    <option value=\"VU\">Vanuatu</option>\n                    <option value=\"VE\">Venezuela</option>\n                    <option value=\"VN\">Viet Nam</option>\n                    <option value=\"VG\">Virgin Islands, British</option>\n                    <option value=\"VI\">Virgin Islands, U.S.</option>\n                    <option value=\"WF\">Wallis and Futuna</option>\n                    <option value=\"EH\">Western Sahara</option>\n                    <option value=\"YE\">Yemen</option>\n                    <option value=\"ZM\">Zambia</option>\n                    <option value=\"ZW\">Zimbabwe</option>\n                </select>\n            </div>\n            <div class=\"help-messages\">\n                <span class=\"help-block col-md-offset-3\" ng-show=\"cardForm.cardCountry.$error.required\">Required</span>\n            </div>\n        </div>\n    </form>\n    <div class=\"form-errors\" ng-show=\"formErrors\">\n        <em class=\"text-warning\">Oops! Please fix up these errors:</em>\n        <ul class=\"form-errors-list\">\n            <li class=\"form-errors-list-item alert alert-warning\" ng-repeat=\"error in formErrors\">{{error}}</li>\n        </ul>\n    </div>\n    <div class=\"form-success alert alert-success\" ng-show=\"formSuccess\">\n        {{formSuccess}}\n    </div>\n</div>\n<div class=\"modal-footer\">\n    <button class=\"btn btn-primary\" ng-click=\"createCard(card)\" ng-disabled=\"cardForm.$invalid\">Add Card</button>\n    <button class=\"btn btn-warning\" ng-click=\"cancel()\">Close</button>\n</div>",
-            controller: require('./CardCreateModalCtrl'),
-            windowClass: 'card-create-modal form-modal',
-            resolve: {
-                userId: function () {
-                    return userAccount.id
-                }
+        return function (stripeData) {
+
+            // although errors are being reported directly from stripe
+            // we can have billing errors from our backend trying to confirm the stripe application
+            $scope.stripeBillingBackendErrors = false;
+            $scope.stripeBillingBackendSuccess = false;
+
+            if (action === 'create') {
+
+                // create the billing record for the user 
+                Restangular.all('billing').post({
+                    'stripeToken': stripeData.id,
+                    'stripeEmail': stripeData.email,
+                    'userId': userAccount.id
+                }).then(function (response) {
+
+                    $scope.stripeBillingBackendSuccess = 'Created Customer';
+                    // re-acquire the billing records after successful billing creation
+                    getBillingRecords();
+
+                }, function (response) {
+
+                    // we need to display errors even if 400 or 500
+                    $scope.stripeBillingBackendErrors = response.data.content;
+
+                });
+
+            } else if (action === 'update') {
+
+                // update the first (and only) billing record for the current user 
+                Restangular.one('billing', billingId).customPUT({
+                    'stripeToken': stripeData.id,
+                    'stripeEmail': stripeData.email
+                }).then(function (response) {
+
+                    $scope.stripeBillingBackendSuccess = 'Updated Customer';
+                    // re-acquire the billing records after successful billing creation
+                    getBillingRecords();
+
+                }, function (response) {
+
+                    // we need to display errors even if 400 or 500
+                    $scope.stripeBillingBackendErrors = response.data.content;
+
+                });
+
             }
-        }).result.then(function () {
 
-            getBillingRecords();
-
-        });
+        };
 
     };
 
-    $scope.deleteCard = function (id, index) {
+    var setupStripeForm = function () {
+
+        ExternalScriptLoaderServ.importScript(
+            'https://checkout.stripe.com/checkout.js', 
+            'stripeScript', 
+            function () {                
+
+                var stripeHandler = StripeCheckout.configure({
+                    key: settings.apiKeys.stripePublicKey,
+                    locale: 'auto',
+                    currency: 'aud',
+                    panelLabel: 'Subscribe',
+                    label: 'Add a Card via Stripe',
+                    allowRememberMe: false, 
+                    email: userAccount.email
+                });
+
+                $scope.cardCreate = function () {
+
+                    stripeHandler.open({
+                        token: stripeScriptCallback('create', null)
+                    });
+
+                };
+
+                $scope.cardUpdate = function (id) {
+
+                    stripeHandler.open({
+                        token: stripeScriptCallback('update', id)
+                    });
+
+                };
+
+            }
+        );
+
+    };
+
+    var initialise = function (userData) {
+
+        // set this up first, as all subsequent procedures rely on this variable
+        userAccount = userData;
+        getBillingRecords();
+        setupStripeForm();
+
+    };
+
+    $scope.cardDelete = function (id) {
 
         Restangular.one('billing', id).remove().then(function (response) {
 
-            $scope.billingRecords.splice(index, 1);
             getBillingRecords();
 
         }, function (response) {
@@ -3984,18 +4027,11 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
 
     };
 
-    var initialise = function (userData) {
-
-        userAccount = userData;
-        getBillingRecords();
-
-    };
-
     //run every time the controller is reinstantiated
     if (UserSystemServ.getUserState() && Object.keys(UserSystemServ.getUserData()).length > 0) {
         
         initialise(UserSystemServ.getUserData());
-    
+        
     } else {
 
         $scope.$watch(UserSystemServ.getUserData, function (newUserAccount, oldUserAccount) {
@@ -4012,7 +4048,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
     }
 
 }];
-},{"./CardCreateModalCtrl":16,"fs":94}],19:[function(require,module,exports){
+},{"../../Settings":8,"fs":94}],18:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -4173,7 +4209,7 @@ module.exports = ['$scope', '$modal', 'UserSystemServ', 'Restangular', function 
     }
 
 }];
-},{"./SnapshotModalCtrl":23,"fs":94}],20:[function(require,module,exports){
+},{"./SnapshotModalCtrl":22,"fs":94}],19:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4588,7 +4624,7 @@ module.exports = [
         }
 
 }];
-},{"../../Settings":8}],21:[function(require,module,exports){
+},{"../../Settings":8}],20:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4629,7 +4665,7 @@ module.exports = ['$scope', 'BusyLoopServ', 'UserSystemServ', 'MomentServ', 'Cal
     }, true);
 
 }];
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4723,7 +4759,7 @@ module.exports = ['$scope', 'UserSystemServ', 'Restangular', 'CalculateServ', fu
     }
 
 }];
-},{"../../Settings":8}],23:[function(require,module,exports){
+},{"../../Settings":8}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4751,7 +4787,7 @@ module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', funct
     };
 
 }];
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4762,7 +4798,7 @@ module.exports = ['$scope', '$modalInstance', 'snapshotId', 'Restangular', funct
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4780,7 +4816,7 @@ module.exports = ['$scope', function ($scope) {
     }
 
 }];
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4838,7 +4874,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
     };
 
 }];
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4849,7 +4885,7 @@ module.exports = ['$scope', 'Restangular', function ($scope, Restangular) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4896,7 +4932,7 @@ module.exports = ['$scope', 'CalculateServ', function ($scope, CalculateServ) {
     });
 
 }];
-},{"../../Settings":8}],29:[function(require,module,exports){
+},{"../../Settings":8}],28:[function(require,module,exports){
 'use strict';
 
 var settings = require('../../Settings');
@@ -4912,7 +4948,7 @@ module.exports = ['$scope', function ($scope) {
     $scope.freeUsageCap = settings.meta.freeUsageCap;
 
 }];
-},{"../../Settings":8}],30:[function(require,module,exports){
+},{"../../Settings":8}],29:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4921,7 +4957,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4930,7 +4966,7 @@ module.exports = ['$scope', function ($scope) {
 module.exports = ['$scope', function ($scope) {
 
 }];
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 /**
@@ -4948,7 +4984,7 @@ module.exports = angular.module('App.Directives')
     .directive('maxValid', require('./maxValid'))
     .directive('jsonChecker', require('./jsonChecker'))
     .directive('placeholderSwitch', require('./placeholderSwitch'));
-},{"./affix":33,"./anchor":34,"./equaliseHeights":35,"./jsonChecker":36,"./maxValid":37,"./minValid":38,"./passwordMatch":39,"./placeholderSwitch":40,"./scroll":41}],33:[function(require,module,exports){
+},{"./affix":32,"./anchor":33,"./equaliseHeights":34,"./jsonChecker":35,"./maxValid":36,"./minValid":37,"./passwordMatch":38,"./placeholderSwitch":39,"./scroll":40}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5037,7 +5073,7 @@ module.exports = ['$window', '$document', function ($window, $document) {
     };
 
 }];
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -5117,7 +5153,7 @@ module.exports = ['$location', '$anchorScroll', '$timeout', function ($location,
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":3}],35:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":3}],34:[function(require,module,exports){
 'use strict';
 
 var imagesloaded = require("./..\\..\\..\\components\\imagesloaded\\imagesloaded.js");
@@ -5159,7 +5195,7 @@ module.exports = [function () {
     };
 
 }];
-},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":3}],36:[function(require,module,exports){
+},{"./..\\..\\..\\components\\imagesloaded\\imagesloaded.js":3}],35:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5199,7 +5235,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5239,7 +5275,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 module.exports = [function () {
@@ -5279,7 +5315,7 @@ module.exports = [function () {
         }
     };
 }];
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5320,7 +5356,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5376,7 +5412,7 @@ module.exports = ['$interval', function ($interval) {
     };
 
 }];
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5401,7 +5437,7 @@ module.exports = ['$anchorScroll', '$location', function ($anchorScroll, $locati
     };
 
 }];
-},{}],42:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5414,7 +5450,7 @@ angular.module('App.Elements', []);
 module.exports = angular.module('App.Elements')
     .directive('syntax', require('./syntaxHighlight'))
     .directive('chatTab', require('./chatTab'));
-},{"./chatTab":43,"./syntaxHighlight":79}],43:[function(require,module,exports){
+},{"./chatTab":42,"./syntaxHighlight":78}],42:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -5450,7 +5486,7 @@ module.exports = [function () {
     };
 
 }];
-},{"fs":94,"insert-css":95}],44:[function(require,module,exports){
+},{"fs":94,"insert-css":95}],43:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -6141,7 +6177,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],45:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var Highlight = require('./highlight');
 var hljs = new Highlight();
 hljs.registerLanguage('apache', require('./languages/apache.js'));
@@ -6178,7 +6214,7 @@ hljs.registerLanguage('scala', require('./languages/scala.js'));
 hljs.registerLanguage('scss', require('./languages/scss.js'));
 hljs.registerLanguage('sql', require('./languages/sql.js'));
 module.exports = hljs;
-},{"./highlight":44,"./languages/apache.js":46,"./languages/bash.js":47,"./languages/clojure.js":48,"./languages/coffeescript.js":49,"./languages/cpp.js":50,"./languages/cs.js":51,"./languages/css.js":52,"./languages/diff.js":53,"./languages/erlang.js":54,"./languages/go.js":55,"./languages/haml.js":56,"./languages/haskell.js":57,"./languages/http.js":58,"./languages/ini.js":59,"./languages/java.js":60,"./languages/javascript.js":61,"./languages/json.js":62,"./languages/lisp.js":63,"./languages/lua.js":64,"./languages/makefile.js":65,"./languages/markdown.js":66,"./languages/nginx.js":67,"./languages/objectivec.js":68,"./languages/perl.js":69,"./languages/php.js":70,"./languages/python.js":71,"./languages/r.js":72,"./languages/ruby.js":73,"./languages/rust.js":74,"./languages/scala.js":75,"./languages/scss.js":76,"./languages/sql.js":77,"./languages/xml.js":78}],46:[function(require,module,exports){
+},{"./highlight":43,"./languages/apache.js":45,"./languages/bash.js":46,"./languages/clojure.js":47,"./languages/coffeescript.js":48,"./languages/cpp.js":49,"./languages/cs.js":50,"./languages/css.js":51,"./languages/diff.js":52,"./languages/erlang.js":53,"./languages/go.js":54,"./languages/haml.js":55,"./languages/haskell.js":56,"./languages/http.js":57,"./languages/ini.js":58,"./languages/java.js":59,"./languages/javascript.js":60,"./languages/json.js":61,"./languages/lisp.js":62,"./languages/lua.js":63,"./languages/makefile.js":64,"./languages/markdown.js":65,"./languages/nginx.js":66,"./languages/objectivec.js":67,"./languages/perl.js":68,"./languages/php.js":69,"./languages/python.js":70,"./languages/r.js":71,"./languages/ruby.js":72,"./languages/rust.js":73,"./languages/scala.js":74,"./languages/scss.js":75,"./languages/sql.js":76,"./languages/xml.js":77}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -6224,7 +6260,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -6287,7 +6323,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     built_in:
@@ -6385,7 +6421,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],49:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -6516,7 +6552,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_KEYWORDS = {
     keyword: 'false int float while private char catch export virtual operator sizeof ' +
@@ -6580,7 +6616,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     // Normal keywords.
@@ -6653,7 +6689,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -6757,7 +6793,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],53:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -6797,7 +6833,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -6952,7 +6988,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -6991,7 +7027,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -7113,7 +7149,7 @@ function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -7239,7 +7275,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -7273,7 +7309,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -7303,7 +7339,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -7358,7 +7394,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -7430,7 +7466,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -7468,7 +7504,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s)(\\+|\\-)?\\d+)?';
@@ -7544,7 +7580,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -7601,7 +7637,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -7646,7 +7682,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],66:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -7748,7 +7784,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -7829,7 +7865,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   var OBJC_KEYWORDS = {
     keyword:
@@ -7914,7 +7950,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -8063,7 +8099,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable', begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -8172,7 +8208,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],71:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var PROMPT = {
     className: 'prompt',  begin: /^(>>>|\.\.\.) /
@@ -8256,7 +8292,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -8326,7 +8362,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS =
@@ -8485,7 +8521,7 @@ module.exports = function(hljs) {
     contains: RUBY_DEFAULT_CONTAINS
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['rs'],
@@ -8534,7 +8570,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],75:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'
@@ -8593,7 +8629,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],76:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -8710,7 +8746,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],77:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = {
     className: 'comment',
@@ -8813,7 +8849,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],78:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -8917,7 +8953,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],79:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 'use strict';
 
 var fs = require('fs');
@@ -8995,7 +9031,7 @@ module.exports = ['$sce', function ($sce) {
     };
 
 }];
-},{"./lib/hljs/index":45,"fs":94,"insert-css":95}],80:[function(require,module,exports){
+},{"./lib/hljs/index":44,"fs":94,"insert-css":95}],79:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9005,7 +9041,7 @@ angular.module('App.Filters', []);
 
 module.exports = angular.module('App.Filters')
     .filter('booleanStyle', require('./booleanStyle'));
-},{"./booleanStyle":81}],81:[function(require,module,exports){
+},{"./booleanStyle":80}],80:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9049,7 +9085,7 @@ module.exports = [function () {
     };
 
 }];
-},{}],82:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9060,7 +9096,7 @@ angular.module('App.Modules', [
 ]);
 
 module.exports = angular.module('App.Modules');
-},{"./UserSystem":83}],83:[function(require,module,exports){
+},{"./UserSystem":82}],82:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9071,7 +9107,7 @@ angular.module('UserSystemMod', [])
     .run(require('./UserSystemRun'));
 
 module.exports = angular.module('UserSystemMod');
-},{"./UserSystemRun":84,"./UserSystemServ":85}],84:[function(require,module,exports){
+},{"./UserSystemRun":83,"./UserSystemServ":84}],83:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9091,7 +9127,7 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     });
 
 }];
-},{}],85:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9256,7 +9292,7 @@ module.exports = function () {
     ];
 
 };
-},{}],86:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9279,14 +9315,14 @@ module.exports = ['$rootScope', 'UserSystemServ', function ($rootScope, UserSyst
     }, true);
 
 }];
-},{}],87:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 /**
  * Base Url Constant
  */
 module.exports = angular.element('base').attr('href');
-},{}],88:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 'use strict';
 
 module.exports = ['$timeout', function ($timeout) {
@@ -9318,7 +9354,7 @@ module.exports = ['$timeout', function ($timeout) {
     };
 
 }];
-},{}],89:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9351,6 +9387,27 @@ module.exports = [function () {
         // Shift back
         value = value.toString().split('e');
         return +(value[0] + 'e' + (value[1] ? (+value[1] - places) : -places));
+
+    };
+
+}];
+},{}],89:[function(require,module,exports){
+'use strict';
+
+module.exports = [function () {
+
+    this.importScript = function (source, id, callback) {
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)){ return; }
+            js = d.createElement(s); js.id = id;
+            if (callback) {
+                js.onload = callback;
+            }
+            js.src = source;
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', id));
 
     };
 
@@ -9398,9 +9455,10 @@ module.exports = angular.module('App.Services')
     // .run(require('./RestangularXSRF')) // doesn't yet work, need cookies in response interception
     //Service Objects
     .service('CalculateServ', require('./CalculateServ'))
+    .service('ExternalScriptLoaderServ', require('./ExternalScriptLoaderServ'))
     .factory('MomentServ', require('./MomentServ'))
     .factory('BusyLoopServ', require('./BusyLoopServ'));
-},{"./AuthenticationStateRun":86,"./BaseUrlConst":87,"./BusyLoopServ":88,"./CalculateServ":89,"./MomentServ":90,"./RestangularConfig":91,"./UserSystemConfig":93}],93:[function(require,module,exports){
+},{"./AuthenticationStateRun":85,"./BaseUrlConst":86,"./BusyLoopServ":87,"./CalculateServ":88,"./ExternalScriptLoaderServ":89,"./MomentServ":90,"./RestangularConfig":91,"./UserSystemConfig":93}],93:[function(require,module,exports){
 'use strict';
 
 /**

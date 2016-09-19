@@ -5,7 +5,7 @@
         <h3>Billing Cards</h3>
 
         <div class="form-success alert alert-success" ng-show="stripeBillingBackendSuccess">
-            {{formSuccess}}
+            {{stripeBillingBackendSuccess}}
         </div>
 
         <div class="form-errors" ng-show="stripeBillingBackendErrors">
@@ -19,7 +19,7 @@
 
         <button class="btn btn-primary telemetry-button" ng-click="cardCreate()" ng-hide="billingRecords">Add Card</button>
         
-        <button class="btn btn-info telemetry-button" ng-click="cardUpdate()" ng-show="billingRecords">Update Card</button>
+        <button class="btn btn-info telemetry-button" ng-click="cardUpdate(billingRecords[0].id)" ng-show="billingRecords">Update Card</button>
 
         <button class="btn btn-danger telemetry-button" ng-click="cardDelete(billingRecords[0].id)" ng-show="billingRecords">Delete Card</button>
 

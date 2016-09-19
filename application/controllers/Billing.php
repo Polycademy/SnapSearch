@@ -216,23 +216,18 @@ class Billing extends CI_Controller{
 	}
 
 	/**
-	 * There are 2 aspects to updating the card.
-	 * Updating the card details on Stripe (which may result in updating our own database).
-	 * Or updating the card details on the current database.
-	 * If we are fully integrating with Stripe, its best not to try to perform state replication, that is 
-	 * having 2 sources of state. Like it wouldn't be useful for us to hold the last 4 digits while 
-	 * Stripe also has the last 4 digits. If we want to improve redundancy by holding the data ourselves, 
-	 * this adds the extra complication of state replication, and having to maintain 2 branches of 
-	 * control flow, one for dealing with updating our own database and one for updating the other database 
-	 * and maintaing some lens between them.
-	 * This update handler is really about updating Stripe's details and synchronising the relevant changes 
-	 * to our database.
-	 * Also note that updating Stripe details occurs through their own form, and we just get the details 
-	 * post-hoc.
-	 * Also remember that the email and card details are associated to the stripe token, and the stripe 
-	 * token is associated to a customer as a source. So it doesn't really matter if the user updates their 
-	 * email, since that's just associated to a customer as a source. The customer doesn't really have a 
-	 * main email beyond their default source's email.
+	 * There are 2 aspects to updating the card:
+	 * 
+	 * 1. Updating the card details on Stripe (which leads to 2.).
+	 * 2. Updating the card details on our database (which doesn't lead to 1.).
+	 *
+	 * Stripe details are updated through their own iframed form.
+	 * The JS application receives a token from this operation.
+	 * The token will be submitted to us here.
+	 *
+	 * All we need to do is to take the token and update our own database for the current user.
+	 * Although the DB was built for multiple cards per user. The application code forces 1 
+	 * customer per user.
 	 */
 	public function update($id){
 
@@ -252,9 +247,12 @@ class Billing extends CI_Controller{
 
 		}else{
 
-			//non administrators are not allowed the change whether card is invalid or not
-			//the only way for people to resolve their billing error is delete their errored card
-			//and create a new card
+			// customerToken should be acquired from the database not from user input
+			unset($data['customerToken']);
+
+			// non administrators are not allowed the change whether card is invalid or not
+			// the only way for people to resolve their billing error is delete their errored card
+			// and create a new card
 			if(!$this->user->authorized(['roles' => 'admin'])){
 				unset(
 					$data['cardInvalid'],
@@ -263,43 +261,77 @@ class Billing extends CI_Controller{
 			}
 
 			$customer_billing_query = $this->Billing_model->read($id);
-			
-			if ($customer_billing_query) {
-				$stripe_query = $this->Stripe_model->update_customer($customer_billing_query['customerToken'], $data);
-				if ($stripe_query) {
-					$data = array_merge($data, $stripe_query);
-					$billing_query = $this->Billing_model->update($id, $data);
-				}	
-			}
-			
-			if(!$customer_billing_query){
 
-				$content = current($this->Billing_model->get_errors());
-				$code = key($this->Billing_model->get_errors());
-
-			}elseif(!$stripe_query){
-
-				$content = current($this->Stripe_model->get_errors());
-				$code = key($this->Stripe_model->get_errors());
-
-			}elseif(!$billing_query){
-
-				$content = current($this->Billing_model->get_errors());
-				$code = key($this->Billing_model->get_errors());
-
-			}else{
-
-				$content = $billing_query;
-				$code = 'success';
-
+			// if the user is not an admin, and also not the owner of this 
+			// billing record, then they are not allowed update this billing record
+			$allowed_to_update_this_id = true;
+			if (
+				$customer_billing_query 
+				AND !$this->user->authorized(['roles' => 'admin'])
+				AND $customer_billing_query['userId'] != $user_id 
+			) {
+				$allowed_to_update_this_id = false;
+				$this->auth_response->setStatusCode(401);
+				$content = 'Not authorized to update billing information.';
+				$code = 'error';
 			}
 
-			if($code == 'success'){
-				$this->auth_response->setStatusCode(200);
-			}elseif($code == 'validation_error'){
-				$this->auth_response->setStatusCode(400);
-			}elseif($code == 'system_error'){
-				$this->auth_response->setStatusCode(500);
+			if ($allowed_to_update_this_id) {
+		
+				if ($customer_billing_query) {
+					
+					// if there's billing record for this id
+					// then we use the customerToken of the billing record to 
+					// identify the customer on the stripe database
+					// and associate the new or updated billing source identified by the stripeToken
+					// the only thing required in this data are:
+					// stripeToken and stripeEmail
+					$stripe_query = $this->Stripe_model->update_customer($customer_billing_query['customerToken'], $data);
+
+					if ($stripe_query) {
+
+						// if successful, then we get back:
+						// the same customerToken
+						// a potentially different customerEmail
+						// and a potentially different cardNumber
+						// this is merged with the existing update data
+						$data = array_merge($data, $stripe_query);
+						$billing_query = $this->Billing_model->update($id, $data);
+					
+					}
+
+				}
+				
+				if(!$customer_billing_query){
+
+					$content = current($this->Billing_model->get_errors());
+					$code = key($this->Billing_model->get_errors());
+
+				}elseif(!$stripe_query){
+
+					$content = current($this->Stripe_model->get_errors());
+					$code = key($this->Stripe_model->get_errors());
+
+				}elseif(!$billing_query){
+
+					$content = current($this->Billing_model->get_errors());
+					$code = key($this->Billing_model->get_errors());
+
+				}else{
+
+					$content = $billing_query;
+					$code = 'success';
+
+				}
+
+				if($code == 'success'){
+					$this->auth_response->setStatusCode(200);
+				}elseif($code == 'validation_error'){
+					$this->auth_response->setStatusCode(400);
+				}elseif($code == 'system_error'){
+					$this->auth_response->setStatusCode(500);
+				}
+
 			}
 
 			$this->auth_response->sendHeaders();
@@ -315,6 +347,13 @@ class Billing extends CI_Controller{
 
 	}
 
+	/**
+	 * Unlike the update operation, this actually just deletes the billing token id.
+	 * This id is not the stripe token, but the actual billing id.
+	 * 
+	 * @param  [type] $id [description]
+	 * @return [type]     [description]
+	 */
 	public function delete($id){
 
 		$query = $this->Billing_model->read($id);
