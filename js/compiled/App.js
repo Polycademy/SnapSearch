@@ -3970,7 +3970,7 @@ module.exports = ['$scope', 'UserSystemServ', 'ExternalScriptLoaderServ', 'Resta
         ExternalScriptLoaderServ.importScript(
             'https://checkout.stripe.com/checkout.js', 
             'stripeScript', 
-            function () {                
+            function () {
 
                 var stripeHandler = StripeCheckout.configure({
                     key: settings.apiKeys.stripePublicKey,
@@ -4016,11 +4016,13 @@ module.exports = ['$scope', 'UserSystemServ', 'ExternalScriptLoaderServ', 'Resta
 
         Restangular.one('billing', id).remove().then(function (response) {
 
+            $scope.stripeBillingBackendSuccess = 'Deleted Customer';
             getBillingRecords();
 
         }, function (response) {
             
             //verify it doesn't exist on the server side
+            $scope.stripeBillingBackendSuccess = 'Already Deleted Customer';
             getBillingRecords();
 
         });
