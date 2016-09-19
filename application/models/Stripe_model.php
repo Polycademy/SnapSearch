@@ -50,7 +50,7 @@ class Stripe_model extends CI_Model{
             return array(
                 'customerToken' => $customer->id,
                 'customerEmail' => $data['stripeEmail'],
-                'cardNumber'    => $customer->sources->data[0]->last4;
+                'cardNumber'    => $customer->sources->data[0]->last4,
             );
 
         } catch (\Stripe\Error\RateLimit $e) {
@@ -289,7 +289,7 @@ class Stripe_model extends CI_Model{
             return array(
                 'customerToken' => $customer->id,
                 'customerEmail' => $data['stripeEmail'],
-                'cardNumber'    => $customer->sources->data[0]->last4;
+                'cardNumber'    => $customer->sources->data[0]->last4,
             );
 
         }  catch (\Stripe\Error\RateLimit $e) {
