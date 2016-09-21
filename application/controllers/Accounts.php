@@ -156,7 +156,9 @@ class Accounts extends CI_Controller{
 			unset(
 				$data['apiLimit'],
 				$data['apiFreeLimit'],
-				$data['chargeInterval']
+				$data['chargeInterval'],
+				$data['graceEndingDate'],
+				$data['graceRetryDate']
 			);
 		}
 
