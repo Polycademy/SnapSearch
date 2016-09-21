@@ -326,18 +326,13 @@ class Cron extends CI_Controller{
 
 			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Charging the User\n";
 
-			$usage = $user['apiUsage'] - $user['apiFreeLimit'];
+			// if the apiUsage is less than the apiFreeLimit, then the charged usage is 0
+			$usage = max($user['apiUsage'] - $user['apiFreeLimit'], 0);
+			// total usage is the total charged usage (subtracting the apiFreeLimit)
 			$total_usage = $usage + $user['apiLeftOverUsage'];
 
-			$charge = 0;
-			if ($usage > 0) {
-				// nearest integer because everything is based on cents
-				$charge += (int) round($usage * $charge_per_request);
-			}
-
-			if($user['apiLeftOverCharge'] > 0){
-				$charge += $user['apiLeftOverCharge']; 
-			}
+			// charge should be calculated from the total_usage
+			$charge = (int) round($total_usage * $charge_per_request);
 
 			// track usage statistics
 			$this->Usage_model->create([
@@ -369,18 +364,21 @@ class Cron extends CI_Controller{
 				'chargeDate'		    => $next_charge_date->format('Y-m-d H:i:s'),
 			]);
 
-			// these are just for the monthly_tracker log
-			$real_current_requests = $user['apiRequests'];
-			$real_current_usage = $user['apiUsage'];
-			$real_total_usage = $user['apiUsage'] + $user['apiLeftOverUsage'];
-			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} {$user['email']} Current Requests: $real_current_requests Current Usage: $real_current_usage Total Usage: $real_total_usage Charge: $charge\n";
+			$total_usage_with_free_usage = $user['apiUsage'] + $user['apiLeftOverUsage'];
+			echo $today->format('Y-m-d H:i:s') . 
+				" - User: #{$user['id']} {$user['email']} " . 
+				"Current Requests: {$user['apiRequests']} " . 
+				"Current Usage: {$user['apiUsage']} " . 
+				"Total Usage: $total_usage_with_free_usage " . 
+				"Total Charged Usage: $total_usage " . 
+				"Charge: $charge\n";
 
-			// handle minimum charge
+			// handle minimum charge or where the charge is 0
 			if ($charge < $minimum_charge) {
 
 				// under the minimum charge, just accumulate and skip
 
-				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Rollover Charge\n";
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Rollover Charge or Charge is Zero\n";
 
 				$this->Accounts_model->update($user['id'], [
 					'apiLeftOverUsage'	=> $total_usage,
@@ -544,20 +542,24 @@ class Cron extends CI_Controller{
 				'amount'		=> $charge,
 				'currency'		=> $currency,
 				'email'			=> $user['email'],
-				'country'		=> $charge_query->source->address_country,
 			];
 
-			$payment_date = new DateTime($charge_query->created);
-			$payment_date = $payment_date->format('Y-m-d H:i:s');
-			$payment_history['date'] = $payment_date;
+			$payment_date = new DateTime('@' . $charge_query->created);
+			$payment_history['date'] = $payment_date->format('Y-m-d H:i:s');
 
-			if(!empty($charge_query->card->address_line1)) $address[] = $charge_query->card->address_line1;
-			if(!empty($charge_query->card->address_line2)) $address[] = $charge_query->card->address_line2;
-			if(!empty($charge_query->card->address_city)) $address[] = $charge_query->card->address_city;
-			if(!empty($charge_query->card->address_state)) $address[] = $charge_query->card->address_state;
+			if (!empty($charge_query->source->country)) {
+				$payment_history['country'] = $charge_query->source->country;
+			}
 
-			$payment_history['address'] = implode(' ', $address);
-
+			$address = [];
+			if (!empty($charge_query->source->address_line1)) $address[] = $charge_query->source->address_line1;
+			if (!empty($charge_query->source->address_line2)) $address[] = $charge_query->source->address_line2;
+			if (!empty($charge_query->source->address_city)) $address[] = $charge_query->source->address_city;
+			if (!empty($charge_query->source->address_state)) $address[] = $charge_query->source->address_state;
+			if (!empty($address)) {
+				$payment_history['address'] = implode(' ', $address);	
+			}
+			
 			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created invoice\n";
 
 			// should return ['invoiceNumber', 'invoiceFile']
@@ -787,19 +789,23 @@ class Cron extends CI_Controller{
 					'amount'		=> $charge,
 					'currency'		=> $currency,
 					'email'			=> $user['email'],
-					'country'		=> $charge_query->source->address_country,
 				];
 
-				$payment_date = new DateTime($charge_query->created);
-				$payment_date = $payment_date->format('Y-m-d H:i:s');
-				$payment_history['date'] = $payment_date;
+				$payment_date = new DateTime('@' . $charge_query->created);
+				$payment_history['date'] = $payment_date->format('Y-m-d H:i:s');
 
-				if(!empty($charge_query->card->address_line1)) $address[] = $charge_query->card->address_line1;
-				if(!empty($charge_query->card->address_line2)) $address[] = $charge_query->card->address_line2;
-				if(!empty($charge_query->card->address_city)) $address[] = $charge_query->card->address_city;
-				if(!empty($charge_query->card->address_state)) $address[] = $charge_query->card->address_state;
+				if (!empty($charge_query->source->country)) {
+					$payment_history['country'] = $charge_query->source->country;
+				}
 
-				$payment_history['address'] = implode(' ', $address);
+				$address = [];
+				if (!empty($charge_query->source->address_line1)) $address[] = $charge_query->source->address_line1;
+				if (!empty($charge_query->source->address_line2)) $address[] = $charge_query->source->address_line2;
+				if (!empty($charge_query->source->address_city)) $address[] = $charge_query->source->address_city;
+				if (!empty($charge_query->source->address_state)) $address[] = $charge_query->source->address_state;
+				if (!empty($address)) {
+					$payment_history['address'] = implode(' ', $address);	
+				}
 
 				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Created invoice\n";
 
