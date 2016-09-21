@@ -4,7 +4,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<title>SnapSearch Monthly Invoice for <?= $month ?> <?= $year ?></title>
-		<? $this->load->view('email/email_styles'); ?>
+		<?php $this->load->view('email/email_styles'); ?>
 	</head>
 	<body>
 		<!-- Wrapper/Container Table: Use a wrapper table to control the width and the background color consistently of your email. Use this approach instead of setting attributes on the body tag. -->
