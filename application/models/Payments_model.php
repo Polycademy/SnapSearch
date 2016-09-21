@@ -86,12 +86,12 @@ class Payments_model extends CI_Model{
 			array(
 				'field'	=> 'address',
 				'label'	=> 'Address',
-				'rules'	=> 'required',
+				'rules'	=> '',
 			),
 			array(
 				'field'	=> 'country',
 				'label'	=> 'Country',
-				'rules'	=> 'required',
+				'rules'	=> '',
 			),
 			array(
 				'field'	=> 'invoiceNumber',

@@ -73,12 +73,12 @@ class Invoices_model extends CI_Model{
             array(
                 'field' => 'address',
                 'label' => 'Address',
-                'rules' => 'required',
+                'rules' => '',
             ),
             array(
                 'field' => 'country',
                 'label' => 'Country',
-                'rules' => 'required',
+                'rules' => '',
             ),
             array(
                 'field' => 'item',
@@ -129,10 +129,18 @@ class Invoices_model extends CI_Model{
         $data['invoiceNumber'] = $invoice_number;
 
         //calculate tax dollars of 10% inclusive but only in Australia, so it can be the full word or the ISO standard
-        if(strtolower($data['country']) == 'australia' OR strtolower($data['country']) == 'au'){
+        if(!empty($data['country']) AND (strtolower($data['country']) == 'australia' OR strtolower($data['country']) == 'au')){
             $data['tax'] = '$' . round(($data['amount'] * 0.1) / 100, 2);
         }else{
             $data['tax'] = '$0';
+        } 
+
+        if (empty($data['address'])) {
+            $data['address'] = 'Unknown';   
+        }
+
+        if (empty($data['country'])) {
+            $data['country'] = 'Unknown';
         }
 
         //convert the cents into dollars
@@ -250,12 +258,12 @@ class Invoices_model extends CI_Model{
             array(
                 'field' => 'address',
                 'label' => 'Address',
-                'rules' => 'required',
+                'rules' => '',
             ),
             array(
                 'field' => 'country',
                 'label' => 'Country',
-                'rules' => 'required',
+                'rules' => '',
             ),
             array(
                 'field' => 'item',
@@ -309,10 +317,18 @@ class Invoices_model extends CI_Model{
         $data['invoiceNumber'] = $invoice_number;
 
         //calculate tax dollars of 10% inclusive
-        if(strtolower($data['country']) == 'australia'){
+        if(!empty($data['country']) AND (strtolower($data['country']) == 'australia' OR strtolower($data['country']) == 'au')){
             $data['tax'] = '$' . round(($data['amount'] * 0.1) / 100, 2);
         }else{
             $data['tax'] = '$0';
+        } 
+
+        if (empty($data['address'])) {
+            $data['address'] = 'Unknown';   
+        }
+
+        if (empty($data['country'])) {
+            $data['country'] = 'Unknown';
         }
 
         //convert the cents into dollars
