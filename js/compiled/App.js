@@ -3977,7 +3977,8 @@ module.exports = ['$scope', 'UserSystemServ', 'ExternalScriptLoaderServ', 'Resta
                     locale: 'auto',
                     currency: 'aud',
                     panelLabel: 'Subscribe',
-                    label: 'Add a Card via Stripe',
+                    name: 'SnapSearch', 
+                    description: 'Add a Card via Stripe', 
                     allowRememberMe: false, 
                     email: userAccount.email
                 });
