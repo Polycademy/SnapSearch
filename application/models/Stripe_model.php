@@ -56,7 +56,7 @@ class Stripe_model extends CI_Model{
         } catch (\Stripe\Error\RateLimit $e) {
         
             // Too many requests made to the API too quickly
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Too many requests to Stripe server, it responded with a ' . $response_status,
             );
@@ -65,7 +65,7 @@ class Stripe_model extends CI_Model{
         } catch (\Stripe\Error\InvalidRequest $e) {
 
             // Invalid stripe parameters
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Invalid request parameters to Stripe server, it responded with a ' . $response_status,
             );
@@ -73,7 +73,7 @@ class Stripe_model extends CI_Model{
             
         } catch (\Stripe\Error\Authentication $e) {
             
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'SnapSearch could not authenticate with Stripe, please contact the administrators. Stripe responded with ' . $response_status
             );
@@ -88,7 +88,7 @@ class Stripe_model extends CI_Model{
         
         } catch (\Stripe\Error\Base $e) {
         
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Unknown error when attempting to create customer in Stripe. Please try again later. Stripe responded with ' . $response_status,
             );
@@ -121,7 +121,7 @@ class Stripe_model extends CI_Model{
         } catch (\Stripe\Error\RateLimit $e) {
         
             // Too many requests made to the API too quickly
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Too many requests to Stripe server, it responded with a ' . $response_status,
             );
@@ -130,7 +130,7 @@ class Stripe_model extends CI_Model{
         } catch (\Stripe\Error\InvalidRequest $e) {
 
             // Invalid stripe parameters
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Invalid request parameters to Stripe server, it responded with a ' . $response_status,
             );
@@ -138,7 +138,7 @@ class Stripe_model extends CI_Model{
             
         } catch (\Stripe\Error\Authentication $e) {
             
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'SnapSearch could not authenticate with Stripe, please contact the administrators. Stripe responded with ' . $response_status
             );
@@ -153,7 +153,7 @@ class Stripe_model extends CI_Model{
         
         } catch (\Stripe\Error\Base $e) {
         
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Unknown error when attempting to create customer in Stripe. Please try again later. Stripe responded with ' . $response_status,
             );
@@ -217,10 +217,23 @@ class Stripe_model extends CI_Model{
             $charge = Charge::create($data);
             return $charge;
 
+        } catch (\Stripe\Error\Card $e) {
+
+            $response_status = $e->getHttpStatus();
+            $response_body = $e->getJsonBody();
+            $card_error_code = $response_body['error']['code'];
+            $card_error_message = $response_body['error']['message'];
+            $this->errors = array(
+                'validation_error' => [ 
+                    'card' => "Error charging your card on Stripe. It responded with status code: $response_status, and message: $card_error_code - $card_error_message" 
+                ],
+            );
+            return false;
+
         } catch (\Stripe\Error\RateLimit $e) {
         
             // Too many requests made to the API too quickly
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Too many requests to Stripe server, it responded with a ' . $response_status,
             );
@@ -229,7 +242,8 @@ class Stripe_model extends CI_Model{
         } catch (\Stripe\Error\InvalidRequest $e) {
 
             // Invalid stripe parameters
-            $response_status = $e->getJsonBody()->getHttpStatus();
+
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Invalid request parameters to Stripe server, it responded with a ' . $response_status,
             );
@@ -237,7 +251,7 @@ class Stripe_model extends CI_Model{
             
         } catch (\Stripe\Error\Authentication $e) {
             
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'SnapSearch could not authenticate with Stripe, please contact the administrators. Stripe responded with ' . $response_status
             );
@@ -252,7 +266,7 @@ class Stripe_model extends CI_Model{
         
         } catch (\Stripe\Error\Base $e) {
         
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Unknown error when attempting to create customer in Stripe. Please try again later. Stripe responded with ' . $response_status,
             );
@@ -295,7 +309,7 @@ class Stripe_model extends CI_Model{
         }  catch (\Stripe\Error\RateLimit $e) {
         
             // Too many requests made to the API too quickly
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Too many requests to Stripe server, it responded with a ' . $response_status,
             );
@@ -304,7 +318,7 @@ class Stripe_model extends CI_Model{
         } catch (\Stripe\Error\InvalidRequest $e) {
 
             // Invalid stripe parameters
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Invalid request parameters to Stripe server, it responded with a ' . $response_status,
             );
@@ -312,7 +326,7 @@ class Stripe_model extends CI_Model{
             
         } catch (\Stripe\Error\Authentication $e) {
             
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'SnapSearch could not authenticate with Stripe, please contact the administrators. Stripe responded with ' . $response_status
             );
@@ -327,7 +341,7 @@ class Stripe_model extends CI_Model{
         
         } catch (\Stripe\Error\Base $e) {
         
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Unknown error when attempting to create customer in Stripe. Please try again later. Stripe responded with ' . $response_status,
             );
@@ -354,7 +368,7 @@ class Stripe_model extends CI_Model{
         }  catch (\Stripe\Error\RateLimit $e) {
         
             // Too many requests made to the API too quickly
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Too many requests to Stripe server, it responded with a ' . $response_status,
             );
@@ -363,7 +377,7 @@ class Stripe_model extends CI_Model{
         } catch (\Stripe\Error\InvalidRequest $e) {
 
             // Invalid stripe parameters
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Invalid request parameters to Stripe server, it responded with a ' . $response_status,
             );
@@ -371,7 +385,7 @@ class Stripe_model extends CI_Model{
             
         } catch (\Stripe\Error\Authentication $e) {
             
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'SnapSearch could not authenticate with Stripe, please contact the administrators. Stripe responded with ' . $response_status
             );
@@ -386,7 +400,7 @@ class Stripe_model extends CI_Model{
         
         } catch (\Stripe\Error\Base $e) {
         
-            $response_status = $e->getJsonBody()->getHttpStatus();
+            $response_status = $e->getHttpStatus();
             $this->errors = array(
                 'system_error' => 'Unknown error when attempting to create customer in Stripe. Please try again later. Stripe responded with ' . $response_status,
             );

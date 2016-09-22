@@ -201,9 +201,9 @@ class Cron extends CI_Controller{
 		$minimum_charge = 500; // in cents
 		$currency = 'AUD';
 		$product_description = 'SnapSearch API Usage';
-		$grace_ending_period = 'P7D';
-		$grace_retry_period = 'P1D';
-		$today = new DateTime;
+		$grace_ending_period = new DateInterval('P7D');
+		$grace_retry_period = new DateInterval('P1D');
+		$today = new DateTimeImmutable;
 
 		echo $today->format('Y-m-d H:i:s') . " - Started Charge Cycle\n";
 
@@ -274,13 +274,13 @@ class Cron extends CI_Controller{
 		$today
 	) {
 
-		$charge_date = new DateTime($user['chargeDate']);
+		$charge_date = new DateTimeImmutable($user['chargeDate']);
 
-		$grace_ending_date = (is_null($user['graceEndingDate'])) ? new Datetime($user['graceEndingDate']) : NULL;
+		$grace_ending_date = (is_null($user['graceEndingDate'])) ? NULL : new DateTimeImmutable($user['graceEndingDate']);
 
-		$grace_retry_date = (is_null($user['graceRetryDate'])) ? new DateTime($user['graceRetryDate']) : NULL;
+		$grace_retry_date = (is_null($user['graceRetryDate'])) ? NULL : new DateTimeImmutable($user['graceRetryDate']);
 
-		$grace_period = (is_null($grace_ending_date) AND is_null($grace_retry_date)) ? false : true; 
+		$grace_period = (is_null($grace_ending_date) OR is_null($grace_retry_date)) ? false : true; 
 
 		if (!$grace_period) {
 
@@ -470,7 +470,6 @@ class Cron extends CI_Controller{
 				if (!$grace_period) {
 
 					// setup a new grace period
-
 					$next_grace_ending_date = $today->add($grace_ending_period);
 					$next_grace_retry_date = $today->add($grace_retry_period);
 
@@ -544,7 +543,7 @@ class Cron extends CI_Controller{
 				'email'			=> $user['email'],
 			];
 
-			$payment_date = new DateTime('@' . $charge_query->created);
+			$payment_date = new DateTimeImmutable('@' . $charge_query->created);
 			$payment_history['date'] = $payment_date->format('Y-m-d H:i:s');
 
 			if (!empty($charge_query->source->country)) {
@@ -629,7 +628,7 @@ class Cron extends CI_Controller{
 
 			// charge is only derived from the api left over usage
 			$total_usage = $user['apiLeftOverUsage'];
-			$charge = $user['apiLeftOverCharge'];
+			$charge = (int) round($total_usage * $charge_per_request);
 
 			echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Retrying with charge: $charge\n";
 
@@ -705,7 +704,7 @@ class Cron extends CI_Controller{
 
 			if (!$charge_query) {
 
-				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Grace Charge Invalid\n";
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Grace charge invalid\n";
 
 				$charge_errors = $this->Stripe_model->get_errors();
 				$charge_error_message = '';
@@ -728,6 +727,17 @@ class Cron extends CI_Controller{
 						'graceEndingDate'   => null,
 						'graceRetryDate'    => null,
 					]);
+
+					echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Terminated service!\n";
+
+					// make the card inactive on the last failed grace retry
+					$this->Billing_model->update($billing_record['id'], [
+						'active'	  		=> false,
+						'cardInvalid' 		=> true,
+						'cardInvalidReason' => $charge_error_message
+					]);
+
+					echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Invalidated card!\n";
 
 					$email = $this->Email_model->prepare_email('email/billing_error_last_grace_email', [
 						'month'						=> $today->format('F'),
@@ -781,6 +791,15 @@ class Cron extends CI_Controller{
 
 				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Grace Retry Charge Successful\n";
 
+				$this->Accounts_model->update($user['id'], [
+					'apiLeftOverUsage'  => 0,
+					'apiLeftOverCharge' => 0,
+					'graceEndingDate'	=> null,
+					'graceRetryDate'	=> null,
+				]);
+
+				echo $today->format('Y-m-d H:i:s') . " - User: #{$user['id']} Ended grace period\n";
+
 				$payment_history = [
 					'userId'		=> $user['id'],
 					'chargeToken'	=> $charge_query->id,
@@ -791,7 +810,7 @@ class Cron extends CI_Controller{
 					'email'			=> $user['email'],
 				];
 
-				$payment_date = new DateTime('@' . $charge_query->created);
+				$payment_date = new DateTimeImmutable('@' . $charge_query->created);
 				$payment_history['date'] = $payment_date->format('Y-m-d H:i:s');
 
 				if (!empty($charge_query->source->country)) {
