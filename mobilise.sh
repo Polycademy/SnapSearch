@@ -50,17 +50,16 @@ composer dump-autoload --optimize </dev/null
 read -p "$(tput bold)$(tput setaf 2)Setup SlimerJS? [Y/n]: $(tput sgr0)" -n 1 -r DOWNLOAD_SLIMERJS
 echo
 if [[ $DOWNLOAD_SLIMERJS =~ ^[Y]$ ]]; then
-	echo "Downloading SlimerJS 0.9.6"
-	if [ $(uname -m) == 'x86_64' ]; then
-		# 64 bit
-		curl http://download.slimerjs.org/releases/0.9.6/slimerjs-0.9.6-linux-x86_64.tar.bz2 -o slimerjs.tar.bz2
-	else
-		# 32 bit
-		curl http://download.slimerjs.org/releases/0.9.6/slimerjs-0.9.6-linux-i686.tar.bz2 -o slimerjs.tar.bz2
-	fi
+	echo "Downloading SlimerJS Latest Stable"
+	curl http://download.slimerjs.org/nightlies/latest-slimerjs-stable/slimerjs-0.10.3-pre.zip -o slimerjs.zip
 	echo "Uncompressing and extracting SlimerJS into ./slimerjs"
-	mkdir -p slimerjs && tar xjvf slimerjs.tar.bz2 -C slimerjs --strip-components 1
-	rm slimerjs.tar.bz2
+	shopt -s dotglob
+	mkdir -p slimerjs && unzip -d './slimerjs' './slimerjs.zip' && f=("./slimerjs"/*) && mv "./slimerjs"/*/* "./slimerjs" && rm -rf "${f[@]}"
+	shopt -u dotglob
+	rm slimerjs.zip
+	echo "Changing compatibility information"
+	firefox_version="$(firefox --version | grep -Po '(?<=Mozilla Firefox )[\d\.]+')"
+	sed -ie "s/MaxVersion=.*/MaxVersion=${firefox_version}/" ./slimerjs/application.ini
 	echo "Adding SlimerJS to the PATH"
 	sudo ln -sf `pwd`/slimerjs/slimerjs /usr/local/bin/slimerjs
 fi
@@ -93,7 +92,7 @@ echo "Migrating the database relies on a proper configuration of the database in
 read -p "$(tput bold)$(tput setaf 2)Migrate the database to latest?. [Y/n]: $(tput sgr0)" -n 1 -r DATABASE_MIGRATION
 echo
 if [[ $DATABASE_MIGRATION =~ ^[Y]$ ]]; then
-	php index.php cli migrate latest	
+	php index.php cli migrate latest
 fi
 
 # Setting up the lockfile directory for synchronising cache refreshes
@@ -112,7 +111,7 @@ fi
 ROBOT_SUBNET="10.0.0.0"
 ROBOT_CIDR="/24"
 ROBOT_VETH0="10.0.0.1"
-ROBOT_VETH1="10.0.0.2" 
+ROBOT_VETH1="10.0.0.2"
 ROBOT_GATEWAY=$ROBOT_VETH0
 
 # Setup the network namespace for the robots
@@ -147,7 +146,7 @@ mkdir -p /etc/netns/robots
 >/etc/netns/robots/resolv.conf
 # we currently only support IPV4, so we must not capture any IPv6 DNS addresses
 nameservers=($(cat /etc/resolv.conf | grep nameserver | grep -P -o '(?<= )([\d\.]+(?:\n|$))'))
-for i in "${nameservers[@]}"; do 
+for i in "${nameservers[@]}"; do
 	# we need to add the $i to the DELETE portion and the ADD portion of robots-namespace.conf
 	sed -i "/# add DNS delete below/aip netns exec robots iptables -D OUTPUT -d ${i} -j ACCEPT 2>\/dev\/null || true" /etc/init/robots-namespace.conf
 	sed -i "/# add DNS append below/aip netns exec robots iptables -A OUTPUT -d ${i} -j ACCEPT" /etc/init/robots-namespace.conf

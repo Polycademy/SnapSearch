@@ -69,7 +69,8 @@ apt-get install -y \
     multitail \
     npm \
     nodejs-legacy \
-    parallel
+    parallel \
+    unzip
 
 easy_install supervisor
 easy_install httpie
@@ -84,7 +85,7 @@ curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 chmod 776 /usr/local/bin/composer
 
-cd - 
+cd -
 ```
 
 Restart to confirm the machine is still working:
@@ -214,7 +215,7 @@ git clone https://github.com/mysqludf/lib_mysqludf_preg.git
 cd lib_mysqludf_preg
 aclocal
 automake --add-missing
-./configure 
+./configure
 make
 make install
 make MYSQL="mysql -p" installdb
@@ -338,7 +339,7 @@ Here we need to discuss SnapSearch's core scripting technology in terms of:
 
  Core R&D activities
 
-Records of core R&D activities should document: 
+Records of core R&D activities should document:
 
     the state of knowledge or technology that existed when the R&D was undertaken
     the new knowledge or information concerning the creation of new or improved materials, products, devices, processes or services that was sought through the R&D
