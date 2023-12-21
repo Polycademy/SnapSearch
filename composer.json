@@ -12,7 +12,7 @@
         "polycademy/polyauth": "0.0.15",
 		"psliwa/php-pdf": "1.2.2",
 		"phpmailer/phpmailer": "5.2.7",
-		"aws/aws-sdk-php": "2.5.1",
+		"aws/aws-sdk-php": "3.288.1",
         "snapsearch/snapsearch-client-php": "1.1.0", 
         "stripe/stripe-php": "3.20.0"
 	},
